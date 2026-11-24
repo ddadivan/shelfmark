@@ -31,7 +31,7 @@
   inset-block-end: rem(-1px);
   inset-inline: rem(14px);
   content: '';
-  border-block-start: 1px solid var(--border);
+  border-block-start: 1px solid var(--ui-history-row-line, var(--border));
 }
 
 :host(:has(.ui-history-row__link:focus-visible)) {
@@ -63,8 +63,8 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: rem(72px);
-  height: rem(48px);
+  width: var(--ui-history-row-preview-width, #{rem(72px)});
+  height: var(--ui-history-row-preview-height, #{rem(48px)});
   overflow: hidden;
   color: var(--text-muted);
   background: var(--surface-hover);
@@ -114,6 +114,8 @@
 .ui-history-row__title {
   @include type(body);
 
+  font-size: var(--ui-history-row-title-size, #{rem(16px)});
+  line-height: var(--ui-history-row-title-line, #{rem(24px)});
   overflow: hidden;
   font-weight: 500;
   color: var(--text);

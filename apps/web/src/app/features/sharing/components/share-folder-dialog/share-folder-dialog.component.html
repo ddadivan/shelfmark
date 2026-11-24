@@ -3,8 +3,6 @@
   [closeLabel]="'sharing.dialog.close' | transloco"
 >
   <div class="share__body">
-    <p class="share__count">{{ countKey | transloco: { count: data.linkCount } }}</p>
-
     @if (data.isDemo) {
       <ui-notice [kind]="NOTICE_KIND.Info">{{ 'sharing.dialog.demo' | transloco }}</ui-notice>
     } @else if (store.loading()) {
@@ -20,7 +18,9 @@
       <div class="share__public">
         <ui-settings-row
           [title]="'sharing.dialog.public' | transloco"
-          [description]="'sharing.dialog.publicHint' | transloco"
+          [description]="
+            (store.enabled() ? 'sharing.dialog.publicHint' : 'sharing.dialog.publicOff') | transloco
+          "
         >
           <ui-switch
             [label]="'sharing.dialog.public' | transloco"
@@ -38,6 +38,7 @@
             class="share__field"
             type="url"
             readonly
+            labelHidden
             [label]="'sharing.dialog.linkLabel' | transloco"
             [value]="url()"
           />
@@ -55,30 +56,38 @@
           }}</ui-notice>
         }
 
-        <section class="share__settings" aria-labelledby="share-settings-title">
-          <h3 id="share-settings-title" class="share__heading">
-            {{ 'sharing.dialog.settings' | transloco }}
-          </h3>
-          <ui-settings-row
-            [title]="'sharing.dialog.notes' | transloco"
-            [description]="'sharing.dialog.notesHint' | transloco"
+        <!-- Shelf 09-data: Show my notes, then Open public page and Reset link on one line. -->
+        <ui-settings-row
+          [title]="'sharing.dialog.notes' | transloco"
+          [description]="'sharing.dialog.notesHint' | transloco"
+        >
+          <ui-switch
+            [label]="'sharing.dialog.notes' | transloco"
+            [disabled]="store.busy()"
+            [(checked)]="notesView"
+            (checkedChange)="toggleNotes($event)"
+          />
+        </ui-settings-row>
+        <div class="share__actions">
+          <ui-button
+            iconLeft="external"
+            newTab
+            [variant]="BUTTON_VARIANT.Ghost"
+            [href]="url()"
+            [ariaLabel]="'sharing.dialog.openPublicLabel' | transloco"
+            >{{ 'sharing.dialog.openPublic' | transloco }}</ui-button
           >
-            <ui-switch
-              [label]="'sharing.dialog.notes' | transloco"
-              [disabled]="store.busy()"
-              [(checked)]="notesView"
-              (checkedChange)="toggleNotes($event)"
-            />
-          </ui-settings-row>
-          <ui-settings-row
-            [title]="'sharing.dialog.reset' | transloco"
-            [description]="'sharing.dialog.resetHint' | transloco"
+          <ui-button
+            [variant]="BUTTON_VARIANT.Ghost"
+            [disabled]="store.busy()"
+            [ariaDescribedby]="'share-reset-hint'"
+            (click)="reset()"
+            >{{ 'sharing.dialog.resetAction' | transloco }}</ui-button
           >
-            <ui-button size="sm" [disabled]="store.busy()" (click)="reset()">{{
-              'sharing.dialog.resetAction' | transloco
-            }}</ui-button>
-          </ui-settings-row>
-        </section>
+        </div>
+        <p id="share-reset-hint" class="share__muted">
+          {{ 'sharing.dialog.resetHint' | transloco }}
+        </p>
       }
 
       @switch (store.error()) {
@@ -100,8 +109,4 @@
       <p class="share__muted">{{ 'sharing.dialog.privateNotes' | transloco }}</p>
     }
   </div>
-
-  <ui-button slot="footer" [variant]="BUTTON_VARIANT.Primary" (click)="close()">{{
-    'sharing.dialog.done' | transloco
-  }}</ui-button>
 </ui-dialog>

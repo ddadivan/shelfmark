@@ -7,6 +7,7 @@ import {
 import {
   MCP_ERROR_MESSAGE,
   MCP_LIMIT,
+  MCP_TOKEN_ACCESS,
   type CreateMcpTokenRequest,
   type CreateMcpTokenResponse,
   type McpTokensResponse,
@@ -24,9 +25,12 @@ const TOKEN_SELECT = {
   name: true,
   last4: true,
   includeNotes: true,
+  access: true,
   createdAt: true,
+  expiresAt: true,
   lastUsedAt: true,
 } as const;
+const DAY_MS = 24 * 60 * 60 * 1000;
 /** "Calls this week": today and the 6 UTC days before it. */
 const WEEK_DAYS_BEFORE_TODAY = 6;
 
@@ -66,7 +70,11 @@ export class McpTokensService {
     };
   }
 
-  async create(userId: string, request: CreateMcpTokenRequest): Promise<CreateMcpTokenResponse> {
+  async create(
+    userId: string,
+    request: CreateMcpTokenRequest,
+    now = new Date(),
+  ): Promise<CreateMcpTokenResponse> {
     const account = await this.prisma.user.findUnique({
       where: { id: userId },
       select: MCP_ACCOUNT_SELECT,
@@ -88,6 +96,11 @@ export class McpTokensService {
           userId,
           name: request.name,
           includeNotes: request.includeNotes,
+          access: request.access ?? MCP_TOKEN_ACCESS.Read,
+          expiresAt:
+            request.expiresInDays == null
+              ? null
+              : new Date(now.getTime() + request.expiresInDays * DAY_MS),
           tokenHash: generated.hash,
           last4: generated.last4,
         },

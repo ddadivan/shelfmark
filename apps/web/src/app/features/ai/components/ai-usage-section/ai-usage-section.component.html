@@ -22,9 +22,14 @@
           [title]="'ai.backfill.running' | transloco"
           [description]="'ai.backfill.progress' | transloco: progress()"
         >
-          <ui-button [size]="BUTTON_SIZE.Sm" (click)="actions.stopBackfill()">
-            {{ 'ai.backfill.stop' | transloco }}
-          </ui-button>
+          <div class="ai-usage__actions">
+            <ui-button [size]="BUTTON_SIZE.Sm" (click)="actions.showBackfill()">
+              {{ 'ai.backfill.show' | transloco }}
+            </ui-button>
+            <ui-button [size]="BUTTON_SIZE.Sm" (click)="actions.stopBackfill()">
+              {{ 'ai.backfill.stop' | transloco }}
+            </ui-button>
+          </div>
         </ui-settings-row>
         <div class="ai-usage__progress">
           <ui-meter [value]="progress().percent" [label]="'ai.backfill.meterLabel' | transloco" />
@@ -42,11 +47,7 @@
             pluralKey('ai.backfill.hint', status.eligible) | transloco: { count: status.eligible }
           "
         >
-          <ui-button
-            [size]="BUTTON_SIZE.Sm"
-            [disabled]="!store.isOn()"
-            (click)="actions.startBackfill()"
-          >
+          <ui-button [size]="BUTTON_SIZE.Sm" [disabled]="!store.isOn()" (click)="start()">
             {{ 'ai.backfill.start' | transloco }}
           </ui-button>
         </ui-settings-row>

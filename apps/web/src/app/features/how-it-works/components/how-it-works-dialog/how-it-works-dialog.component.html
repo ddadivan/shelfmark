@@ -27,7 +27,7 @@
     @for (chapter of chapters; track chapter.id) {
       <li>
         <ui-button
-          variant="ghost"
+          variant="secondary"
           size="sm"
           [ariaPressed]="current() === chapter.id"
           (click)="jump(chapter)"
@@ -38,4 +38,5 @@
       </li>
     }
   </ol>
+  <p class="how-it-works__note">{{ 'howItWorks.note' | transloco }}</p>
 </ui-dialog>

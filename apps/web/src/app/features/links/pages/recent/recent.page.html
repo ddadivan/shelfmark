@@ -21,7 +21,7 @@
         transloco }}
       </ui-button>
       } @if (hasHistory()) {
-      <ui-button variant="secondary" (click)="history()?.clear()">
+      <ui-button variant="ghost" (click)="history()?.clear()">
         {{ 'links.recent.clear' | transloco }}
       </ui-button>
       } }

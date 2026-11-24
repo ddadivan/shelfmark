@@ -1,0 +1,12 @@
+<nav class="settings-chips" [attr.aria-label]="'settings.title' | transloco">
+  @for (entry of entries; track entry.path) {
+    <a
+      uiRipple
+      class="settings-chips__chip"
+      routerLinkActive
+      ariaCurrentWhenActive="page"
+      [routerLink]="[settingsPath, entry.path]"
+      >{{ entry.chipKey ?? entry.labelKey | transloco }}</a
+    >
+  }
+</nav>

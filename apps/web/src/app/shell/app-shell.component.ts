@@ -56,6 +56,7 @@ import { phoneTabForUrl } from './phone-tab-for-url';
 import { isPushedUrl } from './pushed-url';
 import { PreviewFullScreen } from '../features/link-preview/services/preview-full-screen.service';
 import { SettingsNavComponent } from '../features/settings/components/settings-nav/settings-nav.component';
+import { SettingsChipsComponent } from '../features/settings/components/settings-chips/settings-chips.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
 import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.directive';
@@ -88,6 +89,7 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
     HeaderSearchComponent,
     AskHeaderButtonComponent,
     SettingsNavComponent,
+    SettingsChipsComponent,
     SidebarComponent,
     TabBarComponent,
     SearchTriggerComponent,
@@ -129,6 +131,10 @@ export default class AppShellComponent {
   protected readonly pushed = computed(() => isPushedUrl(this.url()));
   /** On the settings pages the settings nav takes the place of the sidebar (tablet and up). */
   protected readonly inSettings = computed(() => this.activeTab() === PHONE_TAB.You);
+  /** Tablet (Shelf 05-settings at 820px): the settings sections as a chip row above the page. */
+  protected readonly settingsChips = computed(
+    () => this.viewport.compact() && !this.viewport.phone() && this.inSettings(),
+  );
   /**
    * The top bar of the mobile shell (search and avatar): not on a pushed page (it has its own bar)
    * nor on the settings pages (their own header leads back).

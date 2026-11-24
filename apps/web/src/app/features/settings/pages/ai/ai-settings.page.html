@@ -155,4 +155,19 @@
 </ui-settings-section>
 }
 
-<app-connect-assistant />
+<!-- Shelf 15-tools: Connect your assistant is a page of its own. -->
+<ui-settings-section [title]="'ai.connect.title' | transloco">
+  <ui-settings-row
+    [title]="'ai.connect.row.title' | transloco"
+    [description]="'ai.connect.row.hint' | transloco"
+  >
+    <ui-button
+      [size]="BUTTON_SIZE.Sm"
+      iconRight="chevron-right"
+      [href]="connectHref"
+      (linkClick)="open($event, connectHref)"
+    >
+      {{ 'ai.connect.row.open' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>

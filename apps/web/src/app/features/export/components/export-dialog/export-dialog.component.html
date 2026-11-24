@@ -3,6 +3,21 @@
   [closeLabel]="'export.dialog.close' | transloco"
 >
   <div class="export-dialog">
+    @if (folder; as choice) {
+      <!-- Shelf 09-data "What": the whole library or the folder the dialog was opened on. -->
+      <div class="export-dialog__what">
+        <span id="export-dialog-what" class="export-dialog__label">{{
+          'export.dialog.what' | transloco
+        }}</span>
+        <ui-segmented-control
+          ariaLabelledby="export-dialog-what"
+          [options]="scopeOptions()"
+          [value]="scope()"
+          [disabled]="preparing()"
+          (valueChange)="scope.set($event)"
+        />
+      </div>
+    }
     <p id="export-dialog-format" class="export-dialog__label">
       {{ 'export.dialog.formatHeading' | transloco }}
     </p>

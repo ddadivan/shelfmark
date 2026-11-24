@@ -5,45 +5,41 @@
 .feedback-page__body {
   display: flex;
   flex-direction: column;
+  margin-block-start: calc(-1 * var(--space-2));
+}
+
+.feedback-page__sr {
+  @include visually-hidden;
 }
 
 .feedback-page__list {
   display: flex;
   flex-direction: column;
+  gap: var(--space-2);
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
+// Shelf 15-tools: a filled 12px card per message.
 .feedback-page__item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: var(--space-3);
-  align-items: start;
-  padding-block: var(--space-3);
-  border-block-start: 1px solid var(--border);
-
-  &:first-child {
-    border-block-start: 0;
-  }
-
-  // Phone: the status moves under the text so the text keeps its width.
-  @include phone {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-}
-
-.feedback-page__status {
-  @include phone {
-    grid-column: 2;
-  }
-}
-
-.feedback-page__main {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+}
+
+.feedback-page__meta {
+  @include type(caption);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .feedback-page__text {
@@ -55,12 +51,29 @@
   white-space: pre-line;
 }
 
-.feedback-page__meta,
+// The reply on a surface card inside, with the replier's avatar.
 .feedback-page__reply {
-  @include type(caption);
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+
+.feedback-page__avatar {
+  flex: none;
+}
+
+.feedback-page__reply-text {
+  @include type(secondary);
 
   margin: 0;
-  color: var(--text-muted);
+  color: var(--text);
   overflow-wrap: anywhere;
   white-space: pre-line;
+}
+
+.feedback-page__send {
+  display: flex;
 }

@@ -8,13 +8,13 @@ import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
   ButtonComponent,
-  ChipComponent,
   FaviconComponent,
   InputComponent,
   LOGO_VARIANT,
   LogoComponent,
   NOTICE_KIND,
   NoticeComponent,
+  SELECT_APPEARANCE,
   SelectComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
@@ -56,7 +56,6 @@ import type { ShareFormModel } from './models/share-form-model.interface';
     SelectComponent,
     SkeletonComponent,
     TranslocoPipe,
-    ChipComponent,
   ],
   providers: [RuleSuggestionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,6 +65,7 @@ import type { ShareFormModel } from './models/share-form-model.interface';
 export default class SharePage {
   protected readonly BUTTON_TYPE = BUTTON_TYPE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  protected readonly SELECT_APPEARANCE = SELECT_APPEARANCE;
   protected readonly LOGO_VARIANT = LOGO_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly PREVIEW_STATE = PREVIEW_STATE;
@@ -181,12 +181,6 @@ export default class SharePage {
         this.model.update((model) => ({ ...model, folderId }));
       }
     });
-  }
-
-  /** The rule chip's remove: its folder and tags leave the form. */
-  protected dismissRule(): void {
-    this.rules.dismiss();
-    this.form.folderId().focusBoundControl();
   }
 
   /** Back to the library, saving nothing. */

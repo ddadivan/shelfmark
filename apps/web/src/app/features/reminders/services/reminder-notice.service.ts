@@ -1,20 +1,25 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Service } from '@angular/core';
+import { DestroyRef, inject, Injector, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
+import type { LinkResponse } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { REMINDERS_SEEN_STORAGE_KEY } from '../../../core/auth/models/reminders-seen-storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../models/app-path.const';
 import { RemindersStore } from '../../../stores/reminders.store';
+import { linkHost } from '../../links/utils/link-view';
+import { REMINDER_NOTICE } from '../models/reminder-notice.const';
 
 /**
- * The gentle note on app open (#275): when reminders became due since the last visit on this
- * device, one toast says so (the title of a single link, "Show" opens the Reminders page). Asked
- * once per session; the latest due time it announced is kept in `localStorage`
- * (`REMINDERS_SEEN_STORAGE_KEY`, a per-user key cleared at sign-out). Nothing runs in the
- * background: a reminder that comes while the app is open shows on the next open.
+ * The note when reminders become due (#275, Shelf 12-notify "A reminder arrives"): on app open,
+ * when reminders became due since the last visit on this device, one toast says so; while the
+ * app stays open, the next upcoming reminder (within `REMINDER_NOTICE.WatchMaxMs`) is announced
+ * the moment it is due, so a tab that is open does not wait for the next visit. One link: "<title>
+ * is due" with its site, Open (opens the link) and Snooze (an hour); several: how many, Show opens
+ * the Reminders page. The latest due time announced is kept in `localStorage`
+ * (`REMINDERS_SEEN_STORAGE_KEY`, a per-user key cleared at sign-out).
  */
 @Service()
 export class ReminderNoticeService {
@@ -22,11 +27,17 @@ export class ReminderNoticeService {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
   private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
   private checked = false;
+  private timer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    inject(SessionScope).onEnd(() => (this.checked = false));
+    inject(SessionScope).onEnd(() => {
+      this.checked = false;
+      this.stopWatch();
+    });
+    inject(DestroyRef).onDestroy(() => this.stopWatch());
   }
 
   /** Loads the due count (the sidebar badge) and, when something is due, announces what is new. */
@@ -36,36 +47,106 @@ export class ReminderNoticeService {
     }
     this.checked = true;
     await this.store.loadCount();
-    if (this.store.dueCount() === 0) {
-      return;
-    }
+    // The lists also hold the upcoming reminders the open tab waits for.
     await this.store.load();
+    if (this.store.dueCount() > 0) {
+      this.announce();
+    }
+    this.watch();
+  }
+
+  /** Announces the due links not announced yet and remembers the latest due time. */
+  private announce(): void {
     const seen = this.readSeen();
-    const fresh = this.store.due().filter((link) => seen === null || (link.remindAt ?? '') > seen);
-    const latest = this.store
-      .due()
-      .reduce<string>(
-        (max, link) => ((link.remindAt ?? '') > max ? (link.remindAt ?? '') : max),
-        '',
-      );
+    const due = this.store.due();
+    const fresh = due.filter((link) => seen === null || (link.remindAt ?? '') > seen);
+    const latest = due.reduce<string>(
+      (max, link) => ((link.remindAt ?? '') > max ? (link.remindAt ?? '') : max),
+      '',
+    );
     if (latest) {
       this.writeSeen(latest);
     }
-    if (fresh.length === 0) {
+    const [first] = fresh;
+    if (first === undefined) {
       return;
     }
-    const [first] = fresh;
+    if (fresh.length === 1) {
+      this.showOne(first);
+      return;
+    }
     this.toasts.show({
       kind: TOAST_KIND.Warn,
-      title: this.transloco.translate(pluralKey('reminders.toast.due', fresh.length), {
+      title: this.t(pluralKey('reminders.toast.due', fresh.length), {
         count: String(fresh.length),
       }),
-      detail: fresh.length === 1 ? first?.title : undefined,
       action: {
-        label: this.transloco.translate('reminders.toast.show'),
+        label: this.t('reminders.toast.show'),
         run: () => void this.router.navigateByUrl(`/${APP_PATH.Reminders}`),
       },
     });
+  }
+
+  /** "<title> is due" with Open and Snooze (Shelf 12-notify, the in-app toast). */
+  private showOne(link: LinkResponse): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Warn,
+      title: this.t('reminders.toast.dueOne', { title: link.title }),
+      detail: linkHost(link.url),
+      action: { label: this.t('reminders.toast.open'), run: () => void this.open(link) },
+      secondary: { label: this.t('reminders.toast.snooze'), run: () => void this.snooze(link) },
+    });
+  }
+
+  private async open(link: LinkResponse): Promise<void> {
+    // Lazy: the link actions pull in the dialogs of the library.
+    const { LinkActionsService } = await import('../../links/services/link-actions.service');
+    this.injector.get(LinkActionsService).open(link);
+  }
+
+  private async snooze(link: LinkResponse): Promise<void> {
+    const remindAt = new Date(Date.now() + REMINDER_NOTICE.SnoozeMs).toISOString();
+    if (await this.store.set([link], remindAt)) {
+      this.watch();
+    }
+  }
+
+  /** Waits for the soonest upcoming reminder (when it is near enough) and announces it. */
+  private watch(): void {
+    this.stopWatch();
+    const next = this.store
+      .upcoming()
+      .map((link) => Date.parse(link.remindAt ?? ''))
+      .filter((at) => Number.isFinite(at))
+      .sort((a, b) => a - b)[0];
+    if (next === undefined) {
+      return;
+    }
+    const wait = next - Date.now();
+    if (wait > REMINDER_NOTICE.WatchMaxMs) {
+      return;
+    }
+    this.timer = setTimeout(
+      () => {
+        this.timer = null;
+        void this.store.open().then(() => {
+          this.announce();
+          this.watch();
+        });
+      },
+      Math.max(0, wait) + REMINDER_NOTICE.GraceMs,
+    );
+  }
+
+  private stopWatch(): void {
+    if (this.timer !== null) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+  }
+
+  private t(key: string, params?: Record<string, string>): string {
+    return this.transloco.translate(key, params);
   }
 
   private readSeen(): string | null {

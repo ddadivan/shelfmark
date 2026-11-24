@@ -13,6 +13,7 @@ import {
   isMotionPreference,
   isTextSize,
   isThemePreference,
+  THEME_PREFERENCE,
   type CustomTheme,
 } from '@shelfmark/contracts';
 import {
@@ -167,6 +168,20 @@ export class AppearanceSettingsService {
     });
   }
 
+  /**
+   * The top-level Accent row: Graphite on System, Light or Dark is what they already draw, so it
+   * changes nothing; any other accent goes to the Custom theme (`setCustom`).
+   */
+  chooseAccent(value: string, picker: ColorPickerComponent): void {
+    if (
+      this.theme.preference() !== THEME_PREFERENCE.Custom &&
+      value === CUSTOM_THEME_ACCENT.Graphite
+    ) {
+      return;
+    }
+    this.setAccent(value, picker);
+  }
+
   /** A curated accent, or an own colour swatch (applied when it keeps 4.5:1, else the warning). */
   setAccent(value: string, picker: ColorPickerComponent): void {
     if (isHexColour(value)) {
@@ -278,8 +293,29 @@ export class AppearanceSettingsService {
     return this.locale.formatNumber(Math.floor(contrast * 10) / 10);
   }
 
+  /**
+   * Shelf draws the accent as a row of its own (05-settings), but the account keeps it in the
+   * Custom theme: an accent chosen on System, Light or Dark turns Custom on, on the base on screen
+   * (its first background when the base changes), so nothing on screen jumps but the accent.
+   */
   private setCustom(change: Partial<CustomTheme>): void {
-    void this.save({ customTheme: { ...this.theme.customTheme(), ...change } });
+    const current = this.theme.customTheme();
+    if (this.theme.preference() === THEME_PREFERENCE.Custom) {
+      void this.save({ customTheme: { ...current, ...change } });
+      return;
+    }
+    const base =
+      this.theme.resolved() === CUSTOM_THEME_BASE.Dark
+        ? CUSTOM_THEME_BASE.Dark
+        : CUSTOM_THEME_BASE.Light;
+    const background =
+      base === current.base
+        ? current.background
+        : (this.ownBackground() ?? CUSTOM_THEME_BACKGROUNDS[base][0]);
+    void this.save({
+      theme: THEME_PREFERENCE.Custom,
+      customTheme: { ...current, base, background, ...change },
+    });
   }
 
   private async save(change: Partial<Appearance>): Promise<void> {

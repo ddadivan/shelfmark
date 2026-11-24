@@ -1,4 +1,4 @@
-<ui-dialog [title]="content().titleKey | transloco" size="md" hideTitle>
+<ui-dialog [title]="content().titleKey | transloco" hideTitle>
   <div class="onboarding">
     @for (item of shown(); track item.step) {
       <div class="onboarding__scene" [class.onboarding__step--back]="backwards()">
@@ -6,11 +6,6 @@
       </div>
     }
     <div class="onboarding__copy">
-      <ui-steps
-        [count]="count"
-        [current]="current()"
-        [label]="'onboarding.stepLabel' | transloco: { current: current(), count: count }"
-      />
       @for (item of shown(); track item.step) {
         <div class="onboarding__step" [class.onboarding__step--back]="backwards()">
           <!-- The dialog title is the accessible name; this is the same text, shown here. -->
@@ -18,6 +13,11 @@
           <p class="onboarding__text">{{ item.textKey | transloco }}</p>
         </div>
       }
+      <ui-steps
+        [count]="count"
+        [current]="current()"
+        [label]="'onboarding.stepLabel' | transloco: { current: current(), count: count }"
+      />
     </div>
     <div class="onboarding__sr" role="status">
       {{

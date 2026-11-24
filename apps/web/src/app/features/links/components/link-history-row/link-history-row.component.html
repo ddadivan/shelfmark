@@ -8,16 +8,31 @@
     (activated)="onActivated($event)"
   >
     <span slot="title">{{ link().title }}</span>
-    <ui-folder-chip
-      slot="meta"
-      class="link-history-row__folder"
-      [label]="folderName() ?? ('links.recent.unsorted' | transloco)"
-      [icon]="folderIcon()"
-      [colour]="folderColour()"
-    />
+    @if (flat()) {
+      <span slot="meta" class="link-history-row__host">{{ host() }}</span>
+    } @else {
+      <ui-folder-chip
+        slot="meta"
+        class="link-history-row__folder"
+        [label]="folderName() ?? ('links.recent.unsorted' | transloco)"
+        [icon]="folderIcon()"
+        [colour]="folderColour()"
+      />
+    }
     <time slot="time" class="link-history-row__time" [attr.datetime]="dateTime()">{{
       time()
     }}</time>
+    @if (flat() && !viewport.compact()) {
+      <ui-button
+        slot="actions"
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="close"
+        [ariaLabel]="'links.recent.remove' | transloco: { title: link().title }"
+        (click)="removeRequested.emit()"
+      />
+    }
     <ui-button
       slot="actions"
       variant="ghost"

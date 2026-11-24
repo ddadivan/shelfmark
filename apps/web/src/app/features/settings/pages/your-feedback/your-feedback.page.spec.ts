@@ -30,7 +30,7 @@ describe('YourFeedbackPage', () => {
     const { root } = await setup();
 
     expect(root.querySelector('h1')?.textContent).toContain('Your feedback');
-    expect(text(root)).toContain('Ideas, problems and the answers we sent.');
+    expect(text(root)).toContain('What you’ve sent and what came of it.');
     expect(buttonWith(root, 'Send feedback')).toBeDefined();
     expect(text(root)).toContain('No messages yet');
     expect(root.querySelector('ul')).toBeNull();

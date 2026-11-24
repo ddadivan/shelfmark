@@ -27,11 +27,15 @@ export class ImportHelpComponent {
 
   /** Apple keys and the Safari step; detected by default. */
   readonly mac = input(isMacPlatform());
+  /** One browser's line only (the import page's choice); every browser when `null`. */
+  readonly browser = input<string | null>(null);
 
   protected readonly rows = computed<ImportHelpRow[]>(() => {
     activeLang();
     const mac = this.mac();
-    return importHelpSteps(mac).map((step) => {
+    const browser = this.browser();
+    const steps = importHelpSteps(mac).filter((step) => browser === null || step.id === browser);
+    return steps.map((step) => {
       const [before, after = ''] = this.transloco
         .translate(step.textKey, { keys: KEYS_MARK })
         .split(KEYS_MARK);

@@ -30,6 +30,8 @@ export const Warning: Story = { args: { tone: BADGE_TONE.Warning, icon: 'clock' 
 
 export const Danger: Story = { args: { tone: BADGE_TONE.Danger } };
 
+export const Ai: Story = { args: { tone: BADGE_TONE.Ai } };
+
 export const WithIcon: Story = { args: { icon: 'star' } };
 
 /** `pop` plays when the badge is created: toggle the control off and on to see it again. */

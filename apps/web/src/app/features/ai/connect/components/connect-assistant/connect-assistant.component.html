@@ -1,75 +1,37 @@
-<ui-settings-section [title]="'ai.connect.title' | transloco">
-  <p class="connect__lead">{{ 'ai.connect.lead' | transloco }}</p>
-
-  @if (blockedKey(); as key) {
+@if (blockedKey(); as key) {
+  @if (isDemo()) {
     <ui-notice [kind]="NOTICE_KIND.Info">{{ key | transloco }}</ui-notice>
+  } @else {
+    <!-- Shelf 15-tools "on Free": the Pro card in place of the how-to. -->
+    <section class="connect__pro" aria-labelledby="connect-pro-title">
+      <ui-badge [tone]="BADGE_TONE.Ai">{{ 'ai.connect.page.pro' | transloco }}</ui-badge>
+      <h2 id="connect-pro-title" class="connect__pro-title">
+        {{ 'ai.connect.page.free.title' | transloco }}
+      </h2>
+      <p class="connect__pro-text">{{ 'ai.connect.page.free.text' | transloco }}</p>
+    </section>
   }
-  @if (store.loadFailed()) {
-    <ui-notice [kind]="NOTICE_KIND.Danger">
-      {{ 'ai.connect.loadFailed' | transloco }}
-      <ui-button uiNoticeAction [size]="BUTTON_SIZE.Sm" (click)="store.load()">
-        {{ 'ai.connect.retry' | transloco }}
-      </ui-button>
-    </ui-notice>
-  }
+}
+@if (store.loadFailed()) {
+  <ui-notice [kind]="NOTICE_KIND.Danger">
+    {{ 'ai.connect.loadFailed' | transloco }}
+    <ui-button uiNoticeAction [size]="BUTTON_SIZE.Sm" (click)="store.load()">
+      {{ 'ai.connect.retry' | transloco }}
+    </ui-button>
+  </ui-notice>
+}
 
-  <div class="connect__step">
-    <div class="connect__step-title">{{ 'ai.connect.address.title' | transloco }}</div>
-    <div class="connect__address">
-      <code class="connect__code">{{ url }}</code>
-      <ui-button
-        iconLeft="copy"
-        [size]="BUTTON_SIZE.Sm"
-        [ariaLabel]="'ai.connect.address.copyLabel' | transloco"
-        (click)="actions.copyAddress(url)"
-        >{{ 'ai.connect.copy' | transloco }}</ui-button
-      >
-    </div>
-  </div>
-
-  <ui-settings-row
-    [title]="'ai.connect.token.title' | transloco"
-    [description]="
-      (store.limitReached() ? 'ai.connect.token.limit' : 'ai.connect.token.hint')
-        | transloco: { max: MCP_LIMIT.TokensPerUserMax }
-    "
-  >
-    <ui-button
-      [size]="BUTTON_SIZE.Sm"
-      [disabled]="!store.loaded() || !store.available() || store.limitReached()"
-      (click)="actions.create()"
-      >{{ 'ai.connect.token.create' | transloco }}</ui-button
-    >
-  </ui-settings-row>
-
-  @if (store.loaded()) {
-    @if (store.empty()) {
-      <ui-empty-state
-        class="connect__empty"
-        icon="spark"
-        [headingLevel]="3"
-        [heading]="'ai.connect.empty.title' | transloco"
-        [text]="'ai.connect.empty.text' | transloco"
-      />
-    } @else {
-      <h3 class="connect__list-title">{{ 'ai.connect.list.title' | transloco }}</h3>
-      <ul class="connect__list">
-        @for (row of rows(); track row.token.id) {
-          <li class="connect__item">
-            <ui-avatar [name]="row.token.name" [size]="AVATAR_SIZE.Sm" />
-            <div class="connect__item-text">
-              <div class="connect__item-name">{{ row.token.name }}</div>
-              <div class="connect__item-meta">
-                <span>{{ 'ai.connect.list.last4' | transloco: { last4: row.token.last4 } }}</span>
-                <span>{{ row.usage }}</span>
-                @if (row.token.includeNotes) {
-                  <ui-badge [tone]="BADGE_TONE.Neutral">{{
-                    'ai.connect.list.notes' | transloco
-                  }}</ui-badge>
-                }
-              </div>
-            </div>
+@if (store.loaded() && (!blockedKey() || !store.empty())) {
+  <div class="connect__tokens">
+    <ui-settings-section [title]="'ai.connect.page.tokens' | transloco">
+      @for (row of rows(); track row.token.id) {
+        <ui-settings-row [title]="row.token.name" [description]="row.meta">
+          <div class="connect__row-end">
+            <ui-badge [tone]="row.expired ? BADGE_TONE.Warning : BADGE_TONE.Neutral">{{
+              row.badgeKey | transloco
+            }}</ui-badge>
             <ui-button
+              class="connect__revoke"
               [variant]="BUTTON_VARIANT.Ghost"
               [size]="BUTTON_SIZE.Sm"
               [loading]="store.revokingId() === row.token.id"
@@ -77,11 +39,47 @@
               (click)="actions.revoke(row.token)"
               >{{ 'ai.connect.list.revoke' | transloco }}</ui-button
             >
-          </li>
+          </div>
+        </ui-settings-row>
+      } @empty {
+        <ui-settings-row
+          [title]="'ai.connect.empty.title' | transloco"
+          [description]="'ai.connect.empty.text' | transloco"
+        />
+      }
+    </ui-settings-section>
+    @if (!blockedKey()) {
+      <div class="connect__create">
+        <ui-button
+          iconLeft="add"
+          [variant]="BUTTON_VARIANT.Primary"
+          [disabled]="store.limitReached()"
+          (click)="actions.create()"
+          >{{ 'ai.connect.token.create' | transloco }}</ui-button
+        >
+        @if (store.limitReached()) {
+          <p class="connect__hint">
+            {{ 'ai.connect.token.limit' | transloco: { max: MCP_LIMIT.TokensPerUserMax } }}
+          </p>
         }
-      </ul>
+      </div>
     }
-  }
+  </div>
+}
 
-  <app-mcp-how-to />
-</ui-settings-section>
+@if (!blockedKey()) {
+  <ui-settings-section [title]="'ai.connect.page.howTo' | transloco">
+    <app-mcp-how-to />
+  </ui-settings-section>
+
+  <ui-settings-section [title]="'ai.connect.page.can.title' | transloco">
+    <ui-settings-row
+      [title]="'ai.connect.page.can.read.title' | transloco"
+      [description]="'ai.connect.page.can.read.text' | transloco"
+    />
+    <ui-settings-row
+      [title]="'ai.connect.page.can.save.title' | transloco"
+      [description]="'ai.connect.page.can.save.text' | transloco"
+    />
+  </ui-settings-section>
+}

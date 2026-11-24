@@ -61,10 +61,13 @@ describe('ConnectAssistantComponent', () => {
     restore = () => undefined;
   });
 
-  it('shows the server address, Create token and the empty state, without axe violations', async () => {
+  it('shows Tokens, How to connect and What an assistant can do, without axe violations', async () => {
     const { loader, element } = await setup();
-    expect(element.querySelector('h2')?.textContent).toContain('Connect your assistant');
-    expect(element.textContent).toContain('Read-only: it can’t change or delete anything.');
+    expect([...element.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
+      'Tokens',
+      'How to connect',
+      'What an assistant can do',
+    ]);
     expect(element.querySelector('code')?.textContent).toBe(URL);
     expect(element.textContent).toContain('No assistants connected');
     const create = await loader.getHarness(UiButtonHarness.with({ text: 'Create token' }));
@@ -89,7 +92,7 @@ describe('ConnectAssistantComponent', () => {
     expect(open).toHaveBeenCalledWith(CreateTokenDialogComponent, expect.anything());
   });
 
-  it('lists the tokens with last four, use and notes, without axe violations', async () => {
+  it('lists the tokens with use, access, expiry and notes, without axe violations', async () => {
     const { element } = await setup({
       available: true,
       items: [
@@ -99,18 +102,26 @@ describe('ConnectAssistantComponent', () => {
           lastUsedAt: new Date(Date.now() - 2 * 3600_000).toISOString(),
           callsThisWeek: 34,
           includeNotes: true,
+          access: 'save',
+          expiresAt: new Date(Date.now() + 30 * 86_400_000).toISOString(),
         }),
         mcpToken({ id: 'b', name: 'Work laptop', last4: 'Zz09' }),
+        mcpToken({ id: 'c', name: 'Old', expiresAt: '2020-01-01T00:00:00.000Z' }),
       ],
     });
-    const items = [...element.querySelectorAll('li')].map((item) => item.textContent ?? '');
+    const items = [...element.querySelectorAll('ui-settings-row')].map(
+      (item) => item.textContent ?? '',
+    );
     expect(items[0]).toContain('Claude Desktop');
-    expect(items[0]).toContain('Ends in aX9c');
-    expect(items[0]).toContain('Last used 2 hours ago, calls this week: 34');
-    expect(items[0]).toContain('Includes notes');
-    expect(items[1]).toContain('Ends in Zz09');
+    expect(items[0]).toContain('used 2 hours ago');
+    expect(items[0]).toContain('calls this week: 34');
+    expect(items[0]).toContain('expires');
+    expect(items[0]).toContain('includes notes');
+    expect(items[0]).toContain('Read and save');
     expect(items[1]).toContain('never used');
-    expect(items[1]).not.toContain('Includes notes');
+    expect(items[1]).toContain('Read only');
+    expect(items[1]).not.toContain('includes notes');
+    expect(items[2]).toContain('Expired');
     expect(element.textContent).not.toContain('No assistants connected');
     expect(await axeViolations(element)).toEqual([]);
   });
@@ -147,7 +158,8 @@ describe('ConnectAssistantComponent', () => {
       ),
     );
     await fixture.whenStable();
-    expect(element.querySelectorAll('li')).toHaveLength(1);
+    expect(element.textContent).toContain('Claude Desktop');
+    expect(element.textContent).not.toContain('No assistants connected');
   });
 
   it('keeps the token when the confirmation is cancelled', async () => {
@@ -162,11 +174,13 @@ describe('ConnectAssistantComponent', () => {
     expect(element.textContent).toContain('Claude Desktop');
   });
 
-  it('says it is part of Pro and turns Create off, keeping the tokens revocable', async () => {
+  it('shows the Pro card without Create or the how-to, keeping the tokens revocable', async () => {
     const { loader, element } = await setup({ available: false, items: [mcpToken()] });
-    expect(element.textContent).toContain('Connecting an assistant is part of Pro.');
-    const create = await loader.getHarness(UiButtonHarness.with({ text: 'Create token' }));
-    expect(await create.isDisabled()).toBe(true);
+    expect(element.textContent).toContain('Connecting an assistant is part of Pro');
+    expect(element.textContent).not.toContain('How to connect');
+    expect(await loader.getAllHarnesses(UiButtonHarness.with({ text: 'Create token' }))).toEqual(
+      [],
+    );
     const revoke = await loader.getHarness(UiButtonHarness.with({ text: 'Revoke' }));
     expect(await revoke.isDisabled()).toBe(false);
   });

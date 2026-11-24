@@ -265,7 +265,7 @@ describe('RecentPage', () => {
     expect(element.textContent).not.toContain('Clear history');
   });
 
-  it('groups the links by day with the folder and time, newest first', async () => {
+  it('groups the links by day with the site and time, newest first (Shelf flat rows)', async () => {
     // A fixed Saturday afternoon (local time): 3 days ago is still this week whether the week
     // starts on Monday or on Sunday, so the groups do not depend on the day the suite runs.
     // Only Date is faked; the fixtures (`opened`) and the page's "now" both read it.
@@ -286,10 +286,13 @@ describe('RecentPage', () => {
     expect(element.querySelectorAll('app-link-history-row')).toHaveLength(4);
     const first = element.querySelector('app-link-history-row');
     expect(first?.textContent).toContain('Link 1');
-    expect(first?.textContent).toContain('Reading');
+    expect(first?.textContent).toContain('site1.example.com');
+    expect(first?.querySelector('ui-history-group, ui-folder-chip')).toBeNull();
     expect(first?.querySelector('time')?.getAttribute('datetime')).not.toBe('');
     expect(first?.querySelector('time')?.textContent?.trim()).not.toBe('');
-    expect(element.querySelectorAll('app-link-history-row')[1].textContent).toContain('Unsorted');
+    expect(element.querySelector('ui-history-group')?.classList).toContain(
+      'ui-history-group--flat',
+    );
     expect(element.querySelector('.recent-page__count')?.textContent).toContain(
       '4 links in the last 30 days',
     );

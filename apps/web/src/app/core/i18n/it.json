@@ -1403,7 +1403,10 @@
       "download": "Scarica",
       "saved": "File salvato",
       "formatHeading": "Formato",
-      "downloadAs": "Esporta {{format}}"
+      "downloadAs": "Esporta {{format}}",
+      "what": "Cosa",
+      "whole": "Tutta la libreria · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {
@@ -1636,6 +1639,27 @@
         "other": "Ci sono suggerimenti di tag per {{count}} link."
       },
       "review": "Rivedi i tag"
+    },
+    "page": {
+      "title": "Importa segnalibri",
+      "lead": "Porta i link dal tuo browser. Nulla viene salvato finché non confermi.",
+      "background": "Puoi continuare a usare Shelfmark; l’importazione prosegue in background.",
+      "steps": "Passaggi dell’importazione",
+      "step": {
+        "source": "Scegli file",
+        "check": "Controlla",
+        "folders": "Cartelle",
+        "import": "Importa"
+      },
+      "helpTitle": "Come ottenere il file da",
+      "detected": "{{browser}} rilevato",
+      "again": "Importa un altro file",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {
@@ -1873,7 +1897,16 @@
         "recent": "Aperti di recente"
       },
       "failed": "Impossibile salvare l’aspetto",
-      "failedDetail": "È tornato com’era."
+      "failedDetail": "È tornato com’era.",
+      "accent": {
+        "label": "Accento",
+        "hint": "Grafite mantiene l’interfaccia sobria; Inchiostro e Salvia aggiungono un colore."
+      },
+      "customRow": {
+        "label": "Tema personalizzato",
+        "hint": "Il tuo accento e il tuo sfondo, con il contrasto verificato.",
+        "action": "Personalizza"
+      }
     },
     "privacy": {
       "policy": {
@@ -2138,6 +2171,10 @@
         "none": "Nessun dispositivo ha le notifiche attive."
       },
       "failed": "Impossibile salvare le impostazioni delle notifiche"
+    },
+    "chips": {
+      "language": "Lingua",
+      "shortcuts": "Scorciatoie"
     }
   },
   "shortcuts": {
@@ -2756,7 +2793,8 @@
       "error": "Invio non riuscito. Il tuo testo è salvato — riprova tra un momento.",
       "rateLimited": "Hai inviato molti messaggi nell’ultima ora. Il tuo testo è salvato — riprova più tardi.",
       "attachClientInfoLabel": "Cosa viene inviato?",
-      "attachClientInfo": "Ci aiuta a riprodurre i problemi. Vengono inviati solo la versione dell’app e il nome e la versione del browser."
+      "attachClientInfo": "Ci aiuta a riprodurre i problemi. Vengono inviati solo la versione dell’app e il nome e la versione del browser.",
+      "kindQuestion": "Di cosa si tratta?"
     },
     "screenshot": {
       "label": "Screenshot (facoltativi)",
@@ -2801,7 +2839,10 @@
       },
       "sent": "Inviato il {{date}}",
       "sentToday": "Inviato oggi",
-      "reply": "Risposta: {{reply}}"
+      "reply": "Risposta: {{reply}}",
+      "lead": "Cosa hai inviato e cosa ne è venuto fuori.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Risposta:"
     }
   },
   "admin": {
@@ -2964,7 +3005,8 @@
       "title": "Nuovo qui? Guarda come funziona",
       "length": "3 minuti",
       "hide": "Nascondi"
-    }
+    },
+    "note": "3 minuti · sottotitoli in inglese"
   },
   "sharing": {
     "dialog": {
@@ -2994,7 +3036,10 @@
       "privateNotes": "Le note restano private, a meno che non le attivi.",
       "limit": "Puoi condividere fino a {{max}} cartelle. Rendi prima privata un’altra cartella.",
       "demo": "Gli account demo non possono condividere cartelle. Accedi per condividere le tue.",
-      "saveFailed": "Impossibile salvare la modifica. Riprova."
+      "saveFailed": "Impossibile salvare la modifica. Riprova.",
+      "publicOff": "Disattivato: solo tu vedi questa cartella.",
+      "openPublic": "Apri la pagina pubblica",
+      "openPublicLabel": "Apri la pagina pubblica (nuova scheda)"
     },
     "reset": {
       "title": "Reimpostare il link della cartella?",
@@ -3243,7 +3288,9 @@
       "remove": "Rimuovi promemoria",
       "cancel": "Annulla",
       "confirm": "Ricordamelo {{when}}",
-      "confirmEmpty": "Scegli un giorno"
+      "confirmEmpty": "Scegli un giorno",
+      "set": "Imposta promemoria",
+      "timeExact": "Ora esatta"
     },
     "menu": {
       "remind": "Ricordamelo…",
@@ -3269,7 +3316,10 @@
         "many": "Sono arrivati {{count}} promemoria",
         "other": "Sono arrivati {{count}} promemoria"
       },
-      "show": "Mostra"
+      "show": "Mostra",
+      "dueOne": "Promemoria: {{title}}",
+      "open": "Apri",
+      "snooze": "Posticipa"
     },
     "edit": {
       "set": "Promemoria: {{when}}",
@@ -3787,7 +3837,20 @@
       "stop": "Interrompi",
       "done": "Tutti i link esistenti sono stati elaborati.",
       "startFailed": "Impossibile avviare l’elaborazione dei link",
-      "stopFailed": "Impossibile interrompere l’elaborazione. Riprova."
+      "stopFailed": "Impossibile interrompere l’elaborazione. Riprova.",
+      "show": "Mostra",
+      "dialog": {
+        "title": "Riordino dei link più vecchi",
+        "text": "Shelfmark aggiunge cartelle, tag e riassunti ai link salvati prima dell’IA. Puoi chiudere: continua in background.",
+        "of": "di {{total}} completati",
+        "note": "Usa la tua quota IA per i link più vecchi: {{used}} di {{limit}} questo mese. I suggerimenti aspettano in Riordina; in modalità Suggerisci nulla viene spostato senza di te.",
+        "pause": "Metti in pausa",
+        "close": "Chiudi",
+        "doneTitle": "I link più vecchi sono in ordine",
+        "doneText": "{{count}} link più vecchi ora hanno suggerimenti. Rivedili in Riordina.",
+        "later": "Più tardi",
+        "openTidy": "Apri Riordina"
+      }
     },
     "backfillOffer": {
       "title": {
@@ -4129,7 +4192,14 @@
         "never": "Creato il {{date}}, mai usato",
         "notes": "Con le note",
         "revoke": "Revoca",
-        "revokeLabel": "Revoca {{name}}"
+        "revokeLabel": "Revoca {{name}}",
+        "created": "Creato il {{date}}",
+        "usedWhen": "usato {{when}}",
+        "neverUsed": "mai usato",
+        "calls": "chiamate questa settimana: {{calls}}",
+        "expires": "scade il {{date}}",
+        "expired": "Scaduto",
+        "withNotes": "include le note"
       },
       "empty": {
         "title": "Nessun assistente collegato",
@@ -4159,7 +4229,21 @@
           "limit": "Hai {{max}} token. Revocane uno per crearne un altro.",
           "notAvailable": "Collegare un assistente fa parte di Pro.",
           "save": "Impossibile creare il token. Riprova."
-        }
+        },
+        "access": "Accesso",
+        "accessOption": {
+          "read": {
+            "title": "Solo lettura",
+            "hint": "Cercare e leggere i tuoi link."
+          },
+          "save": {
+            "title": "Leggi e salva",
+            "hint": "Salva anche i nuovi link che chiedi, appena sarà possibile. Non può eliminare nulla."
+          }
+        },
+        "expires": "Scade",
+        "days": "{{count}} giorni",
+        "never": "Mai"
       },
       "secret": {
         "title": "Token per {{name}}",
@@ -4195,6 +4279,38 @@
             "hint": "Aggiungi questo a .vscode/mcp.json nel tuo progetto:"
           }
         }
+      },
+      "page": {
+        "lead": "Lascia che un assistente IA compatibile con MCP cerchi e legga il tuo scaffale. Ogni assistente ha il suo token, revocabile in qualsiasi momento.",
+        "pro": "Pro",
+        "tokens": "Token",
+        "howTo": "Come collegare",
+        "address": "Indirizzo del server",
+        "clients": "Assistente",
+        "can": {
+          "title": "Cosa può fare un assistente",
+          "read": {
+            "title": "Cercare e leggere i tuoi link",
+            "text": "Titoli, tag, cartelle e riassunti, e le note se il token le include. Mai i dati del tuo account."
+          },
+          "save": {
+            "title": "Salvare link",
+            "text": "Solo con un token «Leggi e salva», quando gli strumenti per assistenti di Shelfmark potranno salvare. Non si può eliminare nulla."
+          }
+        },
+        "free": {
+          "title": "Collegare un assistente fa parte di Pro",
+          "text": "Pro non è ancora in vendita. Tutto il resto di Shelfmark, IA inclusa, funziona con il tuo piano."
+        }
+      },
+      "access": {
+        "read": "Solo lettura",
+        "save": "Leggi e salva"
+      },
+      "row": {
+        "title": "Token e configurazione",
+        "hint": "Lascia che un assistente compatibile con MCP cerchi e legga il tuo scaffale.",
+        "open": "Apri"
       }
     },
     "announce": {

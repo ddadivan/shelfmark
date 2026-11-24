@@ -1,0 +1,63 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// Shelf 09-data: 20px rounds with 12px names, joined by 24px hairlines; wraps on a phone.
+.ui-stepper__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ui-stepper__step {
+  @include type(caption);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--text-muted);
+
+  &:not(:last-child)::after {
+    width: rem(24px);
+    margin-inline-start: var(--space-1);
+    content: '';
+    border-block-start: 1px solid var(--line-strong);
+  }
+}
+
+.ui-stepper__mark {
+  --ui-icon-size: #{rem(12px)};
+
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: rem(20px);
+  height: rem(20px);
+  font-size: rem(12px);
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-full);
+}
+
+.ui-stepper__step--done .ui-stepper__mark {
+  background: var(--surface-hover);
+  border-color: transparent;
+}
+
+.ui-stepper__step--current {
+  font-weight: 500;
+  color: var(--text);
+
+  .ui-stepper__mark {
+    color: var(--bg);
+    background: var(--text);
+    border-color: transparent;
+  }
+}

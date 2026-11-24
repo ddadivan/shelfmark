@@ -58,7 +58,7 @@
   }
   <div class="recent-history__groups">
     @for (day of days(); track day.key) {
-      <ui-history-group [title]="dayTitle(day)" [headingLevel]="headingLevel()">
+      <ui-history-group [title]="dayTitle(day)" [headingLevel]="headingLevel()" [flat]="page()">
         @for (link of day.links; track link.id) {
           <app-link-history-row
             [link]="link"
@@ -66,6 +66,7 @@
             [folderColour]="folderColour(link)"
             [folderIcon]="folderIcon(link)"
             [time]="timeOf(link)"
+            [flat]="page()"
             [dateTime]="link.lastOpenedAt ?? ''"
             (opened)="actions.open(link)"
             (openInNewTab)="openInNewTab(link)"

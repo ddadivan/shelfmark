@@ -2,14 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import type { FeedbackMessage } from '@shelfmark/contracts';
 import {
+  AVATAR_SIZE,
+  AvatarComponent,
   ButtonComponent,
-  ChipComponent,
-  CHIP_VARIANT,
   EmptyStateComponent,
   NOTICE_KIND,
   NoticeComponent,
-  SettingsRowComponent,
-  SettingsSectionComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
 } from '@shelfmark/ui';
@@ -22,22 +20,20 @@ import { FEEDBACK_LOAD_STATE } from '../../../feedback/models/feedback-load-stat
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
 
 /**
- * `/settings/feedback`: "Send feedback" (opens the same dialog as the account menu) and the
- * user's messages, newest first: kind, text, the day it was sent, the reply when there is one
- * and the status. Loading, empty and error states are handled here; the list reloads on entry.
+ * `/settings/feedback` (Shelf 15-tools "Your feedback"): the user's messages, newest first, one
+ * card each (status, kind and the day it was sent, the text, the reply on a card inside), then
+ * "Send feedback" (the same dialog as the account menu). Loading, empty and error states are handled here; the list reloads on entry.
  */
 @Component({
   selector: 'app-settings-feedback-page',
   imports: [
     TranslocoPipe,
+    AvatarComponent,
     ButtonComponent,
-    ChipComponent,
     EmptyStateComponent,
     FeedbackStatusBadgeComponent,
     NoticeComponent,
     SettingsPageHeaderComponent,
-    SettingsRowComponent,
-    SettingsSectionComponent,
     SkeletonComponent,
   ],
   templateUrl: './your-feedback.page.html',
@@ -49,7 +45,7 @@ export default class YourFeedbackPage {
   private readonly dialog = inject(FeedbackDialogService);
   private readonly transloco = inject(TranslocoService);
 
-  protected readonly CHIP_VARIANT = CHIP_VARIANT;
+  protected readonly AVATAR_SIZE = AVATAR_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly LOAD = FEEDBACK_LOAD_STATE;

@@ -1,4 +1,8 @@
-<ui-dialog [title]="data.heading" [closeLabel]="'reminders.dialog.close' | transloco">
+<ui-dialog
+  [class.remind-dialog--wide]="picking()"
+  [title]="data.heading"
+  [closeLabel]="'reminders.dialog.close' | transloco"
+>
   <div class="remind-dialog">
     @if (data.subtitle) {
       <p class="remind-dialog__subtitle">{{ data.subtitle }}</p>
@@ -41,29 +45,67 @@
         </li>
       </ul>
     } @else {
-      <div class="remind-dialog__picker">
-        <ui-date-picker
-          [(date)]="day"
-          [min]="today"
-          [today]="today"
-          [locale]="locale.locale()"
-          [firstDay]="locale.firstDay()"
-          [previousMonthLabel]="'reminders.dialog.previousMonth' | transloco"
-          [nextMonthLabel]="'reminders.dialog.nextMonth' | transloco"
-        />
-        <ui-input
-          class="remind-dialog__time"
-          [type]="INPUT_TYPE.Time"
-          [label]="'reminders.dialog.time' | transloco"
-          [hint]="'reminders.dialog.timeHint' | transloco"
-          [(value)]="time"
-        />
-        @if (pickedInPast()) {
-          <ui-notice [kind]="NOTICE_KIND.Warning">{{
-            'reminders.dialog.past' | transloco
-          }}</ui-notice>
-        }
+      <!-- Shelf 13-views "Pick a date": the presets set the calendar; the time has quick picks. -->
+      <div class="remind-dialog__pick">
+        <ul class="remind-dialog__quick" [attr.aria-label]="'reminders.dialog.presets' | transloco">
+          @for (option of presets; track option.preset) {
+            <li>
+              <ui-button
+                block
+                class="remind-dialog__preset"
+                [class.remind-dialog__preset--on]="isPicked(option)"
+                [variant]="BUTTON_VARIANT.Ghost"
+                [ariaPressed]="isPicked(option)"
+                (click)="pickPreset(option)"
+              >
+                <span class="remind-dialog__preset-label">{{
+                  'reminders.preset.' + option.preset | transloco
+                }}</span>
+                <span class="remind-dialog__preset-hint">{{ hint(option) }}</span>
+              </ui-button>
+            </li>
+          }
+        </ul>
+        <div class="remind-dialog__picker">
+          <ui-date-picker
+            [(date)]="day"
+            [min]="today"
+            [today]="today"
+            [locale]="locale.locale()"
+            [firstDay]="locale.firstDay()"
+            [previousMonthLabel]="'reminders.dialog.previousMonth' | transloco"
+            [nextMonthLabel]="'reminders.dialog.nextMonth' | transloco"
+          />
+          <div class="remind-dialog__times">
+            <span class="remind-dialog__times-label" id="remind-times">{{
+              'reminders.dialog.time' | transloco
+            }}</span>
+            <ui-segmented-control
+              ariaLabelledby="remind-times"
+              [options]="timeOptions()"
+              [value]="time()"
+              (valueChange)="time.set($event)"
+            />
+          </div>
+          <ui-input
+            class="remind-dialog__time"
+            [type]="INPUT_TYPE.Time"
+            [label]="'reminders.dialog.timeExact' | transloco"
+            [hint]="'reminders.dialog.timeHint' | transloco"
+            [(value)]="time"
+          />
+        </div>
       </div>
+      @if (pickedInPast()) {
+        <ui-notice [kind]="NOTICE_KIND.Warning">{{
+          'reminders.dialog.past' | transloco
+        }}</ui-notice>
+      } @else if (summary(); as text) {
+        <p class="remind-dialog__summary" role="status">
+          <ui-icon name="bell" [size]="ICON_SIZE.Sm" />
+          {{ text }}
+        </p>
+      }
     }
     <p class="remind-dialog__zone">
       {{ 'reminders.dialog.timeZone' | transloco: { zone: timeZone } }}
@@ -90,11 +132,7 @@
       [variant]="BUTTON_VARIANT.Primary"
       [disabled]="pickedLabel() === null"
       (click)="confirmPicked()"
-      >{{
-        pickedLabel()
-          ? ('reminders.dialog.confirm' | transloco: { when: pickedLabel() })
-          : ('reminders.dialog.confirmEmpty' | transloco)
-      }}</ui-button
+      >{{ 'reminders.dialog.set' | transloco }}</ui-button
     >
   }
 </ui-dialog>

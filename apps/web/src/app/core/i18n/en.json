@@ -1380,7 +1380,10 @@
       "download": "Download",
       "saved": "File saved",
       "formatHeading": "Format",
-      "downloadAs": "Export {{format}}"
+      "downloadAs": "Export {{format}}",
+      "what": "What",
+      "whole": "Whole library · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {
@@ -1591,6 +1594,27 @@
         "other": "There are tag suggestions for {{count}} links."
       },
       "review": "Review tags"
+    },
+    "page": {
+      "title": "Import bookmarks",
+      "lead": "Bring links from your browser. Nothing is saved until you confirm.",
+      "background": "You can keep using Shelfmark; this continues in the background.",
+      "steps": "Import steps",
+      "step": {
+        "source": "Choose file",
+        "check": "Check",
+        "folders": "Folders",
+        "import": "Import"
+      },
+      "helpTitle": "How to get the file from",
+      "detected": "{{browser}} detected",
+      "again": "Import another file",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {
@@ -1828,7 +1852,16 @@
         "recent": "Recently opened"
       },
       "failed": "Couldn't save the appearance",
-      "failedDetail": "It is back to how it was."
+      "failedDetail": "It is back to how it was.",
+      "accent": {
+        "label": "Accent",
+        "hint": "Graphite keeps the interface quiet; Ink and Sage add one colour."
+      },
+      "customRow": {
+        "label": "Custom theme",
+        "hint": "Your own accent and background, checked for contrast.",
+        "action": "Customize"
+      }
     },
     "privacy": {
       "policy": {
@@ -2091,6 +2124,10 @@
         "none": "No device has notifications on."
       },
       "failed": "Couldn't save the notification settings"
+    },
+    "chips": {
+      "language": "Language",
+      "shortcuts": "Shortcuts"
     }
   },
   "shortcuts": {
@@ -2693,7 +2730,8 @@
       "error": "Couldn't send. Your text is kept — try again in a moment.",
       "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later.",
       "attachClientInfoLabel": "What is sent?",
-      "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent."
+      "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent.",
+      "kindQuestion": "What is it about?"
     },
     "screenshot": {
       "label": "Screenshots (optional)",
@@ -2738,7 +2776,10 @@
       },
       "sent": "Sent {{date}}",
       "sentToday": "Sent today",
-      "reply": "Reply: {{reply}}"
+      "reply": "Reply: {{reply}}",
+      "lead": "What you’ve sent and what came of it.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Reply:"
     }
   },
   "admin": {
@@ -2901,7 +2942,8 @@
       "title": "New here? Watch how it works",
       "length": "3 minutes",
       "hide": "Hide"
-    }
+    },
+    "note": "3 minutes · captions in English"
   },
   "sharing": {
     "dialog": {
@@ -2930,7 +2972,10 @@
       "privateNotes": "Notes stay private unless you turn them on.",
       "limit": "You can share up to {{max}} folders. Make another folder private first.",
       "demo": "Demo accounts can't share folders. Sign in to share yours.",
-      "saveFailed": "Couldn't save the change. Try again."
+      "saveFailed": "Couldn't save the change. Try again.",
+      "publicOff": "Off: only you can see this folder.",
+      "openPublic": "Open public page",
+      "openPublicLabel": "Open public page (opens in a new tab)"
     },
     "reset": {
       "title": "Reset the folder link?",
@@ -3163,7 +3208,9 @@
       "remove": "Remove reminder",
       "cancel": "Cancel",
       "confirm": "Remind me {{when}}",
-      "confirmEmpty": "Pick a day"
+      "confirmEmpty": "Pick a day",
+      "set": "Set reminder",
+      "timeExact": "Exact time"
     },
     "menu": {
       "remind": "Remind me…",
@@ -3187,7 +3234,10 @@
         "one": "A reminder is due",
         "other": "{{count}} reminders are due"
       },
-      "show": "Show"
+      "show": "Show",
+      "dueOne": "{{title}} is due",
+      "open": "Open",
+      "snooze": "Snooze"
     },
     "edit": {
       "set": "Reminder: {{when}}",
@@ -3699,7 +3749,20 @@
       "stop": "Stop",
       "done": "Every existing link has been processed.",
       "startFailed": "Couldn’t start processing your links",
-      "stopFailed": "Couldn’t stop processing. Try again."
+      "stopFailed": "Couldn’t stop processing. Try again.",
+      "show": "Show",
+      "dialog": {
+        "title": "Sorting older links",
+        "text": "Shelfmark is adding folders, tags and summaries to links saved before AI was on. You can close this; it keeps going in the background.",
+        "of": "of {{total}} done",
+        "note": "Uses your AI allowance for older links: {{used}} of {{limit}} this month. Suggestions wait in Tidy up; nothing is moved without you in Suggest mode.",
+        "pause": "Pause",
+        "close": "Close",
+        "doneTitle": "Older links are sorted",
+        "doneText": "{{count}} older links now have suggestions. Review them in Tidy up.",
+        "later": "Later",
+        "openTidy": "Open Tidy up"
+      }
     },
     "backfillOffer": {
       "title": {
@@ -4026,7 +4089,14 @@
         "never": "Created {{date}}, never used",
         "notes": "Includes notes",
         "revoke": "Revoke",
-        "revokeLabel": "Revoke {{name}}"
+        "revokeLabel": "Revoke {{name}}",
+        "created": "Created {{date}}",
+        "usedWhen": "used {{when}}",
+        "neverUsed": "never used",
+        "calls": "calls this week: {{calls}}",
+        "expires": "expires {{date}}",
+        "expired": "Expired",
+        "withNotes": "includes notes"
       },
       "empty": {
         "title": "No assistants connected",
@@ -4056,7 +4126,21 @@
           "limit": "You have {{max}} tokens. Revoke one to create another.",
           "notAvailable": "Connecting an assistant is part of Pro.",
           "save": "Couldn’t create the token. Try again."
-        }
+        },
+        "access": "Access",
+        "accessOption": {
+          "read": {
+            "title": "Read only",
+            "hint": "Search and read your links."
+          },
+          "save": {
+            "title": "Read and save",
+            "hint": "Also save new links you ask for, once saving arrives. It can’t delete anything."
+          }
+        },
+        "expires": "Expires",
+        "days": "{{count}} days",
+        "never": "Never"
       },
       "secret": {
         "title": "Token for {{name}}",
@@ -4092,6 +4176,38 @@
             "hint": "Add this to .vscode/mcp.json in your project:"
           }
         }
+      },
+      "page": {
+        "lead": "Let an AI assistant that speaks MCP search and read your shelf. Each assistant gets its own token; you can revoke it any time.",
+        "pro": "Pro",
+        "tokens": "Tokens",
+        "howTo": "How to connect",
+        "address": "Server address",
+        "clients": "Assistant",
+        "can": {
+          "title": "What an assistant can do",
+          "read": {
+            "title": "Search and read your links",
+            "text": "Titles, tags, folders and summaries, and notes when the token includes them. Never your account details."
+          },
+          "save": {
+            "title": "Save links",
+            "text": "Only with a “Read and save” token, once Shelfmark’s assistant tools can save. Nothing can be deleted."
+          }
+        },
+        "free": {
+          "title": "Connecting an assistant is part of Pro",
+          "text": "Pro isn’t on sale yet. Everything else in Shelfmark, AI included, works on your plan."
+        }
+      },
+      "access": {
+        "read": "Read only",
+        "save": "Read and save"
+      },
+      "row": {
+        "title": "Tokens and setup",
+        "hint": "Let an assistant that speaks MCP search and read your shelf.",
+        "open": "Open"
       }
     },
     "announce": {

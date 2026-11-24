@@ -4,6 +4,7 @@ import type { UpdateAiSettingsRequest } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { LinksStore } from '../../../stores/links.store';
 import { AiIntroDialogComponent } from '../components/ai-intro-dialog/ai-intro-dialog.component';
+import { BackfillDialogComponent } from '../components/backfill-dialog/backfill-dialog.component';
 import { AiSettingsStore } from './ai-settings.store';
 
 /**
@@ -64,6 +65,11 @@ export class AiSettingsActions {
     });
     void this.store.refresh();
     return false;
+  }
+
+  /** "Sorting older links" (Shelf 15-tools): the run's progress, or its end with Open Tidy up. */
+  showBackfill(): void {
+    this.dialogs.open(BackfillDialogComponent, { size: DIALOG_SIZE.Sm });
   }
 
   async stopBackfill(): Promise<void> {

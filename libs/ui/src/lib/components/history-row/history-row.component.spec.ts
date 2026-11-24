@@ -13,7 +13,7 @@ import type { HistoryHeadingLevel } from './models/history-heading-level.type';
 @Component({
   imports: [HistoryGroupComponent, HistoryRowComponent, ButtonComponent, FolderIconComponent],
   template: `
-    <ui-history-group title="Today" [headingLevel]="level()">
+    <ui-history-group title="Today" [headingLevel]="level()" [flat]="flat()">
       <ui-history-row
         [href]="href()"
         [newTab]="newTab()"
@@ -43,6 +43,7 @@ import type { HistoryHeadingLevel } from './models/history-heading-level.type';
 })
 class HostComponent {
   readonly level = signal<HistoryHeadingLevel>(HISTORY_HEADING_LEVEL.Two);
+  readonly flat = signal(false);
   readonly href = signal<string | undefined>(undefined);
   readonly newTab = signal(false);
   readonly preview = signal<string | undefined>(undefined);
@@ -75,6 +76,16 @@ describe('HistoryGroupComponent', () => {
     const list = group.querySelector('.ui-history-group__list') as HTMLElement;
     expect(list.getAttribute('role')).toBe('list');
     expect(list.querySelectorAll('[role=listitem]').length).toBe(2);
+  });
+
+  it('draws flat rows on request (Shelf), keeping the group and list roles', async () => {
+    const { host, update } = setup();
+    const group = host.querySelector('ui-history-group') as HTMLElement;
+    expect(group.classList.contains('ui-history-group--flat')).toBe(false);
+    update((c) => c.flat.set(true));
+    expect(group.classList.contains('ui-history-group--flat')).toBe(true);
+    expect(group.querySelector('[role=list]')).not.toBeNull();
+    expect(await axeViolations(host)).toEqual([]);
   });
 
   it('uses an h3 inside a sheet', () => {
@@ -204,8 +215,10 @@ describe('HistoryRowComponent', () => {
       expect(css).toMatch(/\.ui-history-row__actions\s*{[^}]*z-index: 2;/);
     });
 
-    it('is 72 x 48 and 48 x 48 on phones', () => {
-      expect(css).toMatch(/\.ui-history-row__preview\s*{[^}]*width: 4\.5rem;[^}]*height: 3rem;/);
+    it('is 72 x 48 (a flat group sets its own size) and 48 x 48 on phones', () => {
+      expect(css).toMatch(
+        /\.ui-history-row__preview\s*{[^}]*width: var\(--ui-history-row-preview-width, 4\.5rem\);[^}]*height: var\(--ui-history-row-preview-height, 3rem\);/,
+      );
       expect(mediaBlocks(css, /width\s*<\s*40em/).join('\n')).toMatch(/width: 3rem/);
     });
 

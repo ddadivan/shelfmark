@@ -54,6 +54,9 @@
         appToastArea
         appScrollRestoration
       >
+        @if (settingsChips()) {
+          <app-settings-chips class="shell__settings-chips" />
+        }
         <router-outlet />
       </main>
     </div>

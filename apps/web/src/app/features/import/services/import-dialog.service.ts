@@ -1,18 +1,16 @@
-import { Dialog } from '@angular/cdk/dialog';
 import { inject, Service } from '@angular/core';
-import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { ImportDialogComponent } from '../components/import-dialog/import-dialog.component';
+import { Router } from '@angular/router';
+import { APP_PATH } from '../../../models/app-path.const';
 
-/** Opens "Import links" from Account › Your data; nothing happens while another dialog is open. */
+/**
+ * Opens "Import bookmarks" from the data menu and Settings › Your data: since Shelf (09-data) the
+ * import is the `/import` page with its numbered steps, not a dialog.
+ */
 @Service()
 export class ImportDialogService {
-  private readonly dialogs = inject(DialogService);
-  private readonly cdk = inject(Dialog);
+  private readonly router = inject(Router);
 
   open(): void {
-    if (this.cdk.openDialogs.length > 0) {
-      return;
-    }
-    this.dialogs.open(ImportDialogComponent, { size: DIALOG_SIZE.Md });
+    void this.router.navigate(['/', APP_PATH.Import]);
   }
 }

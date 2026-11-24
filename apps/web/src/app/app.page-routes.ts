@@ -21,6 +21,7 @@ const sharePage = () => import('./features/share/share.page');
 const tidyPage = () => import('./features/ai/pages/tidy/tidy.page');
 const askPage = () => import('./features/ai/pages/ask/ask.page');
 const todayPage = () => import('./features/today/today.page');
+const importPage = () => import('./features/import/import.page');
 
 /** The real pages. `app.routes.ts` serves them as they are; the e2e build adds a test page. */
 export const pageRoutes: Routes = [
@@ -64,6 +65,7 @@ export const pageRoutes: Routes = [
       { path: APP_PATH.Reminders, loadComponent: remindersPage },
       { path: APP_PATH.Revisit, loadComponent: revisitPage },
       { path: APP_PATH.Trash, loadComponent: trashPage },
+      { path: APP_PATH.Import, loadComponent: importPage },
       { path: APP_PATH.Settings, loadChildren: settingsRoutes },
       { path: APP_PATH.Admin, canActivate: [adminOnly], loadChildren: adminRoutes },
     ],
@@ -98,6 +100,7 @@ export const pageRoutes: Routes = [
   { path: APP_PATH.Reminders, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Revisit, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Trash, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Import, canActivate: [redirectToSignIn], children: [] },
   // The sections are children (`/settings/account`): any depth leads to sign-in and back.
   {
     path: APP_PATH.Settings,

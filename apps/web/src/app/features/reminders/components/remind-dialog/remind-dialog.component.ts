@@ -5,12 +5,16 @@ import {
   ButtonComponent,
   DatePickerComponent,
   DialogComponent,
+  ICON_SIZE,
+  IconComponent,
   INPUT_TYPE,
   InputComponent,
   injectDialogData,
   NOTICE_KIND,
   NoticeComponent,
+  SegmentedControlComponent,
   UiDialogRef,
+  type SegmentedOption,
 } from '@shelfmark/ui';
 import { remindAtProblem } from '@shelfmark/contracts';
 import { LocaleService } from '../../../../core/i18n/locale.service';
@@ -21,6 +25,8 @@ import { ReminderFormatService } from '../../services/reminder-format.service';
 import { composeRemindAt } from '../../utils/compose-remind-at';
 import { remindPresets } from '../../utils/remind-presets';
 import { localIsoDay } from '../../utils/local-iso-day';
+
+import { REMIND_QUICK_TIMES } from '../../models/remind-quick-times.const';
 
 const DEFAULT_TIME = '09:00';
 
@@ -37,8 +43,10 @@ const DEFAULT_TIME = '09:00';
     ButtonComponent,
     DatePickerComponent,
     DialogComponent,
+    IconComponent,
     InputComponent,
     NoticeComponent,
+    SegmentedControlComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +57,7 @@ export class RemindDialogComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly INPUT_TYPE = INPUT_TYPE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   private readonly ref = inject<UiDialogRef<RemindDialogResult>>(UiDialogRef);
   protected readonly data = injectDialogData<RemindDialogData>();
@@ -82,6 +91,36 @@ export class RemindDialogComponent {
     const picked = this.picked();
     return picked && !this.pickedInPast() ? this.format.when(picked.toISOString()) : null;
   });
+
+  /** The quick times of the picker (Shelf 13-views: 9:00, 13:00, 18:00, 21:00) in the app's clock. */
+  protected readonly timeOptions = computed<SegmentedOption[]>(() =>
+    REMIND_QUICK_TIMES.map((value) => {
+      const [hours = 0, minutes = 0] = value.split(':').map(Number);
+      return {
+        value,
+        label: this.locale.formatTime(new Date(2026, 0, 1, hours, minutes)),
+      };
+    }),
+  );
+  /** "Saturday 28 November, 9:00 · in 5 days" under the picker. */
+  protected readonly summary = computed(() => {
+    const picked = this.picked();
+    if (picked === null || this.pickedInPast()) return null;
+    return this.format.when(picked.toISOString());
+  });
+
+  protected isPicked(option: RemindOption): boolean {
+    const picked = this.picked();
+    return picked !== null && picked.getTime() === option.at.getTime();
+  }
+
+  /** A preset in the picker sets the calendar and the time; Set reminder saves. */
+  protected pickPreset(option: RemindOption): void {
+    this.day.set(localIsoDay(option.at));
+    this.time.set(
+      `${String(option.at.getHours()).padStart(2, '0')}:${String(option.at.getMinutes()).padStart(2, '0')}`,
+    );
+  }
 
   protected hint(option: RemindOption): string {
     return this.format.when(option.at.toISOString(), this.now.getTime());

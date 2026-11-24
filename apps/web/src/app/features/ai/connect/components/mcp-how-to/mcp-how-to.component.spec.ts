@@ -7,6 +7,7 @@ import { axeViolations } from '../../../../../../testing/axe';
 import { loadEnglish, provideTranslocoForTest } from '../../../../../testing/transloco-testing';
 import { MCP_CLIENT } from '../../models/mcp-client.const';
 import { MCP_SERVER_URL } from '../../models/mcp-server-url.const';
+import { McpConnectActions } from '../../services/mcp-connect-actions.service';
 import { mcpClientSetup } from '../../utils/mcp-client-setup';
 import { McpHowToComponent } from './mcp-how-to.component';
 
@@ -14,9 +15,11 @@ const URL = 'https://shelfmark.example/api/mcp';
 
 async function setup() {
   const show = vi.fn();
+  const copyAddress = vi.fn().mockResolvedValue(true);
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
+      { provide: McpConnectActions, useValue: { copyAddress } },
       { provide: MCP_SERVER_URL, useValue: URL },
       { provide: ToastService, useValue: { show } },
     ],
@@ -24,8 +27,20 @@ async function setup() {
   await loadEnglish();
   const fixture = TestBed.createComponent(McpHowToComponent);
   await fixture.whenStable();
+  /** Picks an assistant in the segmented choice (the native radio is the control). */
+  const choose = async (name: string): Promise<void> => {
+    const radio = [
+      ...(fixture.nativeElement as HTMLElement).querySelectorAll('input[type="radio"]'),
+    ]
+      .map((input) => input as HTMLInputElement)
+      .find((input) => input.closest('label')?.textContent?.trim() === name);
+    radio?.click();
+    await fixture.whenStable();
+  };
   return {
     show,
+    copyAddress,
+    choose,
     loader: TestbedHarnessEnvironment.loader(fixture),
     element: fixture.nativeElement as HTMLElement,
   };
@@ -39,36 +54,34 @@ describe('McpHowToComponent', () => {
     restore = () => undefined;
   });
 
-  it('opens the setup of each assistant with the address, without axe violations', async () => {
-    const { loader, element } = await setup();
-    const toggle = await loader.getHarness(
-      UiButtonHarness.with({ text: 'How to connect: Claude, Cursor, VS Code' }),
-    );
-    expect(await toggle.isExpanded()).toBe(false);
-    expect(element.querySelector('pre')).toBeNull();
-
-    await toggle.click();
-    expect(await toggle.isExpanded()).toBe(true);
+  it('shows the address and one assistant at a time, without axe violations', async () => {
+    const { loader, element, choose, copyAddress } = await setup();
+    expect(element.textContent).toContain(URL);
     expect([...element.querySelectorAll('h3')].map((h) => h.textContent?.trim())).toEqual([
-      'Claude Code',
       'Claude Desktop',
-      'Cursor',
-      'VS Code',
     ]);
-    const code = [...element.querySelectorAll('pre')].map((pre) => pre.textContent ?? '');
-    // Each block is exactly the setup for its assistant (address and `<token>` placeholder included).
-    expect(code.map((text) => text.trim())).toEqual(
-      Object.values(MCP_CLIENT).map((client) => mcpClientSetup(client, URL)),
+    // The block is exactly the setup for its assistant (address and `<token>` placeholder included).
+    expect(element.querySelector('pre')?.textContent?.trim()).toBe(
+      mcpClientSetup(MCP_CLIENT.ClaudeDesktop, URL),
+    );
+    await choose('VS Code');
+    expect(element.querySelector('h3')?.textContent?.trim()).toBe('VS Code');
+    expect(element.querySelector('pre')?.textContent?.trim()).toBe(
+      mcpClientSetup(MCP_CLIENT.VsCode, URL),
     );
     expect(element.textContent).toContain('can’t connect yet');
+    await (
+      await loader.getHarness(UiButtonHarness.with({ label: 'Copy the server address' }))
+    ).click();
+    expect(copyAddress).toHaveBeenCalledWith(URL);
     expect(await axeViolations(element)).toEqual([]);
   });
 
   it('copies one setup', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     restore = stubClipboard({ writeText });
-    const { loader, show } = await setup();
-    await (await loader.getHarness(UiButtonHarness.with({ text: /^How to connect/ }))).click();
+    const { loader, show, choose } = await setup();
+    await choose('Claude Code');
     await (
       await loader.getHarness(UiButtonHarness.with({ label: 'Copy the Claude Code setup' }))
     ).click();
@@ -82,8 +95,8 @@ describe('McpHowToComponent', () => {
 
   it('says so when the clipboard refuses', async () => {
     restore = stubClipboard(undefined);
-    const { loader, show } = await setup();
-    await (await loader.getHarness(UiButtonHarness.with({ text: /^How to connect/ }))).click();
+    const { loader, show, choose } = await setup();
+    await choose('Cursor');
     await (
       await loader.getHarness(UiButtonHarness.with({ label: 'Copy the Cursor setup' }))
     ).click();

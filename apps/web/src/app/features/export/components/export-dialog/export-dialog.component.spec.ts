@@ -17,7 +17,11 @@ import { ExportDialogComponent } from './export-dialog.component';
 @Component({ template: '', changeDetection: ChangeDetectionStrategy.OnPush })
 class RootComponent {}
 
-async function setup(download: ExportApi['download'] = () => of(undefined), links = 3) {
+async function setup(
+  download: ExportApi['download'] = () => of(undefined),
+  links = 3,
+  folder: { id: string; name: string; count: number } | null = null,
+) {
   const api: ExportApi = { download: vi.fn(download) };
   const show = vi.fn();
   TestBed.configureTestingModule({
@@ -36,7 +40,10 @@ async function setup(download: ExportApi['download'] = () => of(undefined), link
     ],
   });
   await loadEnglish();
-  const ref = TestBed.inject(DialogService).open(ExportDialogComponent, { size: DIALOG_SIZE.Sm });
+  const ref = TestBed.inject(DialogService).open(ExportDialogComponent, {
+    size: DIALOG_SIZE.Sm,
+    data: folder,
+  });
   const closed = vi.fn();
   void ref.result.then(closed);
   await vi.waitFor(() => {
@@ -68,6 +75,28 @@ afterEach(() => {
 });
 
 describe('ExportDialogComponent', () => {
+  it('offers the folder it was opened on next to the whole library (Shelf 09-data)', async () => {
+    const { api, radios, body, button, until } = await setup(() => of(undefined), 58, {
+      id: 'f-1',
+      name: 'Learning',
+      count: 7,
+    });
+    expect(body()).toContain('Whole library · 58');
+    expect(body()).toContain('Learning · 7');
+    radios()
+      .find((radio) => radio.value === 'f-1')
+      ?.click();
+    await (await button(/^Export JSON/)).click();
+    await until(() =>
+      expect(api.download).toHaveBeenCalledWith(EXPORT_FORMAT.Json, { folderId: 'f-1' }),
+    );
+  });
+
+  it('shows no What choice outside a folder', async () => {
+    const { body } = await setup();
+    expect(body()).not.toContain('Whole library');
+  });
+
   it('is a small dialog titled Export with the formats as radio cards, JSON chosen', async () => {
     const { dialog, radios, body } = await setup();
 

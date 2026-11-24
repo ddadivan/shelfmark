@@ -1,0 +1,123 @@
+<div
+  class="import-page"
+  appFileDrag
+  [appFileDragDisabled]="dropOff()"
+  (draggingChange)="flow.dragging.set($event)"
+  (fileDropped)="flow.chooseFile($event)"
+>
+  @if (!done()) {
+  <header class="import-page__head">
+    <h1 class="import-page__title">{{ 'import.page.title' | transloco }}</h1>
+    <p class="import-page__lead">{{ lead() }}</p>
+  </header>
+  <ui-stepper
+    [steps]="stepNames()"
+    [current]="stepNumber()"
+    [label]="'import.page.steps' | transloco"
+  />
+  } @switch (flow.step()) { @case (IMPORT_STEP.Source) {
+  <h2 class="import-page__sr">{{ 'import.page.step.source' | transloco }}</h2>
+  <ui-drop-zone
+    class="import-page__drop"
+    illustration="welcome-save"
+    [heading]="flow.source().titleKey | transloco"
+    [text]="flow.source().descriptionKey | transloco"
+    [accept]="flow.source().accept"
+    [label]="dropLabel()"
+    [actionLabel]="'import.source.choose' | transloco"
+    [hint]="hint()"
+    [over]="flow.dragging()"
+    [disabled]="flow.reading()"
+    [invalid]="flow.problem() !== null"
+    (fileSelected)="flow.chooseFile($event)"
+  />
+  <div class="import-page__status" role="status">
+    @if (flow.reading()) {
+    <span class="import-page__reading"><ui-spinner size="sm" />{{ readingText() }}</span>
+    }
+  </div>
+  @if (problemText(); as message) {
+  <ui-notice [kind]="NOTICE_KIND.Danger">{{ message }}</ui-notice>
+  }
+  <!-- Shelf 09-data: how to get the file, one browser at a time; the detected one first. -->
+  <section class="import-page__help" aria-labelledby="import-help-title">
+    <div class="import-page__help-head">
+      <h2 id="import-help-title" class="import-page__help-title">
+        {{ 'import.page.helpTitle' | transloco }}
+      </h2>
+      <ui-segmented-control
+        ariaLabelledby="import-help-title"
+        [options]="browserOptions()"
+        [value]="browser()"
+        (valueChange)="browser.set($event)"
+      />
+      @if (browser() === detected) {
+      <span class="import-page__detected"
+        >{{ 'import.page.detected' | transloco: { browser: browserName(detected) } }}</span
+      >
+      }
+    </div>
+    <app-import-help [browser]="browser()" />
+  </section>
+  <app-recent-imports />
+  } @case (IMPORT_STEP.Review) {
+  <app-import-review />
+  } @case (IMPORT_STEP.Groups) {
+  <app-import-groups />
+  } @case (IMPORT_STEP.Progress) {
+  <div class="import-page__card" [class.import-page__card--done]="done()">
+    <app-import-progress />
+    @if (done()) {
+    <div class="import-page__actions">
+      <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="openTarget()">
+        {{ (runner.run().targetFolderId === null ? 'import.progress.openUnsorted' :
+        'import.progress.openFolder' ) | transloco }}
+      </ui-button>
+      @if (runner.run().importId !== null && runner.run().created > 0) {
+      <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="undo()">
+        {{ 'import.progress.undo' | transloco }}
+      </ui-button>
+      }
+      <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="again()">
+        {{ 'import.page.again' | transloco }}
+      </ui-button>
+    </div>
+    }
+  </div>
+  } }
+
+  <div class="import-page__foot">
+    @switch (flow.step()) { @case (IMPORT_STEP.Review) {
+    <ui-button (click)="flow.back()">{{ 'import.review.back' | transloco }}</ui-button>
+    <ui-button
+      wrap
+      [variant]="aiMode() ? BUTTON_VARIANT.Ai : BUTTON_VARIANT.Primary"
+      [iconLeft]="aiMode() ? 'spark' : undefined"
+      [disabled]="flow.importCount() === 0"
+      (click)="flow.next()"
+    >
+      @if (aiMode()) { {{ 'import.review.group' | transloco }} } @else { {{ importKey() | transloco:
+      { count: flow.importCount() } }} }
+    </ui-button>
+    } @case (IMPORT_STEP.Groups) {
+    <ui-button (click)="flow.back()">{{ 'import.review.back' | transloco }}</ui-button>
+    @if (flow.groups.error() !== null) {
+    <ui-button wrap [variant]="BUTTON_VARIANT.Primary" (click)="importPlain()">
+      {{ importKey() | transloco: { count: flow.importCount() } }}
+    </ui-button>
+    } @else {
+    <ui-button
+      wrap
+      [variant]="BUTTON_VARIANT.Primary"
+      [disabled]="flow.groups.loading() || !flow.groups.valid()"
+      (click)="flow.startImport()"
+    >
+      {{ groupsKey() | transloco: { count: groupsCount() } }}
+    </ui-button>
+    } } @case (IMPORT_STEP.Progress) { @if (runner.run().phase === IMPORT_RUN_PHASE.Failed) {
+    <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="retry()">
+      {{ 'import.review.back' | transloco }}
+    </ui-button>
+    } } }
+  </div>
+</div>

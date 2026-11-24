@@ -1403,7 +1403,10 @@
       "download": "Télécharger",
       "saved": "Fichier enregistré",
       "formatHeading": "Format",
-      "downloadAs": "Exporter en {{format}}"
+      "downloadAs": "Exporter en {{format}}",
+      "what": "Quoi",
+      "whole": "Toute la bibliothèque · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {
@@ -1636,6 +1639,27 @@
         "other": "Des suggestions de tags existent pour {{count}} liens."
       },
       "review": "Voir les tags"
+    },
+    "page": {
+      "title": "Importer des favoris",
+      "lead": "Récupérez les liens de votre navigateur. Rien n’est enregistré avant votre confirmation.",
+      "background": "Vous pouvez continuer à utiliser Shelfmark ; l’import se poursuit en arrière-plan.",
+      "steps": "Étapes de l’import",
+      "step": {
+        "source": "Fichier",
+        "check": "Vérifier",
+        "folders": "Dossiers",
+        "import": "Import"
+      },
+      "helpTitle": "Obtenir le fichier depuis",
+      "detected": "{{browser}} détecté",
+      "again": "Importer un autre fichier",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {
@@ -1873,7 +1897,16 @@
         "recent": "Ouverts récemment"
       },
       "failed": "Impossible d’enregistrer l’apparence",
-      "failedDetail": "Elle est revenue comme avant."
+      "failedDetail": "Elle est revenue comme avant.",
+      "accent": {
+        "label": "Accent",
+        "hint": "Graphite garde l’interface sobre ; Encre et Sauge ajoutent une couleur."
+      },
+      "customRow": {
+        "label": "Thème personnalisé",
+        "hint": "Votre accent et votre fond, avec contraste vérifié.",
+        "action": "Personnaliser"
+      }
     },
     "privacy": {
       "policy": {
@@ -2138,6 +2171,10 @@
         "none": "Aucun appareil n'a les notifications activées."
       },
       "failed": "Impossible d'enregistrer les réglages des notifications"
+    },
+    "chips": {
+      "language": "Langue",
+      "shortcuts": "Raccourcis"
     }
   },
   "shortcuts": {
@@ -2756,7 +2793,8 @@
       "error": "Envoi impossible. Votre texte est conservé — réessayez dans un instant.",
       "rateLimited": "Vous avez envoyé beaucoup de messages dans la dernière heure. Votre texte est conservé — réessayez plus tard.",
       "attachClientInfoLabel": "Qu’est-ce qui est envoyé ?",
-      "attachClientInfo": "Nous aide à reproduire les problèmes. Seuls la version de l’app ainsi que le nom et la version de votre navigateur sont envoyés."
+      "attachClientInfo": "Nous aide à reproduire les problèmes. Seuls la version de l’app ainsi que le nom et la version de votre navigateur sont envoyés.",
+      "kindQuestion": "De quoi s’agit-il ?"
     },
     "screenshot": {
       "label": "Captures d’écran (facultatif)",
@@ -2801,7 +2839,10 @@
       },
       "sent": "Envoyé le {{date}}",
       "sentToday": "Envoyé aujourd’hui",
-      "reply": "Réponse : {{reply}}"
+      "reply": "Réponse : {{reply}}",
+      "lead": "Ce que vous avez envoyé et ce qu’il en est advenu.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Réponse :"
     }
   },
   "admin": {
@@ -2964,7 +3005,8 @@
       "title": "Nouveau ici ? Découvrez comment ça marche",
       "length": "3 minutes",
       "hide": "Masquer"
-    }
+    },
+    "note": "3 minutes · sous-titres en anglais"
   },
   "sharing": {
     "dialog": {
@@ -2994,7 +3036,10 @@
       "privateNotes": "Les notes restent privées, sauf si vous les activez.",
       "limit": "Vous pouvez partager jusqu’à {{max}} dossiers. Rendez d’abord un autre dossier privé.",
       "demo": "Les comptes de démo ne peuvent pas partager de dossiers. Connectez-vous pour partager les vôtres.",
-      "saveFailed": "Impossible d’enregistrer la modification. Réessayez."
+      "saveFailed": "Impossible d’enregistrer la modification. Réessayez.",
+      "publicOff": "Désactivé : vous seul voyez ce dossier.",
+      "openPublic": "Ouvrir la page publique",
+      "openPublicLabel": "Ouvrir la page publique (nouvel onglet)"
     },
     "reset": {
       "title": "Réinitialiser le lien du dossier ?",
@@ -3243,7 +3288,9 @@
       "remove": "Supprimer le rappel",
       "cancel": "Annuler",
       "confirm": "Me le rappeler {{when}}",
-      "confirmEmpty": "Choisissez un jour"
+      "confirmEmpty": "Choisissez un jour",
+      "set": "Créer le rappel",
+      "timeExact": "Heure précise"
     },
     "menu": {
       "remind": "Me le rappeler…",
@@ -3269,7 +3316,10 @@
         "many": "{{count}} rappels sont arrivés",
         "other": "{{count}} rappels sont arrivés"
       },
-      "show": "Voir"
+      "show": "Voir",
+      "dueOne": "Rappel : {{title}}",
+      "open": "Ouvrir",
+      "snooze": "Reporter"
     },
     "edit": {
       "set": "Rappel : {{when}}",
@@ -3787,7 +3837,20 @@
       "stop": "Arrêter",
       "done": "Tous les liens existants ont été traités.",
       "startFailed": "Impossible de lancer le traitement de vos liens",
-      "stopFailed": "Impossible d’arrêter le traitement. Réessayez."
+      "stopFailed": "Impossible d’arrêter le traitement. Réessayez.",
+      "show": "Afficher",
+      "dialog": {
+        "title": "Tri des anciens liens",
+        "text": "Shelfmark ajoute dossiers, tags et résumés aux liens enregistrés avant l’activation de l’IA. Vous pouvez fermer : le tri continue en arrière-plan.",
+        "of": "sur {{total}} terminés",
+        "note": "Utilise votre quota IA pour les anciens liens : {{used}} sur {{limit}} ce mois-ci. Les suggestions attendent dans Ranger ; rien n’est déplacé sans vous en mode Suggérer.",
+        "pause": "Mettre en pause",
+        "close": "Fermer",
+        "doneTitle": "Les anciens liens sont triés",
+        "doneText": "{{count}} anciens liens ont maintenant des suggestions. Passez-les en revue dans Ranger.",
+        "later": "Plus tard",
+        "openTidy": "Ouvrir Ranger"
+      }
     },
     "backfillOffer": {
       "title": {
@@ -4129,7 +4192,14 @@
         "never": "Créé le {{date}}, jamais utilisé",
         "notes": "Avec les notes",
         "revoke": "Révoquer",
-        "revokeLabel": "Révoquer {{name}}"
+        "revokeLabel": "Révoquer {{name}}",
+        "created": "Créé le {{date}}",
+        "usedWhen": "utilisé {{when}}",
+        "neverUsed": "jamais utilisé",
+        "calls": "appels cette semaine : {{calls}}",
+        "expires": "expire le {{date}}",
+        "expired": "Expiré",
+        "withNotes": "inclut les notes"
       },
       "empty": {
         "title": "Aucun assistant connecté",
@@ -4159,7 +4229,21 @@
           "limit": "Vous avez {{max}} jetons. Révoquez-en un pour en créer un autre.",
           "notAvailable": "Connecter un assistant fait partie de Pro.",
           "save": "Impossible de créer le jeton. Réessayez."
-        }
+        },
+        "access": "Accès",
+        "accessOption": {
+          "read": {
+            "title": "Lecture seule",
+            "hint": "Chercher et lire vos liens."
+          },
+          "save": {
+            "title": "Lire et enregistrer",
+            "hint": "Enregistre aussi les liens que vous demandez, dès que ce sera possible. Il ne peut rien supprimer."
+          }
+        },
+        "expires": "Expire",
+        "days": "{{count}} jours",
+        "never": "Jamais"
       },
       "secret": {
         "title": "Jeton pour {{name}}",
@@ -4195,6 +4279,38 @@
             "hint": "Ajoutez ceci à .vscode/mcp.json dans votre projet :"
           }
         }
+      },
+      "page": {
+        "lead": "Laissez un assistant IA compatible MCP chercher et lire votre étagère. Chaque assistant a son propre jeton, révocable à tout moment.",
+        "pro": "Pro",
+        "tokens": "Jetons",
+        "howTo": "Comment connecter",
+        "address": "Adresse du serveur",
+        "clients": "Assistant",
+        "can": {
+          "title": "Ce qu’un assistant peut faire",
+          "read": {
+            "title": "Chercher et lire vos liens",
+            "text": "Titres, tags, dossiers et résumés, et les notes si le jeton les inclut. Jamais les détails de votre compte."
+          },
+          "save": {
+            "title": "Enregistrer des liens",
+            "text": "Seulement avec un jeton « Lire et enregistrer », dès que les outils d’assistant de Shelfmark sauront enregistrer. Rien ne peut être supprimé."
+          }
+        },
+        "free": {
+          "title": "Connecter un assistant fait partie de Pro",
+          "text": "Pro n’est pas encore en vente. Tout le reste de Shelfmark, IA comprise, fonctionne avec votre offre."
+        }
+      },
+      "access": {
+        "read": "Lecture seule",
+        "save": "Lire et enregistrer"
+      },
+      "row": {
+        "title": "Jetons et configuration",
+        "hint": "Laissez un assistant compatible MCP chercher et lire votre étagère.",
+        "open": "Ouvrir"
       }
     },
     "announce": {

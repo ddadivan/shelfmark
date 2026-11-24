@@ -1380,7 +1380,10 @@
       "download": "Herunterladen",
       "saved": "Datei gespeichert",
       "formatHeading": "Format",
-      "downloadAs": "Als {{format}} exportieren"
+      "downloadAs": "Als {{format}} exportieren",
+      "what": "Was",
+      "whole": "Ganze Bibliothek · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {
@@ -1591,6 +1594,27 @@
         "other": "Für {{count}} Links gibt es Tag-Vorschläge."
       },
       "review": "Tags ansehen"
+    },
+    "page": {
+      "title": "Lesezeichen importieren",
+      "lead": "Hol Links aus deinem Browser. Gespeichert wird erst, wenn du bestätigst.",
+      "background": "Du kannst Shelfmark weiter nutzen; der Import läuft im Hintergrund weiter.",
+      "steps": "Schritte des Imports",
+      "step": {
+        "source": "Datei wählen",
+        "check": "Prüfen",
+        "folders": "Ordner",
+        "import": "Import"
+      },
+      "helpTitle": "So bekommst du die Datei aus",
+      "detected": "{{browser}} erkannt",
+      "again": "Weitere Datei importieren",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {
@@ -1828,7 +1852,16 @@
         "recent": "Zuletzt geöffnet"
       },
       "failed": "Darstellung konnte nicht gespeichert werden",
-      "failedDetail": "Sie ist wieder wie vorher."
+      "failedDetail": "Sie ist wieder wie vorher.",
+      "accent": {
+        "label": "Akzent",
+        "hint": "Graphit hält die Oberfläche ruhig; Tinte und Salbei bringen eine Farbe dazu."
+      },
+      "customRow": {
+        "label": "Eigenes Design",
+        "hint": "Eigener Akzent und Hintergrund, auf Kontrast geprüft.",
+        "action": "Anpassen"
+      }
     },
     "privacy": {
       "policy": {
@@ -2091,6 +2124,10 @@
         "none": "Auf keinem Gerät sind Benachrichtigungen an."
       },
       "failed": "Benachrichtigungseinstellungen konnten nicht gespeichert werden"
+    },
+    "chips": {
+      "language": "Sprache",
+      "shortcuts": "Kürzel"
     }
   },
   "shortcuts": {
@@ -2693,7 +2730,8 @@
       "error": "Senden fehlgeschlagen. Dein Text bleibt erhalten — versuch es gleich noch einmal.",
       "rateLimited": "Du hast in der letzten Stunde viele Nachrichten gesendet. Dein Text bleibt erhalten — versuch es später noch einmal.",
       "attachClientInfoLabel": "Was wird gesendet?",
-      "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers."
+      "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers.",
+      "kindQuestion": "Worum geht es?"
     },
     "screenshot": {
       "label": "Screenshots (optional)",
@@ -2738,7 +2776,10 @@
       },
       "sent": "Gesendet am {{date}}",
       "sentToday": "Heute gesendet",
-      "reply": "Antwort: {{reply}}"
+      "reply": "Antwort: {{reply}}",
+      "lead": "Was du geschickt hast und was daraus wurde.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Antwort:"
     }
   },
   "admin": {
@@ -2901,7 +2942,8 @@
       "title": "Neu hier? Sieh dir an, wie es funktioniert",
       "length": "3 Minuten",
       "hide": "Ausblenden"
-    }
+    },
+    "note": "3 Minuten · Untertitel auf Englisch"
   },
   "sharing": {
     "dialog": {
@@ -2930,7 +2972,10 @@
       "privateNotes": "Notizen bleiben privat, solange du sie nicht einschaltest.",
       "limit": "Du kannst bis zu {{max}} Ordner teilen. Mach zuerst einen anderen Ordner wieder privat.",
       "demo": "Demo-Konten können keine Ordner teilen. Melde dich an, um deine zu teilen.",
-      "saveFailed": "Die Änderung konnte nicht gespeichert werden. Versuch es noch einmal."
+      "saveFailed": "Die Änderung konnte nicht gespeichert werden. Versuch es noch einmal.",
+      "publicOff": "Aus: Nur du siehst diesen Ordner.",
+      "openPublic": "Öffentliche Seite öffnen",
+      "openPublicLabel": "Öffentliche Seite öffnen (neuer Tab)"
     },
     "reset": {
       "title": "Ordnerlink zurücksetzen?",
@@ -3163,7 +3208,9 @@
       "remove": "Erinnerung entfernen",
       "cancel": "Abbrechen",
       "confirm": "Erinnern: {{when}}",
-      "confirmEmpty": "Tag wählen"
+      "confirmEmpty": "Tag wählen",
+      "set": "Erinnerung setzen",
+      "timeExact": "Genaue Uhrzeit"
     },
     "menu": {
       "remind": "Erinnern…",
@@ -3187,7 +3234,10 @@
         "one": "Eine Erinnerung ist fällig",
         "other": "{{count}} Erinnerungen sind fällig"
       },
-      "show": "Anzeigen"
+      "show": "Anzeigen",
+      "dueOne": "Erinnerung: {{title}}",
+      "open": "Öffnen",
+      "snooze": "Später"
     },
     "edit": {
       "set": "Erinnerung: {{when}}",
@@ -3699,7 +3749,20 @@
       "stop": "Stoppen",
       "done": "Alle vorhandenen Links sind verarbeitet.",
       "startFailed": "Verarbeitung deiner Links konnte nicht gestartet werden",
-      "stopFailed": "Verarbeitung konnte nicht gestoppt werden. Versuch es noch einmal."
+      "stopFailed": "Verarbeitung konnte nicht gestoppt werden. Versuch es noch einmal.",
+      "show": "Anzeigen",
+      "dialog": {
+        "title": "Ältere Links werden sortiert",
+        "text": "Shelfmark ergänzt Ordner, Tags und Zusammenfassungen für Links, die vor der KI gespeichert wurden. Du kannst das schließen; es läuft im Hintergrund weiter.",
+        "of": "von {{total}} fertig",
+        "note": "Nutzt dein KI-Kontingent für ältere Links: {{used}} von {{limit}} in diesem Monat. Vorschläge warten in Aufräumen; im Modus Vorschlagen wird nichts ohne dich verschoben.",
+        "pause": "Pausieren",
+        "close": "Schließen",
+        "doneTitle": "Ältere Links sind sortiert",
+        "doneText": "{{count}} ältere Links haben jetzt Vorschläge. Sieh sie dir in Aufräumen an.",
+        "later": "Später",
+        "openTidy": "Aufräumen öffnen"
+      }
     },
     "backfillOffer": {
       "title": {
@@ -4026,7 +4089,14 @@
         "never": "Erstellt am {{date}}, nie genutzt",
         "notes": "Mit Notizen",
         "revoke": "Widerrufen",
-        "revokeLabel": "{{name}} widerrufen"
+        "revokeLabel": "{{name}} widerrufen",
+        "created": "Erstellt am {{date}}",
+        "usedWhen": "genutzt {{when}}",
+        "neverUsed": "nie genutzt",
+        "calls": "Aufrufe diese Woche: {{calls}}",
+        "expires": "läuft am {{date}} ab",
+        "expired": "Abgelaufen",
+        "withNotes": "mit Notizen"
       },
       "empty": {
         "title": "Keine Assistenten verbunden",
@@ -4056,7 +4126,21 @@
           "limit": "Du hast {{max}} Tokens. Widerrufe eines, um ein neues zu erstellen.",
           "notAvailable": "Einen Assistenten zu verbinden ist Teil von Pro.",
           "save": "Das Token konnte nicht erstellt werden. Versuch es noch einmal."
-        }
+        },
+        "access": "Zugriff",
+        "accessOption": {
+          "read": {
+            "title": "Nur lesen",
+            "hint": "Deine Links durchsuchen und lesen."
+          },
+          "save": {
+            "title": "Lesen und speichern",
+            "hint": "Speichert auch neue Links, um die du bittest, sobald das möglich ist. Löschen kann es nichts."
+          }
+        },
+        "expires": "Läuft ab",
+        "days": "{{count}} Tage",
+        "never": "Nie"
       },
       "secret": {
         "title": "Token für {{name}}",
@@ -4092,6 +4176,38 @@
             "hint": "Füge das in .vscode/mcp.json in deinem Projekt ein:"
           }
         }
+      },
+      "page": {
+        "lead": "Lass einen KI-Assistenten, der MCP spricht, dein Regal durchsuchen und lesen. Jeder Assistent bekommt ein eigenes Token, das du jederzeit widerrufen kannst.",
+        "pro": "Pro",
+        "tokens": "Tokens",
+        "howTo": "So verbindest du",
+        "address": "Serveradresse",
+        "clients": "Assistent",
+        "can": {
+          "title": "Was ein Assistent kann",
+          "read": {
+            "title": "Deine Links durchsuchen und lesen",
+            "text": "Titel, Tags, Ordner und Zusammenfassungen, Notizen nur, wenn das Token sie einschließt. Nie deine Kontodaten."
+          },
+          "save": {
+            "title": "Links speichern",
+            "text": "Nur mit einem Token „Lesen und speichern“, sobald die Assistenten-Werkzeuge von Shelfmark speichern können. Löschen ist nie möglich."
+          }
+        },
+        "free": {
+          "title": "Einen Assistenten zu verbinden gehört zu Pro",
+          "text": "Pro gibt es noch nicht zu kaufen. Alles andere in Shelfmark, auch die KI, funktioniert mit deinem Tarif."
+        }
+      },
+      "access": {
+        "read": "Nur lesen",
+        "save": "Lesen und speichern"
+      },
+      "row": {
+        "title": "Tokens und Einrichtung",
+        "hint": "Lass einen Assistenten, der MCP spricht, dein Regal durchsuchen und lesen.",
+        "open": "Öffnen"
       }
     },
     "announce": {

@@ -105,7 +105,12 @@ export default class AppearancePage {
   protected readonly themeOptions = computed<ThemePickerOption[]>(() => {
     this.translation();
     const custom = this.theme.customTheme();
-    return Object.values(THEME_PREFERENCE).map((value) => ({
+    // Shelf 05-settings: System, Light and Dark; the Custom tile shows only while Custom is on
+    // (it is reached through "Custom theme › Customize" or an accent).
+    const values = Object.values(THEME_PREFERENCE).filter(
+      (value) => value !== THEME_PREFERENCE.Custom || this.isCustom(),
+    );
+    return values.map((value) => ({
       value,
       label: this.transloco.translate(THEME_OPTION_KEYS[value]),
       ...(value === THEME_PREFERENCE.System
@@ -124,9 +129,14 @@ export default class AppearancePage {
    * The curated accents, then the own colours of the account (#335) as swatches, each drawn in the
    * shade it gets on the current base and background; a chosen own colour is always among them.
    */
+  /** The accent on screen: the Custom theme's, Graphite on System, Light and Dark. */
+  protected readonly accentValue = computed(() =>
+    this.isCustom() ? this.theme.customTheme().accent : CUSTOM_THEME_ACCENT.Graphite,
+  );
+
   protected readonly accentOptions = computed<ThemePickerOption[]>(() => {
     const { base, background } = this.theme.customTheme();
-    const chosen = this.theme.customTheme().accent;
+    const chosen = this.accentValue();
     const names: string[] = [...SHELF_ACCENTS];
     if (
       !names.includes(chosen) &&

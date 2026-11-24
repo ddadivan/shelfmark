@@ -22,6 +22,8 @@ export const APP_PATH = {
   Revisit: 'revisit',
   /** Deleted links and folders waiting for their retention to pass; reached from the sidebar and the phone Library. */
   Trash: 'trash',
+  /** Import bookmarks (Shelf 09-data): a page with numbered steps. */
+  Import: 'import',
   Settings: 'settings',
   /** The author's pages (`/admin/feedback`, `/admin/stats`); behind `adminOnly`. */
   Admin: 'admin',

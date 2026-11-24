@@ -8,7 +8,6 @@
   <div class="appearance__options">
     <ui-settings-section [title]="'settings.appearance.theme.label' | transloco">
       <div class="appearance__themes">
-        <p class="appearance__hint">{{ 'settings.appearance.theme.hint' | transloco }}</p>
         <ui-theme-picker
           class="appearance__theme-picker"
           [ariaLabel]="'settings.appearance.theme.label' | transloco"
@@ -18,8 +17,79 @@
         />
       </div>
 
+      <ui-settings-row
+        #accentRow
+        [align]="SETTINGS_ROW_ALIGN.Top"
+        [title]="'settings.appearance.accent.label' | transloco"
+        [description]="'settings.appearance.accent.hint' | transloco"
+      >
+        <!-- The curated swatches, then the "+" swatch for an own colour (#315). -->
+        <div class="appearance__accents">
+          <ui-theme-picker
+            [kind]="THEME_PICKER_KIND.Accent"
+            [ariaLabelledby]="accentRow.titleId"
+            [options]="accentOptions()"
+            [value]="accentValue()"
+            (valueChange)="appearance.chooseAccent($event, accentPicker)"
+            (removed)="appearance.removeOwnColour($event)"
+          />
+          <ui-color-picker
+            [label]="'settings.appearance.custom.own.label' | transloco"
+            [pickerLabel]="'settings.appearance.custom.own.picker' | transloco"
+            [saturationLabel]="'settings.appearance.custom.own.saturation' | transloco"
+            [brightnessLabel]="'settings.appearance.custom.own.brightness' | transloco"
+            [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
+            [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
+            [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
+            [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
+            [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
+            #accentPicker
+            [adjust]="appearance.adjustAccent"
+            [(value)]="appearance.pickedColour"
+            (committed)="appearance.pickOwnAccent($event, accentPicker)"
+          >
+            <div class="appearance__own-hint">
+              <p>{{ 'settings.appearance.custom.own.hint' | transloco }}</p>
+              <!-- A palette pick moved to a readable shade (#415): a neutral note, read out. -->
+              <p class="appearance__own-adjusted" role="status">
+                @if (accentPicker.adjusted()) { {{ 'settings.appearance.custom.own.adjusted' |
+                transloco: { colour: appearance.pickedColour() } }} }
+              </p>
+            </div>
+            <!-- Not while dragging: the raw colour is a preview until the pick ends. -->
+            @if (!accentPicker.picking() && appearance.accentWarning(); as warning) {
+            <ui-notice [kind]="NOTICE_KIND.Warning">
+              {{ 'settings.appearance.custom.own.warning' | transloco: { ratio: warning.ratio } }}
+              <ui-button
+                uiNoticeAction
+                [size]="BUTTON_SIZE.Sm"
+                (click)="appearance.useShade(warning.shade, accentPicker)"
+              >
+                {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning.shade } }}
+              </ui-button>
+            </ui-notice>
+            }
+          </ui-color-picker>
+        </div>
+      </ui-settings-row>
+      <!-- Shelf 05-settings: the accent is a row of its own; Customize opens the Custom theme. -->
+      <ui-settings-row
+        [title]="'settings.appearance.customRow.label' | transloco"
+        [description]="'settings.appearance.customRow.hint' | transloco"
+      >
+        @if (!isCustom()) {
+        <ui-button [size]="BUTTON_SIZE.Sm" (click)="appearance.setTheme(THEME_PREFERENCE.Custom)">
+          {{ 'settings.appearance.customRow.action' | transloco }}
+        </ui-button>
+        }
+      </ui-settings-row>
+
       @if (isCustom()) {
-      <div class="appearance__custom" role="group" [attr.aria-labelledby]="baseRow.titleId">
+      <div
+        class="appearance__custom"
+        role="group"
+        [attr.aria-label]="'settings.appearance.theme.custom' | transloco"
+      >
         <ui-settings-row
           #baseRow
           [title]="'settings.appearance.custom.base.label' | transloco"
@@ -31,61 +101,6 @@
             [value]="theme.customTheme().base"
             (valueChange)="appearance.setBase($event)"
           />
-        </ui-settings-row>
-        <ui-settings-row
-          #accentRow
-          [align]="SETTINGS_ROW_ALIGN.Top"
-          [title]="'settings.appearance.custom.accent.label' | transloco"
-          [description]="'settings.appearance.custom.accent.hint' | transloco"
-        >
-          <!-- The curated swatches, then the "+" swatch for an own colour (#315). -->
-          <div class="appearance__accents">
-            <ui-theme-picker
-              [kind]="THEME_PICKER_KIND.Accent"
-              [ariaLabelledby]="accentRow.titleId"
-              [options]="accentOptions()"
-              [value]="theme.customTheme().accent"
-              (valueChange)="appearance.setAccent($event, accentPicker)"
-              (removed)="appearance.removeOwnColour($event)"
-            />
-            <ui-color-picker
-              [label]="'settings.appearance.custom.own.label' | transloco"
-              [pickerLabel]="'settings.appearance.custom.own.picker' | transloco"
-              [saturationLabel]="'settings.appearance.custom.own.saturation' | transloco"
-              [brightnessLabel]="'settings.appearance.custom.own.brightness' | transloco"
-              [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
-              [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
-              [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
-              [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
-              [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
-              #accentPicker
-              [adjust]="appearance.adjustAccent"
-              [(value)]="appearance.pickedColour"
-              (committed)="appearance.pickOwnAccent($event, accentPicker)"
-            >
-              <div class="appearance__own-hint">
-                <p>{{ 'settings.appearance.custom.own.hint' | transloco }}</p>
-                <!-- A palette pick moved to a readable shade (#415): a neutral note, read out. -->
-                <p class="appearance__own-adjusted" role="status">
-                  @if (accentPicker.adjusted()) { {{ 'settings.appearance.custom.own.adjusted' |
-                  transloco: { colour: appearance.pickedColour() } }} }
-                </p>
-              </div>
-              <!-- Not while dragging: the raw colour is a preview until the pick ends. -->
-              @if (!accentPicker.picking() && appearance.accentWarning(); as warning) {
-              <ui-notice [kind]="NOTICE_KIND.Warning">
-                {{ 'settings.appearance.custom.own.warning' | transloco: { ratio: warning.ratio } }}
-                <ui-button
-                  uiNoticeAction
-                  [size]="BUTTON_SIZE.Sm"
-                  (click)="appearance.useShade(warning.shade, accentPicker)"
-                >
-                  {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning.shade } }}
-                </ui-button>
-              </ui-notice>
-              }
-            </ui-color-picker>
-          </div>
         </ui-settings-row>
         <ui-settings-row
           #backgroundRow
@@ -164,8 +179,6 @@
           </ui-button>
         </div>
       </div>
-      } @else {
-      <p class="appearance__note">{{ 'settings.appearance.theme.note' | transloco }}</p>
       }
     </ui-settings-section>
 

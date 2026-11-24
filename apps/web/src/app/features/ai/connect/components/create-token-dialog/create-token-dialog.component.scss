@@ -44,3 +44,10 @@
   color: var(--text);
   overflow-wrap: anywhere;
 }
+
+// Shelf 15-tools "New token": Access as radio cards, Expires as a segmented choice.
+.token__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

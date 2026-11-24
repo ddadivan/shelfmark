@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -30,7 +31,7 @@ import {
 } from '@shelfmark/ui';
 import { SwipeReveal } from '../../../../core/layout/swipe-reveal';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { ownImageUrl, safeHref } from '../../utils/link-view';
+import { linkHost, ownImageUrl, safeHref } from '../../utils/link-view';
 
 /**
  * One opened link in "Recently opened": preview, title, the folder, the time of the open and a
@@ -76,6 +77,11 @@ export class LinkHistoryRowComponent {
   readonly folderIcon = input<FolderIcon | string>(FOLDER_DEFAULT_ICON);
   /** Already formatted local time of the open. */
   readonly time = input.required<string>();
+  /**
+   * Shelf flat row (15-tools "Recently opened" page): the site under the title in place of the
+   * folder chip, and a remove (x) button next to the menu.
+   */
+  readonly flat = input(false, { transform: booleanAttribute });
   /** Machine-readable time for the `<time>` element. */
   readonly dateTime = input.required<string>();
 
@@ -90,6 +96,7 @@ export class LinkHistoryRowComponent {
 
   protected readonly href = computed(() => safeHref(this.link().url));
   protected readonly preview = computed(() => ownImageUrl(this.link().imageUrl));
+  protected readonly host = computed(() => linkHost(this.link().url));
 
   private readonly actions = viewChild<ElementRef<HTMLElement>>('actions');
   private readonly surface = viewChild<ElementRef<HTMLElement>>('surface');

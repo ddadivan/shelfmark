@@ -1,0 +1,40 @@
+@if (running()) {
+  <ui-dialog [title]="'ai.backfill.dialog.title' | transloco">
+    <div class="backfill">
+      <p class="backfill__text">{{ 'ai.backfill.dialog.text' | transloco }}</p>
+      <p class="backfill__stat">
+        <span class="backfill__number">{{ view().done }}</span>
+        <span class="backfill__label">{{
+          'ai.backfill.dialog.of' | transloco: { total: view().total }
+        }}</span>
+      </p>
+      <ui-meter [value]="view().percent" [label]="'ai.backfill.meterLabel' | transloco" />
+      <p class="backfill__note">
+        {{ 'ai.backfill.dialog.note' | transloco: { used: view().used, limit: view().limit } }}
+      </p>
+    </div>
+    <ui-button slot="footer" [variant]="BUTTON_VARIANT.Ghost" (click)="pause()">{{
+      'ai.backfill.dialog.pause' | transloco
+    }}</ui-button>
+    <ui-button slot="footer" [variant]="BUTTON_VARIANT.Primary" (click)="close()">{{
+      'ai.backfill.dialog.close' | transloco
+    }}</ui-button>
+  </ui-dialog>
+} @else {
+  <ui-dialog [title]="'ai.backfill.dialog.doneTitle' | transloco">
+    <div class="backfill">
+      <div class="backfill__scene">
+        <ui-illustration name="empty-unsorted" />
+      </div>
+      <p class="backfill__text">
+        {{ 'ai.backfill.dialog.doneText' | transloco: { count: view().done } }}
+      </p>
+    </div>
+    <ui-button slot="footer" [variant]="BUTTON_VARIANT.Ghost" (click)="close()">{{
+      'ai.backfill.dialog.later' | transloco
+    }}</ui-button>
+    <ui-button slot="footer" [variant]="BUTTON_VARIANT.Primary" (click)="openTidy()">{{
+      'ai.backfill.dialog.openTidy' | transloco
+    }}</ui-button>
+  </ui-dialog>
+}

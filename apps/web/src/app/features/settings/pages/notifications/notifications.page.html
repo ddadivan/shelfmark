@@ -91,6 +91,8 @@
       (checkedChange)="save({ continueReading: $event })"
     />
   </ui-settings-row>
+  <!-- Shelf: email postponed by the author (EMAIL_ENABLED is false). -->
+  @if (EMAIL_ENABLED) {
   <ui-settings-row
     [title]="'settings.notifications.send.weekly.label' | transloco"
     [description]="'settings.notifications.send.weekly.hint' | transloco"
@@ -101,6 +103,7 @@
       (checkedChange)="save({ weeklyEmail: $event })"
     />
   </ui-settings-row>
+  }
 </ui-settings-section>
 
 <ui-settings-section [title]="'settings.notifications.quiet.title' | transloco">

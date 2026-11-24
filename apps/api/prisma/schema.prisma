@@ -750,7 +750,11 @@ model McpToken {
   tokenHash    String          @unique @map("token_hash") @db.Char(64)
   last4        String          @db.Char(4)
   includeNotes Boolean         @default(false) @map("include_notes")
+  // MCP_TOKEN_ACCESS (`read` | `save`), kept by a CHECK in the migration; fixed at creation.
+  access       String          @default("read") @db.VarChar(8)
   createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  // From this time the token is refused like a revoked one; null never expires.
+  expiresAt    DateTime?       @map("expires_at") @db.Timestamptz(3)
   // Written at most once a minute by the token guard (plain SQL).
   lastUsedAt   DateTime?       @map("last_used_at") @db.Timestamptz(3)
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)

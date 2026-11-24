@@ -1,0 +1,18 @@
+@use 'ui' as *;
+@use '../../settings/settings-page' as *;
+@include settings-page;
+
+// The lead sits right under the title (the header's own line), the Pro mark at its end.
+.connect-page__lead {
+  @include type(secondary);
+
+  max-width: 68ch;
+  margin: calc(-1 * var(--space-4)) 0 0;
+  line-height: rem(21px);
+  color: var(--text-muted);
+}
+
+.connect-page__pro {
+  margin-inline-start: var(--space-1);
+  vertical-align: middle;
+}
