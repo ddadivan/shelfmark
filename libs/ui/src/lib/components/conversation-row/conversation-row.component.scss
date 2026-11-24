@@ -64,18 +64,24 @@
 }
 
 .ui-conversation-row__actions {
-  position: relative;
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
   z-index: 2;
   display: none;
-  flex: none;
-  padding-inline-end: var(--space-1);
+  align-items: center;
+  padding-inline: var(--space-1);
+  border-radius: inherit;
+  background: var(--surface-hover);
 
   &:has(*) {
     display: flex;
   }
 }
 
-// Shown on hover and focus inside the row; always with touch input.
+// With a pointer the actions show on hover and keyboard focus, over the end of the title (which
+// keeps the whole width otherwise, as in the design). With touch they always show and the title
+// leaves room for them.
 @media (hover: hover) and (pointer: fine) {
   .ui-conversation-row__actions:has(*) {
     visibility: hidden;
@@ -84,5 +90,15 @@
   :host(:hover) .ui-conversation-row__actions,
   :host(:focus-within) .ui-conversation-row__actions {
     visibility: visible;
+  }
+}
+
+@media not ((hover: hover) and (pointer: fine)) {
+  :host(:has(.ui-conversation-row__actions > *)) .ui-conversation-row__link {
+    padding-inline-end: rem(44px);
+  }
+
+  .ui-conversation-row__actions {
+    background: transparent;
   }
 }

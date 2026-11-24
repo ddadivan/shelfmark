@@ -25,7 +25,9 @@
   gap: var(--space-6);
   align-items: start;
   max-width: none;
-  margin-block-start: var(--space-4);
+
+  // 16px under the header (the shell column already has 24px on top).
+  margin-block-start: calc(-1 * var(--space-2));
 }
 
 .ask-page__history {
