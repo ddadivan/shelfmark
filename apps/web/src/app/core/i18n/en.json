@@ -4246,7 +4246,8 @@
       "title": "Due",
       "done": "Done",
       "snooze": "Snooze",
-      "snoozeLabel": "Snooze {{title}}"
+      "snoozeLabel": "Snooze {{title}}",
+      "doneLabel": "Done: {{title}}"
     },
     "continue": {
       "title": "Continue reading",

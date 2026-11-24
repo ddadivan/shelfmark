@@ -4356,7 +4356,8 @@
       "title": "Pendientes",
       "done": "Hecho",
       "snooze": "Posponer",
-      "snoozeLabel": "Posponer {{title}}"
+      "snoozeLabel": "Posponer {{title}}",
+      "doneLabel": "Hecho: {{title}}"
     },
     "continue": {
       "title": "Seguir leyendo",

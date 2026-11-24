@@ -42,17 +42,26 @@
             </span>
           </span>
           <span slot="trailing" class="revisit__actions">
-            <ui-button size="sm" iconLeft="check" (click)="done(link)">
-              {{ 'revisit.due.done' | transloco }}
+            <!-- Shelf phone: the two actions keep only their icons (named by aria-label). -->
+            <ui-button
+              size="sm"
+              iconLeft="check"
+              [iconOnly]="phone()"
+              [ariaLabel]="'revisit.due.doneLabel' | transloco: { title: link.title }"
+              (click)="done(link)"
+            >
+              @if (!phone()) { {{ 'revisit.due.done' | transloco }} }
             </ui-button>
             <ui-button
               size="sm"
               variant="ghost"
               iconLeft="bell"
+              [iconOnly]="phone()"
               [uiMenuTrigger]="snoozeMenu"
               [ariaLabel]="'revisit.due.snoozeLabel' | transloco: { title: link.title }"
-              >{{ 'revisit.due.snooze' | transloco }}</ui-button
             >
+              @if (!phone()) { {{ 'revisit.due.snooze' | transloco }} }
+            </ui-button>
             <ui-menu
               #snoozeMenu
               align="end"

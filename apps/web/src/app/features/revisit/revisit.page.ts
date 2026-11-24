@@ -19,6 +19,7 @@ import {
   SkeletonComponent,
 } from '@shelfmark/ui';
 import { LocaleService } from '../../core/i18n/locale.service';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { APP_PATH } from '../../models/app-path.const';
 import { PREVIEW_QUERY_PARAM } from '../../models/preview-query-param.const';
@@ -72,6 +73,7 @@ export default class RevisitPage {
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
 
+  protected readonly phone = inject(ViewportService).phone;
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly pluralKey = pluralKey;

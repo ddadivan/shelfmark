@@ -4466,7 +4466,8 @@
       "title": "Настав час",
       "done": "Готово",
       "snooze": "Відкласти",
-      "snoozeLabel": "Відкласти «{{title}}»"
+      "snoozeLabel": "Відкласти «{{title}}»",
+      "doneLabel": "Готово: «{{title}}»"
     },
     "continue": {
       "title": "Продовжити читання",

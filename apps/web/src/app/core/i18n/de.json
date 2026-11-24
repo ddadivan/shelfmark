@@ -4246,7 +4246,8 @@
       "title": "Fällig",
       "done": "Erledigt",
       "snooze": "Später",
-      "snoozeLabel": "{{title}} später erinnern"
+      "snoozeLabel": "{{title}} später erinnern",
+      "doneLabel": "Erledigt: {{title}}"
     },
     "continue": {
       "title": "Weiterlesen",
