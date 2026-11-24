@@ -6,6 +6,7 @@ import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { gotoLandingLoaded } from './support/landing';
 import { settled } from './support/settled';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { seedSession } from './support/mock-session';
 
 test.describe('landing', () => {
   test(
@@ -176,6 +177,80 @@ test.describe('landing', () => {
       expect(total, JSON.stringify(shifts)).toBeLessThan(0.001);
     });
   }
+});
+
+// Shelf 16-landing: the header and the What's new block change with the width and the session.
+test.describe('landing variants', () => {
+  const header = (page: Page): Locator => page.getByRole('banner');
+
+  for (const variant of [
+    { width: 1280, links: true, signIn: true },
+    { width: 700, links: false, signIn: true },
+    { width: 360, links: false, signIn: false },
+  ]) {
+    test(`a guest at ${variant.width}px: page links ${variant.links ? 'shown' : 'hidden'}, Sign in ${variant.signIn ? 'shown' : 'hidden'}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: variant.width, height: 800 });
+      await page.goto('/');
+      await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+
+      const nav = header(page).getByRole('navigation', { name: 'Page' });
+      if (variant.links) {
+        await expect(nav.getByRole('link')).toHaveText([
+          'How it works',
+          'AI',
+          /^What.s new$/,
+          'Privacy',
+        ]);
+      } else {
+        await expect(nav).toBeHidden();
+      }
+      await expect(header(page).getByRole('link', { name: 'Sign in' })).toHaveCount(
+        variant.signIn ? 1 : 0,
+      );
+      await expect(header(page).getByRole('link', { name: 'Start your shelf' })).toBeVisible();
+      await expect(header(page).getByRole('link', { name: 'Back to my shelf' })).toHaveCount(0);
+      // No What's new block for a guest.
+      await expect(page.getByRole('region', { name: /^What.s new$/ })).toHaveCount(0);
+    });
+  }
+
+  test('a guest switches the theme in the header and it is remembered on this device', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto('/');
+    const html = page.locator('html');
+    await expect(html).toHaveAttribute('data-theme', 'light');
+    await header(page).getByRole('button', { name: 'Switch theme' }).click();
+    await expect(html).toHaveAttribute('data-theme', 'dark');
+    await page.reload();
+    await expect(html).toHaveAttribute('data-theme', 'dark');
+  });
+
+  test(
+    'a signed-in person: / opens the links, /about has Back to my shelf and What’s new',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock auth');
+      await seedSession(page);
+      await page.goto('/');
+      await expect(page).toHaveURL('/links');
+
+      await page.goto('/about');
+      await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+      await expect(header(page).getByRole('link', { name: 'Back to my shelf' })).toBeVisible();
+      await expect(header(page).getByRole('link', { name: 'Sign in' })).toHaveCount(0);
+      await expect(page.getByRole('link', { name: 'Open the demo' })).toHaveCount(0);
+      const whatsNew = page.getByRole('region', { name: /^What.s new$/ });
+      await expect(whatsNew.getByRole('listitem')).toHaveCount(4);
+      await expect(whatsNew.getByRole('link', { name: 'See all changes' })).toHaveAttribute(
+        'href',
+        '/changelog',
+      );
+    },
+  );
 });
 
 test.describe('landing scenes and reveals', () => {
