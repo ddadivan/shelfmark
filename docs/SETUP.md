@@ -304,6 +304,26 @@ Reminders reach a closed Shelfmark through Web Push (VAPID, RFC 8292). Without t
 - [ ] Vercel → Settings → **Cron Jobs** shows `/api/cron/notifications` (daily at 08:07 UTC, `vercel.json`; Hobby allows one run a day per cron). It uses the same `CRON_SECRET` (5.8). Use **Run** once and check `{ "configured": true, "sent": …, "removed": …, "quiet": …, "hasMore": … }`. For timely reminders (every 15 minutes) point an external scheduler at the same route with the `Authorization: Bearer <CRON_SECRET>` header, or move to Vercel Pro and change the schedule; the route is idempotent (a reminder is pushed once).
 - [ ] After the release: Settings › Notifications on a desktop Chrome, turn notifications on, **Send a test**: the notification arrives through the push service.
 - [ ] Vercel → Settings → **Cron Jobs** also shows `/api/cron/account-purge` (daily at 02:37 UTC): it deletes accounts whose 7-day deletion grace period is over (Shelf 05-settings), with the same `CRON_SECRET`.
+- [ ] Vercel → Settings → **Cron Jobs** also shows `/api/cron/ask-history` (daily at 04:27 UTC): it deletes Ask conversations 30 days after their last turn (ADR 0055 amendment), with the same `CRON_SECRET`.
+
+#### Vercel to-do for the Shelf redesign
+
+One Vercel project serves both the web app and the API (`vercel.json` at the repo root), so every variable below is set on that project. Names only; values never go into the repo.
+
+| Variable | Part | Environments | What it is for | How to get the value |
+| --- | --- | --- | --- | --- |
+| `VAPID_PUBLIC_KEY` | api (sent to the web through `/api/me/notifications`) | Production | Web Push: the browser subscribes with it | `npx web-push generate-vapid-keys` once, the "Public Key" line |
+| `VAPID_PRIVATE_KEY` | api | Production, **Sensitive** | Web Push: signs each push | same command, the "Private Key" line; keep it in your password manager |
+| `VAPID_SUBJECT` | api | Production | Web Push contact for the push services | `mailto:<your email>` |
+| `CRON_SECRET` | api | Production, **Sensitive** | already set (5.8); the three new crons use it too | nothing new |
+
+Not needed: Preview (crons and push are Production only; without the keys Preview shows "not configured"). The Reader text fetcher, reading progress, Ask history, saved views and account deletion add no variables. Weekly email is postponed: no mail provider variables yet.
+
+New cron entries in `vercel.json` (all with `CRON_SECRET`, Production only):
+
+- [ ] `/api/cron/notifications`, `7 8 * * *`: pushes due reminders.
+- [ ] `/api/cron/account-purge`, `37 2 * * *`: deletes accounts after the 7-day grace period.
+- [ ] `/api/cron/ask-history`, `27 4 * * *`: deletes Ask conversations older than 30 days.
 
 ## 6. Secrets policy
 
