@@ -1,16 +1,8 @@
-<ui-card [image]="image()" [headingLevel]="2" (activated)="activated.emit()">
+<!-- Shelf 07-extension: the link as a row, its picture in the thumb, then title and site. -->
+<ui-list-item [thumb]="image() ?? ''" (activated)="activated.emit()">
   <span slot="title">{{ link().title }}</span>
   <span slot="meta" class="card__site">
     <ui-favicon [src]="favicon()" [letter]="letter()" />
     <span class="card__host">{{ host() }}</span>
   </span>
-  @if (link().tags.length > 0) {
-    <ul class="card__tags">
-      @for (tag of link().tags; track tag) {
-        <li>
-          <ui-chip>{{ tag }}</ui-chip>
-        </li>
-      }
-    </ul>
-  }
-</ui-card>
+</ui-list-item>

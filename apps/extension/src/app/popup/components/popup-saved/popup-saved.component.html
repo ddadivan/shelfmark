@@ -1,5 +1,8 @@
+<div class="ext-screen__head">
+  <ui-logo />
+</div>
 <div class="ext-screen__center saved">
-  <span class="saved__check" aria-hidden="true"><ui-icon name="check" [size]="24" /></span>
+  <ui-illustration class="saved__scene" name="welcome-save" motion="once" />
   <h1 class="ext-screen__center-title" role="status">
     {{ 'popup.saved.title' | transloco: { folder: folderName() } }}
   </h1>
@@ -9,12 +12,12 @@
     }}</ui-notice>
   }
   @if (store.link(); as link) {
-    <ext-popup-link-card class="saved__card" [link]="link" (activated)="store.openLinkFolder()" />
+    <p class="ext-screen__text">{{ link.title || link.url }}</p>
   }
 </div>
 <div class="ext-screen__foot">
-  <ui-button block (click)="store.openLinkFolder()">{{ 'popup.openInApp' | transloco }}</ui-button>
-  <ui-button block [variant]="BUTTON_VARIANT.Primary" (click)="store.close()">{{
+  <ui-button (click)="store.openLinkFolder()">{{ 'popup.openInApp' | transloco }}</ui-button>
+  <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="store.close()">{{
     'popup.saved.done' | transloco
   }}</ui-button>
 </div>

@@ -3,12 +3,12 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   BUTTON_VARIANT,
   ButtonComponent,
-  IconComponent,
+  IllustrationComponent,
+  LogoComponent,
   NOTICE_KIND,
   NoticeComponent,
 } from '@shelfmark/ui';
 import { PopupStore } from '../../popup.store';
-import { PopupLinkCardComponent } from '../popup-link-card/popup-link-card.component';
 
 /** State 2: the thank-you screen with the new card; the check pops in once. */
 @Component({
@@ -17,7 +17,7 @@ import { PopupLinkCardComponent } from '../popup-link-card/popup-link-card.compo
   styleUrl: './popup-saved.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ext-screen', '(keydown.escape)': 'store.close()' },
-  imports: [ButtonComponent, IconComponent, NoticeComponent, PopupLinkCardComponent, TranslocoPipe],
+  imports: [ButtonComponent, IllustrationComponent, LogoComponent, NoticeComponent, TranslocoPipe],
 })
 export class PopupSavedComponent {
   protected readonly store = inject(PopupStore);

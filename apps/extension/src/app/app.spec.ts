@@ -86,7 +86,7 @@ describe('App', () => {
         folders: [makeFolder({ id: 'f1', name: 'Reading' })],
         rules: [makeRule({ folderId: 'f1' })],
       });
-      expect(fixture.nativeElement.textContent).toContain('From your rule for example.com');
+      expect(fixture.nativeElement.textContent).toContain('Goes to Reading · rule');
       expect(fixture.nativeElement.textContent).toContain('Reading');
     });
 
@@ -103,11 +103,11 @@ describe('App', () => {
       expect(TestBed.inject(PopupStore).folderId()).toBe('f1');
     });
 
-    it('opens Shelfmark from the footer', async () => {
-      const { fixture, tabs } = await createPopup();
-      const loader = await harness(fixture);
-      await (await loader.getHarness(UiButtonHarness.with({ text: 'Open Shelfmark' }))).click();
-      expect(tabs.open).toHaveBeenCalledWith(`${SHELFMARK_ORIGIN}/links`);
+    it('names the save shortcut in the footer (Shelf 07-extension: no Open Shelfmark there)', async () => {
+      const { fixture } = await createPopup();
+      const foot: HTMLElement = fixture.nativeElement.querySelector('.ext-screen__foot');
+      expect(foot.textContent).toMatch(/(Ctrl|⌘) Enter to save/);
+      expect(foot.textContent).not.toContain('Open Shelfmark');
     });
 
     it('has no accessibility violations', async () => {
@@ -124,7 +124,7 @@ describe('App', () => {
         folders: [makeFolder({ id: 'f1', name: 'Reading' })],
       });
       const loader = await harness(fixture);
-      await (await loader.getHarness(UiButtonHarness.with({ label: /Folder: Unsorted/ }))).click();
+      await (await loader.getHarness(UiButtonHarness.with({ text: /Goes to Unsorted/ }))).click();
       await settle(fixture);
       const option = [...fixture.nativeElement.querySelectorAll('[role="option"]')].find(
         (el: Element) => el.textContent?.includes('Reading'),
@@ -241,10 +241,10 @@ describe('App', () => {
       return popup;
     }
 
-    it('shows the link card and opens the folder from Open in Shelfmark', async () => {
+    it('names the saved link and opens the folder from Open in Shelfmark', async () => {
       const { fixture, tabs } = await saved();
       expect(fixture.nativeElement.textContent).toContain('Saved to Reading');
-      expect(fixture.nativeElement.textContent).toContain('docs');
+      expect(fixture.nativeElement.querySelector('ui-illustration')).not.toBeNull();
       const loader = await harness(fixture);
       await (await loader.getHarness(UiButtonHarness.with({ text: 'Open in Shelfmark' }))).click();
       expect(tabs.open).toHaveBeenCalledWith(`${SHELFMARK_ORIGIN}/folders/f1`);
@@ -298,12 +298,16 @@ describe('App', () => {
       ]);
     });
 
-    it('shows a decorative card strip that is hidden from assistive technology', async () => {
+    it('shows the collect scene, the account line and Sign in in the foot', async () => {
       const { fixture } = await createPopup({ session: null });
-      const strip: HTMLElement = fixture.nativeElement.querySelector('.strip');
-      expect(strip.getAttribute('aria-hidden')).toBe('true');
-      expect(strip.hasAttribute('inert')).toBe(true);
-      expect(strip.textContent).toContain('A complete guide to CSS grid');
+      const root: HTMLElement = fixture.nativeElement;
+      expect(root.querySelector('ui-illustration')).not.toBeNull();
+      expect(root.textContent).toContain(
+        'The extension uses your Shelfmark account in this browser.',
+      );
+      expect(root.querySelector('.ext-screen__foot')?.textContent).toContain(
+        'Sign in to Shelfmark',
+      );
     });
 
     it('has no accessibility violations', async () => {
@@ -684,8 +688,8 @@ describe('App', () => {
   });
 
   describe('footer', () => {
-    it('shows Open Shelfmark as the outlined (secondary) button next to Save', async () => {
-      const { fixture } = await createPopup();
+    it('keeps Open Shelfmark as the secondary button on the screens that offer it', async () => {
+      const { fixture } = await createPopup({ tab: { url: 'chrome://newtab', title: '' } });
       const loader = await harness(fixture);
       const open = await loader.getHarness(UiButtonHarness.with({ text: 'Open Shelfmark' }));
       expect(await open.getVariant()).toBe('secondary');

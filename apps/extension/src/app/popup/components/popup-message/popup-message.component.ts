@@ -10,6 +10,7 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   IllustrationComponent,
+  LogoComponent,
   type IllustrationName,
 } from '@shelfmark/ui';
 import { POPUP_ERROR } from '../../models/popup-error.const';
@@ -23,7 +24,7 @@ import { PopupStore } from '../../popup.store';
   templateUrl: './popup-message.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ext-screen ext-screen--flow' },
-  imports: [ButtonComponent, IllustrationComponent, TranslocoPipe],
+  imports: [ButtonComponent, IllustrationComponent, LogoComponent, TranslocoPipe],
 })
 export class PopupMessageComponent {
   protected readonly store = inject(PopupStore);

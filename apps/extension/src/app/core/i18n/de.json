@@ -7,8 +7,6 @@
     "form": {
       "title": "In Shelfmark speichern",
       "folder": "Ordner",
-      "chooseFolder": "Ordner: {{folder}}. Ändern",
-      "ruleHint": "Aus Ihrer Regel für {{domain}}",
       "recentFolders": "Zuletzt verwendete Ordner",
       "tags": "Tags",
       "tagsPlaceholder": "Tag hinzufügen",
@@ -27,7 +25,12 @@
       "saveCount": {
         "one": "{{count}} Link speichern",
         "other": "{{count}} Links speichern"
-      }
+      },
+      "saveHint": "Strg Enter zum Speichern",
+      "saveHintMac": "⌘ Enter zum Speichern",
+      "goesTo": "Kommt in",
+      "ruleNote": "Regel",
+      "change": "Ändern"
     },
     "picker": {
       "title": "Ordner wählen",
@@ -68,22 +71,14 @@
     },
     "signedOut": {
       "title": "Melden Sie sich an, um diese Seite zu speichern",
-      "text": "Einmal in diesem Browser anmelden, danach ist jede Seite einen Klick entfernt.",
+      "text": "Die Erweiterung nutzt dein Shelfmark-Konto in diesem Browser.",
       "signIn": "Bei Shelfmark anmelden",
       "privacy": "Gesendet wird nur die Seite, die Sie speichern, sonst nichts.",
-      "privacyLink": "Datenschutz",
-      "cards": {
-        "grid": "Der komplette Leitfaden zu CSS Grid",
-        "nestjs": "NestJS für Frontend-Entwickler",
-        "icons": "Kostenlose Icon-Sets für Nebenprojekte",
-        "ramen": "Das beste Ramen für den Feierabend",
-        "woolCoat": "Wollmantel, gerader Schnitt",
-        "signalForms": "Signal Forms in 20 Minuten"
-      }
+      "privacyLink": "Datenschutz"
     },
     "unsupported": {
       "title": "Diese Seite lässt sich nicht speichern",
-      "text": "Shelfmark speichert Webseiten. Browserseiten, Dateien und der neue Tab bleiben außen vor."
+      "text": "Browserseiten wie die Einstellungen oder ein neuer Tab haben keine Adresse zum Speichern."
     },
     "error": {
       "title": "Seite konnte nicht gespeichert werden",

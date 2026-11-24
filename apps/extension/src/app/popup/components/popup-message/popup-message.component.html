@@ -1,3 +1,6 @@
+<div class="ext-screen__head">
+  <ui-logo />
+</div>
 <div class="ext-screen__center">
   <ui-illustration motion="once" [name]="illustration()" />
   <h1 class="ext-screen__center-title">{{ titleKey() | transloco }}</h1>
@@ -15,10 +18,10 @@
   </div>
 }
 <div class="ext-screen__foot">
-  <ui-button block (click)="store.openApp()">{{ 'popup.openApp' | transloco }}</ui-button>
+  <ui-button (click)="store.openApp()">{{ 'popup.openApp' | transloco }}</ui-button>
   @if (canRetry()) {
     <span class="ext-foot-slot" [class.ext-foot-slot--animate]="animateSlot">
-      <ui-button block [variant]="BUTTON_VARIANT.Primary" (click)="store.retry()">{{
+      <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="store.retry()">{{
         'popup.error.tryAgain' | transloco
       }}</ui-button>
     </span>

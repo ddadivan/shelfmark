@@ -14,8 +14,12 @@
   overflow-y: visible;
 }
 
+.form__logo {
+  margin-inline-end: auto;
+}
+
 .form__mode {
-  flex: 1;
+  flex: none;
   min-width: 0;
 }
 
@@ -60,10 +64,23 @@
   text-align: start;
 }
 
-.form__hint {
-  @include type(caption);
+// The folder row: "Goes to <folder> · rule" and "Change" at the end (the Shelf row select look).
+.form__goes {
+  --ui-button-radius: var(--radius-md);
+}
 
+.form__folder-name b {
+  font-weight: 600;
+}
+
+.form__rule {
+  font-weight: 400;
   color: var(--text-muted);
+}
+
+.form__change {
+  margin-inline-start: auto;
+  font-weight: 600;
 }
 
 .form__recent {

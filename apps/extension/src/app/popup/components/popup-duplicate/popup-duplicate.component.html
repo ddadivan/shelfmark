@@ -1,5 +1,6 @@
 <div class="ext-screen__head">
-  <h1 class="ext-screen__title">{{ 'popup.duplicate.title' | transloco }}</h1>
+  <ui-logo />
+  <h1 class="duplicate__title">{{ 'popup.duplicate.title' | transloco }}</h1>
 </div>
 @if (store.link(); as link) {
   <ext-popup-link-card class="duplicate__card" [link]="link" (activated)="store.openLinkFolder()" />

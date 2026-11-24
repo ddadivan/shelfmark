@@ -7,8 +7,6 @@
     "form": {
       "title": "Enregistrer dans Shelfmark",
       "folder": "Dossier",
-      "chooseFolder": "Dossier : {{folder}}. Changer",
-      "ruleHint": "Selon votre règle pour {{domain}}",
       "recentFolders": "Dossiers récents",
       "tags": "Tags",
       "tagsPlaceholder": "Ajouter un tag",
@@ -28,7 +26,12 @@
         "one": "Enregistrer {{count}} lien",
         "many": "Enregistrer {{count}} de liens",
         "other": "Enregistrer {{count}} liens"
-      }
+      },
+      "saveHint": "Ctrl Entrée pour enregistrer",
+      "saveHintMac": "⌘ Entrée pour enregistrer",
+      "goesTo": "Va dans",
+      "ruleNote": "règle",
+      "change": "Changer"
     },
     "picker": {
       "title": "Choisir un dossier",
@@ -71,22 +74,14 @@
     },
     "signedOut": {
       "title": "Connectez-vous pour enregistrer cette page",
-      "text": "Connectez-vous une fois dans ce navigateur, et chaque page sera ensuite à un clic.",
+      "text": "L’extension utilise votre compte Shelfmark dans ce navigateur.",
       "signIn": "Se connecter à Shelfmark",
       "privacy": "Seule la page enregistrée est envoyée, rien d’autre de votre navigation.",
-      "privacyLink": "Politique de confidentialité",
-      "cards": {
-        "grid": "Le guide complet de CSS grid",
-        "nestjs": "NestJS pour les développeurs frontend",
-        "icons": "Des icônes gratuites pour vos projets",
-        "ramen": "Le meilleur ramen de semaine",
-        "woolCoat": "Manteau en laine, coupe droite",
-        "signalForms": "Signal Forms en 20 minutes"
-      }
+      "privacyLink": "Politique de confidentialité"
     },
     "unsupported": {
       "title": "Impossible d’enregistrer cette page",
-      "text": "Shelfmark enregistre les pages web. Les pages du navigateur, les fichiers et le nouvel onglet en sont exclus."
+      "text": "Les pages du navigateur, comme les réglages ou un nouvel onglet, n’ont pas d’adresse à enregistrer."
     },
     "error": {
       "title": "Impossible d’enregistrer cette page",
