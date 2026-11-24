@@ -147,7 +147,7 @@ test.describe('link preview (mock API)', () => {
   );
 
   test(
-    'below 80em the preview is a pushed page with Back',
+    'below 80em the preview is a pushed page with Close',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       test.skip(!isCompact(page), 'the pushed page path is checked on the phone');
@@ -160,7 +160,7 @@ test.describe('link preview (mock API)', () => {
       await expect(pushed.getByRole('button', { name: 'Share' })).toBeVisible();
       await expect(page.getByRole('navigation', { name: /tabs/i })).toHaveCount(0);
 
-      await pushed.getByRole('button', { name: 'Back to the links' }).click();
+      await pushed.getByRole('button', { name: 'Close preview' }).click();
       await expect(pushed).toHaveCount(0);
       await expect(page).not.toHaveURL(/[?&]preview=/);
       await expect(page.locator('ui-card').first()).toBeVisible();
