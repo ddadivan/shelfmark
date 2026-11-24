@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Injector, Service, signal } from '@angular/core';
+import { DestroyRef, inject, Injector, Service, signal } from '@angular/core';
 import type { UserSettingsResponse } from '@shelfmark/contracts';
 import { READER_TEXT_SIZE } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
@@ -44,6 +44,8 @@ export class ReaderSettingsService {
       this.cancelTimer();
       this.pending = {};
     });
+    // A pause timer must not outlive the injector it reads the API from.
+    inject(DestroyRef).onDestroy(() => this.cancelTimer());
   }
 
   set(change: Partial<ReaderSettings>): void {

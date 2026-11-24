@@ -55,6 +55,8 @@ describe('parseViewDraftOutput', () => {
         sort: 'createdAt',
         order: 'asc',
         q: 'forms',
+        saved: null,
+        favorite: false,
       },
       set: ['scope', 'tags', 'kind', 'q', 'sort'],
       name: 'Angular talks',
