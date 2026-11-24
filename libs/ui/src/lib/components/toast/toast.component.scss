@@ -7,9 +7,9 @@
   @include type(label);
 
   --ui-toast-ink: var(--bg);
-  --ui-toast-muted: color-mix(in srgb, var(--bg) 72%, var(--text));
-  --ui-toast-tile: color-mix(in srgb, var(--bg) 16%, transparent);
-  --ui-toast-tile-hover: color-mix(in srgb, var(--bg) 26%, transparent);
+  --ui-toast-muted: var(--toast-muted);
+  --ui-toast-tile: var(--toast-tile);
+  --ui-toast-tile-hover: var(--toast-tile-hover);
 
   position: relative;
   box-sizing: border-box;

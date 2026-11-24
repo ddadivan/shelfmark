@@ -1,6 +1,6 @@
 import shelfTokens from './tools/stylelint/shelf-tokens.mjs';
 
-// The token files are the only place where raw colours live (ADR 0063, DS guard).
+// The token files are the only place where raw colours live (ADR 0062, DS guard).
 const TOKEN_FILES = ['libs/ui/src/styles/tokens/**'];
 
 /** @type {import('stylelint').Config} */
@@ -42,7 +42,7 @@ export default {
     // Breakpoints in em only.
     'media-feature-name-unit-allowed-list': [{ '/^(min-|max-)?(width|height)$/': ['em'] }],
 
-    // DS guard (ADR 0063): colours, radii, font sizes and shadows only through libs/ui tokens.
+    // DS guard (ADR 0062): colours, radii, font sizes and shadows only through libs/ui tokens.
     // `transparent`, `currentcolor` and `inherit` stay allowed; `color-mix()` over tokens too.
     'color-no-hex': true,
     'color-named': 'never',

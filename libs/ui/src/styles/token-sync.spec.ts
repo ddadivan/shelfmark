@@ -8,7 +8,7 @@ import { CONTRAST_PAIRS } from './models/contrast-pairs.const';
 import { TOKEN_RENAMES } from './models/token-renames.const';
 
 /**
- * DS guard, token sync (ADR 0063): the compiled libs/ui tokens must carry the values of
+ * DS guard, token sync (ADR 0062): the compiled libs/ui tokens must carry the values of
  * docs/design-next/shelf/design-system/tokens.json — every colour in both themes, the radii,
  * the type scale (size and line height), the shadows and the spacing. Renamed tokens are mapped
  * in `TOKEN_RENAMES`; a token on one side only fails unless `CODE_ONLY_TOKENS` gives a reason.
@@ -229,7 +229,7 @@ const normalise = (category: Expected['category'], value: string): string =>
 
 // ---------------------------------------------------------------- specs
 
-describe('DS guard: token sync with tokens.json (ADR 0063)', () => {
+describe('DS guard: token sync with tokens.json (ADR 0062)', () => {
   it('reads the Shelf tokens and the compiled libs/ui tokens', () => {
     expect(expected.length).toBeGreaterThan(80);
     expect(code.light.size).toBeGreaterThan(80);

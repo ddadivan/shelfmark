@@ -37,7 +37,7 @@
 
   // Type scale (Shelf `type.groups`): font size and line height per style. The `type()` mixin in
   // _typography.scss applies a whole style; a bare `font-size` uses these tokens only (DS guard,
-  // ADR 0063). A new size is first added to tokens.json and here.
+  // ADR 0062). A new size is first added to tokens.json and here.
   --font-size-display-l: #{rem(40px)};
   --line-height-display-l: #{rem(48px)};
   --font-size-display: #{rem(32px)};

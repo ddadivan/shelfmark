@@ -167,9 +167,8 @@ describe('ui-streaming-answer', () => {
 
   it('swaps and shimmers the words of the pill with a resting colour that keeps contrast on ai-fill', () => {
     const css = compileScss('lib/components/streaming-answer/streaming-answer.component.scss');
-    expect(css).toContain(
-      '--ui-text-swap-rest: color-mix(in srgb, var(--text) 75%, var(--text-muted))',
-    );
+    // `--status-text` is 75% text over text-muted (tokens/_light.scss, _dark.scss).
+    expect(css).toContain('--ui-text-swap-rest: var(--status-text)');
     const { host, update } = setup();
     update((c) => c.status.set('Searching your links…'));
     expect(

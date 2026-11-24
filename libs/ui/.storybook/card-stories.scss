@@ -24,7 +24,7 @@
 
 .cs-heading {
   margin: 0;
-  font-size: rem(13px);
+  font-size: var(--font-size-meta);
   font-weight: 600;
   color: var(--text-muted);
 }

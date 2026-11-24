@@ -23,9 +23,9 @@ export const Counting: Story = {
       <div style="display: flex; gap: 2rem">
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" style="display: flex; align-items: center; gap: 1rem; padding: 1.5rem; background: var(--bg); color: var(--text)">
-            <button type="button" (click)="n = n - 1">-1</button>
-            <button type="button" (click)="n = n + 1">+1</button>
-            <button type="button" (click)="n = n * 10">x10</button>
+            <button type="button" data-ds-ignore (click)="n = n - 1">-1</button>
+            <button type="button" data-ds-ignore (click)="n = n + 1">+1</button>
+            <button type="button" data-ds-ignore (click)="n = n * 10">x10</button>
             <ui-number-flow [value]="n" style="font-size: 1.5rem" />
           </div>
         }

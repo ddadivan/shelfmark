@@ -31,7 +31,8 @@ describe('contrast workarounds are gone', () => {
   it('the tooltip shortcut is dimmed by colour, not opacity', () => {
     const css = compileScss('lib/directives/tooltip/tooltip-panel/tooltip-panel.component.scss');
     const [kbd] = rulesFor(css, /__kbd/);
-    expect(kbd).toContain('color-mix');
+    // The colour is the `--tooltip-kbd` token: 70% on-primary over primary (tokens/_light.scss).
+    expect(kbd).toContain('var(--tooltip-kbd)');
     expect(kbd).not.toContain('opacity');
   });
 

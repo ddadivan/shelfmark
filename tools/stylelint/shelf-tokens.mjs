@@ -1,4 +1,4 @@
-// Shelf design-system guard (ADR 0063): radii, font sizes and shadows come from the libs/ui tokens.
+// Shelf design-system guard (ADR 0062): radii, font sizes and shadows come from the libs/ui tokens.
 // Colours are guarded by core rules in stylelint.config.mjs (color-no-hex, color-named,
 // function-disallowed-list); these three rules cover what core rules cannot express.
 //

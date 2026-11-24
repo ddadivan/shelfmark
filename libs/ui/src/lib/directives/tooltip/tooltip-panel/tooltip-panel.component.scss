@@ -57,6 +57,6 @@
   &__kbd {
     margin-inline-start: var(--space-2);
     font: inherit;
-    color: color-mix(in srgb, var(--on-primary) 70%, var(--primary));
+    color: var(--tooltip-kbd);
   }
 }

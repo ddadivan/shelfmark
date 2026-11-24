@@ -2,7 +2,7 @@
  * libs/ui tokens with no Shelf counterpart in tokens.json, each with the reason it exists.
  * token-sync.spec.ts fails for a colour, radius, type, shadow or spacing token that is in the
  * code but neither in tokens.json nor here. A new one is first added to tokens.json (DS guard,
- * ADR 0063); only aliases, derived mixes and values the prototypes draw outside tokens.json
+ * ADR 0062); only aliases, derived mixes and values the prototypes draw outside tokens.json
  * belong here.
  */
 export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
@@ -45,5 +45,11 @@ export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
   'shadow-card-spread': 'Hovered card spread shadow of the pointer effect (uiPointerShadow).',
   'shadow-card-pointer': 'Colour of the pointer-following card shadow (uiPointerShadow).',
   'shadow-card-press': 'Pressed card shadow (80 ms press feedback).',
+  'toast-muted': 'Muted text of the inverted toast: 72% bg over text.',
+  'toast-tile': 'Button and icon tiles of the inverted toast: bg at 16%.',
+  'toast-tile-hover': 'Hovered toast button tile: bg at 26%.',
+  'tooltip-kbd': 'Key cap text in the tooltip: 70% on-primary over primary.',
+  'card-overlay': 'Translucent bar over a card preview: surface at 88%.',
+  'status-text': 'Resting text of the Ask status pill: 75% text over text-muted.',
   'shadow-thumb': 'Soft lift under the range slider thumb.',
 };

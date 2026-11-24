@@ -1,4 +1,4 @@
-// Tests of the DS guard stylelint rules (ADR 0063). Run: node --test tools/stylelint/
+// Tests of the DS guard stylelint rules (ADR 0062). Run: node --test tools/stylelint/
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import stylelint from 'stylelint';
