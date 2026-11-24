@@ -4,6 +4,11 @@
   display: block;
 }
 
+// Shelf 15-tools "Welcome": a 480px dialog, everything centred.
+ui-dialog {
+  --ui-dialog-custom-width: #{rem(480px)};
+}
+
 .onboarding {
   display: flex;
   flex-direction: column;
@@ -13,23 +18,31 @@
   overflow-x: clip;
 }
 
-// The illustration sits on the page background in a rounded box (Welcome spec).
+// Shelf: the scene on the soft sage disc of the empty states, centred.
 .onboarding__scene {
+  align-self: center;
+  width: rem(176px);
+  aspect-ratio: 1;
   overflow: hidden;
-  background: var(--bg);
-  border-radius: var(--radius-md);
+  background: var(--illustration-disc);
+  border-radius: var(--radius-full);
   animation: onboarding-next var(--duration-slow) var(--ease-out) both;
 }
 
 .onboarding__art {
   --ui-illustration-width: 100%;
+
+  display: block;
+  height: 100%;
 }
 
-// Step dots, then the title and text of the step.
+// The title and text of the step, then the step dots, centred.
 .onboarding__copy {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  align-items: center;
+  text-align: center;
 
   // The text does not move the buttons when a step has one line less.
   min-height: rem(104px);
@@ -49,7 +62,9 @@
 .onboarding__title {
   @include type(title);
 
-  margin: var(--space-1) 0 0;
+  margin: 0;
+  font-size: rem(22px);
+  line-height: rem(28px);
   color: var(--text);
 
   // Two-line rise (#562) inside the sliding step: the title, then the text 60 ms later.
@@ -57,7 +72,7 @@
 }
 
 .onboarding__text {
-  @include type(body);
+  @include type(secondary);
 
   margin: 0;
   color: var(--text-muted);
