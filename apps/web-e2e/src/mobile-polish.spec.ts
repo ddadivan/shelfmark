@@ -23,7 +23,7 @@ test.describe('mobile polish (mock API)', () => {
     test('lists the child folder as a link and opens it', async ({ page }) => {
       await page.goto(`/folders/${READING.id}`);
 
-      const tile = page.getByRole('link', { name: /^Open folder Angular, \d+ links?/ });
+      const tile = page.getByRole('link', { name: /^Angular, \d+ links?/ });
       await expect(tile).toBeVisible();
       await expect(tile).toHaveAttribute('href', `/folders/${ANGULAR.id}`);
       await tile.click();
@@ -36,7 +36,7 @@ test.describe('mobile polish (mock API)', () => {
       await page.goto(`/folders/${READING.id}`);
       await switchView(page, 'List');
 
-      const tile = page.getByRole('link', { name: /^Open folder Angular/ });
+      const tile = page.getByRole('link', { name: /^Angular, \d+ link/ });
       await tile.focus();
       await expect(tile).toBeFocused();
       await page.keyboard.press('Enter');
@@ -46,7 +46,7 @@ test.describe('mobile polish (mock API)', () => {
 
     test('has no horizontal overflow', { tag: E2E_TAG.Phone }, async ({ page }) => {
       await page.goto(`/folders/${READING.id}`);
-      await expect(page.getByRole('link', { name: /^Open folder Angular/ })).toBeVisible();
+      await expect(page.getByRole('link', { name: /^Angular, \d+ link/ })).toBeVisible();
 
       const overflow = await page.evaluate<number>(
         '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
@@ -139,7 +139,7 @@ test.describe('mobile polish (mock API)', () => {
       await expect(dialog).toBeVisible();
       await settled(page);
 
-      await expect(dialog.getByRole('button', { name: 'Create link' })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Save', exact: true })).toBeVisible();
       await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeHidden();
 
       await dialog.getByRole('button', { name: 'Close' }).click();

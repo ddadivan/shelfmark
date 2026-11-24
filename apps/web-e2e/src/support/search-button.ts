@@ -1,28 +1,42 @@
-import type { Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+import { isCompact, tabBar } from './sidebar';
 
 /**
- * Accessible name of the button that opens the search dialog: "Search" (with the shortcut hint)
- * from 64em to 80em, the icon button "Search" of the tab bar on a phone. From 80em the header has
- * a search field instead (`SEARCH_FIELD_NAME`).
+ * Accessible name of the tab bar button that opens the full-screen search in the mobile shell
+ * (below 64em). From 64em the header has a search field instead (`SEARCH_FIELD_NAME`), Shelf
+ * block 3.
  */
 export const SEARCH_BUTTON = /^Search$/;
 
-/** Accessible name of the search field (header field from 80em, field of the dialog). */
+/** Accessible name of the search field (header field from 64em, field of the dialog). */
 export const SEARCH_FIELD_NAME = 'Search links, folders and tags';
 
-/** The header search turns from a button into a field at 80em (1280px, #329). */
-const WIDE_MIN_PX = 1280;
-/** A desktop width below it: the header has the "Search" button and the dialog opens from it. */
-export const DIALOG_DESKTOP_WIDTH = 1180;
+/**
+ * Where the search dialog flows start: a library feed in the mobile shell (the tab bar opens the
+ * dialog), a settings page from 64em, the only place where the header has no field and Ctrl+K
+ * opens the dialog (Shelf block 3).
+ */
+export function searchDialogStart(page: Page): string {
+  return isCompact(page) ? '/links' : '/settings/account';
+}
+
+/** The control that opens the search dialog and gets the focus back: the tab bar's Search. */
+export function searchDialogTrigger(page: Page): Locator {
+  return tabBar(page).getByRole('button', { name: SEARCH_BUTTON });
+}
 
 /**
- * Makes the header show the "Search" button (a desktop at the 1280px default is wide enough for
- * the field): the dialog flows (button, Ctrl+K opening the dialog) run at 1180px. The tablet and
- * phone projects are already narrower and keep their size.
+ * Opens the search dialog from where `searchDialogStart` led: the tab bar's Search below 64em,
+ * Ctrl+K on a settings page from 64em. Resolves with the dialog.
  */
-export async function useSearchDialogWidth(page: Page): Promise<void> {
-  const size = page.viewportSize();
-  if (size && size.width >= WIDE_MIN_PX) {
-    await page.setViewportSize({ width: DIALOG_DESKTOP_WIDTH, height: size.height });
+export async function openSearchDialog(page: Page): Promise<Locator> {
+  if (isCompact(page)) {
+    await searchDialogTrigger(page).click();
+  } else {
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await page.keyboard.press('Control+k');
   }
+  const dialog = page.getByRole('dialog', { name: 'Search' });
+  await expect(dialog.getByRole('combobox', { name: SEARCH_FIELD_NAME })).toBeVisible();
+  return dialog;
 }

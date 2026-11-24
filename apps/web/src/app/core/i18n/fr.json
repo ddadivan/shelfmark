@@ -1196,8 +1196,8 @@
       },
       "meta": "{{links}}",
       "metaWithFolders": "{{links}}, {{folders}}",
-      "aria": "Ouvrir le dossier {{name}}, {{links}}",
-      "ariaWithFolders": "Ouvrir le dossier {{name}}, {{links}}, {{folders}}"
+      "aria": "{{name}}, {{links}}",
+      "ariaWithFolders": "{{name}}, {{links}}, {{folders}}"
     },
     "view": {
       "label": "Affichage",

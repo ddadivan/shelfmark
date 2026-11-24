@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_ADMIN_KEY, seedMockKey } from './support/feedback';
-import { openAccountMenu, seedSession } from './support/mock-session';
+import { openAccountMenu, openYouPage, seedSession } from './support/mock-session';
 import { isCompact, tabBar } from './support/sidebar';
 import { expect, test } from './support/test';
 
@@ -20,7 +20,7 @@ async function pick(page: Page, group: string, name: string): Promise<void> {
 /** Opens the stats the way each device has them: the account menu, or the You list. */
 async function openStats(page: Page): Promise<void> {
   if (isCompact(page)) {
-    await tabBar(page).getByRole('link', { name: 'You' }).click();
+    await openYouPage(page);
     await page.getByRole('main').getByRole('link', { name: 'Usage stats' }).click();
   } else {
     await openAccountMenu(page);
@@ -89,7 +89,7 @@ test.describe('admin usage stats (mock API)', () => {
       await page.goto('/links');
       await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
       if (isCompact(page)) {
-        await tabBar(page).getByRole('link', { name: 'You' }).click();
+        await openYouPage(page);
         await expect(
           page.getByRole('main').getByRole('link', { name: 'Your feedback' }),
         ).toBeVisible();

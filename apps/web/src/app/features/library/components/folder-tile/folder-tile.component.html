@@ -24,7 +24,8 @@
   @if (row()) {
     <span class="folder-tile__text">
       <span class="folder-tile__name">{{ folder().name }}</span>
-      <span class="folder-tile__meta">
+      <!-- A text space between name and meta: the visible text reads as words, the start of the name. -->
+      &ngsp;<span class="folder-tile__meta">
         {{
           (childCount() > 0 ? 'library.subfolders.metaWithFolders' : 'library.subfolders.meta')
             | transloco
@@ -43,6 +44,7 @@
   } @else {
     <!-- Shelf subfolder chip (04-organise "Folder page"): the tile, the name and the link count. -->
     <span class="folder-tile__name">{{ folder().name }}</span>
-    <span class="folder-tile__count" aria-hidden="true">{{ folder().linkCount }}</span>
+    <!-- A text space: the visible text "Angular 12" is then part of the name "Angular, 12 links". -->
+    &ngsp;<span class="folder-tile__count" aria-hidden="true">{{ folder().linkCount }}</span>
   }
 </a>

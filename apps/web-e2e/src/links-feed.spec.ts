@@ -193,7 +193,7 @@ test.describe('links feed (mock API)', () => {
     const dialog = page.getByRole('dialog', { name: 'Add link' });
     await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/post');
     await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
-    await dialog.getByRole('button', { name: 'Create link' }).click();
+    await dialog.getByRole('button', { name: 'Save', exact: true }).click();
 
     await expect(page.getByText(/Saved to /)).toBeVisible();
     await expect(page.locator('ui-card').first()).toContainText('Page on example.org');

@@ -1,5 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import { isCompact, tabBar } from './sidebar';
+import { openYouPage } from './mock-session';
+import { isCompact } from './sidebar';
 
 /** The "Data & help" row of the desktop sidebar footer. */
 export function dataRow(page: Page): Locator {
@@ -14,19 +15,22 @@ export async function openDataMenu(page: Page): Promise<Locator> {
   return menu;
 }
 
-/** Goes to the You tab (a phone and the tablet shell). */
+/** Goes to the You list of the mobile shell (account menu, Settings). */
 export async function openYouTab(page: Page): Promise<void> {
-  await tabBar(page).getByRole('link', { name: 'You' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
+  await openYouPage(page);
 }
 
-/** Opens "Import links" or "Export" the way each device has it: the data menu, or the You group. */
+/**
+ * Opens "Import links" or "Export" the way each device has it: the data menu, or the "Import and
+ * export" group of Your data in the mobile shell (Shelf block 5).
+ */
 export async function openDataDialog(page: Page, entry: 'Import links' | 'Export'): Promise<void> {
   if (isCompact(page)) {
-    await openYouTab(page);
+    await openYouPage(page);
+    await page.getByRole('main').getByRole('link', { name: 'Your data' }).click();
     await page
       .getByRole('group', { name: 'Import and export' })
-      .getByRole('link', { name: entry })
+      .getByRole('button', { name: entry })
       .click();
   } else {
     const menu = await openDataMenu(page);

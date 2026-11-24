@@ -1219,8 +1219,8 @@
       },
       "meta": "{{links}}",
       "metaWithFolders": "{{links}}, {{folders}}",
-      "aria": "Відкрити папку {{name}}, {{links}}",
-      "ariaWithFolders": "Відкрити папку {{name}}, {{links}}, {{folders}}"
+      "aria": "{{name}}, {{links}}",
+      "ariaWithFolders": "{{name}}, {{links}}, {{folders}}"
     },
     "view": {
       "label": "Вигляд",

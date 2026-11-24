@@ -9,6 +9,6 @@ export const A11Y_PAGES: readonly A11yPage[] = [
   { path: '/', heading: LANDING_HEADLINE },
   { path: '/privacy', heading: 'Privacy policy' },
   { path: '/changelog', heading: "What's new" },
-  { path: '/sign-in', heading: 'All your links on one shelf' },
+  { path: '/sign-in', heading: 'All your links, and a way back to them' },
   { path: '/__e2e/csp', heading: 'CSP test page', ciOnly: true, overlayOpener: 'Open overlay' },
 ];

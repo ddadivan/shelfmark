@@ -1196,8 +1196,8 @@
       },
       "meta": "{{links}}",
       "metaWithFolders": "{{links}}, {{folders}}",
-      "aria": "Abrir la carpeta {{name}}, {{links}}",
-      "ariaWithFolders": "Abrir la carpeta {{name}}, {{links}}, {{folders}}"
+      "aria": "{{name}}, {{links}}",
+      "ariaWithFolders": "{{name}}, {{links}}, {{folders}}"
     },
     "view": {
       "label": "Vista",

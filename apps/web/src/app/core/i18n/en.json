@@ -1173,8 +1173,8 @@
       },
       "meta": "{{links}}",
       "metaWithFolders": "{{links}}, {{folders}}",
-      "aria": "Open folder {{name}}, {{links}}",
-      "ariaWithFolders": "Open folder {{name}}, {{links}}, {{folders}}"
+      "aria": "{{name}}, {{links}}",
+      "ariaWithFolders": "{{name}}, {{links}}, {{folders}}"
     },
     "view": {
       "label": "View",

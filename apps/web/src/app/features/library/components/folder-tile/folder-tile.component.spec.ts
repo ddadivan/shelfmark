@@ -20,12 +20,12 @@ async function setup(childCount = 0, linkCount = FOLDER.linkCount, row = false) 
 }
 
 describe('FolderTileComponent', () => {
-  it('is one link to the folder route named "Open folder …, N links"', async () => {
+  it('is one link to the folder route named "<name>, N links" (the visible text first)', async () => {
     const { element } = await setup();
 
     const anchor = element.querySelector('a');
     expect(anchor?.getAttribute('href')).toBe('/folders/f2');
-    expect(anchor?.getAttribute('aria-label')).toBe('Open folder Angular, 12 links');
+    expect(anchor?.getAttribute('aria-label')).toBe('Angular, 12 links');
     expect(anchor?.textContent).toContain('Angular');
     expect(element.querySelector('.folder-tile__count')?.textContent?.trim()).toBe('12');
     expect(element.querySelector('ui-folder-icon')?.classList).toContain('ui-folder-icon--sm');
@@ -36,7 +36,7 @@ describe('FolderTileComponent', () => {
     const { element } = await setup(1, 1, true);
 
     expect(element.querySelector('a')?.getAttribute('aria-label')).toBe(
-      'Open folder Angular, 1 link, 1 subfolder',
+      'Angular, 1 link, 1 subfolder',
     );
     expect(element.textContent).toContain('1 link, 1 subfolder');
   });

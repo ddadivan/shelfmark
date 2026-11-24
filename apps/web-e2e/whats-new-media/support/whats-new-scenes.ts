@@ -92,7 +92,7 @@ export async function rulesByDomain(page: Page): Promise<WhatsNewClip> {
   let dialog = page.getByRole('dialog', { name: 'Add link' });
   await dialog.getByLabel('Link', { exact: true }).fill('https://www.youtube.com/watch?v=first');
   await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
-  await dialog.getByRole('button', { name: 'Create link' }).click();
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(dialog).toBeHidden();
 
   await page.mouse.move(0, 0);

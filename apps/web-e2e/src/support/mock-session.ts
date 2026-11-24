@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import { isCompact, tabBar } from './sidebar';
+import { isCompact } from './sidebar';
 
 // Same value as MOCK_SESSION_STORAGE_KEY in apps/web/src/app/core/auth/models/mock-session-storage-key.const.ts.
 const MOCK_SESSION_KEY = 'sm-mock-session';
@@ -68,30 +68,35 @@ export async function seedSession(
   );
 }
 
-/** Opens the account menu in the app shell header (tablet and desktop; a phone has the You tab). */
+/**
+ * Opens the account menu: the avatar in the header from 64em, in the top bar of the mobile shell
+ * (a bottom sheet there; Shelf block 1 has no You tab).
+ */
 export async function openAccountMenu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Account menu' }).click();
 }
 
-/** Opens Settings: the "Settings" item of the account menu, or the You tab on a phone. */
+/** Opens Settings: the "Settings" item of the account menu (the You list in the mobile shell). */
 export async function openSettingsPage(page: Page): Promise<void> {
-  if (isCompact(page)) {
-    await tabBar(page).getByRole('link', { name: 'You' }).click();
-  } else {
-    await openAccountMenu(page);
-    await page.getByRole('menuitem', { name: 'Settings' }).click();
-  }
+  await openAccountMenu(page);
+  await page.getByRole('menuitem', { name: 'Settings' }).click();
+}
+
+/** Opens the You list of the mobile shell (`/settings` below 64em) through the account menu. */
+export async function openYouPage(page: Page): Promise<void> {
+  await openSettingsPage(page);
+  await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
 }
 
 /**
  * Opens one section of the settings by its name ("Account", "Appearance", "Export", ...): the row
- * in the settings nav, or in the You list on a phone (where the account is the card on top).
+ * in the settings nav, or in the You list in the mobile shell (where the account is the card on top).
  */
 export async function openSettingsSection(page: Page, section: string): Promise<void> {
   await openSettingsPage(page);
   if (isCompact(page)) {
     const name = section === 'Account' ? /^Account/ : section;
-    await page.getByRole('main').getByRole('link', { name }).click();
+    await page.getByRole('main').getByRole('link', { name }).last().click();
   } else {
     await page
       .getByRole('navigation', { name: 'Settings' })
@@ -100,15 +105,10 @@ export async function openSettingsSection(page: Page, section: string): Promise<
   }
 }
 
-/** Signs out: the "Sign out" item of the account menu, or the button on the You tab on a phone. */
+/** Signs out: the "Sign out" item of the account menu. */
 export async function signOutFromUi(page: Page): Promise<void> {
-  if (isCompact(page)) {
-    await tabBar(page).getByRole('link', { name: 'You' }).click();
-    await page.getByRole('button', { name: 'Sign out' }).click();
-  } else {
-    await openAccountMenu(page);
-    await page.getByRole('menuitem', { name: 'Sign out' }).click();
-  }
+  await openAccountMenu(page);
+  await page.getByRole('menuitem', { name: 'Sign out' }).click();
 }
 
 /** A user who has not seen the welcome tour yet (the mock sign-in buttons create one too). */

@@ -2,11 +2,13 @@ import { expect, test } from './support/test';
 import { E2E_PROJECT } from './models/e2e-project.const';
 import { HOW_IT_WORKS_CHAPTERS } from './models/how-it-works-chapters.const';
 import { expectNoBlockingViolations } from './support/axe';
-import { openAccountMenu, seedSession } from './support/mock-session';
+import { openAccountMenu, openYouPage, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isCompact, isPhone, tabBar, openTags } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
+/** The landing section heading, with the typographic apostrophe of the copy. */
+const WHATS_NEW = /^What’s new$/;
 /** `HTMLMediaElement.HAVE_METADATA`: duration and size are known. */
 const HAVE_METADATA = 1;
 /**
@@ -23,7 +25,7 @@ test.describe('About and "How it works" (mock API)', () => {
 
     await expect(page.getByRole('link', { name: 'Open the demo' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: 'Back to my shelf' })).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: "What's new" })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: WHATS_NEW })).toHaveCount(0);
   });
 
   test(
@@ -33,7 +35,7 @@ test.describe('About and "How it works" (mock API)', () => {
       await seedSession(page);
       await page.goto('/links');
       if (isCompact(page)) {
-        await tabBar(page).getByRole('link', { name: 'You' }).click();
+        await openYouPage(page);
         await page.getByRole('link', { name: 'About Shelfmark' }).click();
       } else {
         await openAccountMenu(page);
@@ -41,7 +43,7 @@ test.describe('About and "How it works" (mock API)', () => {
       }
 
       await expect(page).toHaveURL('/about');
-      await expect(page.getByRole('heading', { name: "What's new" })).toBeVisible();
+      await expect(page.getByRole('heading', { name: WHATS_NEW })).toBeVisible();
       await expect(page.getByRole('link', { name: 'Open the demo' })).toHaveCount(0);
       await expect(page.getByRole('link', { name: 'Sign in' })).toHaveCount(0);
       await settled(page);
@@ -57,7 +59,7 @@ test.describe('About and "How it works" (mock API)', () => {
   }) => {
     await seedSession(page);
     await page.goto('/about');
-    const caption = page.getByRole('heading', { name: "What's new" });
+    const caption = page.getByRole('heading', { name: WHATS_NEW });
     await expect(caption).toBeVisible();
     await settled(page);
 
@@ -74,7 +76,7 @@ test.describe('About and "How it works" (mock API)', () => {
     expect(captionBox.x).toBeGreaterThan(8);
     expect(Math.abs(captionBox.x - heroBox.x)).toBeLessThanOrEqual(1);
     expect(panelBox.x + panelBox.width).toBeLessThan(viewport.width - 8);
-    await expect(caption).toHaveText("What's new");
+    await expect(caption).toHaveText('What’s new');
   });
 
   test('"How it works" plays the promo video with captions, and chapters jump', async ({
@@ -83,7 +85,7 @@ test.describe('About and "How it works" (mock API)', () => {
     await seedSession(page);
     await page.goto('/links');
     if (isCompact(page)) {
-      await tabBar(page).getByRole('link', { name: 'You' }).click();
+      await openYouPage(page);
       await page.getByRole('button', { name: 'How it works' }).click();
     } else {
       await openAccountMenu(page);

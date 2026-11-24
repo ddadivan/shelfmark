@@ -1,7 +1,7 @@
 import { type Page } from '@playwright/test';
 import { MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
 import { routeSampleAvatars, SAMPLE_AVATAR_PATH } from './support/sample-avatar';
-import { isCompact, tabBar } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 
@@ -25,7 +25,7 @@ test.describe('account page (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
   test(
-    'the provider photo shows on Account and in the account menu or the You page',
+    'the provider photo shows on Account, on the account button and in its menu, and on the You page',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await routeSampleAvatars(page);
@@ -38,16 +38,19 @@ test.describe('account page (mock API)', () => {
         .poll(() => photoLoaded(page, 'app-settings-account-page ui-avatar img'))
         .toBe(true);
 
+      // The avatar of the header (the sidebar head from 64em, the top bar of the mobile shell)
+      // and of its menu; the settings pages have no shell header.
+      await page.goto('/links');
+      await expect.poll(() => photoLoaded(page, '.shell__user ui-avatar img')).toBe(true);
+      await openAccountMenu(page);
+      await expect.poll(() => photoLoaded(page, '.shell__account ui-avatar img')).toBe(true);
       if (isCompact(page)) {
-        await tabBar(page).getByRole('link', { name: 'You' }).click();
+        // The You list of the mobile shell has the account card on top.
+        await page.getByRole('menuitem', { name: 'Settings' }).click();
         await expect(page).toHaveURL('/settings');
         await expect
           .poll(() => photoLoaded(page, 'app-settings-index-page ui-avatar img'))
           .toBe(true);
-      } else {
-        await expect.poll(() => photoLoaded(page, '.shell__user ui-avatar img')).toBe(true);
-        await openAccountMenu(page);
-        await expect.poll(() => photoLoaded(page, '.shell__account ui-avatar img')).toBe(true);
       }
     },
   );

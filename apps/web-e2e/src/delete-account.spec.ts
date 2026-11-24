@@ -16,7 +16,7 @@ async function openDialog(page: Page) {
 test.describe('delete account (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock auth API');
 
-  test('the button waits for the typed email, then deletes and lands on the landing page', async ({
+  test('the button waits for the typed email, then schedules the deletion and lands on the landing page', async ({
     page,
   }) => {
     await seedSession(page);
@@ -32,7 +32,11 @@ test.describe('delete account (mock API)', () => {
 
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    await expect(page.getByText('All your data was deleted')).toBeVisible();
+    // Scheduled 7 days ahead (API phase 1): the toast says so and names the date.
+    await expect(page.getByText('Account deletion scheduled')).toBeVisible();
+    await expect(
+      page.getByText(/^It will be deleted on .+\. Sign in before then to keep it\.$/),
+    ).toBeVisible();
     expect(await page.evaluate((key) => localStorage.getItem(key), SESSION_KEY)).toBeNull();
 
     // The session is gone: a protected page sends the guest to sign-in.

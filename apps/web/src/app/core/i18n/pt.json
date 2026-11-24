@@ -1196,8 +1196,8 @@
       },
       "meta": "{{links}}",
       "metaWithFolders": "{{links}}, {{folders}}",
-      "aria": "Abrir a pasta {{name}}, {{links}}",
-      "ariaWithFolders": "Abrir a pasta {{name}}, {{links}}, {{folders}}"
+      "aria": "{{name}}, {{links}}",
+      "ariaWithFolders": "{{name}}, {{links}}, {{folders}}"
     },
     "view": {
       "label": "Visualização",

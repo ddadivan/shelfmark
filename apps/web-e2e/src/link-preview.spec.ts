@@ -108,7 +108,7 @@ test.describe('link preview (mock API)', () => {
     const dialog = page.getByRole('dialog', { name: 'Add link' });
     await dialog.getByLabel('Link', { exact: true }).fill('https://github.com/angular/angular');
     await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on github.com');
-    await dialog.getByRole('button', { name: 'Create link' }).click();
+    await dialog.getByRole('button', { name: 'Save', exact: true }).click();
     await expect(dialog).toBeHidden();
 
     await previewFromMenu(page, 'Page on github.com');

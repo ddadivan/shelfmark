@@ -1,6 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { openAccountMenu } from './mock-session';
-import { isCompact, tabBar } from './sidebar';
 
 // Same values as the mock constants in apps/web/src/app/features/feedback/mock/models.
 export const MOCK_FEEDBACK_SCENARIO_KEY = 'sm-mock-feedback-scenario';
@@ -45,15 +44,10 @@ export function pngFiles(count: number): { name: string; mimeType: string; buffe
   }));
 }
 
-/** Opens the "Send feedback" dialog the way each device has it: the account menu, or the You list. */
+/** Opens the "Send feedback" dialog from the account menu (header avatar, top bar avatar). */
 export async function openSendFeedback(page: Page): Promise<Locator> {
-  if (isCompact(page)) {
-    await tabBar(page).getByRole('link', { name: 'You' }).click();
-    await page.getByRole('main').getByRole('button', { name: 'Send feedback' }).click();
-  } else {
-    await openAccountMenu(page);
-    await page.getByRole('menuitem', { name: 'Send feedback' }).click();
-  }
+  await openAccountMenu(page);
+  await page.getByRole('menuitem', { name: 'Send feedback' }).click();
   const dialog = page.getByRole('dialog', { name: 'Send feedback' });
   await expect(dialog).toBeVisible();
   return dialog;

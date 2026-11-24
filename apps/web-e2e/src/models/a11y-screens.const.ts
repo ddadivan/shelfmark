@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { openCardMove, openFeed, openSignedIn } from '../support/a11y-flows';
-import { SEARCH_BUTTON, SEARCH_FIELD_NAME, useSearchDialogWidth } from '../support/search-button';
+import { openSearchDialog, SEARCH_FIELD_NAME, searchDialogStart } from '../support/search-button';
 import { openSidebar, openTags } from '../support/sidebar';
 import { deleteFirstLink, deleteReadingFolderWithLinks, openTrash } from '../support/trash';
 import type { A11yScreen } from './a11y-screen.interface';
@@ -65,25 +65,31 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     name: 'search dialog',
     tag: E2E_TAG.Phone,
     open: async (page) => {
-      await useSearchDialogWidth(page);
-      await openFeed(page);
-      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
-      await page
-        .getByRole('combobox', { name: 'Search links, folders and tags' })
-        .fill(MOCK_FIXTURE.searchWord);
+      // The tab bar's Search in the mobile shell; from 64em the dialog opens only on the settings
+      // pages, whose header has no field (Shelf block 3).
+      await openSignedIn(page, searchDialogStart(page));
+      const dialog = await openSearchDialog(page);
+      await dialog.getByRole('combobox', { name: SEARCH_FIELD_NAME }).fill(MOCK_FIXTURE.searchWord);
       await expect(page.getByRole('option').first()).toBeVisible();
       await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
     },
     ...SHEET,
   },
   {
-    // From 80em (the desktop project's 1280px) the header field opens a results panel (#329).
+    // From 64em the header field filters the feed in place; focused while empty it opens the
+    // "Recent searches" panel (Shelf block 3).
     name: 'search panel (header field)',
     open: async (page) => {
       await openFeed(page);
-      await page.getByRole('combobox', { name: SEARCH_FIELD_NAME }).fill(MOCK_FIXTURE.searchWord);
-      await expect(page.getByRole('option').first()).toBeVisible();
-      await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
+      const field = page.getByRole('combobox', { name: SEARCH_FIELD_NAME });
+      await field.fill(MOCK_FIXTURE.searchWord);
+      await field.press('Enter');
+      await expect(page.getByRole('heading', { level: 1, name: 'Search' })).toBeVisible();
+      await page.getByRole('button', { name: 'Clear search' }).click();
+      await field.click();
+      await expect(
+        page.getByRole('listbox', { name: 'Recent searches' }).getByRole('option'),
+      ).toHaveText([MOCK_FIXTURE.searchWord]);
     },
     include: 'app-header-search, .ui-command-list__panel',
     only: E2E_PROJECT.Desktop,
@@ -122,7 +128,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await page.getByRole('button', { name: 'Add link' }).first().click();
       const dialog = page.getByRole('dialog', { name: 'Add link' });
       await dialog.getByLabel('Link', { exact: true }).fill(DUPLICATE_URL);
-      await expect(dialog.getByRole('button', { name: 'Open saved' })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Open', exact: true })).toBeVisible();
     },
     ...SHEET,
   },
