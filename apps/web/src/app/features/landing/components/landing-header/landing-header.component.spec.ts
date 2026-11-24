@@ -1,52 +1,46 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { AuthStore } from '../../../../core/auth/auth.store';
-import { ViewportService } from '../../../../core/layout/viewport.service';
+import { ThemeService } from '../../../../core/theme/theme.service';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { axeViolations } from '../../../../../testing/axe';
 import { createTranslated } from '../../../../../testing/create-translated';
 import { LandingHeaderComponent } from './landing-header.component';
 
+const texts = (root: HTMLElement, selector: string) =>
+  Array.from(root.querySelectorAll(selector)).map((node) => node.textContent?.trim());
+
 describe('LandingHeaderComponent', () => {
-  it('leaves the section links and "Get started" out of the DOM on a phone; sign-in stays', async () => {
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: ViewportService, useValue: { phone: signal(true), compact: signal(true) } },
-      ],
-    });
+  beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
+
+  it('links to How it works, AI, What’s new and Privacy, then Sign in and Start your shelf', async () => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const root = fixture.nativeElement as HTMLElement;
 
-    expect(root.querySelectorAll('.landing-header__link')).toHaveLength(0);
-    expect(root.querySelector('nav')).toBeNull();
-    const signIn = Array.from(root.querySelectorAll('a[href="/sign-in"]'));
-    expect(signIn.map((link) => link.textContent?.trim())).toEqual(['Sign in']);
+    expect(root.querySelector('nav')?.getAttribute('aria-label')).toBe('Page');
+    expect(texts(root, 'nav a')).toEqual(['How it works', 'AI', 'What’s new', 'Privacy']);
+    expect(root.querySelector('nav a[href="#works"]')).not.toBeNull();
+    expect(root.querySelector('nav a[href="#ai"]')).not.toBeNull();
+    expect(root.querySelector('nav a[href="/changelog"]')).not.toBeNull();
+    expect(root.querySelector('nav a[href="/privacy"]')).not.toBeNull();
+    expect(texts(root, 'a[href="/sign-in"]')).toEqual(['Sign in', 'Start your shelf']);
+    expect(root.querySelector('button[aria-label="Switch theme"]')).not.toBeNull();
   });
 
-  it('links to "How it works" and "Privacy", then "Sign in" and "Get started"', async () => {
-    const fixture = await createTranslated(LandingHeaderComponent);
-    const root = fixture.nativeElement as HTMLElement;
-
-    expect(root.querySelector('header')).not.toBeNull();
-    expect(root.querySelector('nav')?.getAttribute('aria-label')).toBe('Main');
-    expect(root.querySelector('a[href="#works"]')?.textContent).toContain('How it works');
-    expect(root.querySelector('a[href="/privacy"]')?.textContent).toContain('Privacy');
-    const signIn = Array.from(root.querySelectorAll('a[href="/sign-in"]'));
-    expect(signIn.map((link) => link.textContent?.trim())).toEqual(['Sign in', 'Get started']);
-    expect(root.querySelector('a[href="https://github.com/ddadivan/shelfmark"]')).toBeNull();
-  });
-
-  it('asks the page for "How it works" instead of following the anchor', async () => {
+  it.each([
+    ['#works', 'works'],
+    ['#ai', 'ai'],
+  ])('asks the page for %s instead of following the anchor', async (href, target) => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const requested = vi.fn();
-    fixture.componentInstance.howItWorksRequested.subscribe(requested);
-    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
-      'a[href="#works"]',
-    );
+    fixture.componentInstance.sectionRequested.subscribe(requested);
     const click = new MouseEvent('click', { bubbles: true, cancelable: true });
 
-    link?.dispatchEvent(click);
+    (fixture.nativeElement as HTMLElement).querySelector(`a[href="${href}"]`)?.dispatchEvent(click);
 
-    expect(requested).toHaveBeenCalledTimes(1);
+    expect(requested).toHaveBeenCalledWith(target);
     expect(click.defaultPrevented).toBe(true);
   });
 
@@ -58,33 +52,54 @@ describe('LandingHeaderComponent', () => {
   ])('keeps the plain link for %s-click', async (_name, init) => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const requested = vi.fn();
-    fixture.componentInstance.howItWorksRequested.subscribe(requested);
-    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
-      'a[href="#works"]',
-    );
+    fixture.componentInstance.sectionRequested.subscribe(requested);
     const click = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
 
-    link?.dispatchEvent(click);
+    (fixture.nativeElement as HTMLElement).querySelector('a[href="#works"]')?.dispatchEvent(click);
 
     expect(requested).not.toHaveBeenCalled();
     expect(click.defaultPrevented).toBe(false);
   });
 
-  it('has no axe violations', async () => {
+  it('switches a guest’s theme in this browser only', async () => {
     const fixture = await createTranslated(LandingHeaderComponent);
+    const theme = TestBed.inject(ThemeService);
+    const setPreference = vi.spyOn(theme, 'setPreference');
+    const dark = theme.resolved() === 'dark';
 
-    expect(await axeViolations(fixture.nativeElement)).toEqual([]);
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLButtonElement>('button[aria-label="Switch theme"]')
+      ?.click();
+
+    expect(setPreference).toHaveBeenCalledWith(
+      dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
+    );
   });
 
-  it('offers "Back to my shelf" and no demo or sign-in to a signed-in person (/about)', async () => {
+  it('offers only "Back to my shelf" to a signed-in person (/about) and saves the theme on the account', async () => {
+    const setAppearance = vi.fn().mockResolvedValue(true);
     TestBed.configureTestingModule({
-      providers: [{ provide: AuthStore, useValue: { user: signal({ id: 'u' }) } }],
+      providers: [
+        {
+          provide: AuthStore,
+          useValue: { user: signal({ id: 'u' }), isSignedIn: signal(true) },
+        },
+        { provide: UserSettingsStore, useValue: { setAppearance } },
+      ],
     });
     const fixture = await createTranslated(LandingHeaderComponent);
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelector('a[href="/links"]')?.textContent).toContain('Back to my shelf');
     expect(root.querySelector('a[href="/sign-in"]')).toBeNull();
-    expect(root.querySelector('a[href="/demo"]')).toBeNull();
+
+    root.querySelector<HTMLButtonElement>('button[aria-label="Switch theme"]')?.click();
+    expect(setAppearance).toHaveBeenCalledTimes(1);
+  });
+
+  it('has no axe violations', async () => {
+    const fixture = await createTranslated(LandingHeaderComponent);
+
+    expect(await axeViolations(fixture.nativeElement)).toEqual([]);
   });
 });

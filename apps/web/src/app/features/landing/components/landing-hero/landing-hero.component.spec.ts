@@ -23,11 +23,11 @@ describe('LandingHeroComponent', () => {
     );
     expect(root.querySelectorAll('h1')).toHaveLength(1);
     expect(root.textContent).toContain(
-      'Videos, articles, things to buy, courses — on one calm shelf instead of chats and open tabs.',
+      'Videos, repositories, things to buy, courses: on one calm shelf instead of chats and forty open tabs.',
     );
   });
 
-  it('offers "Start your shelf" and "Open the demo" with the sign-in note to a guest', async () => {
+  it('offers "Start your shelf" and "Open the demo" to a guest, with no note under them', async () => {
     stubReducedMotion(false);
 
     const fixture = await createTranslated(LandingHeroComponent);
@@ -35,9 +35,7 @@ describe('LandingHeroComponent', () => {
 
     expect(root.querySelector('a[href="/sign-in"]')?.textContent).toContain('Start your shelf');
     expect(root.querySelector('a[href="/demo"]')?.textContent).toContain('Open the demo');
-    expect(root.querySelector('.landing-hero__note')?.textContent).toContain(
-      'Sign in with Google or GitHub.',
-    );
+    expect(root.textContent).not.toContain('Sign in with Google or GitHub.');
   });
 
   it('shows the app preview next to the copy and no chat', async () => {

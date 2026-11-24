@@ -1,7 +1,5 @@
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { UiSuggestionRowHarness } from '@shelfmark/ui/testing';
 import { axeViolations } from '../../../../../testing/axe';
 import { createTranslated } from '../../../../../testing/create-translated';
 import { LandingAiComponent } from './landing-ai.component';
@@ -44,26 +42,28 @@ describe('LandingAiComponent', () => {
     expect(links[0].getAttribute('href')).toBe('/privacy#ai');
   });
 
-  it('shows the real suggestion chips in an inert visual hidden from assistive technology', async () => {
-    const { fixture, root } = await setup();
+  it('draws three examples as named pictures: suggestions, a meaning search and an Ask answer', async () => {
+    const { root } = await setup();
 
-    const visual = root.querySelector('.landing-ai__visual');
-    expect(visual?.getAttribute('aria-hidden')).toBe('true');
-    expect(visual?.hasAttribute('inert')).toBe(true);
-    const row = await TestbedHarnessEnvironment.loader(fixture).getHarness(UiSuggestionRowHarness);
-    const chips = await row.getSuggestions();
-    expect(await Promise.all(chips.map((chip) => chip.getLabel()))).toEqual([
-      'Angular',
-      'angular',
-      'signals',
-      'state management',
+    const pictures = Array.from(root.querySelectorAll('.landing-ai__card'));
+    expect(pictures.map((picture) => picture.getAttribute('role'))).toEqual(['img', 'img', 'img']);
+    expect(pictures.map((picture) => picture.getAttribute('aria-label'))).toEqual([
+      expect.stringContaining('AI suggestions'),
+      expect.stringContaining('search by meaning'),
+      expect.stringContaining('Ask your shelf'),
     ]);
-    expect(await Promise.all(chips.map((chip) => chip.isAccepted()))).toEqual([
-      false,
-      true,
-      false,
-      false,
+    const chips = Array.from(root.querySelectorAll('.landing-ai__chip'));
+    expect(chips.map((chip) => chip.textContent?.trim())).toEqual([
+      'Learning',
+      '#architecture',
+      '#backend',
+      'new: #system-design',
     ]);
+    expect(root.querySelectorAll('.landing-ai__chip--on')).toHaveLength(2);
+    expect(root.querySelectorAll('.landing-ai__cite')).toHaveLength(2);
+    expect(root.querySelector('img')?.getAttribute('src')).toBe(
+      '/media/landing/microservices.webp',
+    );
   });
 
   it('has no axe violations', async () => {

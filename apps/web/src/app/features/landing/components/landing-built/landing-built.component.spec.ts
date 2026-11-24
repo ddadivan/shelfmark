@@ -11,7 +11,7 @@ describe('LandingBuiltComponent', () => {
     expect(root.id).not.toBe('how');
     expect(root.querySelectorAll('#how')).toHaveLength(1);
     expect(root.querySelector('#how')?.getAttribute('tabindex')).toBe('-1');
-    expect(root.querySelector('h2')?.textContent?.trim()).toBe("How it's built");
+    expect(root.querySelector('h2')?.textContent?.trim()).toBe('How it’s built');
     expect(root.querySelectorAll('.landing-built__agent')).toHaveLength(8);
     expect(root.textContent).toContain('security-reviewer');
   });
