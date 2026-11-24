@@ -2956,13 +2956,7 @@
         "one": "Tags for {{count}} link",
         "other": "Tags for {{count}} links"
       },
-      "add": "Add to all",
-      "addHint": "Added to every selected link",
-      "remove": "Remove from all",
-      "removeHint": "Taken off every selected link; the tags themselves stay",
-      "removePlaceholder": "Pick a tag",
       "onLinks": "on {{count}} of {{total}}",
-      "apply": "Apply",
       "cancel": "Cancel",
       "close": "Close",
       "done": {
@@ -2971,7 +2965,16 @@
       },
       "failed": "Couldn't change the tags",
       "failedDetail": "Nothing was changed",
-      "tooMany": "A link can have at most {{max}} tags. Nothing was changed."
+      "tooMany": "A link can have at most {{max}} tags. Nothing was changed.",
+      "find": "Add or find a tag",
+      "hint": "A dash means some of the selected links have the tag. Click once to add it to all, again to remove it from all.",
+      "list": "Tags",
+      "onAll": "on all {{total}}",
+      "enterToAdd": "Press Enter to add “{{name}}”",
+      "applyTo": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      }
     },
     "favorite": {
       "on": {

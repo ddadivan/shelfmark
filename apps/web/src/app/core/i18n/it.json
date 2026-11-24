@@ -3026,13 +3026,7 @@
         "many": "Tag per {{count}} link",
         "other": "Tag per {{count}} link"
       },
-      "add": "Aggiungi a tutti",
-      "addHint": "Aggiunto a ogni link selezionato",
-      "remove": "Rimuovi da tutti",
-      "removeHint": "Tolto da ogni link selezionato; i tag restano",
-      "removePlaceholder": "Scegli un tag",
       "onLinks": "su {{count}} di {{total}}",
-      "apply": "Applica",
       "cancel": "Annulla",
       "close": "Chiudi",
       "done": {
@@ -3042,7 +3036,17 @@
       },
       "failed": "Impossibile cambiare i tag",
       "failedDetail": "Non è cambiato nulla",
-      "tooMany": "Un link può avere al massimo {{max}} tag. Non è cambiato nulla."
+      "tooMany": "Un link può avere al massimo {{max}} tag. Non è cambiato nulla.",
+      "find": "Aggiungi o trova un tag",
+      "hint": "Un trattino indica che alcuni link selezionati hanno il tag. Clicca una volta per aggiungerlo a tutti, di nuovo per toglierlo da tutti.",
+      "list": "Tag",
+      "onAll": "su tutti i {{total}}",
+      "enterToAdd": "Premi Invio per aggiungere «{{name}}»",
+      "applyTo": {
+        "one": "Applica a {{count}} link",
+        "many": "Applica a {{count}} link",
+        "other": "Applica a {{count}} link"
+      }
     },
     "favorite": {
       "on": {

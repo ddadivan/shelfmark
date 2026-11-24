@@ -3026,13 +3026,7 @@
         "many": "Etiquetas de {{count}} enlaces",
         "other": "Etiquetas de {{count}} enlaces"
       },
-      "add": "Añadir a todos",
-      "addHint": "Se añade a cada enlace seleccionado",
-      "remove": "Quitar de todos",
-      "removeHint": "Se quita de cada enlace seleccionado; las etiquetas siguen existiendo",
-      "removePlaceholder": "Elige una etiqueta",
       "onLinks": "en {{count}} de {{total}}",
-      "apply": "Aplicar",
       "cancel": "Cancelar",
       "close": "Cerrar",
       "done": {
@@ -3042,7 +3036,17 @@
       },
       "failed": "No se pudieron cambiar las etiquetas",
       "failedDetail": "No se ha cambiado nada",
-      "tooMany": "Un enlace puede tener como máximo {{max}} etiquetas. No se ha cambiado nada."
+      "tooMany": "Un enlace puede tener como máximo {{max}} etiquetas. No se ha cambiado nada.",
+      "find": "Añadir o buscar una etiqueta",
+      "hint": "Un guion indica que algunos enlaces seleccionados tienen la etiqueta. Haz clic una vez para añadirla a todos y otra para quitarla de todos.",
+      "list": "Etiquetas",
+      "onAll": "en los {{total}}",
+      "enterToAdd": "Pulsa Intro para añadir «{{name}}»",
+      "applyTo": {
+        "one": "Aplicar a {{count}} enlace",
+        "many": "Aplicar a {{count}} enlaces",
+        "other": "Aplicar a {{count}} enlaces"
+      }
     },
     "favorite": {
       "on": {

@@ -3026,13 +3026,7 @@
         "many": "Tags pour {{count}} liens",
         "other": "Tags pour {{count}} liens"
       },
-      "add": "Ajouter à tous",
-      "addHint": "Ajouté à chaque lien sélectionné",
-      "remove": "Retirer de tous",
-      "removeHint": "Retiré de chaque lien sélectionné ; les tags eux-mêmes restent",
-      "removePlaceholder": "Choisissez un tag",
       "onLinks": "sur {{count}} de {{total}}",
-      "apply": "Appliquer",
       "cancel": "Annuler",
       "close": "Fermer",
       "done": {
@@ -3042,7 +3036,17 @@
       },
       "failed": "Impossible de modifier les tags",
       "failedDetail": "Rien n’a été modifié",
-      "tooMany": "Un lien peut avoir au maximum {{max}} tags. Rien n’a été modifié."
+      "tooMany": "Un lien peut avoir au maximum {{max}} tags. Rien n’a été modifié.",
+      "find": "Ajouter ou trouver un tag",
+      "hint": "Un tiret indique que certains liens sélectionnés ont ce tag. Cliquez une fois pour l’ajouter à tous, encore pour l’enlever de tous.",
+      "list": "Tags",
+      "onAll": "sur les {{total}}",
+      "enterToAdd": "Appuyez sur Entrée pour ajouter « {{name}} »",
+      "applyTo": {
+        "one": "Appliquer à {{count}} lien",
+        "many": "Appliquer à {{count}} liens",
+        "other": "Appliquer à {{count}} liens"
+      }
     },
     "favorite": {
       "on": {

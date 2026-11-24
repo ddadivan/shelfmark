@@ -1,44 +1,50 @@
-<form [formRoot]="form">
-  <ui-dialog [title]="data.heading" [closeLabel]="'bulk.tags.close' | transloco">
-    <div class="bulk-tags__fields">
-      <ui-tag-input
-        [label]="'bulk.tags.add' | transloco"
-        [hint]="'bulk.tags.addHint' | transloco"
-        [placeholder]="'links.add.tags.placeholder' | transloco"
-        [suggestions]="suggestions()"
-        [maxTags]="LINK_LIMIT.TagsMax"
-        [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
-        [createLabel]="'links.add.tags.create' | transloco"
-        [removeLabel]="'links.add.tags.remove' | transloco"
-        [addedLabel]="'links.add.tags.added' | transloco"
-        [removedLabel]="'links.add.tags.removed' | transloco"
-        [duplicateLabel]="'links.add.tags.duplicate' | transloco"
-        [listLabel]="'links.add.tags.list' | transloco"
-        [formField]="form.add"
-      />
-      <ui-tag-input
-        [label]="'bulk.tags.remove' | transloco"
-        [hint]="'bulk.tags.removeHint' | transloco"
-        [placeholder]="'bulk.tags.removePlaceholder' | transloco"
-        [suggestions]="present()"
-        [maxTags]="LINK_LIMIT.TagsMax"
-        [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
-        [removeLabel]="'links.add.tags.remove' | transloco"
-        [addedLabel]="'links.add.tags.added' | transloco"
-        [removedLabel]="'links.add.tags.removed' | transloco"
-        [duplicateLabel]="'links.add.tags.duplicate' | transloco"
-        [listLabel]="'links.add.tags.list' | transloco"
-        [formField]="form.remove"
-      />
-    </div>
+<ui-dialog [title]="data.heading" [closeLabel]="'bulk.tags.close' | transloco">
+  <div class="bulk-tags">
+    <ui-input
+      icon="hash"
+      labelHidden
+      [label]="'bulk.tags.find' | transloco"
+      [placeholder]="'bulk.tags.find' | transloco"
+      [(value)]="query"
+      (keydown.enter)="addTyped($event)"
+    />
+    <p class="bulk-tags__hint">{{ 'bulk.tags.hint' | transloco }}</p>
+    @if (rows().length > 0) {
+      <ul class="bulk-tags__list" [attr.aria-label]="'bulk.tags.list' | transloco">
+        @for (row of rows(); track row.name) {
+          <li class="bulk-tags__row">
+            <ui-checkbox
+              class="bulk-tags__check"
+              [label]="row.name"
+              [checked]="row.state === BULK_TAG_STATE.All"
+              [indeterminate]="row.state === BULK_TAG_STATE.Some"
+              (checkedChange)="toggle(row)"
+            />
+            @if (row.state !== BULK_TAG_STATE.None && row.count > 0) {
+              <span class="bulk-tags__count" aria-hidden="true">
+                @if (row.state === BULK_TAG_STATE.All && row.initial === BULK_TAG_STATE.All) {
+                  {{ 'bulk.tags.onAll' | transloco: { total: data.total } }}
+                } @else if (row.state === BULK_TAG_STATE.Some) {
+                  {{ 'bulk.tags.onLinks' | transloco: { count: row.count, total: data.total } }}
+                }
+              </span>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="bulk-tags__empty" role="status">
+        {{ 'bulk.tags.enterToAdd' | transloco: { name: query().trim() } }}
+      </p>
+    }
+  </div>
 
-    <ui-button slot="footer" (click)="cancel()">{{ 'bulk.tags.cancel' | transloco }}</ui-button>
-    <ui-button
-      slot="footer"
-      [type]="BUTTON_TYPE.Submit"
-      [variant]="BUTTON_VARIANT.Primary"
-      [disabled]="empty()"
-      >{{ 'bulk.tags.apply' | transloco }}</ui-button
-    >
-  </ui-dialog>
-</form>
+  <ui-button slot="footer" (click)="cancel()">{{ 'bulk.tags.cancel' | transloco }}</ui-button>
+  <ui-button
+    slot="footer"
+    [variant]="BUTTON_VARIANT.Primary"
+    [disabled]="empty()"
+    (click)="apply()"
+    >{{ pluralKey('bulk.tags.applyTo', data.total) | transloco: { count: data.total } }}</ui-button
+  >
+</ui-dialog>
