@@ -2962,7 +2962,10 @@
       "privateNotes": "Notizen bleiben privat, solange du sie nicht einschaltest.",
       "limit": "Du kannst bis zu {{max}} Ordner teilen. Mach zuerst einen anderen Ordner wieder privat.",
       "demo": "Demo-Konten können keine Ordner teilen. Melde dich an, um deine zu teilen.",
-      "saveFailed": "Die Änderung konnte nicht gespeichert werden. Versuch es noch einmal."
+      "saveFailed": "Die Änderung konnte nicht gespeichert werden. Versuch es noch einmal.",
+      "publicOff": "Aus: Nur du siehst diesen Ordner.",
+      "openPublic": "Öffentliche Seite öffnen",
+      "openPublicLabel": "Öffentliche Seite öffnen (neuer Tab)"
     },
     "reset": {
       "title": "Ordnerlink zurücksetzen?",

@@ -3025,7 +3025,10 @@
       "privateNotes": "As notas ficam privadas, a menos que você as ative.",
       "limit": "Você pode compartilhar até {{max}} pastas. Torne outra pasta privada primeiro.",
       "demo": "Contas de demo não podem compartilhar pastas. Entre para compartilhar as suas.",
-      "saveFailed": "Não foi possível salvar a alteração. Tente de novo."
+      "saveFailed": "Não foi possível salvar a alteração. Tente de novo.",
+      "publicOff": "Desativado: só você vê esta pasta.",
+      "openPublic": "Abrir a página pública",
+      "openPublicLabel": "Abrir a página pública (nova aba)"
     },
     "reset": {
       "title": "Redefinir o link da pasta?",

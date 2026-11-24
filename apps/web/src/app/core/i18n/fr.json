@@ -3025,7 +3025,10 @@
       "privateNotes": "Les notes restent privées, sauf si vous les activez.",
       "limit": "Vous pouvez partager jusqu’à {{max}} dossiers. Rendez d’abord un autre dossier privé.",
       "demo": "Les comptes de démo ne peuvent pas partager de dossiers. Connectez-vous pour partager les vôtres.",
-      "saveFailed": "Impossible d’enregistrer la modification. Réessayez."
+      "saveFailed": "Impossible d’enregistrer la modification. Réessayez.",
+      "publicOff": "Désactivé : vous seul voyez ce dossier.",
+      "openPublic": "Ouvrir la page publique",
+      "openPublicLabel": "Ouvrir la page publique (nouvel onglet)"
     },
     "reset": {
       "title": "Réinitialiser le lien du dossier ?",

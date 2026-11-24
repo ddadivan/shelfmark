@@ -3025,7 +3025,10 @@
       "privateNotes": "Las notas siguen siendo privadas salvo que las actives.",
       "limit": "Puedes compartir hasta {{max}} carpetas. Haz privada otra carpeta antes.",
       "demo": "Las cuentas demo no pueden compartir carpetas. Inicia sesión para compartir las tuyas.",
-      "saveFailed": "No se pudo guardar el cambio. Inténtalo de nuevo."
+      "saveFailed": "No se pudo guardar el cambio. Inténtalo de nuevo.",
+      "publicOff": "Desactivado: solo tú ves esta carpeta.",
+      "openPublic": "Abrir la página pública",
+      "openPublicLabel": "Abrir la página pública (nueva pestaña)"
     },
     "reset": {
       "title": "¿Restablecer el enlace de la carpeta?",

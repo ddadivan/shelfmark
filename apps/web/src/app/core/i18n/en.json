@@ -2962,7 +2962,10 @@
       "privateNotes": "Notes stay private unless you turn them on.",
       "limit": "You can share up to {{max}} folders. Make another folder private first.",
       "demo": "Demo accounts can't share folders. Sign in to share yours.",
-      "saveFailed": "Couldn't save the change. Try again."
+      "saveFailed": "Couldn't save the change. Try again.",
+      "publicOff": "Off: only you can see this folder.",
+      "openPublic": "Open public page",
+      "openPublicLabel": "Open public page (opens in a new tab)"
     },
     "reset": {
       "title": "Reset the folder link?",

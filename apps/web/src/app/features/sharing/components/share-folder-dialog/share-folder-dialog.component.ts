@@ -23,9 +23,7 @@ import {
   SwitchComponent,
   TOAST_KIND,
   ToastService,
-  UiDialogRef,
 } from '@shelfmark/ui';
-import { pluralKey } from '../../../../core/i18n/plural-key';
 import { FolderShareStore } from '../../services/folder-share.store';
 import { SHARE_ERROR } from '../../models/share-error.const';
 import type { ShareFolderDialogData } from '../../models/share-folder-dialog-data.interface';
@@ -62,7 +60,6 @@ export class ShareFolderDialogComponent {
 
   protected readonly data = injectDialogData<ShareFolderDialogData>();
   protected readonly store = inject(FolderShareStore);
-  private readonly ref = inject<UiDialogRef<void>>(UiDialogRef);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
@@ -70,8 +67,6 @@ export class ShareFolderDialogComponent {
   private readonly publicOrigin = inject(PUBLIC_COLLECTION_ORIGIN);
 
   private readonly linkField = viewChild<InputComponent>('linkField');
-
-  protected readonly countKey = pluralKey('sharing.dialog.count', this.data.linkCount);
 
   /** What the switches show; put back to the stored state when a change fails. */
   protected readonly enabledView = linkedSignal(() => this.store.enabled());
@@ -137,10 +132,6 @@ export class ShareFolderDialogComponent {
 
   protected retry(): void {
     void this.store.load(this.data.folder.id);
-  }
-
-  protected close(): void {
-    this.ref.close();
   }
 
   private t(key: string, params?: Record<string, string>): string {

@@ -3025,7 +3025,10 @@
       "privateNotes": "Le note restano private, a meno che non le attivi.",
       "limit": "Puoi condividere fino a {{max}} cartelle. Rendi prima privata un’altra cartella.",
       "demo": "Gli account demo non possono condividere cartelle. Accedi per condividere le tue.",
-      "saveFailed": "Impossibile salvare la modifica. Riprova."
+      "saveFailed": "Impossibile salvare la modifica. Riprova.",
+      "publicOff": "Disattivato: solo tu vedi questa cartella.",
+      "openPublic": "Apri la pagina pubblica",
+      "openPublicLabel": "Apri la pagina pubblica (nuova scheda)"
     },
     "reset": {
       "title": "Reimpostare il link della cartella?",

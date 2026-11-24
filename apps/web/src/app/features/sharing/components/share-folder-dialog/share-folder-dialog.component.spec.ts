@@ -80,7 +80,6 @@ describe('ShareFolderDialogComponent', () => {
     await open();
 
     expect(dialog()?.textContent).toContain('Share folder “Reading”');
-    expect(dialog()?.textContent).toContain('15 links, subfolders included');
     await until(() =>
       expect(switchNamed('Public folder')?.getAttribute('aria-checked')).toBe('false'),
     );
