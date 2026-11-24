@@ -4136,15 +4136,73 @@
     "resize": "Resize the list",
     "resizeHint": "Drag, or use ← and →. Double-click resets.",
     "blocked": {
-      "title": "{{domain}} doesn't open inside other apps",
-      "text": "The site blocks it, not Shelfmark. Open it in a new tab.",
-      "open": "Open in new tab",
-      "always": "Always open {{domain}} in a new tab"
+      "title": "{{domain}} doesn't allow showing it here",
+      "text": "Read it here in Reader, or open it in your browser.",
+      "open": "Open in browser",
+      "always": "Always open {{domain}} in a new tab",
+      "reader": "Open in Reader"
     },
     "keys": {
       "next": "Next link",
       "newTab": "New tab",
       "close": "Close"
+    },
+    "mode": {
+      "label": "Show as",
+      "site": "Site",
+      "reader": "Reader"
+    },
+    "reading": {
+      "title": "Reading settings",
+      "size": {
+        "label": "Text size",
+        "s": "S",
+        "m": "M",
+        "l": "L"
+      },
+      "font": {
+        "label": "Font",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Readable"
+      },
+      "width": {
+        "label": "Line width",
+        "narrow": "Narrow",
+        "wide": "Wide"
+      },
+      "tone": {
+        "label": "Page",
+        "app": "Like the app",
+        "sepia": "Sepia"
+      }
+    },
+    "reader": {
+      "loading": "Loading the text",
+      "minutes": "{{count}} min read",
+      "noText": "This page has no article text. Reader shows the picture, what the page says about itself and your note.",
+      "noTextVideo": "A video has no text to read. Reader shows its picture, description and your note; play it on the site.",
+      "blockedNotice": "Showing Reader: {{domain}} doesn't allow showing the page here.",
+      "openSite": "Open {{domain}}"
+    },
+    "details": {
+      "toggle": "Details",
+      "region": "Details",
+      "title": "Title",
+      "note": "Note",
+      "folder": "Folder",
+      "moveLabel": "Folder: {{folder}}. Move to another folder",
+      "tags": "Tags",
+      "addTag": "Add tag",
+      "reminder": "Reminder",
+      "remind": "Remind me…",
+      "reminderSet": "{{when}}",
+      "summary": "Summary",
+      "address": "Address",
+      "saved": "Saved",
+      "savedOpened": "{{saved}} · opened {{opened}}",
+      "saveFailed": "Couldn't save the change",
+      "retry": "Try again"
     }
   }
 }

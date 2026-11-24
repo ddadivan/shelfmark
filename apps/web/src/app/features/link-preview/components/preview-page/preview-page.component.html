@@ -37,20 +37,50 @@
         variant="ghost"
         iconOnly
         iconLeft="more"
-        [uiMenuTrigger]="more"
+        [uiMenuTrigger]="more.menu()"
         [ariaLabel]="'preview.more' | transloco"
       />
-      <ui-menu #more align="end" [ariaLabel]="'preview.more' | transloco">
-        <ui-menu-item icon="edit" (activated)="preview.edit()">
-          {{ 'preview.edit' | transloco }}
-        </ui-menu-item>
-        <ui-menu-item icon="copy" (activated)="preview.copyLink()">
-          {{ 'preview.copy' | transloco }}
-        </ui-menu-item>
-      </ui-menu>
     }
   </header>
-  <app-preview-body class="preview-page__body" />
+  @if (preview.link()) {
+    <div class="preview-page__modes">
+      <ui-segmented-control
+        [ariaLabel]="'preview.mode.label' | transloco"
+        [options]="modes()"
+        [value]="reader.mode()"
+        (valueChange)="setMode($event)"
+      />
+      @if (reader.reading()) {
+        <ui-button
+          variant="ghost"
+          iconOnly
+          iconLeft="text-size"
+          [ariaLabel]="'preview.reading.title' | transloco"
+          [uiPopoverTrigger]="readingSettings.popover()"
+          uiPopoverTriggerHover="false"
+        />
+      }
+      <ui-button
+        class="preview-page__details-toggle"
+        variant="ghost"
+        iconOnly
+        iconLeft="panel-right"
+        [ariaPressed]="reader.detailsOpen()"
+        [ariaLabel]="'preview.details.toggle' | transloco"
+        (click)="reader.toggleDetails()"
+      />
+    </div>
+  }
+  <div class="preview-page__main">
+    @if (reader.reading()) {
+      <app-preview-reader class="preview-page__body" />
+    } @else {
+      <app-preview-body class="preview-page__body" />
+    }
+    @if (reader.detailsOpen() && preview.link(); as link) {
+      <app-preview-details class="preview-page__details" [link]="link" />
+    }
+  </div>
   @if (preview.link(); as link) {
     <div class="preview-page__bar" role="toolbar" [attr.aria-label]="'preview.toolbar' | transloco">
       <ui-button
@@ -74,3 +104,5 @@
     </div>
   }
 </section>
+<app-preview-menu #more />
+<app-reading-settings #readingSettings />

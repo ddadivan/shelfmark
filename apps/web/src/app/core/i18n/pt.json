@@ -4245,15 +4245,73 @@
     "resize": "Ajustar a largura da lista",
     "resizeHint": "Arraste ou use ← e →. Clique duplo restaura.",
     "blocked": {
-      "title": "{{domain}} não abre dentro de outros apps",
-      "text": "Quem bloqueia é o site, não o Shelfmark. Abra em uma nova aba.",
-      "open": "Abrir em nova aba",
-      "always": "Sempre abrir {{domain}} em nova aba"
+      "title": "{{domain}} não permite exibir aqui",
+      "text": "Leia aqui na leitura ou abra no seu navegador.",
+      "open": "Abrir no navegador",
+      "always": "Sempre abrir {{domain}} em nova aba",
+      "reader": "Abrir na leitura"
     },
     "keys": {
       "next": "Próximo link",
       "newTab": "Nova aba",
       "close": "Fechar"
+    },
+    "mode": {
+      "label": "Mostrar como",
+      "site": "Site",
+      "reader": "Leitura"
+    },
+    "reading": {
+      "title": "Ajustes de leitura",
+      "size": {
+        "label": "Tamanho do texto",
+        "s": "P",
+        "m": "M",
+        "l": "G"
+      },
+      "font": {
+        "label": "Fonte",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Legível"
+      },
+      "width": {
+        "label": "Largura da linha",
+        "narrow": "Estreita",
+        "wide": "Larga"
+      },
+      "tone": {
+        "label": "Página",
+        "app": "Como o app",
+        "sepia": "Sépia"
+      }
+    },
+    "reader": {
+      "loading": "Carregando o texto",
+      "minutes": "{{count}} min de leitura",
+      "noText": "Esta página não tem texto de artigo. A leitura mostra a imagem, o que a página diz de si e a sua nota.",
+      "noTextVideo": "Um vídeo não tem texto para ler. A leitura mostra a imagem, a descrição e a sua nota; assista no site.",
+      "blockedNotice": "Mostrando a leitura: {{domain}} não permite exibir a página aqui.",
+      "openSite": "Abrir {{domain}}"
+    },
+    "details": {
+      "toggle": "Detalhes",
+      "region": "Detalhes",
+      "title": "Título",
+      "note": "Nota",
+      "folder": "Pasta",
+      "moveLabel": "Pasta: {{folder}}. Mover para outra pasta",
+      "tags": "Tags",
+      "addTag": "Adicionar tag",
+      "reminder": "Lembrete",
+      "remind": "Lembrar-me…",
+      "reminderSet": "{{when}}",
+      "summary": "Resumo",
+      "address": "Endereço",
+      "saved": "Salvo",
+      "savedOpened": "{{saved}} · aberto {{opened}}",
+      "saveFailed": "Não foi possível salvar a alteração",
+      "retry": "Tentar de novo"
     }
   }
 }

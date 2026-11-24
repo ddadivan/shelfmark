@@ -26,6 +26,7 @@ export function createLinkPreviewStub(link: LinkResponse | null = PREVIEW_STUB_L
   );
   const stub = {
     link: current,
+    currentId: signal<string | null>(link?.id ?? null),
     body,
     host: signal(link ? (linkHost(link.url) ?? '') : ''),
     href: signal<string | undefined>(link?.url),

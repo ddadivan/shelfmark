@@ -27,11 +27,16 @@
           [heading]="'preview.blocked.title' | transloco: { domain: preview.host() }"
           [text]="'preview.blocked.text' | transloco"
         >
-          @if (preview.href()) {
-            <ui-button variant="primary" iconLeft="external" (click)="preview.openInNewTab()">
-              {{ 'preview.blocked.open' | transloco }}
+          <div class="preview-body__actions">
+            <ui-button iconLeft="text-size" (click)="reader.setMode(MODE.Reader)">
+              {{ 'preview.blocked.reader' | transloco }}
             </ui-button>
-          }
+            @if (preview.href()) {
+              <ui-button variant="ghost" iconLeft="external" (click)="preview.openInNewTab()">
+                {{ 'preview.blocked.open' | transloco }}
+              </ui-button>
+            }
+          </div>
         </ui-empty-state>
         @if (preview.host()) {
           <ui-checkbox

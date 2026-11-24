@@ -1,0 +1,66 @@
+@if (preview.link(); as link) {
+  @if (reader.loading()) {
+    <div class="preview-reader__loading" aria-busy="true">
+      <ui-progress-bar active variant="inline" [label]="'preview.reader.loading' | transloco" />
+    </div>
+  } @else {
+    @let article = reader.article();
+    @let settings = reader.settings();
+    <ui-reader
+      class="preview-reader"
+      [site]="site()"
+      [faviconSrc]="favicon()"
+      [faviconLetter]="letter()"
+      [faviconColour]="colour()"
+      [heading]="article?.title ?? link.title"
+      [meta]="reader.meta()"
+      [notice]="reader.notice()"
+      [image]="article ? null : (image() ?? null)"
+      [imageRatio]="imageRatio()"
+      [blocks]="article?.blocks ?? []"
+      [size]="settings.size"
+      [font]="settings.font"
+      [width]="settings.width"
+      [tone]="settings.tone"
+      (progressed)="reader.onProgress($event)"
+    >
+      @if (article && link.summary) {
+        <p slot="summary" class="preview-reader__summary">
+          @if (aiSummary()) {
+            <ui-icon
+              class="preview-reader__spark"
+              name="spark"
+              [size]="ICON_SIZE.Sm"
+              [label]="'ai.disclaimer' | transloco"
+            />
+          }
+          <span>{{ link.summary }}</span>
+        </p>
+      }
+      @if (!article) {
+        @if (link.summary) {
+          <p class="preview-reader__description">{{ link.summary }}</p>
+        }
+        @if (link.note) {
+          <p class="preview-reader__note">
+            <ui-icon name="edit" [size]="ICON_SIZE.Sm" />
+            <span
+              ><span class="preview-reader__sr">{{ 'preview.details.note' | transloco }}: </span
+              >{{ link.note }}</span
+            >
+          </p>
+        }
+        @if (preview.href()) {
+          <ui-button
+            class="preview-reader__open"
+            variant="secondary"
+            iconLeft="external"
+            (click)="preview.openInNewTab()"
+          >
+            {{ 'preview.reader.openSite' | transloco: { domain: site() } }}
+          </ui-button>
+        }
+      }
+    </ui-reader>
+  }
+}

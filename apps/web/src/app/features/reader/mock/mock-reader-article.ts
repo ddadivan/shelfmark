@@ -16,6 +16,10 @@ const READABLE_KINDS: ReadonlySet<LinkKind> = new Set<LinkKind>([
   LINK_KIND.Recipe,
 ]);
 
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 /** Words per minute of the reading-time estimate. */
 const WORDS_PER_MINUTE = 220;
 
@@ -65,7 +69,7 @@ export function mockReaderArticle(link: LinkResponse): ReaderArticle | null {
     .split(/\s+/).length;
   return {
     title: link.title,
-    author: `${site.split('.')[0] ?? site} team`,
+    author: `${capitalize(site.split('.')[0] ?? site)} team`,
     publishedAt: link.createdAt,
     minutes: Math.max(1, Math.round(words / WORDS_PER_MINUTE) + 4),
     blocks,

@@ -4245,15 +4245,73 @@
     "resize": "Cambiar el ancho de la lista",
     "resizeHint": "Arrastra o usa ← y →. Doble clic para restablecer.",
     "blocked": {
-      "title": "{{domain}} no se abre dentro de otras apps",
-      "text": "Lo bloquea el sitio, no Shelfmark. Ábrelo en una pestaña nueva.",
-      "open": "Abrir en una pestaña nueva",
-      "always": "Abrir siempre {{domain}} en una pestaña nueva"
+      "title": "{{domain}} no permite mostrarlo aquí",
+      "text": "Léela aquí en Lectura o ábrela en tu navegador.",
+      "open": "Abrir en el navegador",
+      "always": "Abrir siempre {{domain}} en una pestaña nueva",
+      "reader": "Abrir en Lectura"
     },
     "keys": {
       "next": "Enlace siguiente",
       "newTab": "Pestaña nueva",
       "close": "Cerrar"
+    },
+    "mode": {
+      "label": "Mostrar como",
+      "site": "Sitio",
+      "reader": "Lectura"
+    },
+    "reading": {
+      "title": "Ajustes de lectura",
+      "size": {
+        "label": "Tamaño del texto",
+        "s": "P",
+        "m": "M",
+        "l": "G"
+      },
+      "font": {
+        "label": "Fuente",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Legible"
+      },
+      "width": {
+        "label": "Ancho de línea",
+        "narrow": "Estrecho",
+        "wide": "Ancho"
+      },
+      "tone": {
+        "label": "Página",
+        "app": "Como la app",
+        "sepia": "Sepia"
+      }
+    },
+    "reader": {
+      "loading": "Cargando el texto",
+      "minutes": "{{count}} min de lectura",
+      "noText": "Esta página no tiene texto de artículo. Lectura muestra la imagen, lo que la página dice de sí misma y tu nota.",
+      "noTextVideo": "Un vídeo no tiene texto que leer. Lectura muestra su imagen, la descripción y tu nota; míralo en el sitio.",
+      "blockedNotice": "Mostrando Lectura: {{domain}} no permite mostrar la página aquí.",
+      "openSite": "Abrir {{domain}}"
+    },
+    "details": {
+      "toggle": "Detalles",
+      "region": "Detalles",
+      "title": "Título",
+      "note": "Nota",
+      "folder": "Carpeta",
+      "moveLabel": "Carpeta: {{folder}}. Mover a otra carpeta",
+      "tags": "Etiquetas",
+      "addTag": "Añadir etiqueta",
+      "reminder": "Recordatorio",
+      "remind": "Recuérdamelo…",
+      "reminderSet": "{{when}}",
+      "summary": "Resumen",
+      "address": "Dirección",
+      "saved": "Guardado",
+      "savedOpened": "{{saved}} · abierto {{opened}}",
+      "saveFailed": "No se pudo guardar el cambio",
+      "retry": "Reintentar"
     }
   }
 }

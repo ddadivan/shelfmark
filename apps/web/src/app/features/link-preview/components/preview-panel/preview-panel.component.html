@@ -35,69 +35,78 @@
         <!-- prettier-ignore -->
         <h2 class="preview-panel__name">{{ link.title }}</h2>
         <span class="preview-panel__address">
-          <ui-favicon [src]="favicon()" [letter]="letter()" />
+          <ui-favicon [src]="favicon()" [letter]="letter()" [colour]="colour()" />
           <span class="preview-panel__url">{{ address() }}</span>
         </span>
       </div>
-      <span class="preview-panel__sep" aria-hidden="true"></span>
-      <app-related-links small [linkId]="link.id" (chosen)="preview.open($event)" />
-      <ui-button
-        class="preview-panel__star"
-        [class.preview-panel__star--on]="link.isFavorite"
-        variant="ghost"
-        size="sm"
-        iconOnly
-        [iconLeft]="link.isFavorite ? 'star-filled' : 'star'"
-        [ariaPressed]="link.isFavorite"
-        [ariaLabel]="'preview.favorite' | transloco"
-        [uiTooltip]="
-          (link.isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
-        "
-        (click)="preview.toggleFavorite()"
-      />
-      <ui-button
-        variant="ghost"
-        size="sm"
-        iconOnly
-        iconLeft="edit"
-        [ariaLabel]="'preview.edit' | transloco"
-        [uiTooltip]="'preview.edit' | transloco"
-        (click)="preview.edit()"
-      />
-      <ui-button
-        variant="ghost"
-        size="sm"
-        iconOnly
-        [iconLeft]="preview.copied() ? 'check' : 'copy'"
-        [ariaLabel]="'preview.copy' | transloco"
-        [uiTooltip]="'preview.copy' | transloco"
-        (click)="preview.copyLink()"
-      />
-      <ui-button
-        variant="ghost"
-        size="sm"
-        iconOnly
-        [iconLeft]="preview.listHidden() ? 'collapse' : 'expand'"
-        [ariaPressed]="preview.listHidden()"
-        [ariaLabel]="'preview.wider' | transloco"
-        [uiTooltip]="(preview.listHidden() ? 'preview.showList' : 'preview.wider') | transloco"
-        (click)="preview.toggleList()"
-      />
-      @if (preview.href()) {
+      <div class="preview-panel__tools">
+        <app-related-links small [linkId]="link.id" (chosen)="preview.open($event)" />
+        <ui-segmented-control
+          class="preview-panel__mode"
+          [ariaLabel]="'preview.mode.label' | transloco"
+          [options]="modes()"
+          [value]="reader.mode()"
+          (valueChange)="setMode($event)"
+        />
+        @if (reader.reading()) {
+          <ui-button
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="text-size"
+            [ariaLabel]="'preview.reading.title' | transloco"
+            [uiPopoverTrigger]="readingSettings.popover()"
+            uiPopoverTriggerHover="false"
+          />
+        }
+        @if (preview.href()) {
+          <ui-button
+            variant="secondary"
+            size="sm"
+            iconLeft="external"
+            [uiTooltip]="'preview.openHint' | transloco"
+            uiTooltipShortcut="↵"
+            (click)="preview.openInNewTab()"
+          >
+            {{ 'preview.open' | transloco }}
+          </ui-button>
+        }
         <ui-button
-          variant="secondary"
+          class="preview-panel__star"
+          [class.preview-panel__star--on]="link.isFavorite"
+          variant="ghost"
           size="sm"
-          iconLeft="external"
-          [uiTooltip]="'preview.openHint' | transloco"
-          uiTooltipShortcut="↵"
-          (click)="preview.openInNewTab()"
-        >
-          {{ 'preview.open' | transloco }}
-        </ui-button>
-      }
+          iconOnly
+          [iconLeft]="link.isFavorite ? 'star-filled' : 'star'"
+          [ariaPressed]="link.isFavorite"
+          [ariaLabel]="'preview.favorite' | transloco"
+          [uiTooltip]="
+            (link.isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+          "
+          (click)="preview.toggleFavorite()"
+        />
+        <ui-button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="panel-right"
+          [ariaPressed]="reader.detailsOpen()"
+          [ariaLabel]="'preview.details.toggle' | transloco"
+          (click)="reader.toggleDetails()"
+        />
+        <ui-button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="more"
+          [ariaLabel]="'preview.more' | transloco"
+          [uiMenuTrigger]="more.menu()"
+        />
+      </div>
     } @else {
       <span class="preview-panel__title"></span>
     }
+    <span class="preview-panel__sep" aria-hidden="true"></span>
     <ui-button
       variant="ghost"
       size="sm"
@@ -109,5 +118,16 @@
       (click)="preview.close()"
     />
   </div>
-  <app-preview-body class="preview-panel__body" />
+  <div class="preview-panel__main" [class.preview-panel__main--details]="reader.detailsOpen()">
+    @if (reader.reading()) {
+      <app-preview-reader class="preview-panel__body" />
+    } @else {
+      <app-preview-body class="preview-panel__body" />
+    }
+    @if (reader.detailsOpen() && preview.link(); as link) {
+      <app-preview-details class="preview-panel__details" [link]="link" />
+    }
+  </div>
 </section>
+<app-preview-menu #more wide />
+<app-reading-settings #readingSettings />

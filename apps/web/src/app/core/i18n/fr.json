@@ -4245,15 +4245,73 @@
     "resize": "Redimensionner la liste",
     "resizeHint": "Faites glisser ou utilisez ← et →. Double-clic pour réinitialiser.",
     "blocked": {
-      "title": "{{domain}} ne s'ouvre pas dans d'autres apps",
-      "text": "C'est le site qui le bloque, pas Shelfmark. Ouvrez-le dans un nouvel onglet.",
-      "open": "Ouvrir dans un nouvel onglet",
-      "always": "Toujours ouvrir {{domain}} dans un nouvel onglet"
+      "title": "{{domain}} n'autorise pas l'affichage ici",
+      "text": "Lisez-la ici en mode lecture ou ouvrez-la dans votre navigateur.",
+      "open": "Ouvrir dans le navigateur",
+      "always": "Toujours ouvrir {{domain}} dans un nouvel onglet",
+      "reader": "Ouvrir en lecture"
     },
     "keys": {
       "next": "Lien suivant",
       "newTab": "Nouvel onglet",
       "close": "Fermer"
+    },
+    "mode": {
+      "label": "Afficher comme",
+      "site": "Site",
+      "reader": "Lecture"
+    },
+    "reading": {
+      "title": "Réglages de lecture",
+      "size": {
+        "label": "Taille du texte",
+        "s": "P",
+        "m": "M",
+        "l": "G"
+      },
+      "font": {
+        "label": "Police",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Lisible"
+      },
+      "width": {
+        "label": "Largeur des lignes",
+        "narrow": "Étroite",
+        "wide": "Large"
+      },
+      "tone": {
+        "label": "Page",
+        "app": "Comme l'app",
+        "sepia": "Sépia"
+      }
+    },
+    "reader": {
+      "loading": "Chargement du texte",
+      "minutes": "{{count}} min de lecture",
+      "noText": "Cette page n'a pas de texte d'article. La lecture montre l'image, ce que la page dit d'elle-même et votre note.",
+      "noTextVideo": "Une vidéo n'a pas de texte à lire. La lecture montre son image, sa description et votre note ; regardez-la sur le site.",
+      "blockedNotice": "Affichage en lecture : {{domain}} n'autorise pas l'affichage de la page ici.",
+      "openSite": "Ouvrir {{domain}}"
+    },
+    "details": {
+      "toggle": "Détails",
+      "region": "Détails",
+      "title": "Titre",
+      "note": "Note",
+      "folder": "Dossier",
+      "moveLabel": "Dossier : {{folder}}. Déplacer vers un autre dossier",
+      "tags": "Tags",
+      "addTag": "Ajouter un tag",
+      "reminder": "Rappel",
+      "remind": "Me le rappeler…",
+      "reminderSet": "{{when}}",
+      "summary": "Résumé",
+      "address": "Adresse",
+      "saved": "Enregistré",
+      "savedOpened": "{{saved}} · ouvert {{opened}}",
+      "saveFailed": "Impossible d'enregistrer la modification",
+      "retry": "Réessayer"
     }
   }
 }

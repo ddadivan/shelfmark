@@ -4136,15 +4136,73 @@
     "resize": "Listenbreite ändern",
     "resizeHint": "Ziehen oder ← und → nutzen. Doppelklick setzt zurück.",
     "blocked": {
-      "title": "{{domain}} lässt sich nicht in anderen Apps öffnen",
-      "text": "Die Website blockiert das, nicht Shelfmark. Öffne sie in einem neuen Tab.",
-      "open": "In neuem Tab öffnen",
-      "always": "{{domain}} immer in neuem Tab öffnen"
+      "title": "{{domain}} erlaubt die Anzeige hier nicht",
+      "text": "Lies sie hier in der Leseansicht oder öffne sie im Browser.",
+      "open": "Im Browser öffnen",
+      "always": "{{domain}} immer in neuem Tab öffnen",
+      "reader": "In der Leseansicht öffnen"
     },
     "keys": {
       "next": "Nächster Link",
       "newTab": "Neuer Tab",
       "close": "Schließen"
+    },
+    "mode": {
+      "label": "Anzeigen als",
+      "site": "Website",
+      "reader": "Leseansicht"
+    },
+    "reading": {
+      "title": "Leseeinstellungen",
+      "size": {
+        "label": "Textgröße",
+        "s": "S",
+        "m": "M",
+        "l": "L"
+      },
+      "font": {
+        "label": "Schrift",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Gut lesbar"
+      },
+      "width": {
+        "label": "Zeilenbreite",
+        "narrow": "Schmal",
+        "wide": "Breit"
+      },
+      "tone": {
+        "label": "Seite",
+        "app": "Wie die App",
+        "sepia": "Sepia"
+      }
+    },
+    "reader": {
+      "loading": "Text wird geladen",
+      "minutes": "{{count}} Min. Lesezeit",
+      "noText": "Diese Seite hat keinen Artikeltext. Die Leseansicht zeigt das Bild, die Beschreibung der Seite und deine Notiz.",
+      "noTextVideo": "Ein Video hat keinen Text zum Lesen. Die Leseansicht zeigt Bild, Beschreibung und deine Notiz; abspielen kannst du es auf der Website.",
+      "blockedNotice": "Leseansicht: {{domain}} erlaubt nicht, die Seite hier zu zeigen.",
+      "openSite": "{{domain}} öffnen"
+    },
+    "details": {
+      "toggle": "Details",
+      "region": "Details",
+      "title": "Titel",
+      "note": "Notiz",
+      "folder": "Ordner",
+      "moveLabel": "Ordner: {{folder}}. In einen anderen Ordner verschieben",
+      "tags": "Tags",
+      "addTag": "Tag hinzufügen",
+      "reminder": "Erinnerung",
+      "remind": "Erinnere mich…",
+      "reminderSet": "{{when}}",
+      "summary": "Zusammenfassung",
+      "address": "Adresse",
+      "saved": "Gespeichert",
+      "savedOpened": "{{saved}} · geöffnet {{opened}}",
+      "saveFailed": "Änderung konnte nicht gespeichert werden",
+      "retry": "Erneut versuchen"
     }
   }
 }

@@ -60,8 +60,34 @@
   white-space: nowrap;
 }
 
+.preview-page__modes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-block-end: 1px solid var(--border);
+}
+
+.preview-page__details-toggle {
+  margin-inline-start: auto;
+}
+
+// The page, and the details under it (Shelf phone: the details follow the text).
+.preview-page__main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-block-size: 0;
+}
+
 .preview-page__body {
   flex: 1 1 auto;
+  min-block-size: 0;
+}
+
+.preview-page__details {
+  flex: 0 1 50%;
+  border-block-start: 1px solid var(--border);
 }
 
 .preview-page__bar {
@@ -78,5 +104,5 @@
 }
 
 .preview-page__star--on {
-  color: var(--accent);
+  color: var(--star);
 }
