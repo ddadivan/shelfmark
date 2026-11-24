@@ -719,11 +719,11 @@ body{background:var(--l0);font-family:var(--font)}
 .cfgsl.off{opacity:.45}
 .cfgsl-h,.cfgsl-t{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
 .cfgsl-t{margin-top:-4px}
-.cfgsl input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;margin:4px 0;cursor:pointer}
-.cfgsl input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:var(--tg-off)}
-.cfgsl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;margin-top:-6px;border-radius:50%;background:var(--tg-thumb);box-shadow:0 0 0 2px var(--tg-ring),0 1px 3px rgba(0,0,0,.3)}
-.cfgsl input[type=range]::-moz-range-track{height:4px;border-radius:999px;background:var(--tg-off)}
-.cfgsl input[type=range]::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;background:var(--tg-thumb);box-shadow:0 0 0 2px var(--tg-ring),0 1px 3px rgba(0,0,0,.3)}
+.cfgsl input[type=range],.rs-size input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;margin:4px 0;cursor:pointer}
+.cfgsl input[type=range]::-webkit-slider-runnable-track,.rs-size input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:var(--tg-off)}
+.cfgsl input[type=range]::-webkit-slider-thumb,.rs-size input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;margin-top:-6px;border-radius:50%;background:var(--tg-thumb);box-shadow:0 0 0 2px var(--tg-ring),0 1px 3px rgba(0,0,0,.3)}
+.cfgsl input[type=range]::-moz-range-track,.rs-size input[type=range]::-moz-range-track{height:4px;border-radius:999px;background:var(--tg-off)}
+.cfgsl input[type=range]::-moz-range-thumb,.rs-size input[type=range]::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;background:var(--tg-thumb);box-shadow:0 0 0 2px var(--tg-ring),0 1px 3px rgba(0,0,0,.3)}
 .cfgrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;font-size:.875rem;cursor:pointer}
 .cfgrow:hover{background:var(--hover-ink)}.cfgrow span{flex:1}
 .sw{flex:none;position:relative;width:28px;height:16px;border:0;border-radius:999px;background:var(--tg-off);cursor:pointer;padding:0;transition:background 200ms}
@@ -746,6 +746,41 @@ body{background:var(--l0);font-family:var(--font)}
  .fab{width:48px!important;height:48px!important;border-radius:12px!important;background:var(--fg)!important;color:var(--l0)!important}
  .masonry{columns:3!important;column-gap:16px!important}.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}}
 @media (max-width:39.99em){.main{padding:16px 16px 104px!important}.top .search{height:44px!important}.ask-top span{display:none}.masonry{columns:2!important;column-gap:12px!important}.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}.tools .cfgbtn{display:none}}
+
+/* Reader: themes are fixed palettes, independent of the app theme (default follows it) */
+.reader{--rw:68ch}.reader[data-width="narrow"]{--rw:60ch}.reader[data-width="wide"]{--rw:84ch}
+.reader[data-lh="compact"] .article{line-height:1.45}.reader[data-lh="relaxed"] .article{line-height:1.8}
+.reader[data-rt="light"]{--r-bg:#FFFFFF;--r-fg:#1C1C1F;--r-muted:#6B6B70}
+.reader[data-rt="sepia"]{--r-bg:#F6EFE2;--r-fg:#3B3024;--r-muted:#6E5F4C}
+.reader[data-rt="dark"]{--r-bg:#212125;--r-fg:#ECECEE;--r-muted:#A3A3AA}
+.reader[data-rt="black"]{--r-bg:#000000;--r-fg:#D4D4D8;--r-muted:#8A8B90}
+.reader[data-rt]{background:var(--r-bg);color:var(--r-fg)}
+.reader[data-rt] .r-site,.reader[data-rt] .r-meta,.reader[data-rt] .r-sum{color:var(--r-muted)}
+.view:has(>.reader[data-rt]){background:transparent}
+/* Reading settings */
+#pop.rs-pop:not(.sheet){width:320px;max-width:calc(100vw - 32px)}
+.rs-pop .pgroup .seg{display:flex}.rs-pop .pgroup .seg button{flex:1;height:32px}
+.rs-themes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.rs-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;border:0;background:none;color:var(--muted);font-size:var(--t-meta);cursor:pointer}
+.rs-tile i{display:grid;place-items:center;width:100%;height:44px;border-radius:var(--r-sm);font:600 1rem/1 var(--font);font-style:normal;box-shadow:inset 0 0 0 1px var(--line-strong)}
+.rs-tile[aria-checked="true"]{color:var(--fg);font-weight:500}.rs-tile[aria-checked="true"] i{box-shadow:0 0 0 2px var(--l1),0 0 0 4px var(--fg)}
+.rs-tile:focus-visible{outline:none}.rs-tile:focus-visible i{outline:2px solid var(--fg);outline-offset:4px}
+.rs-size{display:flex;align-items:center;gap:8px}.rs-size input{flex:1}
+.rs-size .ib{flex:none}.rs-size .a-s{font:500 .75rem/1 var(--font)}.rs-size .a-l{font:500 1.25rem/1 var(--font)}
+.rs-val{min-width:24px;text-align:right;font-size:var(--t-sec);font-variant-numeric:tabular-nums;color:var(--muted)}
+.rs-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;padding:12px 8px 4px;border-top:1px solid var(--line)}
+.rs-foot span{font-size:var(--t-meta);color:var(--muted)}
+/* Full screen link page */
+.lp-pos{font-size:var(--t-meta);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;display:none}
+body.link-full .lp-pos{display:inline}
+body.link-full .side,body.link-full .top,body.link-full .tabbar,body.link-full .mini{display:none!important}
+body.link-full .lp{position:fixed;inset:0;z-index:90;border-radius:0;min-height:0;border:0}
+body.link-full .split.on{grid-template-columns:minmax(0,1fr)}
+body.link-full .lp-body{flex:1;min-height:0}
+body.link-full .view{height:100%}
+@media (max-width:64em){[data-full]{display:none!important}}
+/* Phone link head: two deliberate rows. Row 1: title, more, close. Row 2: Site/Reader, Aa, Open (icon), then previous/next. Star and details live in the more menu. */
+@media (max-width:40em){.lp-head{flex-wrap:wrap;row-gap:8px}.lp-tools{display:contents}.lp-title{order:1;flex:1 1 0;min-width:calc(100% - 88px)}.lp-title b,.lp-title span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lp-head [data-menu]{order:2}.lp-head [data-close]{order:3}.lp-head .seg{order:4}.lp-head [data-pop="reading"]{order:5}.lp-head [data-ext]{order:6;padding:0;width:32px;justify-content:center}.lp-head [data-ext] .lbl-open{display:none}.lp-head [data-step="-1"]{order:8;margin-left:auto}.lp-head [data-step="1"]{order:9}.lp-head [data-fav],.lp-head [data-details],.lp-head .lp-sep,.lp-head .lp-pos{display:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -776,7 +811,7 @@ body{background:var(--l0);font-family:var(--font)}
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
 <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
 <symbol id="i-text" viewBox="0 0 24 24"><path d="M4 18 9 6l5 12M6 14h6M15 18l3-7 3 7M16 16h4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-<symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M15 4v16" stroke="currentColor" stroke-width="1.75"/></symbol>
+<symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-collapse" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M15 4v16" stroke="currentColor" stroke-width="1.75"/></symbol>
 <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/></symbol>
 <symbol id="i-move" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM10 13h6M13 10l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><circle cx="16" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="10" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
@@ -838,7 +873,7 @@ body{background:var(--l0);font-family:var(--font)}
 <div class="proto l2" role="group" aria-label="Prototype screens" data-desk-host><span>Prototype</span>
   <select id="screen" aria-label="Screen">
     <option value="today">Today (home)</option><option value="today-done">Today: all caught up</option><option value="library">Library</option><option value="select">Library: selecting</option><option value="search">Search: results in the feed</option><option value="search-q">Search: a question</option><option value="search-none">Search: nothing found</option>
-    <option value="reader">Link page, Reader</option>
+    <option value="reader">Link page, Reader</option><option value="reader-full">Link page, Reader full screen</option><option value="site-full">Link page, Site full screen</option>
     <option value="site">Link page, Site</option>
     <option value="blocked">Site can't be shown</option>
     <option value="empty">Empty library</option>
@@ -892,8 +927,8 @@ body{background:var(--l0);font-family:var(--font)}
   const CHIPS=[['all','All',17],['videos','Videos',6],['repos','Repositories',4],['shops','Shops',4],['articles','Articles',3]];
   const VIEWS=[['masonry','Masonry','i-masonry'],['grid','Grid','i-grid'],['list','List','i-list'],['headlines','Headlines','i-lines']];
   const SHOW_DEF={image:true,desc:false,note:true,tags:true,site:true,date:true,folder:true};const CW=[130,160,190,220,260,300];
-  const S={step:3,size:'m',sel:new Set(),select:false,done:new Set(),show:Object.assign({},SHOW_DEF),scope:'all',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:false,empty:false,reader:{size:'m',font:'sans',width:'narrow',tone:'app'}};
-  try{const v=JSON.parse(localStorage.getItem('sm-lib')||'{}');if(v.view)S.view=v.view;if(v.size)S.size=v.size;if(typeof v.step==='number')S.step=v.step;if(v.reader)S.reader=Object.assign(S.reader,v.reader);if(v.show)S.show=Object.assign(S.show,v.show)}catch(e){}
+  const S={step:3,size:'m',sel:new Set(),select:false,done:new Set(),show:Object.assign({},SHOW_DEF),scope:'all',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:false,empty:false,reader:{size:18,font:'sans',lh:'normal',width:'normal',theme:''},full:false};
+  try{const v=JSON.parse(localStorage.getItem('sm-lib')||'{}');if(v.view)S.view=v.view;if(v.size)S.size=v.size;if(typeof v.step==='number')S.step=v.step;if(v.reader&&typeof v.reader.size==='number')S.reader=Object.assign(S.reader,v.reader);if(v.show)S.show=Object.assign(S.show,v.show)}catch(e){}
   const save=()=>{try{localStorage.setItem('sm-lib',JSON.stringify({step:S.step,size:S.size,view:S.view,reader:S.reader,show:S.show}))}catch(e){}};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const ic=(id,n)=>`<svg width="${n}" height="${n}" aria-hidden="true"><use href="#${id}"/></svg>`;
@@ -1005,9 +1040,10 @@ body{background:var(--l0);font-family:var(--font)}
     const bg=l.kind==='type'?l.bg:'#ffffff',fg=l.kind==='type'?l.fg:'#1d1d1f';
     return `<div class="site" style="background:#fff;color:#1d1d1f"><div class="site-bar" style="background:${bg};color:${fg}">${esc(l.site||l.domain)}</div><div class="site-body"><h2>${esc(l.title)}</h2><p style="color:#555">${esc(l.summary||'The page as the site shows it, with its own fonts and colours.')}</p>${l.kind==='type'||l.kind==='none'?'':`<div class="site-media">${art(l)}</div>`}<p>This is how ${esc(l.domain)} shows the page inside Shelfmark. Reader turns article pages into clean text when the site has one.</p></div></div>`;
   }
+  function appTheme(){const t=document.documentElement.getAttribute('data-theme');return (t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}
   function readerView(l){
     const r=S.reader;
-    if(!l.reader){return `<div class="reader" data-size="${r.size}" data-font="${r.font}" data-width="${r.width}" data-tone="${r.tone}"><article class="article">
+    if(!l.reader){return `<div class="reader" style="--rs:${r.size/16}rem" data-font="${r.font}" data-width="${r.width}" data-lh="${r.lh}" data-rt="${r.theme||appTheme()}"><article class="article">
       <div class="notice" style="margin-bottom:16px">${ic('i-text',16)}${l.kind==='video'?'A video has no text to read. Reader shows its picture, description and your note; play it on the site.':'This page has no article text. Reader shows the picture, what the page says about itself and your note.'}</div>
       <div class="r-site">${favi(l)}${esc(l.site||l.domain)}</div><h2 class="r-title">${esc(l.title)}</h2>
       ${l.price?`<div class="r-meta">${esc(l.price)}</div>`:''}
@@ -1017,7 +1053,7 @@ body{background:var(--l0);font-family:var(--font)}
       <p><a class="btn secondary" href="#" data-ext>${ic('i-ext',16)}Open ${esc(l.domain)}</a></p></article></div>`}
     const a=ARTICLES[l.reader];
     const body=a.blocks.map(([t,v])=>t==='p'?`<p>${esc(v)}</p>`:t==='h'?`<h3>${esc(v)}</h3>`:t==='q'?`<blockquote>${esc(v)}</blockquote>`:t==='ul'?`<ul>${v.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<figure><div>${art({kind:'type',bg:'#e9e6dc'})}</div><figcaption>${esc(v)}</figcaption></figure>`).join('');
-    return `<div class="reader" data-size="${r.size}" data-font="${r.font}" data-width="${r.width}" data-tone="${r.tone}"><div class="progress" aria-hidden="true"><i id="prog"></i></div>
+    return `<div class="reader" style="--rs:${r.size/16}rem" data-font="${r.font}" data-width="${r.width}" data-lh="${r.lh}" data-rt="${r.theme||appTheme()}"><div class="progress" aria-hidden="true"><i id="prog"></i></div>
       ${l.blocked?`<div class="notice">${ic('i-text',16)}Showing Reader: ${esc(l.domain)} doesn't allow showing the page here.</div>`:''}
       <article class="article"><div class="r-site">${favi(l)}${esc(l.site||l.domain)}</div><h2 class="r-title">${esc(l.title)}</h2>
       <div class="r-meta">${esc(a.author)} · ${esc(a.date)} · ${a.min} min read</div>
@@ -1046,15 +1082,15 @@ body{background:var(--l0);font-family:var(--font)}
         <div class="lp-head">
           <button class="ib" type="button" data-step="-1" aria-label="Previous link" title="Previous (↑)" ${idx<=0?'disabled':''}>${ic('i-up',16)}</button>
           <button class="ib" type="button" data-step="1" aria-label="Next link" title="Next (↓)" style="transform:rotate(180deg)" ${idx>=items.length-1?'disabled':''}>${ic('i-up',16)}</button>
-          <div class="lp-title"><b>${esc(l.title)}</b><span>${favi(l)}${esc(l.domain)}</span></div>
+          <div class="lp-title"><b>${esc(l.title)}</b><span>${favi(l)}${esc(l.domain)}</span></div><span class="lp-pos">${idx+1} of ${items.length}</span>
           <div class="lp-tools">
             ${true?`<div class="seg" role="radiogroup" aria-label="Show as"><button type="button" role="radio" aria-checked="${S.mode==='site'}" data-mode="site">Site</button><button type="button" role="radio" aria-checked="${S.mode==='reader'}" data-mode="reader">Reader</button></div>`:''}
             ${S.mode==='reader'&&canRead?`<button class="ib" type="button" data-pop="reading" aria-haspopup="dialog" aria-label="Reading settings" title="Reading settings">${ic('i-text',16)}</button>`:''}
-            <a class="btn sm secondary" href="#" data-ext>${ic('i-ext',16)}Open</a>
+            <a class="btn sm secondary" href="#" data-ext aria-label="Open on the site">${ic('i-ext',16)}<span class="lbl-open">Open</span></a>
             <button class="ib" type="button" data-fav="${l.id}" aria-pressed="${!!l.fav}" aria-label="${l.fav?'Remove from favorites':'Add to favorites'}" title="Favorite" style="${l.fav?'color:var(--star)':''}">${ic(l.fav?'i-star-f':'i-star',16)}</button>
             <button class="ib" type="button" data-details aria-pressed="${S.details}" aria-label="Details" title="Details">${ic('i-panel',16)}</button>
             <button class="ib" type="button" data-menu="${l.id}" aria-haspopup="menu" aria-label="More actions">${ic('i-more',16)}</button>
-            <span class="lp-sep" aria-hidden="true"></span>
+            <button class="ib" type="button" data-full aria-pressed="${S.full}" aria-label="${S.full?'Exit full screen':'Full screen'}" title="${S.full?'Exit full screen (F)':'Full screen (F)'}">${ic(S.full?'i-collapse':'i-expand',16)}</button><span class="lp-sep" aria-hidden="true"></span>
             <button class="ib" type="button" data-close aria-label="Close" title="Close (Esc)">${ic('i-x',16)}</button>
           </div>
         </div>
@@ -1065,13 +1101,13 @@ body{background:var(--l0);font-family:var(--font)}
   function render(){
     const items=visible();
     const page=document.getElementById('page');
-    document.body.classList.toggle('link-open',!!S.link);
+    document.body.classList.toggle('link-open',!!S.link);document.body.classList.toggle('link-full',!!S.link&&S.full);
     page.innerHTML=S.link&&!S.empty?linkHTML(items):libraryHTML(items);
     document.querySelectorAll('.side [data-scope],.tabbar [data-scope]').forEach(b=>{if(b.dataset.scope===S.scope&&!S.empty)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     const v=document.getElementById('view');
     if(v){v.addEventListener('scroll',()=>{const p=document.getElementById('prog');if(p){const m=v.scrollHeight-v.clientHeight;p.style.width=(m>0?v.scrollTop/m*100:0)+'%'}})}
     const sel=document.getElementById('screen');
-    sel.value=S.empty?'empty':S.q&&!S.link?(/\?$/.test(S.q)?'search-q':visible().length?'search':'search-none'):!S.link?(S.scope==='today'?(S.done.has('b1')&&S.done.has('b2')&&S.done.has('b8')?'today-done':'today'):S.select?'select':'library'):byId(S.link).blocked?'blocked':S.mode==='reader'?'reader':'site';
+    sel.value=S.empty?'empty':S.q&&!S.link?(/\?$/.test(S.q)?'search-q':visible().length?'search':'search-none'):!S.link?(S.scope==='today'?(S.done.has('b1')&&S.done.has('b2')&&S.done.has('b8')?'today-done':'today'):S.select?'select':'library'):byId(S.link).blocked?'blocked':(S.mode==='reader'?'reader':'site')+(S.full&&(S.mode==='reader'||!byId(S.link).blocked)?(S.mode==='reader'?'-full':'-full'):'');
   }
 
   const SUB={Learning:[['Courses',2],['Talks',1]],Shopping:[['Shoes',2]]};
@@ -1100,7 +1136,7 @@ body{background:var(--l0);font-family:var(--font)}
       pop.style.left='';pop.style.top='';return true}
     if(sc)sc.hidden=true;pop.style.background='';return false}
   function openPop(kind,trigger,id){
-    let h='';const l=id?byId(id):S.link?byId(S.link):null;pop.setAttribute('role','menu');
+    let h='';const l=id?byId(id):S.link?byId(S.link):null;pop.setAttribute('role','menu');pop.classList.remove('rs-pop');
     if(kind==='menu')h=`<button class="mi" type="button" data-open="${l.id}">${ic('i-eye',16)}Open here<span class="kbd">Space</span></button><a class="mi" href="#" data-ext>${ic('i-ext',16)}Open in browser</a><div class="msep"></div>
       <button class="mi" type="button" data-rename="${l.id}">${ic('i-edit',16)}Rename…<span class="kbd">F2</span></button><button class="mi" type="button" data-fav="${l.id}">${ic('i-star',16)}${l.fav?'Remove from favorites':'Add to favorites'}</button><button class="mi" type="button">${ic('i-pin',16)}${l.pinned?'Unpin from top of folder':'Pin to top of folder'}</button><button class="mi" type="button">${ic('i-pin',16)}Pin to sidebar</button>
       <button class="mi" type="button" data-pop="move" data-id="${l.id}">${ic('i-move',16)}Move to folder…<span class="kbd">M</span></button><button class="mi" type="button" data-pop="remind" data-id="${l.id}">${ic('i-bell',16)}Remind me…<span class="kbd">R</span></button><button class="mi" type="button" data-copy>${ic('i-copy',16)}Copy link</button><button class="mi" type="button">${ic('i-rule',16)}Rule for ${esc(l.domain)}…</button>
@@ -1117,8 +1153,15 @@ body{background:var(--l0);font-family:var(--font)}
       <div class="pgroup" style="flex-direction:row;justify-content:space-between;align-items:center"><span style="font-size:var(--t-sec)">Only favorites</span><button class="chip" type="button" aria-pressed="false" style="height:28px">Off</button></div>`}
     else if(kind==='move')h=`<div class="mh">Move to</div>`+FOLDERS.map(([n,,col])=>`<button class="mi" type="button" data-moved="${n}"><span class="tile" style="background:var(--fb-${col});color:var(--fc-${col})">${ic('i-folder',14)}</span>${n}</button>`).join('')+`<div class="msep"></div><button class="mi" type="button">${ic('i-plus',16)}New folder</button>`;
     else if(kind==='remind')h=`<div class="mh">Remind me</div>`+[['Later today','18:00'],['Tomorrow','9:00'],['This weekend','Sat 9:00'],['Next week','Mon 9:00']].map(([a,b])=>`<button class="mi" type="button" data-remind="${a}">${a}<span class="muted" style="margin-left:auto;font-size:var(--t-meta);font-weight:400">${b}</span></button>`).join('')+`<div class="msep"></div><button class="mi" type="button">Pick a date…</button>`;
-    else if(kind==='reading'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Reading settings');const r=S.reader;const g=(k,label,opts)=>`<div class="pgroup"><span class="lbl">${label}</span><div class="seg" role="radiogroup" aria-label="${label}">${opts.map(([v,t])=>`<button type="button" role="radio" aria-checked="${r[k]===v}" data-rs="${k}:${v}">${t}</button>`).join('')}</div></div>`;
-      h=g('size','Text size',[['s','S'],['m','M'],['l','L']])+g('font','Font',[['sans','Sans'],['serif','Serif'],['readable','Readable']])+g('width','Line width',[['narrow','Narrow'],['wide','Wide']])+g('tone','Page',[['app','Like the app'],['sepia','Sepia']]);}
+    else if(kind==='reading'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Reading settings');pop.classList.add('rs-pop');const r=S.reader;const cur=r.theme||appTheme();
+      const g=(k,label,opts)=>`<div class="pgroup"><span class="lbl">${label}</span><div class="seg" role="radiogroup" aria-label="${label}">${opts.map(([v,t,st])=>`<button type="button" role="radio" aria-checked="${r[k]===v}" data-rs="${k}:${v}"${st?` style="${st}"`:''}>${t}</button>`).join('')}</div></div>`;
+      const TH=[['light','Light','#FFFFFF','#1C1C1F'],['sepia','Sepia','#F6EFE2','#3B3024'],['dark','Dark','#212125','#ECECEE'],['black','Black','#000000','#D4D4D8']];
+      h=`<div class="pgroup"><span class="lbl">Theme</span><div class="rs-themes" role="radiogroup" aria-label="Theme">${TH.map(([v,t,bg,fg])=>`<button class="rs-tile" type="button" role="radio" aria-checked="${cur===v}" data-rs="theme:${v}"><i style="background:${bg};color:${fg}" aria-hidden="true">Aa</i>${t}</button>`).join('')}</div></div>`
+       +g('font','Font',[['sans','Sans','font-family:var(--font)'],['serif','Serif','font-family:var(--serif)'],['readable','Readable','font-family:var(--readable)']])
+       +`<div class="pgroup"><span class="lbl" id="rs-size-l">Text size</span><div class="rs-size"><button class="ib" type="button" data-rsz="-1" aria-label="Smaller text"><span class="a-s">A</span></button><input type="range" min="14" max="24" step="1" value="${r.size}" data-rs-size aria-labelledby="rs-size-l"><button class="ib" type="button" data-rsz="1" aria-label="Larger text"><span class="a-l">A</span></button><span class="rs-val">${r.size}</span></div></div>`
+       +g('lh','Line spacing',[['compact','Compact'],['normal','Normal'],['relaxed','Relaxed']])
+       +g('width','Line width',[['narrow','Narrow'],['normal','Normal'],['wide','Wide']])
+       +`<div class="rs-foot"><span>Saved on this device</span><button class="btn sm ghost" type="button" data-rs-reset>Reset</button></div>`;}
     else if(kind==='account')h=`<button class="mi" type="button">${ic('i-user',16)}Settings</button><div class="mh">Theme</div>${[['system','System'],['light','Light'],['dark','Dark']].map(([v,t])=>`<button class="mi" type="button" role="menuitemradio" data-theme-set="${v}" aria-checked="${(root.getAttribute('data-theme')||'system')===v}">${t}</button>`).join('')}<div class="msep"></div><button class="mi" type="button">Keyboard shortcuts<span class="kbd">?</span></button><button class="mi" type="button">Help and feedback</button><button class="mi" type="button">What's new</button><div class="msep"></div><button class="mi" type="button">Sign out</button>`;
     pop.innerHTML=h;pop.hidden=false;if(popFor&&popFor!==trigger)popFor.removeAttribute('aria-expanded');popFor=trigger;if(trigger&&trigger.setAttribute)trigger.setAttribute('aria-expanded','true');
     if(sheetize({menu:l&&l.title,view:'View',cfg:'View',help:'Data and help',sort:'Sort by',more:'More',filter:'Filter',reading:'Reading settings',account:'Account'}[kind])){const f=pop.querySelector('button,a');if(f)f.focus({preventScroll:true});return}
@@ -1128,6 +1171,8 @@ body{background:var(--l0);font-family:var(--font)}
     pop.style.left=x+'px';pop.style.top=y+'px';
     const f=pop.querySelector('button,a');if(f)f.focus();
   }
+  function setSize(v){v=Math.max(14,Math.min(24,v));S.reader.size=v;save();const a=document.querySelector('.reader');if(a)a.style.setProperty('--rs',v/16+'rem');const i=pop.querySelector('[data-rs-size]');if(i)i.value=v;const o=pop.querySelector('.rs-val');if(o)o.textContent=v}
+  pop.addEventListener('input',e=>{if(e.target.matches('[data-rs-size]'))setSize(+e.target.value)});
   function closePop(back){const sc=document.getElementById('popscrim');if(sc)sc.hidden=true;if(popFor&&popFor.removeAttribute)popFor.removeAttribute('aria-expanded');if(!pop.hidden){pop.hidden=true;if(back&&popFor)popFor.focus();popFor=null}}
   const root=document.documentElement;
   let tt;function toast(msg,undo){const t=document.getElementById('toast');t.innerHTML=`<span>${esc(msg)}</span>${undo?'<button class="btn sm" type="button" data-undo>Undo</button>':''}`;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,4000)}
@@ -1150,9 +1195,12 @@ body{background:var(--l0);font-family:var(--font)}
     const c=t.closest('[data-chip]');if(c){S.chip=c.dataset.chip;render();return}
     const sc=t.closest('[data-scope]');if(sc){S.scope=sc.dataset.scope;S.link=null;S.empty=false;S.select=false;S.sel.clear();render();document.querySelectorAll('#page .masonry,#page .grid,#page .panel,#page .t-back').forEach(g=>{[...g.children].forEach((c,i)=>c.style.setProperty('--i',i));g.classList.add('mo-stagger');setTimeout(()=>g.classList.remove('mo-stagger'),500)});return}
     const md=t.closest('[data-mode]');if(md){S.mode=md.dataset.mode;render();return}
-    if(t.closest('[data-close]')){(window.__moVT||(f=>f()))(()=>{S.link=null;render()});if(fromSearch&&phoneQ.matches){fromSearch=false;openSearch()}return}
+    if(t.closest('[data-close]')){(window.__moVT||(f=>f()))(()=>{S.link=null;S.full=false;render()});if(fromSearch&&phoneQ.matches){fromSearch=false;openSearch()}return}
     const st=t.closest('[data-step]');if(st){step(+st.dataset.step);return}
     if(t.closest('[data-details]')){S.details=!S.details;render();return}
+    if(t.closest('[data-full]')){S.full=!S.full;render();return}
+    if(t.closest('[data-rs-reset]')){S.reader={size:18,font:'sans',lh:'normal',width:'normal',theme:''};save();render();const nt=document.querySelector('[data-pop="reading"]');if(nt)openPop('reading',nt);return}
+    const rz=t.closest('[data-rsz]');if(rz){setSize(S.reader.size+ +rz.dataset.rsz);return}
     const rs=t.closest('[data-rs]');if(rs){const [k,val]=rs.dataset.rs.split(':');S.reader[k]=val;save();const trig=popFor;render();const nt=document.querySelector('[data-pop="reading"]');if(nt)openPop('reading',nt);return}
     const th=t.closest('[data-theme-set]');if(th){const v2=th.dataset.themeSet;if(v2==='system')root.removeAttribute('data-theme');else root.setAttribute('data-theme',v2);closePop(true);return}
     const mv=t.closest('[data-moved]');if(mv){toast('Moved to '+mv.dataset.moved,true);closePop();return}
@@ -1175,7 +1223,8 @@ body{background:var(--l0);font-family:var(--font)}
     const inField=e.target.closest('input,textarea');
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(phoneQ.matches)openSearch();else{const q=document.getElementById('q');q.focus();q.select()}return}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='j'){e.preventDefault();location.href='ask.html';return}
-    if(e.key==='Escape'){if(!pop.hidden){closePop(true);return}if(S.link){S.link=null;render();return}}
+    if(e.key==='Escape'){if(!pop.hidden){closePop(true);return}if(S.link&&S.full){S.full=false;render();return}if(S.link){S.link=null;render();return}}
+    if(S.link&&(e.key==='f'||e.key==='F')&&!e.metaKey&&!e.ctrlKey&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&matchMedia('(min-width:64.0625em)').matches){S.full=!S.full;render();return}
     if(inField)return;
     if(e.key.toLowerCase()==='x'&&!S.link&&S.scope!=='today'){S.select=!S.select;if(!S.select)S.sel.clear();render();return}
     if(e.key==='Escape'&&S.select){S.select=false;S.sel.clear();render();return}
@@ -1234,7 +1283,7 @@ body{background:var(--l0);font-family:var(--font)}
     if(e.target.closest('[data-fs-ask]')){toast('Ask answers here, with sources (see Search and Ask)');}});
   document.getElementById('tab-search').addEventListener('click',()=>openSearch());
   document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='g2'){location.href='save-revisit.html';return}if(v.startsWith('go:')){location.href=v.slice(3);return}S.empty=v==='empty';S.link=null;S.q={search:'angular','search-q':'which jackets did I save?','search-none':'kombucha'}[v]||'';document.getElementById('q').value=S.q;document.getElementById('qx').hidden=!S.q;S.select=v==='select';S.sel=new Set(v==='select'?[1,4,7]:[]);S.scope=(v==='today'||v==='today-done')?'today':'all';S.done=new Set(v==='today-done'?['b2','b8','b1','gem']:[]);
-    if(v==='reader'){S.link=16;S.mode='reader'}else if(v==='site'){S.link=1;S.mode='site'}else if(v==='blocked'){S.link=15;S.mode='site'}render();window.scrollTo(0,0)});
+    S.full=v.endsWith('-full');if(v==='reader'||v==='reader-full'){S.link=16;S.mode='reader'}else if(v==='site-full'){S.link=1;S.mode='site'}else if(v==='site'){S.link=1;S.mode='site'}else if(v==='blocked'){S.link=15;S.mode='site'}render();window.scrollTo(0,0)});
   window.addEventListener('resize',()=>closePop());
   let lp=null;document.addEventListener('touchstart',e=>{const c=e.target.closest('.card');if(!c||S.select||e.target.closest('.acts'))return;lp=setTimeout(()=>{S.select=true;S.sel.add(+c.dataset.id);render();if(navigator.vibrate)navigator.vibrate(10);window.__justDragged=true;setTimeout(()=>window.__justDragged=false,400)},500)},{passive:true});
   ['touchend','touchmove','touchcancel'].forEach(n=>document.addEventListener(n,()=>{clearTimeout(lp)},{passive:true}));
