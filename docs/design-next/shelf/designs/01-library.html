@@ -771,8 +771,10 @@ body{background:var(--l0);font-family:var(--font)}
 .rs-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;padding:12px 8px 4px;border-top:1px solid var(--line)}
 .rs-foot span{font-size:var(--t-meta);color:var(--muted)}
 /* Window controls: full screen and close sit apart from the link actions, after the separator */
-.lp-win{color:var(--fg)}
-.lp-win[aria-pressed="true"]{background:var(--sel)}
+.lp-head .lp-win[data-full]{color:var(--fg);background:var(--hover);border-radius:4px}
+.lp-head .lp-win[data-full]:hover{background:var(--sel)}
+.lp-head .lp-win[data-full][aria-pressed="true"]{background:var(--sel)}
+.lp-head .seg{border-radius:6px;padding:2px}.lp-head .seg button{border-radius:4px;height:28px}
 /* Full screen link page */
 .lp-pos{font-size:var(--t-meta);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;display:none}
 body.link-full .lp-pos{display:inline}

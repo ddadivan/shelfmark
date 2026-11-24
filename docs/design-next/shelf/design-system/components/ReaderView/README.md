@@ -18,6 +18,8 @@ Segmented controls fill the width with equal segments.
 - Works for Site and Reader, so people can run through their links or read one without distraction. Full screen is remembered while stepping through links and ends when the Link page closes.
 - Phones: the Link page is already full screen, so there is no button.
 
+**Head controls:** the full screen button has a `surface-hover` fill and `radius-xs` (4px), hover `surface-pressed`; the Site / Reader switch is a 6px track with 2px padding and 4px segments (28px tall). Both only in the Link page head.
+
 **Phone head:** two rows. Row 1: title and site, ⋯, close. Row 2: Site / Reader, Aa, Open (icon), then previous / next on the right. Star and details move into ⋯.
 
 ## Rules
