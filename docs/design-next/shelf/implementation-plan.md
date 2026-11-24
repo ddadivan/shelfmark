@@ -168,3 +168,8 @@ From `04-organise.html`, `08-select-move.html` and `13-views.html`. Screens: `sc
 - Block 3: nothing (search uses `GET /api/links?q=`, `AI_API.searchMeaning` and the folders, tags and saved views already loaded; recent searches live on the device).
 - Block 5: **Notifications** (`NOTIFICATIONS_API`, contracts `libs/shared/contracts/src/notifications/`): `apps/api` cannot deliver notifications (Web Push needs VAPID keys, a subscription per device and a sender job; the weekly email needs a mail sender). `features/notifications/http/http-notifications.api.ts` answers `available: false` without a request, so production shows only the device part (permission, test, blocked and iPhone steps); `features/notifications/mock/mock-notifications.api.ts` keeps what to send, quiet hours and one other device in `localStorage` `sm-mock-notifications`. Marked `MOCK (Shelf)` in code.
 - Block 4: nothing (organise uses the existing folders, tags, rules, trash, links batch, saved views and AI tidy / view draft endpoints).
+
+## For the author at the end (manual setup, not done by agents)
+
+- **Web Push keys in Vercel:** `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (e.g. `mailto:` of the project). Without them the API answers "not configured" for push notifications and sends nothing.
+- **Weekly email:** postponed by the author (Nov 24, 2026): the screen stays as designed with mocked data; delivery needs a mail provider and is not built.
