@@ -77,7 +77,6 @@ describe('AI settings API', () => {
         meaningSearch: true,
         ask: true,
         askHistory: true,
-        askHistory: true,
       },
       introSeen: false,
       announcementSeen: false,
