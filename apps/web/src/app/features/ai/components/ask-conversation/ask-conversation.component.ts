@@ -139,12 +139,39 @@ export class AskConversationComponent {
     effect(() => {
       const next = this.store.entries().length;
       if (next > count) {
+        this.userScrolled = false;
         afterNextRender(() => this.revealLatest(), { injector: this.injector });
       }
       count = next;
     });
-    inject(DestroyRef).onDestroy(() => this.inbox.clear());
+    // When a question is sent its answer is still empty, so the chat may not scroll far enough to
+    // bring the question to the top (a short chat, a tall window). Once the answer is in, reveal it
+    // again, unless the person scrolled meanwhile.
+    let streaming = this.store.streaming();
+    effect(() => {
+      const now = this.store.streaming();
+      if (streaming && !now && !this.userScrolled) {
+        afterNextRender(() => this.revealLatest(), { injector: this.injector });
+      }
+      streaming = now;
+    });
+    const scrolled = (): void => {
+      this.userScrolled = true;
+    };
+    const root = this.host.nativeElement.ownerDocument;
+    for (const type of ['wheel', 'touchmove', 'keydown']) {
+      root.addEventListener(type, scrolled, { passive: true });
+    }
+    inject(DestroyRef).onDestroy(() => {
+      this.inbox.clear();
+      for (const type of ['wheel', 'touchmove', 'keydown']) {
+        root.removeEventListener(type, scrolled);
+      }
+    });
   }
+
+  /** The person scrolled (or used the keyboard) since the newest question was sent. */
+  private userScrolled = false;
 
   /** Scrolls the newest question to the top of whatever scrolls the chat. */
   private revealLatest(): void {

@@ -43,7 +43,8 @@ export class AskComposerComponent {
   private readonly settings = inject(AiSettingsStore);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
-  private readonly field = viewChild.required(TextareaComponent);
+  /** The field; gone while the limit is reached (the composer steps aside). */
+  private readonly field = viewChild(TextareaComponent);
   /** The composer had focus when the streaming question was sent. */
   private readonly refocus = signal(false);
 
@@ -69,7 +70,11 @@ export class AskComposerComponent {
       }
       this.refocus.set(false);
       // After the render that enables the field again: a disabled field cannot take focus.
-      afterNextRender(() => this.field().focus(), { injector: this.injector });
+      // The answer may have reached the limit, which removes the field.
+      // Without scrolling: the chat's own reveal of the answer must not be cut short.
+      afterNextRender(() => this.field()?.focus({ preventScroll: true }), {
+        injector: this.injector,
+      });
     });
   }
 

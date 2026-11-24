@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { seedSession } from './support/mock-session';
-import { isCompact } from './support/sidebar';
+import { isCompact, isPhone } from './support/sidebar';
 import { SEARCH_BUTTON, SEARCH_FIELD_NAME } from './support/search-button';
 import { expect, test } from './support/test';
 
@@ -34,9 +34,37 @@ async function openLibrary(page: Page): Promise<void> {
   await expect(page.locator('ui-card').first()).toBeVisible();
 }
 
-/** Opens the Ask drawer from the header Ask pill. */
-async function openPanel(page: Page): Promise<Locator> {
-  await page.getByRole('button', { name: 'Ask', exact: true }).click();
+/** The conversation column of the Ask page (the start or the chat, and the composer). */
+function askPage(page: Page): Locator {
+  return page.locator('.ask-page__main');
+}
+
+/**
+ * Opens the Ask page (`/ask`): the header Ask pill from 64em (Ask history: the page with the
+ * conversation list), the Ask tab of the mobile shell. Resolves with its conversation column.
+ */
+async function openAsk(page: Page): Promise<Locator> {
+  if (isCompact(page)) {
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Ask' }).click();
+  } else {
+    await page.getByRole('button', { name: 'Ask', exact: true }).click();
+  }
+  await expect(page).toHaveURL('/ask');
+  const main = askPage(page);
+  await expect(main.getByRole('textbox', { name: 'Ask about your links' })).toBeVisible();
+  return main;
+}
+
+/**
+ * Opens the Ask drawer the way it still opens from 64em: a question handed over from the search
+ * dialog's Ask row (Ctrl+K on a settings page). Resolves with the drawer.
+ */
+async function openDrawer(page: Page, question: string): Promise<Locator> {
+  await page.goto('/settings/account');
+  await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
+  await page.keyboard.press('Control+k');
+  await page.getByRole('combobox', { name: SEARCH_FIELD_NAME }).fill(question);
+  await page.getByRole('option', { name: `Ask your shelf: “${question}”` }).click();
   const panel = page.getByRole('dialog', { name: 'Ask your shelf' });
   await expect(panel).toBeVisible();
   return panel;
@@ -73,13 +101,13 @@ async function chat(scope: Locator): Promise<Locator> {
   await expect(scope).toContainText(/I found \d+ links? about ramen\./);
   await expect(scope.getByRole('textbox', { name: 'Ask about your links' })).toHaveAttribute(
     'placeholder',
-    'Ask something else…',
+    'Ask a follow-up',
   );
   return cards;
 }
 
 /** "The first one" reads the first card, a count, a deeper answer, then New conversation. */
-async function followUps(scope: Locator, cards: Locator): Promise<void> {
+async function followUps(page: Page, scope: Locator, cards: Locator): Promise<void> {
   const firstTitle =
     (await cards.getByRole('listitem').first().locator('[slot="title"]').textContent()) ?? '';
   await ask(scope, 'open the first one');
@@ -88,11 +116,15 @@ async function followUps(scope: Locator, cards: Locator): Promise<void> {
   await expect(scope.locator('app-ask-entry').last()).toContainText(/You have \d+ links\./);
   await ask(scope, 'compare my coats');
   await expect(scope.locator('app-ask-entry').last()).toContainText('Looking closer');
-  await scope.getByRole('button', { name: 'New conversation' }).click();
-  await expect(scope).toContainText('What do you want to find out?');
+  // The list's New conversation from 64em, the pushed head's in the mobile shell. The answer has
+  // finished and its turn is stored, so the leave guard does not ask.
+  await expect(scope.getByRole('textbox', { name: 'Ask about your links' })).toBeEnabled();
+  await page.getByRole('button', { name: 'New conversation' }).first().click();
+  await expect(page).toHaveURL('/ask');
+  await expect(scope.locator('app-ask-entry')).toHaveCount(0);
   await expect(scope.getByRole('textbox', { name: 'Ask about your links' })).toHaveAttribute(
     'placeholder',
-    'Ask about your links',
+    'Ask anything about your links',
   );
 }
 
@@ -101,15 +133,16 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
 
   test('streams a cited answer with sources; a citation highlights its row', async ({ page }) => {
     await openLibrary(page);
-    const panel = await openPanel(page);
-    await expect(panel).toContainText('What do you want to find out?');
+    const panel = await openAsk(page);
+    await expect(panel.getByRole('heading', { level: 2, name: 'Ask your shelf' })).toBeVisible();
     await expect(panel).toContainText('50 questions left today');
     await expect(panel.getByRole('button', { name: /^What did I save about / })).toBeVisible();
 
     await ask(panel, RAMEN);
     await expect(panel.getByRole('button', { name: 'Stop' })).toBeVisible();
     await expect(panel).toContainText('You saved a few ramen recipes.');
-    await expect(panel).toContainText(DISCLAIMER);
+    // The composer's fine line says who wrote the answer (Shelf composer).
+    await expect(panel).toContainText('Answers are written by AI and can be wrong');
     const sources = panel.getByRole('list', { name: 'Sources from your shelf' });
     await expect(sources.getByRole('listitem')).toHaveCount(3);
     await expect(sources).toContainText(/ramen/i);
@@ -129,7 +162,7 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
     page,
   }) => {
     await openLibrary(page);
-    const panel = await openPanel(page);
+    const panel = await openAsk(page);
     await ask(panel, 'What did I save about sourdough?');
     await expect(
       panel.getByRole('button', { name: /^Search “What did I save about sourdough\?”/ }),
@@ -146,15 +179,16 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
 
     await ask(panel, 'ramen ai-quota');
     await expect(panel).toContainText('You’ve used today’s questions.');
-    await expect(panel.getByRole('textbox', { name: 'Ask about your links' })).toBeDisabled();
+    // The composer steps aside while the limit is reached.
+    await expect(panel.getByRole('textbox', { name: 'Ask about your links' })).toHaveCount(0);
   });
 
-  test('chats in the panel: status pill, cards and their menu, follow-ups, a count, a deeper answer', async ({
+  test('chats on the desktop page: status pill, cards and their menu, follow-ups, a count, a deeper answer', async ({
     page,
   }) => {
-    test.skip((page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX, 'the panel is from 64em');
+    test.skip((page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX, 'the desktop page is from 64em');
     await openLibrary(page);
-    const panel = await openPanel(page);
+    const panel = await openAsk(page);
     const cards = await chat(panel);
     await cards
       .getByRole('button', { name: /^More actions for / })
@@ -163,7 +197,14 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
     await expect(page.getByRole('menuitem', { name: 'Remind me' })).toBeVisible();
     await expect(page.getByRole('menuitem', { name: 'Open side by side' })).toBeVisible();
     await page.keyboard.press('Escape');
-    await followUps(panel, cards);
+    // The stored conversation is the current row of the list.
+    await expect(page).toHaveURL(/\/ask\?c=/);
+    await expect(
+      page.getByRole('complementary', { name: 'Conversations' }).getByRole('link', {
+        name: 'find ramen',
+      }),
+    ).toHaveAttribute('aria-current', 'page');
+    await followUps(page, panel, cards);
   });
 
   test(
@@ -177,12 +218,17 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
         .getByRole('link', { name: 'Ask' })
         .click();
       await expect(page).toHaveURL('/ask');
-      const main = page.getByRole('main');
+      const main = askPage(page);
       const cards = await chat(main);
       const card = await cards.getByRole('listitem').first().boundingBox();
       const list = await cards.boundingBox();
-      expect(Math.round(card?.width ?? 0)).toBe(Math.round(list?.width ?? -1));
-      await followUps(main, cards);
+      if (isPhone(page)) {
+        expect(Math.round(card?.width ?? 0)).toBe(Math.round(list?.width ?? -1));
+      } else {
+        // Three across from 37.5rem of width (a tablet).
+        expect(card?.width ?? 0).toBeLessThan((list?.width ?? 0) / 2);
+      }
+      await followUps(page, main, cards);
     },
   );
 
@@ -191,17 +237,7 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await openLibrary(page);
-      const compact = (page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX;
-      let scope: Locator;
-      if (compact) {
-        await page
-          .getByRole('navigation', { name: 'Main' })
-          .getByRole('link', { name: 'Ask' })
-          .click();
-        scope = page.getByRole('main');
-      } else {
-        scope = await openPanel(page);
-      }
+      const scope = await openAsk(page);
       await ask(
         scope,
         'which of my links explain decorators and how they work in sourdough baking in detail',
@@ -210,11 +246,16 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
       await expect(
         scope.getByRole('button', { name: 'Search “which of my links explain decorators…”' }),
       ).toBeVisible();
-      const sideways = await scope.evaluate((root) =>
-        [root, ...root.querySelectorAll('*')]
+      // Nothing scrolls sideways: the document and every scroll area of the page (a box may reach
+      // into its parent's padding, like the pushed head's buttons, without scrolling anything).
+      const sideways = await page.getByRole('main').evaluate((root) =>
+        [root.ownerDocument.documentElement, root, ...root.querySelectorAll('*')]
           .filter((element) => {
             const style = element.ownerDocument.defaultView?.getComputedStyle(element);
-            return style?.overflowX !== 'hidden' && element.scrollWidth > element.clientWidth + 1;
+            const scrolls =
+              element === element.ownerDocument.documentElement ||
+              /auto|scroll/u.test(style?.overflowX ?? '');
+            return scrolls && element.scrollWidth > element.clientWidth + 1;
           })
           .map((element) => element.tagName.toLowerCase()),
       );
@@ -227,17 +268,7 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await openLibrary(page);
-      const compact = (page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX;
-      let scope: Locator;
-      if (compact) {
-        await page
-          .getByRole('navigation', { name: 'Main' })
-          .getByRole('link', { name: 'Ask' })
-          .click();
-        scope = page.getByRole('main');
-      } else {
-        scope = await openPanel(page);
-      }
+      const scope = await openAsk(page);
       const entries = scope.locator('app-ask-entry');
       for (const [index, question] of ['find ramen', 'find coats', 'find design'].entries()) {
         await ask(scope, question);
@@ -280,7 +311,7 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
   }) => {
     test.skip((page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX, 'from 64em only');
     await openLibrary(page);
-    let panel = await openPanel(page);
+    let panel = await openDrawer(page, 'ramen recipes');
     const handle = panel.getByRole('separator', { name: 'Resize the panel' });
     await expect(handle).toHaveAttribute('aria-valuenow', '440');
     await handle.focus();
@@ -289,10 +320,11 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
     await expect(handle).toHaveAttribute('aria-valuenow', '520');
     const box = await panel.boundingBox();
     expect(Math.round(box?.width ?? 0)).toBe(520);
-    await page.keyboard.press('Escape');
-    await page.reload();
-    await expect(page.locator('ui-card').first()).toBeVisible();
-    panel = await openPanel(page);
+    // Closed once the answer is stored (else the leave guard asks first).
+    await expect(panel.getByRole('textbox', { name: 'Ask about your links' })).toBeEnabled();
+    await panel.getByRole('button', { name: 'Close Ask your shelf' }).click();
+    await expect(panel).toHaveCount(0);
+    panel = await openDrawer(page, 'ramen recipes');
     await expect(panel.getByRole('separator', { name: 'Resize the panel' })).toHaveAttribute(
       'aria-valuenow',
       '520',
@@ -304,13 +336,18 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
     );
   });
 
-  test('asks from the end of the search results (⌘K row)', async ({ page }) => {
+  test('asks from the end of the search results (⌘K row); Open full page continues it on /ask', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'the mobile shell hands the question to the Ask page');
     await openLibrary(page);
-    const field = page.getByRole('combobox', { name: SEARCH_FIELD_NAME });
-    await field.fill('ramen recipes');
-    await page.getByRole('option', { name: 'Ask your shelf: “ramen recipes”' }).click();
-    const panel = page.getByRole('dialog', { name: 'Ask your shelf' });
+    const panel = await openDrawer(page, 'ramen recipes');
     await expect(panel).toContainText('You saved a few ramen recipes.');
+    // Stored once it finished (else the leave guard would ask first).
+    await expect(panel.getByRole('textbox', { name: 'Ask about your links' })).toBeEnabled();
+    await panel.getByRole('button', { name: 'Open full page' }).click();
+    await expect(page).toHaveURL(/\/ask\?c=/);
+    await expect(askPage(page)).toContainText('You saved a few ramen recipes.');
   });
 
   test(
@@ -324,19 +361,28 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
       await bar.getByRole('link', { name: 'Ask' }).click();
       await expect(page).toHaveURL('/ask');
       await expect(page.getByRole('heading', { level: 1, name: 'Ask your shelf' })).toBeVisible();
-      // Full screen: the tab bar hides while the page is open.
-      await expect(bar).toHaveCount(0);
+      // A tab page until something is asked: the tab bar stays, Ask is the current tab.
+      await expect(bar.getByRole('link', { name: 'Ask' })).toHaveAttribute('aria-current', 'page');
 
       // Enter asks (the due-reminder toast of the demo library may float over the send button).
       const field = page.getByRole('textbox', { name: 'Ask about your links' });
       await field.fill(RAMEN);
       await field.press('Enter');
-      await expect(page.getByRole('main')).toContainText('You saved a few ramen recipes.');
+      await expect(askPage(page)).toContainText('You saved a few ramen recipes.');
       await expect(page.getByRole('list', { name: 'Sources from your shelf' })).toBeVisible();
+      // Then the conversation is pushed: the question is the title, both bars hide.
+      await expect(page.getByRole('heading', { level: 1, name: RAMEN })).toBeVisible();
+      await expect(bar).toHaveCount(0);
 
-      await page.getByRole('link', { name: 'Back' }).click();
-      await expect(page).toHaveURL('/links');
+      // Back starts over on the tab page (the turn is stored: no leave guard).
+      await page.getByRole('button', { name: 'Back' }).click();
+      await expect(page).toHaveURL('/ask');
+      await expect(page.getByRole('heading', { level: 1, name: 'Ask your shelf' })).toBeVisible();
       await expect(bar).toBeVisible();
+
+      // The Conversations sheet lists it.
+      await page.getByRole('button', { name: 'Conversations' }).click();
+      await expect(page.getByRole('dialog').getByRole('link', { name: RAMEN })).toBeVisible();
     },
   );
 
@@ -366,8 +412,8 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
       await expect(dialog.getByRole('radio', { name: 'Ask' })).toHaveCount(0);
       await dialog.getByRole('combobox', { name: SEARCH_FIELD_NAME }).fill('ramen recipes');
       await dialog.getByRole('option', { name: 'Ask your shelf about this' }).click();
-      await expect(page).toHaveURL('/ask');
-      await expect(page.getByRole('main')).toContainText('You saved a few ramen recipes.');
+      await expect(page).toHaveURL(/\/ask/);
+      await expect(askPage(page)).toContainText('You saved a few ramen recipes.');
     },
   );
 });

@@ -118,4 +118,28 @@ describe('AskComposerComponent', () => {
     await fixture.whenStable();
     expect(document.activeElement).toBe(outside);
   });
+
+  it('steps aside without an error when the answer used the last question', async () => {
+    const { stream, fixture, field, type, pressEnter } = await setup();
+    field().focus();
+    await type('What did I save about ramen?');
+    await pressEnter();
+    field().blur();
+    const errors = vi.spyOn(console, 'error');
+    stream.next({
+      type: 'done',
+      sources: [],
+      notFound: true,
+      truncated: false,
+      allowance: { ...ALLOWANCE, questionsLeft: 0 },
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
+      conversationId: null,
+    });
+    stream.complete();
+    await fixture.whenStable();
+    expect((fixture.nativeElement as HTMLElement).querySelector('textarea')).toBeNull();
+    expect(errors).not.toHaveBeenCalled();
+    errors.mockRestore();
+  });
 });
