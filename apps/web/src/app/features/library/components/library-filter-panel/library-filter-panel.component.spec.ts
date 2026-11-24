@@ -72,7 +72,7 @@ describe('LibraryFilterPanelComponent', () => {
     document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
       el.remove();
     });
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
   });
 
   it('opens as the "Filter" dialog with Type, Saved, Tags and Only favorites', async () => {
