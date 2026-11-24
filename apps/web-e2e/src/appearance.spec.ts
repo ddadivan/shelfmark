@@ -123,6 +123,10 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
 
     // Cancel: the preview goes, nothing is kept.
     await swatch.click();
+    // The panel is open (it focuses the hex field) and has finished growing before anything is
+    // pressed: while it grows, scroll anchoring moves the page under the pointer.
+    await expect(hex).toBeFocused();
+    await settled(page);
     await hex.fill('#23716c');
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(hex).toHaveCount(0);
@@ -131,10 +135,19 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
 
     // Two own colors; the second is the accent, so the first can go.
     await swatch.click();
+    // The panel is open (it focuses the hex field) and has finished growing before anything is
+    // pressed: while it grows, scroll anchoring moves the page under the pointer.
+    await expect(hex).toBeFocused();
+    await settled(page);
     await hex.fill('#23716c');
     await add.click();
     await expect(hex).toHaveCount(0);
+    await expect(choice(page, 'Accent', '#23716c')).toBeChecked();
     await swatch.click();
+    // The panel is open (it focuses the hex field) and has finished growing before anything is
+    // pressed: while it grows, scroll anchoring moves the page under the pointer.
+    await expect(hex).toBeFocused();
+    await settled(page);
     await hex.fill('#1d4f91');
     await add.click();
     await expect(choice(page, 'Accent', '#1d4f91')).toBeChecked();
