@@ -204,3 +204,40 @@
     display: none;
   }
 }
+
+// Ask link tile (Shelf `lc`): a filled tile, 48 x 36 thumb, 12px title (500) and meta.
+:host(.ui-list-item--tile) {
+  --ui-row-hover: var(--surface-pressed);
+
+  gap: rem(10px);
+  min-height: 0;
+  padding: rem(8px);
+  background: var(--surface-hover);
+  border-radius: var(--ui-list-item-radius, var(--radius-sm));
+}
+
+:host(.ui-list-item--tile) {
+  @include hover {
+    background: var(--surface-pressed);
+  }
+}
+
+:host(.ui-list-item--tile.ui-list-item--selected) {
+  background: var(--pick);
+}
+
+:host(.ui-list-item--tile) .ui-list-item__thumb {
+  width: rem(48px);
+  height: rem(36px);
+}
+
+:host(.ui-list-item--tile) .ui-list-item__title {
+  @include type(caption);
+
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+:host(.ui-list-item--tile) .ui-list-item__link {
+  gap: 0;
+}

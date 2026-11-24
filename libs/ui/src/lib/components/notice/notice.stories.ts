@@ -66,6 +66,19 @@ export const Banner: Story = {
   }),
 };
 
+/** `quiet`: the plain row (the Ask limit) with a trailing action. */
+export const Quiet: Story = {
+  args: { kind: 'quiet', icon: 'bell' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-notice [kind]="kind" [icon]="icon">
+        You’ve used this month’s questions. Ask again on 1 December; search works as usual.
+        <ui-button uiNoticeAction variant="secondary" size="sm">Open search</ui-button>
+      </ui-notice>`,
+  }),
+};
+
 export const CustomIcon: Story = { args: { icon: 'info' } };
 
 /** Both kinds, with and without a link, in both themes. */

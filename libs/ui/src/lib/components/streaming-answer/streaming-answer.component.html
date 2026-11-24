@@ -5,6 +5,24 @@
       <ui-icon name="spark" [size]="ICON_SIZE.Sm" />
     </span>
     <div class="ui-streaming-answer__body">
+      @if (steps().length > 0 || shownStatus()) {
+        <div class="ui-streaming-answer__steps">
+          @for (step of steps(); track $index) {
+            <span class="ui-streaming-answer__step">
+              <ui-icon class="ui-streaming-answer__check" name="check" [size]="ICON_SIZE.Sm" />{{
+                step
+              }}
+            </span>
+          }
+          @if (shownStatus(); as status) {
+            <span
+              class="ui-streaming-answer__step ui-streaming-answer__step--now"
+              aria-hidden="true"
+              ><ui-text-swap [text]="status" shimmer
+            /></span>
+          }
+        </div>
+      }
       @if (hasAnswer() || (streaming() && !shownStatus())) {
         <p class="ui-streaming-answer__text">
           @for (part of parts(); track $index) {
@@ -29,14 +47,12 @@
           }
         </p>
       }
-      <p class="ui-streaming-answer__status" role="status">
-        @if (shownStatus(); as status) {
-          <span class="ui-streaming-answer__pill"><ui-text-swap [text]="status" shimmer /></span>
-        }
-      </p>
+      <p class="ui-streaming-answer__status" role="status">{{ shownStatus() ?? '' }}</p>
       <div class="ui-streaming-answer__extra"><ng-content select="[uiStreamingLive]" /></div>
       @if (!streaming() && (hasAnswer() || hasContent())) {
-        <p class="ui-streaming-answer__disclaimer">{{ disclaimer() }}</p>
+        @if (disclaimer()) {
+          <p class="ui-streaming-answer__disclaimer">{{ disclaimer() }}</p>
+        }
         <div class="ui-streaming-answer__after"><ng-content /></div>
       }
     </div>

@@ -5,33 +5,42 @@
   flex-direction: column;
   gap: var(--space-2);
   align-items: stretch;
+  container-type: inline-size;
 }
 
+// Shelf `lcards`: tiles 8px apart, three across a wide column (the page), one in the panel.
 .ask-link-cards__list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
+
+  @container (min-width: 37.5rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-// Compact cards like the sources: `bg` fill, a border, `radius-md`; full width in the column.
 .ask-link-cards__card {
-  padding: rem(10px) var(--space-3);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  height: 100%;
 }
 
+// The ⋯ menu shows on hover or focus inside the tile on a pointer device, always on touch.
 .ask-link-cards__actions {
   display: inline-flex;
-  gap: var(--space-1);
   align-items: center;
-}
+  margin-block: calc(-1 * var(--space-1));
 
-.ask-link-cards__open {
-  color: var(--text-muted);
+  @media (hover: hover) {
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+
+    .ask-link-cards__card:hover &,
+    .ask-link-cards__card:focus-within & {
+      opacity: 1;
+    }
+  }
 }
 
 .ask-link-cards__all {

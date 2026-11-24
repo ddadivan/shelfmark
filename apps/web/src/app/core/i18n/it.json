@@ -4151,8 +4151,8 @@
         "generic": "Cosa ho salvato questo mese?"
       },
       "label": "Chiedi sui tuoi link",
-      "placeholder": "Chiedi sui tuoi link",
-      "followUp": "Chiedi qualcos’altro…",
+      "placeholder": "Chiedi qualsiasi cosa sui tuoi link",
+      "followUp": "Fai un’altra domanda",
       "send": "Chiedi",
       "stop": "Interrompi",
       "left": {
@@ -4203,7 +4203,51 @@
         "showAll": "Mostra tutti i {{count}} nella ricerca"
       },
       "button": "Chiedi",
-      "try": "Prova"
+      "try": "Prova",
+      "startLead": {
+        "one": "Domande con parole tue, con risposte dal {{count}} link che hai salvato. Ogni risposta mostra i link usati. Tocca un esempio o scrivi qui sotto.",
+        "many": "Domande con parole tue, con risposte dai {{count}} di link che hai salvato. Ogni risposta mostra i link usati. Tocca un esempio o scrivi qui sotto.",
+        "other": "Domande con parole tue, con risposte dai {{count}} link che hai salvato. Ogni risposta mostra i link usati. Tocca un esempio o scrivi qui sotto."
+      },
+      "startShort": {
+        "one": "Chiedi qualsiasi cosa sul tuo {{count}} link.",
+        "many": "Chiedi qualsiasi cosa sui tuoi {{count}} di link.",
+        "other": "Chiedi qualsiasi cosa sui tuoi {{count}} link."
+      },
+      "caps": {
+        "find": "Trovare",
+        "count": "Contare e confrontare",
+        "summarise": "Riassumere",
+        "plan": "Pianificare e scegliere"
+      },
+      "examples": {
+        "findFolder": "Cosa ho salvato su {{folder}}?",
+        "find": "L’articolo che ho salvato la settimana scorsa",
+        "findVideo": "Il video che ho salvato il mese scorso",
+        "countFolders": "Quanti link ho, per cartella?",
+        "countMonth": "Cosa ho salvato di più questo mese?",
+        "summariseFolder": "Cosa c’è nella mia cartella {{folder}}, in cinque righe?",
+        "summarise": "Cosa ho salvato questo mese, in cinque righe?",
+        "ideasFolder": "Le idee principali in {{folder}}",
+        "ideas": "Le idee principali dei miei ultimi link",
+        "watch": "Qualcosa da guardare questo weekend, in meno di un’ora",
+        "firstFolder": "Cosa dovrei leggere per primo in {{folder}}?",
+        "first": "Cosa dovrei leggere per primo?"
+      },
+      "fine": "Le risposte sono scritte dall’IA e possono essere sbagliate; controlla i link.",
+      "step": {
+        "search": "Cercato nei tuoi link",
+        "count": "Contati i tuoi link",
+        "read": "Letto un link",
+        "browse": "Guardato cartelle e tag",
+        "deep": "Analizzato più a fondo"
+      },
+      "found": {
+        "one": "{{count}} trovato",
+        "many": "{{count}} di trovati",
+        "other": "{{count}} trovati"
+      },
+      "openSearch": "Apri la ricerca"
     },
     "connect": {
       "title": "Collega il tuo assistente",

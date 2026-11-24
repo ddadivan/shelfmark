@@ -18,7 +18,8 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  * plus words: colour is never the only signal. The text is projected and may contain a link.
  * `warning` is a polite `role="status"`, `danger` an assertive `role="alert"`. The icon is
  * decorative; the default is `warning` / `error` / `info` by kind. `info` is a polite status in the
- * accent tint. `banner` turns it into a full-width, centred strip (no radius, wraps on a phone)
+ * accent tint; `quiet` (a polite status too) is the plain Shelf row: `surface` with the `line`
+ * hairline, text colour and a muted icon (the Ask limit row). `banner` turns it into a full-width, centred strip (no radius, wraps on a phone)
  * for page-level messages such as the demo banner; the icon is then hidden unless `icon` is set.
  * An optional trailing action (a small button or link) is projected with `uiNoticeAction`.
  * Encapsulation is off so projected links get the notice's link style (BEM-prefixed selectors).
@@ -33,6 +34,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
     '[class.ui-notice--warning]': 'kind() === NOTICE_KIND.Warning',
     '[class.ui-notice--danger]': 'kind() === NOTICE_KIND.Danger',
     '[class.ui-notice--info]': 'kind() === NOTICE_KIND.Info',
+    '[class.ui-notice--quiet]': 'kind() === NOTICE_KIND.Quiet',
     '[class.ui-notice--banner]': 'banner()',
     '[attr.role]': "kind() === NOTICE_KIND.Danger ? 'alert' : 'status'",
   },
@@ -43,7 +45,7 @@ export class NoticeComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
 
-  /** `warning`, `danger` or `info`. */
+  /** `warning`, `danger`, `info` or `quiet`. */
   readonly kind = input<NoticeKind>(NOTICE_KIND.Warning);
   /** Icon override; defaults to `warning` for a warning and `error` for danger. */
   readonly icon = input<IconName>();

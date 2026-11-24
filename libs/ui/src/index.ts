@@ -1,6 +1,7 @@
 export * from './lib/components/ai-line';
 export * from './lib/components/ask-button';
 export * from './lib/components/ask-button';
+export * from './lib/components/ask-starters';
 export * from './lib/components/avatar';
 export * from './lib/components/badge';
 export * from './lib/components/breadcrumbs';

@@ -16,6 +16,7 @@ const ENTRY: AskEntry = {
   reason: null,
   allowance: null,
   activity: null,
+  steps: [],
   cards: [],
   turn: null,
 };
@@ -75,7 +76,7 @@ describe('endAskEntry and stopAskEntry', () => {
 
 describe('applyAskEvent for the chat events (ADR 0055)', () => {
   const link = { id: 'l1', title: 'Signals' } as never;
-  it('shows the status pill on an activity start and hides it on its end, text or cards', () => {
+  it('shows the status on an activity start, adds a step on its end and hides it on text or cards', () => {
     let entry = applyAskEvent(ENTRY, {
       type: 'activity',
       activity: 'search',
@@ -85,6 +86,7 @@ describe('applyAskEvent for the chat events (ADR 0055)', () => {
     expect(entry.activity).toEqual({ activity: 'search' });
     entry = applyAskEvent(entry, { type: 'activity', activity: 'search', phase: 'end', found: 3 });
     expect(entry.activity).toBeNull();
+    expect(entry.steps).toEqual([{ activity: 'search', found: 3 }]);
     entry = applyAskEvent(entry, {
       type: 'activity',
       activity: 'count',

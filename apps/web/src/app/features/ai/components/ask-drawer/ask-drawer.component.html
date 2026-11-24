@@ -8,17 +8,10 @@
   (sizeChange)="width.set($event)"
 >
   <div slot="head" class="ask-drawer__head">
-    <app-ask-heading />
     @if (store.entries().length > 0) {
-      <ui-button
-        variant="ghost"
-        size="lg"
-        iconOnly
-        iconLeft="edit"
-        [ariaLabel]="'ai.ask.newChat' | transloco"
-        [uiTooltip]="'ai.ask.newChat' | transloco"
-        (click)="store.reset()"
-      />
+      <ui-button variant="secondary" size="sm" iconLeft="add" (click)="store.reset()">
+        {{ 'ai.ask.newChat' | transloco }}
+      </ui-button>
     }
   </div>
   <app-ask-conversation />

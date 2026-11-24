@@ -3,20 +3,21 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-6);
 }
 
 // Same bubble as `ui-streaming-answer` for a question without an answer.
 .ask-entry__bubble {
+  @include type(body);
+
   align-self: flex-end;
-  max-width: 85%;
+  max-width: 75%;
   margin: 0;
   padding: rem(10px) rem(14px);
-  font: 400 var(--font-size-secondary) / #{rem(20px)} var(--font-sans);
   overflow-wrap: anywhere;
   color: var(--text);
   background: var(--surface-hover);
-  border-radius: var(--radius-card) var(--radius-card) var(--radius-xs);
+  border-radius: var(--radius-md);
 }
 
 .ask-entry__text {

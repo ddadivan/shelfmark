@@ -78,6 +78,14 @@ describe('NoticeComponent', () => {
     expect(iconHref(notice).endsWith('#sm-info')).toBe(true);
   });
 
+  it('quiet is a polite status on the plain surface row', () => {
+    const { notice, update } = setup();
+    update((c) => c.kind.set(NOTICE_KIND.Quiet));
+    expect(notice.classList.contains('ui-notice--quiet')).toBe(true);
+    expect(notice.getAttribute('role')).toBe('status');
+    expect(iconHref(notice).endsWith('#sm-info')).toBe(true);
+  });
+
   it('banner adds the modifier and hides the default icon, an explicit icon stays', () => {
     const { notice, update } = setup();
     update((c) => {

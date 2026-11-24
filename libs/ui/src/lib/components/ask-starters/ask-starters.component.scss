@@ -1,0 +1,112 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: block;
+  container-type: inline-size;
+  text-align: start;
+}
+
+.ui-ask-starters__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+
+  @container (min-width: 37.5rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+// Shelf `cap` (`sm-l1`): `surface` with the `line` hairline, radius 12, 16px padding.
+.ui-ask-starters__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.ui-ask-starters__title {
+  @include type(heading);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.ui-ask-starters__glyph {
+  color: var(--text-muted);
+}
+
+.ui-ask-starters__questions,
+.ui-ask-starters__pills {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ui-ask-starters__questions {
+  gap: 0;
+}
+
+// Shelf `cap .q`: a quiet 14/1.4 row, 8px 10px, radius 10, `surface-hover` on hover.
+.ui-ask-starters__question {
+  @include type(secondary);
+
+  display: block;
+  width: 100%;
+  min-height: rem(36px);
+  padding: rem(8px) rem(10px);
+  line-height: 1.4;
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+  background: var(--surface);
+  border: 0;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include coarse {
+    min-height: rem(44px);
+  }
+}
+
+// The phone start: left-aligned `surface-hover` pills (Shelf secondary button, 10px 12px).
+.ui-ask-starters__pill {
+  @include type(secondary);
+
+  display: block;
+  width: 100%;
+  min-height: rem(44px);
+  padding: rem(10px) rem(12px);
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+  background: var(--surface-hover);
+  border: 0;
+  border-radius: var(--radius-lg);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

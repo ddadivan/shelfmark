@@ -52,6 +52,7 @@ let nextId = 0;
     '[class.ui-list-item--checked]': 'checked()',
     '[class.ui-list-item--selecting]': 'selecting()',
     '[class.ui-list-item--compact]': 'compact()',
+    '[class.ui-list-item--tile]': 'tile()',
     '[class.ui-list-item--reveal]': 'reveal()',
   },
   templateUrl: './list-item.component.html',
@@ -74,6 +75,11 @@ export class ListItemComponent {
   readonly selecting = input(false, { transform: booleanAttribute });
   /** Denser row (8px padding, smaller title) for side panels. */
   readonly compact = input(false, { transform: booleanAttribute });
+  /**
+   * Link tile of an Ask answer (Shelf `lc`): a `surface-hover` tile with radius 10 and 8px
+   * padding, a 48 x 36 thumb and 12px title and meta; `pressed` on hover, `pick` when selected.
+   */
+  readonly tile = input(false, { transform: booleanAttribute });
   /**
    * Preview image URL. Setting it (even to an empty string) reserves the 56 x 40 thumb: the
    * image when it loads, a picture icon when it is empty or fails. Unset: no thumb.

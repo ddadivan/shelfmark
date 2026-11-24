@@ -18,6 +18,7 @@ const HOSTILE = '<img src=x onerror=alert(1)> **bold** [link](https://evil.examp
       [citeLabel]="citeLabel"
       [disabledCites]="disabled()"
       [status]="status()"
+      [steps]="steps()"
       [hasContent]="cards()"
       (citationClicked)="clicks.update((c) => [...c, $event])"
     >
@@ -39,6 +40,7 @@ class HostComponent {
   readonly disabled = signal<readonly number[]>([]);
   readonly clicks = signal<number[]>([]);
   readonly status = signal<string | null>(null);
+  readonly steps = signal<readonly string[]>([]);
   readonly cards = signal(false);
   readonly citeLabel = (n: number): string => `Source ${n}`;
 }
@@ -132,20 +134,49 @@ describe('ui-streaming-answer', () => {
     expect(host.querySelector('ui-streaming-answer')?.getAttribute('aria-busy')).toBeNull();
   });
 
-  it('shows the status pill in a polite region while working, instead of the caret', () => {
+  it('shows the status as a shimmering step line and in a polite region, instead of the caret', () => {
     const { host, update } = setup();
     const region = () => host.querySelector('.ui-streaming-answer__status');
+    const now = () => host.querySelector('.ui-streaming-answer__step--now');
     expect(region()?.getAttribute('role')).toBe('status');
-    expect(host.querySelector('.ui-streaming-answer__pill')).toBeNull();
+    expect(now()).toBeNull();
     update((c) => c.status.set('Searching your links…'));
-    expect(host.querySelector('.ui-streaming-answer__pill')?.textContent).toBe(
-      'Searching your links…',
-    );
+    expect(now()?.textContent?.trim()).toBe('Searching your links…');
+    expect(now()?.querySelector('.ui-text-swap__text--shimmer')).not.toBeNull();
+    expect(region()?.textContent).toBe('Searching your links…');
     expect(host.querySelector('.ui-streaming-answer__caret')).toBeNull();
     update((c) => c.segments.set([{ text: 'Found it.' }]));
     expect(host.querySelector('.ui-streaming-answer__text')?.textContent).toContain('Found it.');
     update((c) => c.streaming.set(false));
-    expect(host.querySelector('.ui-streaming-answer__pill')).toBeNull();
+    expect(now()).toBeNull();
+    expect(region()?.textContent).toBe('');
+  });
+
+  it('lists the finished steps with a check and keeps them once complete', () => {
+    const { host, update } = setup();
+    update((c) => c.steps.set(['Searched your links · 6 found', 'Counted your links']));
+    const steps = () => [...host.querySelectorAll('.ui-streaming-answer__step')];
+    expect(steps().map((step) => step.textContent?.trim())).toEqual([
+      'Searched your links · 6 found',
+      'Counted your links',
+    ]);
+    expect(steps()[0].querySelector('.ui-streaming-answer__check')).not.toBeNull();
+    update((c) => {
+      c.segments.set([{ text: 'Six links.' }]);
+      c.streaming.set(false);
+    });
+    expect(steps().length).toBe(2);
+  });
+
+  it('leaves the disclaimer out when it is empty', () => {
+    const fixture = TestBed.createComponent(StreamingAnswerComponent);
+    fixture.componentRef.setInput('question', 'Q');
+    fixture.componentRef.setInput('segments', [{ text: 'A.' }]);
+    fixture.componentRef.setInput('citeLabel', (n: number) => `Source ${n}`);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.ui-streaming-answer__text')).not.toBeNull();
+    expect(el.querySelector('.ui-streaming-answer__disclaimer')).toBeNull();
   });
 
   it('shows live content as it arrives and keeps the reply for a cards-only answer', () => {
@@ -159,21 +190,10 @@ describe('ui-streaming-answer', () => {
     expect(host.querySelector('.sources')).not.toBeNull();
   });
 
-  it('sweeps the pill with the shimmer loop, which stops under reduced motion', () => {
+  it('draws the steps in muted caption type with a success check', () => {
     const css = compileScss('lib/components/streaming-answer/streaming-answer.component.scss');
-    expect(css).toMatch(/\.ui-streaming-answer__pill\s*\{[^}]*background: var\(--ai-fill\)/);
-    expect(css).toMatch(/\.ui-streaming-answer__pill::after\s*\{[^}]*animation: ui-shimmer/);
-  });
-
-  it('swaps and shimmers the words of the pill with a resting colour that keeps contrast on ai-fill', () => {
-    const css = compileScss('lib/components/streaming-answer/streaming-answer.component.scss');
-    // `--status-text` is 75% text over text-muted (tokens/_light.scss, _dark.scss).
-    expect(css).toContain('--ui-text-swap-rest: var(--status-text)');
-    const { host, update } = setup();
-    update((c) => c.status.set('Searching your links…'));
-    expect(
-      host.querySelector('.ui-streaming-answer__pill .ui-text-swap__text--shimmer'),
-    ).not.toBeNull();
+    expect(css).toMatch(/\.ui-streaming-answer__steps\s*\{[^}]*color: var\(--text-muted\)/);
+    expect(css).toMatch(/\.ui-streaming-answer__check\s*\{[^}]*color: var\(--success\)/);
   });
 
   it('shows only the bubble for a question without an answer', () => {

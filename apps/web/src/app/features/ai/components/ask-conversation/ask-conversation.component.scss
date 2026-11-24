@@ -1,70 +1,58 @@
 @use 'ui' as *;
 
+// Shelf `msgs`: questions and answers 24px apart.
 :host {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
   min-height: 100%;
-  padding: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
-// Top-aligned under the header, not centred in the height of the panel.
-.ask-conversation__empty {
+// Shelf `start`: the 48px sage spark tile, the 32/40 title and the 14px lead, centred.
+.ask-conversation__start {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  padding-block-start: var(--space-4);
+  align-items: center;
+  padding-block-start: var(--space-8);
+  margin-block-end: var(--space-2);
+  text-align: center;
 }
 
-.ask-conversation__intro {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.ask-conversation__title {
-  @include type(title);
-
-  margin: 0;
-}
-
-.ask-conversation__lead {
-  @include type(body);
-
-  margin: 0;
-  color: var(--text-muted);
-}
-
-.ask-conversation__starters {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.ask-conversation__try {
-  @include type(caption);
-
-  margin: 0;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-// A starter is a full-width card: `bg` fill, a border, `radius-md`, at least 56px high; the
-// question may wrap over several lines.
-.ask-conversation__starter {
-  min-height: rem(56px);
-  padding: var(--space-2) var(--space-4);
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
+.ask-conversation__spark {
+  display: inline-grid;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  color: var(--ai);
+  background: var(--ai-bg);
   border-radius: var(--radius-md);
 }
 
-.ask-conversation__starter-text {
-  display: block;
-  white-space: normal;
+.ask-conversation__spark--lg {
+  width: rem(48px);
+  height: rem(48px);
+}
+
+.ask-conversation__title {
+  @include type(display);
+
+  margin: var(--space-4) 0 0;
+  letter-spacing: -0.02em;
+}
+
+.ask-conversation__lead {
+  @include type(secondary);
+
+  max-width: 68ch;
+  margin: var(--space-2) auto 0;
+  color: var(--text-muted);
+}
+
+// The phone start: 16px above and 8px below the 40px tile.
+.ask-conversation__start--compact {
+  padding-block: var(--space-4) var(--space-2);
+  margin-block-end: calc(-1 * var(--space-4));
 }
 
 // The quiet note once older questions no longer go with the next one.

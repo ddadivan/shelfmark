@@ -4050,8 +4050,8 @@
         "generic": "Was habe ich diesen Monat gespeichert?"
       },
       "label": "Frag zu deinen Links",
-      "placeholder": "Frag zu deinen Links",
-      "followUp": "Etwas anderes fragen…",
+      "placeholder": "Frag alles über deine Links",
+      "followUp": "Stell eine Folgefrage",
       "send": "Fragen",
       "stop": "Stoppen",
       "left": {
@@ -4100,7 +4100,48 @@
         "showAll": "Alle {{count}} in der Suche zeigen"
       },
       "button": "Fragen",
-      "try": "Zum Beispiel"
+      "try": "Zum Beispiel",
+      "startLead": {
+        "one": "Fragen in deinen eigenen Worten, beantwortet aus dem {{count}} Link, den du gespeichert hast. Jede Antwort zeigt die Links, die sie nutzt. Tippe auf ein Beispiel oder schreib unten.",
+        "other": "Fragen in deinen eigenen Worten, beantwortet aus den {{count}} Links, die du gespeichert hast. Jede Antwort zeigt die Links, die sie nutzt. Tippe auf ein Beispiel oder schreib unten."
+      },
+      "startShort": {
+        "one": "Frag alles über deinen {{count}} Link.",
+        "other": "Frag alles über deine {{count}} Links."
+      },
+      "caps": {
+        "find": "Finden",
+        "count": "Zählen und vergleichen",
+        "summarise": "Zusammenfassen",
+        "plan": "Planen und auswählen"
+      },
+      "examples": {
+        "findFolder": "Was habe ich zu {{folder}} gespeichert?",
+        "find": "Der Artikel, den ich letzte Woche gespeichert habe",
+        "findVideo": "Das Video, das ich letzten Monat gespeichert habe",
+        "countFolders": "Wie viele Links habe ich, nach Ordnern?",
+        "countMonth": "Was habe ich diesen Monat am meisten gespeichert?",
+        "summariseFolder": "Was ist in meinem Ordner {{folder}}, in fünf Zeilen?",
+        "summarise": "Was habe ich diesen Monat gespeichert, in fünf Zeilen?",
+        "ideasFolder": "Die wichtigsten Ideen in {{folder}}",
+        "ideas": "Die wichtigsten Ideen meiner neuesten Links",
+        "watch": "Etwas zum Anschauen am Wochenende, unter einer Stunde",
+        "firstFolder": "Was sollte ich in {{folder}} zuerst lesen?",
+        "first": "Was sollte ich zuerst lesen?"
+      },
+      "fine": "Antworten schreibt eine KI, und sie können falsch sein; prüfe die Links.",
+      "step": {
+        "search": "Deine Links durchsucht",
+        "count": "Deine Links gezählt",
+        "read": "Einen Link gelesen",
+        "browse": "Ordner und Tags durchgesehen",
+        "deep": "Genauer hingesehen"
+      },
+      "found": {
+        "one": "{{count}} gefunden",
+        "other": "{{count}} gefunden"
+      },
+      "openSearch": "Suche öffnen"
     },
     "connect": {
       "title": "Assistenten verbinden",

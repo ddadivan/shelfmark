@@ -18,7 +18,9 @@ import {
   StreamingAnswerComponent,
   type StreamingCiteLabel,
 } from '@shelfmark/ui';
+import { activeLang } from '../../../../core/i18n/active-lang';
 import { LocaleService } from '../../../../core/i18n/locale.service';
+import { pluralKey } from '../../../../core/i18n/plural-key';
 import { aiResetDate } from '../../utils/ai-reset-date';
 import { shortQuestion } from '../../utils/short-question';
 import { ASK_SEARCH_LABEL_MAX } from '../../models/ask-search-label-max.const';
@@ -33,8 +35,8 @@ import { AskSourcesComponent } from '../ask-sources/ask-sources.component';
 const HIGHLIGHT_MS = 1500;
 
 /**
- * One question of the Ask chat: the streamed answer (`ui-streaming-answer`) with the status pill
- * while tools run, the link cards as they arrive and the cited sources not already shown as cards,
+ * One question of the Ask chat: the streamed answer (`ui-streaming-answer`) with the finished steps
+ * and the status line while tools run, the link cards as they arrive and the cited sources not already shown as cards,
  * or the "not in your links" actions, the limit line or the error line with "Try again" (only when
  * the question was not counted). A citation scrolls to its card or source row and highlights it
  * for 1.5 s.
@@ -102,7 +104,20 @@ export class AskEntryComponent {
       entry.cards.length > 0
     );
   });
-  /** The status pill's key: what Ask is doing (never the tool or its words). */
+  /**
+   * The finished steps above the answer ("Searched your links · 6 found"); never the tool or its
+   * words. Re-built on a language switch.
+   */
+  protected readonly stepLabels = computed(() => {
+    activeLang();
+    return this.entry().steps.map((step) => {
+      const label = this.transloco.translate(`ai.ask.step.${step.activity}`);
+      return step.found === null
+        ? label
+        : `${label} · ${this.transloco.translate(pluralKey('ai.ask.found', step.found), { count: step.found })}`;
+    });
+  });
+  /** The status line's key: what Ask is doing (never the tool or its words). */
   protected readonly statusKey = computed(() => {
     const activity = this.entry().activity;
     return activity === null ? null : `ai.ask.activity.${activity.activity}`;

@@ -30,6 +30,7 @@ import { AI_API } from '../features/ai/models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../features/ai/models/ai-settings-default.const';
 import { AiSettingsStore } from '../features/ai/services/ai-settings.store';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
+import { PushedPage } from '../core/layout/pushed-page.service';
 import AppShellComponent from './app-shell.component';
 
 /** The account settings never load here; a change is saved and answered as sent. */
@@ -520,8 +521,12 @@ describe('AppShellComponent', () => {
       tab(root, 'Ask')?.click();
       await harness.fixture.whenStable();
       expect(TestBed.inject(Router).url).toBe('/ask');
-      // The full-screen Ask page is pushed: the tab bar hides.
+      // The Ask start is a tab page; a running conversation pushes it and the tab bar hides.
+      expect(bar(root)).not.toBeNull();
+      TestBed.inject(PushedPage).set(true);
+      await harness.fixture.whenStable();
       expect(bar(root)).toBeNull();
+      TestBed.inject(PushedPage).set(false);
     });
 
     it('keeps Tags while AI is on but Ask is off', async () => {

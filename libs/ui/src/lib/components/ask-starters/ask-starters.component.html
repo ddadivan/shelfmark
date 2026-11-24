@@ -1,0 +1,42 @@
+@if (compact()) {
+  <ul class="ui-ask-starters__pills">
+    @for (question of firstQuestions(); track $index) {
+      <li>
+        <button type="button" class="ui-ask-starters__pill" (click)="picked.emit(question)">
+          {{ question }}
+        </button>
+      </li>
+    }
+  </ul>
+} @else {
+  <div class="ui-ask-starters__grid">
+    @for (group of groups(); track group.title) {
+      <section class="ui-ask-starters__card">
+        @if (headingLevel() === 2) {
+          <h2 class="ui-ask-starters__title">
+            <ui-icon class="ui-ask-starters__glyph" [name]="group.icon" [size]="ICON_SIZE.Sm" />
+            {{ group.title }}
+          </h2>
+        } @else {
+          <h3 class="ui-ask-starters__title">
+            <ui-icon class="ui-ask-starters__glyph" [name]="group.icon" [size]="ICON_SIZE.Sm" />
+            {{ group.title }}
+          </h3>
+        }
+        <ul class="ui-ask-starters__questions">
+          @for (question of group.questions; track $index) {
+            <li>
+              <button
+                type="button"
+                class="ui-ask-starters__question"
+                (click)="picked.emit(question)"
+              >
+                {{ question }}
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </div>
+}

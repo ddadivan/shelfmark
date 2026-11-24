@@ -28,6 +28,16 @@
     background: var(--accent-bg);
   }
 
+  &--quiet {
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+
+  &--quiet &__icon {
+    color: var(--text-muted);
+  }
+
   &--banner {
     flex-wrap: wrap;
     gap: rem(8px) rem(12px);

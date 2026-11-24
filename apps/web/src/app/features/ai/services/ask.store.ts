@@ -145,6 +145,7 @@ export const AskStore = signalStore(
           reason: null,
           allowance: null,
           activity: null,
+          steps: [],
           cards: [],
           turn: null,
         };
@@ -169,6 +170,7 @@ export const AskStore = signalStore(
           reason: null,
           allowance: null,
           activity: null,
+          steps: [],
           cards: [],
         }));
         start(id, entry.question);

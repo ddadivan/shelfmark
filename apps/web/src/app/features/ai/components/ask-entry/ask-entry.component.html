@@ -6,8 +6,8 @@
     [streaming]="streaming()"
     [citeLabel]="citeLabel"
     [disabledCites]="disabledCites()"
-    [disclaimer]="'ai.disclaimer' | transloco"
     [status]="activityKey ? (activityKey | transloco) : null"
+    [steps]="stepLabels()"
     [hasContent]="entry().cards.length > 0"
     (citationClicked)="cite($event)"
   >
