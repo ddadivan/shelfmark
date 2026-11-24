@@ -1,7 +1,8 @@
 import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
+import { openSearchDialog, searchDialogStart, searchDialogTrigger } from './support/search-button';
+import { isCompact } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror the contract mock links (libs/shared/contracts/src/testing); the e2e project cannot
@@ -22,35 +23,33 @@ test.describe('search (mock API)', () => {
     );
   });
 
-  const searchButton = (page: Page) => page.getByRole('button', { name: SEARCH_BUTTON });
   const searchField = (page: Page) =>
     page.getByRole('combobox', { name: 'Search links, folders and tags' });
 
   test.describe('library page', () => {
-    test('filters the feed by the query, in the note too, with a Search chip', async ({ page }) => {
+    test('filters the feed by the query, in the note too, under the Search title', async ({
+      page,
+    }) => {
       await page.goto(`/links?q=${NOTE_WORD}`);
 
       await expect(page.getByRole('main').getByText(ANGULAR_TITLE, { exact: true })).toBeVisible();
       await expect(page.getByRole('main').getByText(PASTA_TITLE, { exact: true })).toHaveCount(0);
-      await expect(page.getByRole('group', { name: 'Active filters' })).toContainText(
-        `Search: ${NOTE_WORD}`,
-      );
+      // Shelf block 3: the search is the page title and its count line, not a filter chip.
+      await expect(page.getByRole('heading', { level: 1, name: 'Search' })).toBeVisible();
+      await expect(page.getByText(`1 for “${NOTE_WORD}”`)).toBeVisible();
       await expect(page).toHaveTitle(new RegExp(`^Search: ${NOTE_WORD}`));
     });
   });
 
+  // The dialog: the Search tab of the mobile shell; from 64em only Ctrl+K on a settings page,
+  // where the header has no field (Shelf block 3).
   test.describe('search dialog', () => {
-    // The dialog opens from the button, which the header shows below 80em (#329).
-    test.beforeEach(async ({ page }) => {
-      await useSearchDialogWidth(page);
-    });
-
     test(
-      'opens from the header, finds links, folders and tags, and returns focus on Esc',
+      'opens from the tab bar or Ctrl+K, finds links, folders and tags, and closes on Esc',
       { tag: E2E_TAG.Phone },
       async ({ page }) => {
-        await page.goto('/links');
-        await searchButton(page).click();
+        await page.goto(searchDialogStart(page));
+        await openSearchDialog(page);
 
         await searchField(page).fill(NOTE_WORD);
         await expect(page.getByRole('option', { name: new RegExp(ANGULAR_TITLE) })).toBeVisible();
@@ -58,7 +57,9 @@ test.describe('search (mock API)', () => {
 
         await searchField(page).press('Escape');
         await expect(searchField(page)).toHaveCount(0);
-        await expect(searchButton(page)).toBeFocused();
+        if (isCompact(page)) {
+          await expect(searchDialogTrigger(page)).toBeFocused();
+        }
       },
     );
 
@@ -68,9 +69,8 @@ test.describe('search (mock API)', () => {
       isMobile,
     }) => {
       test.skip(isMobile, 'no keyboard on the phone project');
-      await page.goto('/links');
-
-      await expect(searchButton(page)).toBeVisible();
+      await page.goto(searchDialogStart(page));
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
       await page.keyboard.press('Control+k');
       await searchField(page).fill('pasta');
       await expect(page.getByRole('option', { name: new RegExp(PASTA_TITLE) })).toBeVisible();
@@ -88,9 +88,8 @@ test.describe('search (mock API)', () => {
     }) => {
       // Low enough that the results overflow the dialog.
       await page.setViewportSize({ width: page.viewportSize()?.width ?? 1280, height: 480 });
-      await page.goto('/links');
-      await expect(searchButton(page)).toBeVisible();
-      await searchButton(page).click();
+      await page.goto(searchDialogStart(page));
+      await openSearchDialog(page);
       await searchField(page).fill('article');
       const list = page.getByRole('listbox', { name: 'Search results' });
       await expect(list.getByRole('option').first()).toBeVisible();
