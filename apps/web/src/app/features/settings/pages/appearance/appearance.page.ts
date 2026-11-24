@@ -45,7 +45,7 @@ import { activeLang } from '../../../../core/i18n/active-lang';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { AppearanceSettingsService } from '../../services/appearance-settings.service';
 import { THEME_OPTION_KEYS } from '../../models/theme-option-keys.const';
-import { DateTimeSettingsComponent } from './date-time-settings/date-time-settings.component';
+import { SHELF_ACCENTS } from '../../models/shelf-accents.const';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
 
 const KEY = 'settings.appearance';
@@ -69,7 +69,6 @@ const SYSTEM_THUMB = 'system';
     TranslocoPipe,
     ButtonComponent,
     ColorPickerComponent,
-    DateTimeSettingsComponent,
     NoticeComponent,
     SegmentedControlComponent,
     SettingsPageHeaderComponent,
@@ -127,9 +126,20 @@ export default class AppearancePage {
    */
   protected readonly accentOptions = computed<ThemePickerOption[]>(() => {
     const { base, background } = this.theme.customTheme();
-    const curated = this.labels(Object.values(CUSTOM_THEME_ACCENT), `${KEY}.custom.accent`).map(
-      (option) => ({ ...option, theme: THEME_CUSTOM, base, accent: option.value }),
-    );
+    const chosen = this.theme.customTheme().accent;
+    const names: string[] = [...SHELF_ACCENTS];
+    if (
+      !names.includes(chosen) &&
+      (Object.values(CUSTOM_THEME_ACCENT) as string[]).includes(chosen)
+    ) {
+      names.push(chosen);
+    }
+    const curated = this.labels(names, `${KEY}.custom.accent`).map((option) => ({
+      ...option,
+      theme: THEME_CUSTOM,
+      base,
+      accent: option.value,
+    }));
     const own = this.withChosen(this.settings.customColours(), this.appearance.ownAccent()).map(
       (colour): ThemePickerOption => ({
         value: colour,

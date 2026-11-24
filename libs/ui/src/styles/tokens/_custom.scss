@@ -17,6 +17,14 @@
 // The coloured light tints take the deeper muted text (#636368), so meta keeps 4.5:1 on them.
 $custom-accents: (
   'light': (
+    // Shelf `accent-ink` / `accent-ink-bg` (tokens.json); the deeper text keeps 4.5:1 on the tint.
+    'ink': (
+      'accent': #2a5bd7,
+      'accent-bg': #e8eefc,
+      'accent-text': #1d3f96,
+      'focus-ring': #2a5bd7,
+      'text-muted': #636368,
+    ),
     'sage': (
       'accent': #3b7443,
       'accent-bg': #e4efe4,
@@ -74,6 +82,12 @@ $custom-accents: (
     ),
   ),
   'dark': (
+    'ink': (
+      'accent': #82a6ff,
+      'accent-bg': #1a2440,
+      'accent-text': #c9d7ff,
+      'focus-ring': #82a6ff,
+    ),
     'sage': (
       'accent': #86c08e,
       'accent-bg': #1b2a1d,

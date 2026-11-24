@@ -147,7 +147,7 @@
   padding: var(--space-1) var(--space-4);
   margin-bottom: rem(14px);
   background: var(--bg);
-  border-radius: rem(18px);
+  border-radius: var(--radius-lg);
 }
 
 .appearance__reset {
