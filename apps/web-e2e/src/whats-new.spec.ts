@@ -90,7 +90,10 @@ test.describe('public changelog', () => {
 
   test('the landing footer links to it', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('contentinfo').getByRole('link', { name: "What's new" }).click();
+    await page
+      .getByRole('contentinfo')
+      .getByRole('link', { name: /^What.s new$/ })
+      .click();
 
     await expect(page).toHaveURL(/\/changelog$/);
     await expect(page.getByRole('heading', { level: 1, name: "What's new" })).toBeVisible();

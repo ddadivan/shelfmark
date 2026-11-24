@@ -6,7 +6,6 @@ import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { gotoLandingLoaded } from './support/landing';
 import { settled } from './support/settled';
 import { E2E_TAG } from './models/e2e-tag.const';
-import { isCompact } from './support/sidebar';
 
 test.describe('landing', () => {
   test(
@@ -17,17 +16,17 @@ test.describe('landing', () => {
 
       await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
       await expect(page.getByRole('main')).toBeVisible();
-      // Auto-waits: the sections below the hero are deferred (on idle).
-      // The AI block and the browser extension block follow the hero (#507). The extension block (#455) is only on a desktop Chromium browser: the desktop
-      // project runs Chromium, the tablet and phone projects are below 64em.
+      // Auto-waits: the sections below the hero are deferred (on idle). Shelf 16-landing: the AI
+      // block, then the extension block (on every device now), the bento, before / after, why and
+      // how, the finale.
       await expect(page.getByRole('heading', { level: 2 })).toHaveText([
         'Help with sorting, when you want it',
-        ...(isCompact(page) ? [] : ['Save the page you are on']),
+        'Save the page you are on',
         'Save once, find in seconds',
         'The same links, before and after',
         'Why this exists',
-        "How it's built",
-        'Empty your Saved Messages.',
+        'How it’s built',
+        'Empty your saved messages.',
       ]);
     },
   );
@@ -49,7 +48,7 @@ test.describe('landing', () => {
   test('opening the page with #how scrolls to and focuses the section', async ({ page }) => {
     await page.goto('/#how');
 
-    const section = page.getByRole('region', { name: "How it's built" });
+    const section = page.getByRole('region', { name: 'How it’s built' });
     await expect(section).toBeInViewport();
     await expect(section).toBeFocused();
 
@@ -63,24 +62,30 @@ test.describe('landing', () => {
     { width: 1440, height: 900 },
     { width: 1920, height: 1080 },
   ]) {
-    test(`the first screen fills a ${viewport.width}x${viewport.height} window`, async ({
+    test(`the first screen holds the headline, the actions and the app preview at ${viewport.width}x${viewport.height}`, async ({
       page,
     }) => {
       await page.setViewportSize(viewport);
       await page.goto('/');
       await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
-      await expect(page.locator('.landing-hero-preview')).toBeVisible();
+      const preview = page.locator('app-landing-hero-preview');
+      await expect(preview).toBeVisible();
 
-      const hero = await page.locator('.landing-hero').boundingBox();
+      // Shelf 16-landing: the 64px header, then the hero copy above the live preview, all of it
+      // inside the first window.
       const header = await page.locator('.landing-header').boundingBox();
-      if (!hero || !header) {
-        throw new Error('The header or the hero has no box');
+      const copy = await page.locator('.landing-hero__copy').boundingBox();
+      const box = await preview.boundingBox();
+      if (!header || !copy || !box) {
+        throw new Error('The header, the hero copy or the preview has no box');
       }
-      // Header + hero are the window tall (never shorter); the content is bigger than the old column.
-      expect(header.y + header.height + hero.height).toBeGreaterThanOrEqual(viewport.height - 1);
-      expect(hero.y + hero.height).toBeLessThanOrEqual(viewport.height * 1.1);
-      const title = await page.locator('.landing-hero__title').boundingBox();
-      expect(title?.width).toBeGreaterThan(viewport.width * 0.3);
+      expect(Math.round(header.height)).toBe(64);
+      expect(copy.y).toBeGreaterThanOrEqual(header.y + header.height);
+      expect(box.y).toBeLessThan(viewport.height);
+      expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
+      await expect(
+        page.locator('app-landing-hero').getByRole('link', { name: 'Open the demo' }),
+      ).toBeInViewport();
       const overflow = await page.evaluate<number>(
         '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
       );
@@ -159,7 +164,10 @@ test.describe('landing', () => {
       await gotoLandingLoaded(page);
       // The preview's cards land and its toast slides in after the headline: wait for the last
       // part to finish, then for the page to settle.
-      await expect(page.locator('.landing-hero-preview__toast')).toHaveCSS('opacity', '1');
+      await expect(page.locator('app-landing-hero-preview .preview__toast')).toHaveCSS(
+        'opacity',
+        '1',
+      );
       await settled(page);
 
       // The sources go into the failure message, so a CI failure says what moved.
@@ -189,75 +197,50 @@ test.describe('landing scenes and reveals', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('the scattered board comes in, then floats on and holds still under the pointer', async ({
-    page,
-  }) => {
+  test('the scattered notes drift on, and stand still under reduced motion', async ({ page }) => {
     await page.goto('/');
     const shelf = page.getByRole('region', { name: 'The same links, before and after' });
     await shelf.scrollIntoViewIfNeeded();
-    await page.mouse.move(0, 0);
-    const board = shelf.getByRole('img', { name: /scattered across Saved Messages/ });
-    const states = (): Promise<string[]> =>
-      board.evaluate((el) =>
-        el
-          .getAnimations({ subtree: true })
-          .map((animation: { playState: string }) => animation.playState),
-      );
-
-    await expect(board.getByText('Bookmarks bar (91)')).toHaveCSS('opacity', '1');
-    // The entrance is over, the endless float keeps running.
-    await expect
-      .poll(async () => (await states()).filter((state) => state === 'running').length, {
-        timeout: 5000,
-      })
-      .toBeGreaterThanOrEqual(5);
-
-    await shelf.locator('.landing-ba__scenes').hover();
-    await expect
-      .poll(async () => (await states()).filter((state) => state === 'running').length)
-      .toBe(0);
-    await page.mouse.move(0, 0);
-    await expect
-      .poll(async () => (await states()).filter((state) => state === 'running').length)
-      .toBeGreaterThan(0);
-  });
-});
-
-test.describe('landing app preview motion', () => {
-  /**
-   * Four cards in the DOM (a video and three articles); a row shows as many as fit at a readable
-   * width, the others are off it (transparent).
-   */
-  const cards = (page: Page): Locator => page.locator('.landing-hero-preview__item');
-  /** The cards on the row: opaque ones. */
-  // String scripts: this project has no DOM lib, and the code runs in the browser anyway.
-  const shownCards = (page: Page): Promise<string[]> =>
-    page.evaluate<string[]>(
-      "[...document.querySelectorAll('.landing-hero-preview__item')].filter((el) => getComputedStyle(el).opacity === '1').map((el) => el.querySelector('.link-preview-card__host')?.textContent.trim() ?? '')",
-    );
-  const toast = (page: Page): Locator => page.locator('.landing-hero-preview__toast');
-  /** Animations still running inside the preview. */
-  const running = (page: Page): Promise<number> =>
-    page
-      .locator('.landing-hero-preview')
-      .evaluate(
+    const mess = shelf.getByRole('img', { name: /scattered across saved messages/ });
+    const running = (): Promise<number> =>
+      mess.evaluate(
         (el) =>
           el
             .getAnimations({ subtree: true })
             .filter((animation: { playState: string }) => animation.playState === 'running').length,
       );
 
-  test('the cards land one after another, then the toast slides in, once', async ({ page }) => {
-    await page.goto('/');
-    await expect(cards(page)).toHaveCount(4);
+    await expect(mess.getByText('Bookmarks bar (91)')).toBeVisible();
+    // Five notes, each on its own endless drift.
+    await expect.poll(running).toBe(5);
 
-    // The toast is the last to arrive: when it is done, every card is done.
-    await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
-    await expect.poll(() => running(page)).toBe(0);
-    expect((await shownCards(page)).length).toBeGreaterThan(0);
-    // That it never lands again while the page stays open: landing-hero-preview.component.spec.ts.
-    await expect(toast(page)).toContainText('Saved to Read later');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect.poll(running).toBe(0);
+  });
+});
+
+test.describe('landing app preview motion', () => {
+  const preview = (page: Page): Locator => page.locator('app-landing-hero-preview');
+  const toast = (page: Page): Locator => preview(page).locator('.preview__toast');
+
+  test('the cards land, the toast slides in, then the preview cycles through its frames', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(preview(page).locator('.preview__card').first()).toBeVisible();
+
+    // The first frame: All links with the toast (16-landing).
+    await expect(toast(page)).toHaveClass(/preview__toast--shown/, { timeout: 5000 });
+    await expect(toast(page)).toHaveCSS('opacity', '1');
+    await expect(toast(page)).toContainText('Saved to Watch later');
     await expect(toast(page)).toContainText('Undo');
+    const title = preview(page).locator('.preview__title');
+    const first = (await title.textContent())?.trim();
+    // Every 3.6 s the next frame; the order and the hold after a click:
+    // landing-preview-cycle.service.spec.ts.
+    await expect
+      .poll(async () => (await title.textContent())?.trim(), { timeout: 8000 })
+      .not.toBe(first);
   });
 });
 
