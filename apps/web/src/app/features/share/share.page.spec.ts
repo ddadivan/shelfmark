@@ -109,7 +109,7 @@ describe('SharePage', () => {
     );
     await vi.waitFor(() => {
       harness.detectChanges();
-      expect(root.textContent).toContain('Rule: example.com → Angular, #docs');
+      expect(root.textContent).toContain('rule for example.com');
     });
     button(root, 'Save').click();
     await vi.waitFor(() => {

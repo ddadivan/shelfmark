@@ -47,20 +47,14 @@
 
     @if (previewState() === PREVIEW_STATE.Failed) {
     <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.preview.failed' | transloco }}</ui-notice>
-    } @if (ruleChip(); as chip) {
-    <div class="share__rule">
-      <ui-chip
-        variant="neutral"
-        icon="globe"
-        removable
-        [removeLabel]="'links.add.rule.remove' | transloco: { domain: chip.domain }"
-        (removed)="dismissRule()"
-        >{{ 'links.add.rule.chip' | transloco: chip }}</ui-chip
-      >
-    </div>
     }
 
+    <!-- Shelf 09-data: the "Goes to … · rule  Change" row of Add link. -->
     <ui-select
+      [appearance]="SELECT_APPEARANCE.Row"
+      [rowLead]="'links.add.goes.lead' | transloco"
+      [rowNote]="ruleChip() ? ('links.add.goes.rule' | transloco: { domain: ruleChip()?.domain }) : ''"
+      [rowAction]="'links.add.goes.change' | transloco"
       [label]="'links.add.folder.label' | transloco"
       [options]="folderOptions()"
       [emptyLabel]="'links.add.folder.unsorted' | transloco"
@@ -71,6 +65,7 @@
     />
 
     <ui-input
+      labelHidden
       [label]="'links.add.note.label' | transloco"
       [placeholder]="'links.add.note.placeholder' | transloco"
       [formField]="form.note"
@@ -80,18 +75,20 @@
     <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.saveFailed' | transloco }}</ui-notice>
     }
 
-    <ui-button
-      class="share__action"
-      size="lg"
-      [type]="BUTTON_TYPE.Submit"
-      [variant]="BUTTON_VARIANT.Primary"
-      [loading]="saving()"
-      >{{ (saving() ? 'links.add.actions.saving' : duplicate() ? 'links.add.actions.saveAnyway' :
-      'share.actions.save' ) | transloco }}</ui-button
-    >
-    <ui-button class="share__action" [disabled]="saving()" (click)="leave()"
-      >{{ 'links.add.actions.cancel' | transloco }}</ui-button
-    >
+    <div class="share__buttons">
+      <ui-button class="share__action" size="lg" [disabled]="saving()" (click)="leave()"
+        >{{ 'links.add.actions.cancel' | transloco }}</ui-button
+      >
+      <ui-button
+        class="share__action"
+        size="lg"
+        [type]="BUTTON_TYPE.Submit"
+        [variant]="BUTTON_VARIANT.Primary"
+        [loading]="saving()"
+        >{{ (saving() ? 'links.add.actions.saving' : duplicate() ? 'links.add.actions.saveAnyway' :
+        'share.actions.save' ) | transloco }}</ui-button
+      >
+    </div>
     <p class="share__footnote">{{ 'share.footnote' | transloco }}</p>
   </form>
   } @case (SHARE_STATE.Invalid) {
