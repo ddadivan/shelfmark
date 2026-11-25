@@ -1,5 +1,4 @@
 <ui-card
-  uiPointerShadow
   [headingLevel]="headingLevel()"
   [href]="href()"
   [image]="image()"
@@ -17,6 +16,7 @@
   (uiLongPress)="onLongPress()"
   (activated)="open($event)"
   (keydown)="onKeydown($event)"
+  (contextmenu)="onContextMenu($event)"
 >
   @if (showCheckbox()) {
     <ui-checkbox
@@ -89,6 +89,10 @@
     <ui-favicon [src]="favicon()" [letter]="letter()" [colour]="colour()" />
     <span class="link-card__host">{{ host() }}</span>
   </span>
+  @if (showDescription() && (link().summary || link().aiStatus === AI_JOB_STATUS.Pending)) {
+    <!-- The description (the site's or AI's summary, or its skeleton right after a save, #391): shown with or without a note, muted, under the site row. -->
+    <app-link-summary slot="summary" class="link-card__summary" [link]="link()" />
+  }
   @if (showTags() && link().tags.length > 0) {
     <app-link-card-tags
       slot="tags"
@@ -102,10 +106,6 @@
   }
   @if (pinnedToTop()) {
     <ui-badge class="link-card__pinned" icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
-  }
-  @if (!link().note && (link().summary || link().aiStatus === AI_JOB_STATUS.Pending)) {
-    <!-- No note of the person's: AI's summary (or its skeleton right after a save, #391), muted. -->
-    <app-link-summary class="link-card__summary" [link]="link()" />
   }
   <ui-menu
     #menu

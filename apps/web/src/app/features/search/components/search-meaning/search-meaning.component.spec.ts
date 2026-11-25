@@ -35,6 +35,7 @@ class LinkCardStub {
   readonly showTags = input(true);
   readonly showFolder = input(true);
   readonly showDate = input(true);
+  readonly showDescription = input(true);
   readonly folder = input<unknown>(null);
   readonly previewable = input(false);
   readonly previewRequested = output<void>();

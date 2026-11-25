@@ -64,7 +64,9 @@ export class LinkRowComponent {
   protected readonly phone = this.viewport.phone;
   /** The meta line shows the summary (or its skeleton right after a save) instead of the domain. */
   protected readonly summarised = computed(
-    () => !!this.link().summary || this.link().aiStatus === AI_JOB_STATUS.Pending,
+    () =>
+      this.showDescription() &&
+      (!!this.link().summary || this.link().aiStatus === AI_JOB_STATUS.Pending),
   );
   private readonly reminders = inject(ReminderFormatService);
   private readonly locale = inject(LocaleService);
@@ -102,6 +104,8 @@ export class LinkRowComponent {
    * date; the tags, summary and badges stay out. Phones keep the title and the date.
    */
   readonly headline = input(false);
+  /** The description (the summary) in the meta line: the View menu's Description switch. */
+  readonly showDescription = input(true);
   /** The compact list beside the desktop preview (#553): no tags, the title gets the room. */
   readonly dense = input(false);
   readonly previewRequested = output<void>();

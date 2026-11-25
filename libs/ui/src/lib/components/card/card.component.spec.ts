@@ -307,14 +307,24 @@ describe('CardComponent', () => {
   it('collapses every empty body slot, so a bare card has no row and no gap', () => {
     const css = compileScss('lib/components/card/card.component.scss');
     expect(css).toMatch(
-      /\.ui-card__source,\s*\.ui-card__tags\s*\{[^}]*\}[\s\S]*:empty\s*\{\s*display: none/,
+      /\.ui-card__source,\s*\.ui-card__summary,\s*\.ui-card__tags\s*\{[^}]*\}[\s\S]*:empty\s*\{\s*display: none/,
     );
     expect(css).toMatch(/\.ui-card__meta:not\(:has\(/);
     expect(css).toMatch(/\.ui-card__note:has\(\.ui-card__note-text:empty\)\s*\{\s*display: none/);
     const bare = TestBed.createComponent(BareHostComponent);
     bare.detectChanges();
     const el = bare.nativeElement as HTMLElement;
-    for (const name of ['site', 'date', 'source', 'tags', 'play', 'select', 'favorite', 'more']) {
+    for (const name of [
+      'site',
+      'date',
+      'source',
+      'summary',
+      'tags',
+      'play',
+      'select',
+      'favorite',
+      'more',
+    ]) {
       expect(el.querySelector(`.ui-card__${name}`)?.childNodes.length ?? 0).toBe(0);
     }
     expect(el.querySelector('.ui-card__note-text')?.childNodes.length).toBe(0);
@@ -364,24 +374,26 @@ describe('CardComponent', () => {
       expect(css).toMatch(/margin: [^;]*;[\s\S]*\.ui-card__note/);
     });
 
-    it('zooms the preview slowly and only without a reduced-motion preference', () => {
-      expect(css).toContain('transform 900ms var(--ease-out)');
-      const zoom = mediaBlocks(css, /no-preference/).join('\n');
-      expect(zoom).toContain('.ui-card__image');
+    it('does not zoom the preview or lift the card on hover (Shelf reference)', () => {
+      expect(css).not.toContain('scale(1.035)');
+      expect(css).not.toContain('900ms');
+      expect(mediaBlocks(css, HOVER_ONLY).join('\n')).not.toContain('translateY');
     });
 
-    it('shows the actions without hover on touch', () => {
+    it('opens the ⋯ next to the star only on hover, keyboard focus or touch', () => {
+      const hover = mediaBlocks(css, HOVER_ONLY).join('\n');
+      expect(hover).toMatch(/\.ui-card__more\s*{[^}]*opacity: 1;/);
       const touch = mediaBlocks(css, /hover:\s*none/).join('\n');
       expect(touch).toMatch(/\.ui-card__more\s*{[^}]*opacity: 1;/);
+      expect(css).toMatch(
+        /:host\(:has\(:focus-visible\)\)[^{]*\.ui-card__more\s*{[^}]*opacity: 1;/,
+      );
+      expect(css).toMatch(/\.ui-card__more\s*{[^}]*inline-size: 0;[^}]*opacity: 0;/);
     });
 
-    it('drops the zoom and the slides under reduced motion but keeps colour and shadow', () => {
-      const hover = mediaBlocks(css, HOVER_ONLY).join('\n');
-      expect(hover).not.toContain('scale(1.035)');
-      const zoom = mediaBlocks(css, /no-preference/).join('\n');
-      expect(zoom).toContain('scale(1.035)');
+    it('moves the ⋯ in without animation under reduced motion', () => {
       const reduced = mediaBlocks(css, /prefers-reduced-motion:\s*reduce/).join('\n');
-      expect(reduced).toContain('transform: none');
+      expect(reduced).toContain('transition: none');
       expect(css).toContain('box-shadow var(--duration-base)');
     });
   });

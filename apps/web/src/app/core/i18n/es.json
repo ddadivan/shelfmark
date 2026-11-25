@@ -1299,7 +1299,8 @@
         "note": "Nota",
         "tags": "Hashtags",
         "folder": "Carpeta",
-        "date": "Fecha"
+        "date": "Fecha",
+        "description": "Descripción"
       }
     },
     "split": {

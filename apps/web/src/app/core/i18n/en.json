@@ -1276,7 +1276,8 @@
         "note": "Note",
         "tags": "Hashtags",
         "folder": "Folder",
-        "date": "Date"
+        "date": "Date",
+        "description": "Description"
       }
     },
     "split": {

@@ -25,13 +25,14 @@ let nextId = 0;
  * The link card of the feed (Shelf LinkCard): a `surface` box with a hairline at rest (a lighter
  * fill in dark) and `radius-card` corners. The preview is full bleed at the top (`media`) and
  * content comes in through slots (`slot="..."` attributes): over the preview `play` (top left,
- * videos), `favorite` (top right), `actions` (the "..." menu trigger, beside the star, on hover)
- * and `select` (a `ui-checkbox` for bulk selection, in the place of the play mark: shown on hover,
- * focus inside, while `selecting` and always on touch), plus `overlay` (a bar over the preview)
+ * videos), `favorite` (top right), `actions` (the "..." menu trigger, beside the star: only on
+ * keyboard focus inside the card, while its menu is open and on touch, never on hover) and `select`
+ * (a `ui-checkbox` for bulk selection, in the place of the play mark: shown in select mode
+ * (`selecting`), on a `checked` card and on keyboard focus, never on hover), plus `overlay` (a bar over the preview)
  * and `fallback` (shown instead of the image, for example the site letter; without it a picture
  * drawing). In the body: `meta` (the folder: filled icon and name) with `date` at its end,
  * `title` (inside the link, so it names the card), `source` (favicon and channel, repository or
- * price and domain), `tags` (up to three `#tag` words) and `note` (the person's note, with a pen,
+ * price and domain), `summary` (the description, under the source), `tags` (up to three `#tag` words) and `note` (the person's note, with a pen,
  * on sage); the default slot is for anything else. Every empty slot takes no room.
  *
  * **One activation target.** The title lives in a single native `<a>` (with `href`) or
@@ -50,10 +51,9 @@ let nextId = 0;
  * are blocked and the fallbacks show until stage 3 decides on an image proxy or a CSP change
  * (see the image-sources issue #57 in milestone 3).
  *
- * Hover (pointer devices only): the hover shadow settles in 200 ms (in dark the fill lightens), the
- * preview zooms 3.5% over 900 ms, the overlay slides up 8 px and the ⋯ fades in. Press tightens
- * the shadow (80 ms). The card never lifts or scales and has no ripple. Under reduced motion there
- * is no zoom or slide; colour and shadow transitions stay.
+ * Hover (pointer devices only, Shelf reference): only a slight colour change of the card, the soft
+ * hover shadow in light and a 4% white overlay in dark (`--card-hover-bg`). No lift, no zoom, no
+ * controls appear. Press tightens the shadow (80 ms). No ripple.
  */
 @Component({
   selector: 'ui-card',

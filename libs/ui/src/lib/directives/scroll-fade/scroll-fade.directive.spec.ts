@@ -8,6 +8,8 @@ import { ScrollFadeDirective } from './scroll-fade.directive';
 })
 class HostComponent {}
 
+const frame = () => new Promise<void>((done) => queueMicrotask(() => queueMicrotask(done)));
+
 describe('ScrollFadeDirective', () => {
   let resize: () => void;
   let metrics: { scrollTop: number; scrollHeight: number; clientHeight: number };
@@ -24,8 +26,9 @@ describe('ScrollFadeDirective', () => {
         disconnect = vi.fn();
       },
     );
+    // A frame is a microtask here; `frame()` waits for it.
     vi.stubGlobal('requestAnimationFrame', (cb: () => void) => {
-      cb();
+      queueMicrotask(cb);
       return 1;
     });
     vi.stubGlobal('cancelAnimationFrame', vi.fn());
@@ -44,9 +47,10 @@ describe('ScrollFadeDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const area = fixture.nativeElement.querySelector('.area') as HTMLElement;
-    const scrollTo = (top: number) => {
+    const scrollTo = async (top: number) => {
       metrics.scrollTop = top;
       area.dispatchEvent(new Event('scroll'));
+      await frame();
     };
     return { area, scrollTo };
   }
@@ -59,23 +63,23 @@ describe('ScrollFadeDirective', () => {
 
   it('shows both fades in the middle', async () => {
     const { area, scrollTo } = await setup();
-    scrollTo(100);
+    await scrollTo(100);
     expect(area.hasAttribute('data-scroll-top')).toBe(true);
     expect(area.hasAttribute('data-scroll-bottom')).toBe(true);
   });
 
   it('shows only the top fade at the end', async () => {
     const { area, scrollTo } = await setup();
-    scrollTo(300);
+    await scrollTo(300);
     expect(area.hasAttribute('data-scroll-top')).toBe(true);
     expect(area.hasAttribute('data-scroll-bottom')).toBe(false);
   });
 
   it('ignores sub-pixel positions at the edges', async () => {
     const { area, scrollTo } = await setup();
-    scrollTo(0.5);
+    await scrollTo(0.5);
     expect(area.hasAttribute('data-scroll-top')).toBe(false);
-    scrollTo(299.5);
+    await scrollTo(299.5);
     expect(area.hasAttribute('data-scroll-bottom')).toBe(false);
   });
 
@@ -91,6 +95,7 @@ describe('ScrollFadeDirective', () => {
     const { area } = await setup();
     metrics.scrollHeight = 600;
     resize();
+    await frame();
     expect(area.hasAttribute('data-scroll-bottom')).toBe(true);
   });
 });

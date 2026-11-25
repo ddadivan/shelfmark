@@ -48,15 +48,17 @@ describe('CardComponent select slot', () => {
     expect(host.querySelector('.ui-card__link')?.hasAttribute('aria-current')).toBe(false);
   });
 
-  it('shows the checkbox on hover only for hover pointers, on focus, while selecting and on touch', () => {
+  it('shows the checkbox on hover (hover pointers), on focus and while selecting, not on touch', () => {
     const css = compileScss('lib/components/card/card.component.scss');
     const hover = mediaBlocks(css, /\(hover: ?hover\)/).join('\n');
     expect(hover).toContain('.ui-card__select');
     const touch = mediaBlocks(css, /\(hover: ?none\)/).join('\n');
-    expect(touch).toContain('.ui-card__select');
+    expect(touch).not.toContain('.ui-card__select');
     const base = css;
     expect(base).toContain('.ui-card--selecting');
     expect(base).toMatch(/box-shadow: 0 0 0 2px var\(--accent\)/);
+    // Unchecked it is the glass of the star pill.
+    expect(base).toContain('--ui-checkbox-bg: var(--glass)');
     // The checkbox takes the place of the play mark.
     expect(hover).toContain('.ui-card__play');
   });

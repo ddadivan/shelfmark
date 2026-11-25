@@ -61,10 +61,16 @@ describe('LinkCardComponent', () => {
       expect(await axe.run(element).then((result) => result.violations)).toEqual([]);
     });
 
-    it("lets the note win the slot and shows the user's summary without the mark", async () => {
+    it("shows the description with a note too, and the user's summary without the mark", async () => {
       const noted = await setup({ ...SUMMARISED, note: 'Start here.' });
-      expect(noted.element.querySelector('app-link-summary')).toBeNull();
+      expect(noted.element.querySelector('app-link-summary')).not.toBeNull();
       expect(noted.element.textContent).toContain('Start here.');
+      TestBed.resetTestingModule();
+
+      const hidden = await setup(SUMMARISED);
+      hidden.fixture.componentRef.setInput('showDescription', false);
+      hidden.fixture.detectChanges();
+      expect(hidden.element.querySelector('app-link-summary')).toBeNull();
       TestBed.resetTestingModule();
 
       const own = await setup({ ...SUMMARISED, summarySource: SUMMARY_SOURCE.User });
@@ -316,6 +322,53 @@ describe('LinkCardComponent', () => {
     menuItem('Delete').click();
 
     expect(requested).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens the actions menu with a right click on the card', async () => {
+    const { fixture, element } = await setup();
+    const requested = vi.fn();
+    fixture.componentInstance.deleteRequested.subscribe(requested);
+
+    const event = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 40,
+      clientY: 30,
+    });
+    element.querySelector('ui-card')?.dispatchEvent(event);
+    await fixture.whenStable();
+
+    expect(event.defaultPrevented).toBe(true);
+    menuItem('Delete').click();
+    expect(requested).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens the actions menu with Shift+F10 and the context-menu key', async () => {
+    for (const init of [{ key: 'F10', shiftKey: true }, { key: 'ContextMenu' }]) {
+      const { fixture, element } = await setup();
+      const requested = vi.fn();
+      fixture.componentInstance.editRequested.subscribe(requested);
+
+      const event = new KeyboardEvent('keydown', { ...init, bubbles: true, cancelable: true });
+      element.querySelector('ui-card')?.dispatchEvent(event);
+      await fixture.whenStable();
+
+      expect(event.defaultPrevented).toBe(true);
+      menuItem('Edit').click();
+      expect(requested).toHaveBeenCalledTimes(1);
+      TestBed.resetTestingModule();
+    }
+  });
+
+  it('does not open a menu on a right click of a read-only card', async () => {
+    const { fixture, element } = await setup();
+    fixture.componentRef.setInput('readOnly', true);
+    await fixture.whenStable();
+
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    element.querySelector('ui-card')?.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
   });
 
   it('emits editRequested from the first item of the actions menu', async () => {

@@ -7,4 +7,5 @@ export const CARD_FIELD_KEYS: Readonly<Record<CardField, string>> = {
   [CARD_FIELD.Tags]: 'library.viewMenu.fields.tags',
   [CARD_FIELD.Folder]: 'library.viewMenu.fields.folder',
   [CARD_FIELD.Date]: 'library.viewMenu.fields.date',
+  [CARD_FIELD.Description]: 'library.viewMenu.fields.description',
 };
