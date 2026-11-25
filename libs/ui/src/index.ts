@@ -5,6 +5,7 @@ export * from './lib/components/ask-starters';
 export * from './lib/components/avatar';
 export * from './lib/components/badge';
 export * from './lib/components/breadcrumbs';
+export * from './lib/components/link-tile';
 export * from './lib/components/bulk-bar';
 export * from './lib/components/button';
 export * from './lib/components/card';

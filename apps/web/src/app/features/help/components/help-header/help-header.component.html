@@ -1,49 +1,54 @@
-<header class="help-header">
-  <div class="help-header__bar">
-    <a class="help-header__home" [routerLink]="helpPath">
-      <ui-logo class="help-header__logo" [wordmark]="'landing.header.brand' | transloco" />
-      <span class="help-header__tag">{{ 'help.brand' | transloco }}</span>
-    </a>
-    <ui-search-trigger
-      class="help-header__search"
-      [label]="'help.searchTrigger' | transloco"
-      [shortcut]="'help.searchShortcut' | transloco"
-      ariaKeyshortcuts="Control+K Meta+K"
-      (click)="searchRequested.emit()"
-    />
-    <ui-button
-      class="help-header__search-icon"
-      [variant]="BUTTON_VARIANT.Ghost"
-      [size]="BUTTON_SIZE.Md"
-      iconLeft="search"
-      iconOnly
-      [ariaLabel]="'help.searchTrigger' | transloco"
-      (click)="searchRequested.emit()"
-    />
+<header class="top">
+  @if (compact()) {
     <ui-button
       [variant]="BUTTON_VARIANT.Ghost"
       [size]="BUTTON_SIZE.Md"
-      [iconLeft]="dark() ? 'sun' : 'moon'"
+      iconLeft="menu"
       iconOnly
-      [ariaLabel]="'landing.header.theme' | transloco"
-      (click)="toggleTheme()"
+      [ariaLabel]="'help.nav' | transloco"
+      ariaHaspopup="dialog"
+      (click)="menuRequested.emit()"
     />
-    @if (signedIn()) {
-      <ui-button
-        class="help-header__action"
-        [variant]="BUTTON_VARIANT.Primary"
-        [href]="LANDING_LINKS.Shelf"
-        [appAppLink]="LANDING_LINKS.Shelf"
-        >{{ 'landing.backToShelf' | transloco }}</ui-button
-      >
-    } @else {
-      <ui-button
-        class="help-header__action"
-        [variant]="BUTTON_VARIANT.Primary"
-        [href]="LANDING_LINKS.SignIn"
-        [appAppLink]="LANDING_LINKS.SignIn"
-        >{{ 'landing.header.signIn' | transloco }}</ui-button
-      >
-    }
-  </div>
+  }
+  <ui-search-trigger
+    class="top__search"
+    [label]="'help.searchTrigger' | transloco"
+    [shortcut]="'help.searchShortcut' | transloco"
+    ariaKeyshortcuts="Control+K Meta+K"
+    (click)="searchRequested.emit()"
+  />
+  <ui-button
+    class="top__search-icon"
+    [variant]="BUTTON_VARIANT.Ghost"
+    [size]="BUTTON_SIZE.Md"
+    iconLeft="search"
+    iconOnly
+    [ariaLabel]="'help.searchTrigger' | transloco"
+    (click)="searchRequested.emit()"
+  />
+  <ui-button
+    [variant]="BUTTON_VARIANT.Ghost"
+    [size]="BUTTON_SIZE.Md"
+    [iconLeft]="dark() ? 'sun' : 'moon'"
+    iconOnly
+    [ariaLabel]="'landing.header.theme' | transloco"
+    (click)="toggleTheme()"
+  />
+  @if (signedIn()) {
+    <ui-button
+      class="top__action"
+      [variant]="BUTTON_VARIANT.Primary"
+      [href]="LANDING_LINKS.Shelf"
+      [appAppLink]="LANDING_LINKS.Shelf"
+      >{{ 'landing.backToShelf' | transloco }}</ui-button
+    >
+  } @else {
+    <ui-button
+      class="top__action"
+      [variant]="BUTTON_VARIANT.Primary"
+      [href]="LANDING_LINKS.SignIn"
+      [appAppLink]="LANDING_LINKS.SignIn"
+      >{{ 'landing.header.signIn' | transloco }}</ui-button
+    >
+  }
 </header>

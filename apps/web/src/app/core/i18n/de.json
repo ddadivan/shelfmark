@@ -5242,6 +5242,7 @@
           }
         }
       }
-    }
+    },
+    "closeMenu": "Menü schließen"
   }
 }

@@ -36,6 +36,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
     '[class.ui-notice--danger]': 'kind() === NOTICE_KIND.Danger',
     '[class.ui-notice--info]': 'kind() === NOTICE_KIND.Info',
     '[class.ui-notice--quiet]': 'kind() === NOTICE_KIND.Quiet',
+    '[class.ui-notice--tip]': 'kind() === NOTICE_KIND.Tip',
     '[class.ui-notice--banner]': 'banner()',
     '[attr.role]': "kind() === NOTICE_KIND.Danger ? 'alert' : 'status'",
   },
@@ -46,7 +47,7 @@ export class NoticeComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
 
-  /** `warning`, `danger`, `info` or `quiet`. */
+  /** `warning`, `danger`, `info`, `quiet` or `tip`. */
   readonly kind = input<NoticeKind>(NOTICE_KIND.Warning);
   /** Icon override; defaults to `warning` for a warning and `error` for danger. */
   readonly icon = input<IconName>();

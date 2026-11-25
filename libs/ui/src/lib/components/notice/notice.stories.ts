@@ -66,6 +66,15 @@ export const Banner: Story = {
   }),
 };
 
+/** `tip`: a sage note in an article, with the bulb. */
+export const Tip: Story = {
+  args: { kind: 'tip' },
+  render: (args) => ({
+    props: args,
+    template: `<ui-notice [kind]="kind">Open a link’s menu and choose Rule for this site.</ui-notice>`,
+  }),
+};
+
 /** `quiet`: the plain row (the Ask limit) with a trailing action. */
 export const Quiet: Story = {
   args: { kind: 'quiet', icon: 'bell' },

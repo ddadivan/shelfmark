@@ -1,0 +1,16 @@
+<a
+  class="ui-link-tile__link"
+  [attr.href]="href()"
+  [attr.target]="newTab() ? '_blank' : null"
+  [attr.rel]="newTab() ? 'noopener noreferrer' : null"
+  (click)="activated.emit($event)"
+>
+  @if (icon(); as name) {
+    <span class="ui-link-tile__icon"><ui-icon [name]="name" /></span>
+  }
+  <span class="ui-link-tile__body">
+    <span class="ui-link-tile__eyebrow"><ng-content select="[slot=eyebrow]" /></span>
+    <span class="ui-link-tile__heading"><ng-content select="[slot=heading]" /></span>
+    <span class="ui-link-tile__text"><ng-content select="[slot=text]" /></span>
+  </span>
+</a>

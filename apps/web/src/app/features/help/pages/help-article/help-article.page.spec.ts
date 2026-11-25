@@ -28,17 +28,17 @@ describe('HelpArticlePage', () => {
     expect(root.querySelectorAll('.body__step')).toHaveLength(3);
     expect(root.querySelector('app-help-rule-mock')).not.toBeNull();
     expect(root.querySelectorAll('.doc__related a')).toHaveLength(4);
-    expect(root.querySelector('a[rel="prev"]')?.getAttribute('href')).toBe('/help/tags');
-    expect(root.querySelector('a[rel="next"]')?.getAttribute('href')).toBe('/help/favorites-pins');
+    const pager = [...root.querySelectorAll('.doc__pager a')].map((a) => a.getAttribute('href'));
+    expect(pager).toEqual(['/help/tags', '/help/favorites-pins']);
     expect(root.textContent).not.toMatch(/help\.(articles|categories)/);
   });
 
   it('marks the open article in the topics nav and lists "On this page"', async () => {
     provideArticle('rules');
     const root = (await createTranslated(HelpArticlePage)).nativeElement as HTMLElement;
-    const open = root.querySelector('.doc__nav [aria-current="page"]');
+    const open = root.querySelector('app-help-sidebar [aria-current="page"]');
 
-    expect(open?.textContent?.trim()).toBe('Rules: file links automatically');
+    expect(open?.textContent).toContain('Rules: file links automatically');
     expect(root.querySelectorAll('.help-toc__link')).toHaveLength(4);
   });
 

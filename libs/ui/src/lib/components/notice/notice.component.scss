@@ -28,6 +28,11 @@
     background: var(--accent-bg);
   }
 
+  &--tip {
+    color: var(--note-text);
+    background: var(--ai-bg);
+  }
+
   &--quiet {
     color: var(--text);
     background: var(--surface);

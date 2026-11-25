@@ -1,0 +1,19 @@
+<nav class="side" [attr.aria-label]="'help.nav' | transloco">
+  <a class="side__head" [routerLink]="helpPath">
+    <ui-logo class="side__logo" [wordmark]="'landing.header.brand' | transloco" />
+    <span class="side__tag">{{ 'help.brand' | transloco }}</span>
+  </a>
+  <div class="side__scroll">
+    @for (group of groups(); track group.id) {
+      <section class="side__group" [attr.aria-labelledby]="'help-side-' + group.id">
+        <h2 class="side__heading" [id]="'help-side-' + group.id">{{ group.title }}</h2>
+        <ui-tree
+          [fixedNodes]="group.nodes"
+          [activeId]="currentId()"
+          [ariaLabel]="group.title"
+          (selected)="open($event)"
+        />
+      </section>
+    }
+  </div>
+</nav>

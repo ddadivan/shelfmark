@@ -1,0 +1,73 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.side {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+// The head of the app sidebar: a 32px row with the logo (22px mark, 16/24 600 wordmark).
+.side__head {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  height: var(--control-sm);
+  padding-inline: var(--space-2);
+  margin-bottom: var(--space-4);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.side__logo {
+  --ui-logo-size: #{rem(22px)};
+  --ui-logo-gap: var(--space-2);
+  --ui-logo-wordmark-size: #{rem(16px)};
+  --ui-logo-wordmark-line: #{rem(24px)};
+}
+
+.side__tag {
+  padding-inline-start: var(--space-2);
+  color: var(--text-muted);
+  border-inline-start: 1px solid var(--sep);
+
+  @include type(heading);
+
+  font-weight: 400;
+}
+
+// The middle scrolls on its own, with the soft edges of the app sidebar.
+.side__scroll {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 0;
+  padding-bottom: var(--space-6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  @include scroll-fade(var(--sidebar));
+}
+
+.side__heading {
+  padding: 0 var(--space-2) var(--space-1);
+  margin: 0;
+  color: var(--text-muted);
+
+  @include type(caption);
+
+  font-weight: 500;
+}

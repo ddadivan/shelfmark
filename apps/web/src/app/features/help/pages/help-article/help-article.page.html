@@ -1,97 +1,92 @@
-<app-help-header (searchRequested)="openSearch()" />
-@if (article(); as article) {
-<main class="doc">
-  <aside class="doc__nav">
-    <app-help-nav [currentId]="article.id" />
-  </aside>
+<app-help-shell
+  [currentId]="article()?.id ?? null"
+  [resetKey]="article()?.id ?? null"
+  (searchRequested)="openSearch()"
+  (scrolled)="trackSection()"
+>
+  @if (article(); as article) {
+  <main class="doc">
+    <article class="doc__article">
+      <ui-breadcrumbs
+        class="doc__crumbs"
+        [items]="crumbs()"
+        [ariaLabel]="'help.crumbs' | transloco"
+        [collapsedLabel]="'help.topics' | transloco"
+      />
+      <h1 class="doc__title">{{ 'help.articles.' + article.id + '.title' | transloco }}</h1>
+      <p class="doc__lead">{{ 'help.articles.' + article.id + '.lead' | transloco }}</p>
+      <p class="doc__meta">
+        <span>{{ minutesKey() | transloco: { count: article.minutes } }}</span>
+        <span>{{ 'help.updated' | transloco: { date: (article.updated | appDate) } }}</span>
+      </p>
 
-  <article class="doc__article">
-    <div class="doc__mobile">
-      <ui-button
-        block
-        iconLeft="book"
-        disclosure
-        [attr.aria-expanded]="topicsOpen()"
-        aria-controls="help-topics"
-        (click)="topicsOpen.set(!topicsOpen())"
-        >{{ mobileLabel() }}</ui-button
-      >
-      @if (topicsOpen()) {
-      <div id="help-topics" class="doc__topics">
-        <app-help-nav [currentId]="article.id" />
-      </div>
+      <app-help-article-body [article]="article" />
+
+      <h2 class="doc__related-heading">{{ 'help.related' | transloco }}</h2>
+      <ul class="doc__related">
+        @for (item of related(); track item.id) {
+        <li>
+          <ui-link-tile
+            [href]="navigation.articleUrl(item.id)"
+            (activated)="navigation.go($event, navigation.articleUrl(item.id))"
+          >
+            <span slot="heading">{{ 'help.articles.' + item.id + '.title' | transloco }}</span>
+            <span slot="text">{{ 'help.categories.' + item.category + '.title' | transloco }}</span>
+          </ui-link-tile>
+        </li>
+        }
+      </ul>
+
+      <app-help-feedback [articleId]="article.id" (feedbackRequested)="sendFeedback()" />
+
+      @if (neighbours(); as near) {
+      <nav class="doc__pager" [attr.aria-label]="'help.articleNav' | transloco">
+        @if (near.previous; as previous) {
+        <ui-link-tile
+          [href]="navigation.articleUrl(previous.id)"
+          (activated)="navigation.go($event, navigation.articleUrl(previous.id))"
+        >
+          <span slot="eyebrow">{{ 'help.previous' | transloco }}</span>
+          <span slot="heading">{{ 'help.articles.' + previous.id + '.title' | transloco }}</span>
+        </ui-link-tile>
+        } @else {
+        <span></span>
+        } @if (near.next; as next) {
+        <ui-link-tile
+          end
+          [href]="navigation.articleUrl(next.id)"
+          (activated)="navigation.go($event, navigation.articleUrl(next.id))"
+        >
+          <span slot="eyebrow">{{ 'help.next' | transloco }}</span>
+          <span slot="heading">{{ 'help.articles.' + next.id + '.title' | transloco }}</span>
+        </ui-link-tile>
+        }
+      </nav>
       }
-    </div>
+    </article>
 
-    <ui-breadcrumbs
-      class="doc__crumbs"
-      [items]="crumbs()"
-      [ariaLabel]="'help.crumbs' | transloco"
-      [collapsedLabel]="'help.topics' | transloco"
-    />
-    <h1 class="doc__title">{{ 'help.articles.' + article.id + '.title' | transloco }}</h1>
-    <p class="doc__lead">{{ 'help.articles.' + article.id + '.lead' | transloco }}</p>
-    <p class="doc__meta">
-      <span>{{ minutesKey() | transloco: { count: article.minutes } }}</span>
-      <span>{{ 'help.updated' | transloco: { date: (article.updated | appDate) } }}</span>
-    </p>
-
-    <app-help-article-body [article]="article" />
-
-    <h2 class="doc__related-heading">{{ 'help.related' | transloco }}</h2>
-    <ul class="doc__related">
-      @for (item of related(); track item.id) {
-      <li>
-        <a class="doc__card" [routerLink]="[helpPath, item.id]">
-          <b>{{ 'help.articles.' + item.id + '.title' | transloco }}</b>
-          <span>{{ 'help.categories.' + item.category + '.title' | transloco }}</span>
-        </a>
-      </li>
-      }
-    </ul>
-
-    <app-help-feedback [articleId]="article.id" (feedbackRequested)="sendFeedback()" />
-
-    @if (neighbours(); as near) {
-    <nav class="doc__pager" [attr.aria-label]="'help.articleNav' | transloco">
-      @if (near.previous; as previous) {
-      <a class="doc__card" [routerLink]="[helpPath, previous.id]" rel="prev">
-        <span>{{ 'help.previous' | transloco }}</span>
-        <b>{{ 'help.articles.' + previous.id + '.title' | transloco }}</b>
-      </a>
-      } @else {
-      <span></span>
-      } @if (near.next; as next) {
-      <a class="doc__card doc__card--next" [routerLink]="[helpPath, next.id]" rel="next">
-        <span>{{ 'help.next' | transloco }}</span>
-        <b>{{ 'help.articles.' + next.id + '.title' | transloco }}</b>
-      </a>
-      }
-    </nav>
-    }
-  </article>
-
-  <aside class="doc__toc">
-    <app-help-toc
-      [articleId]="article.id"
-      [sections]="article.sections"
-      [activeId]="activeSection() ?? article.sections[0].id"
-      (selected)="scrollTo($event)"
-    />
-  </aside>
-</main>
-} @else {
-<main class="missing">
-  <ui-empty-state
-    layout="page"
-    illustration="page-not-found"
-    [headingLevel]="1"
-    [heading]="'help.notFound.title' | transloco"
-    [text]="'help.notFound.text' | transloco"
-  >
-    <ui-button [variant]="BUTTON_VARIANT.Primary" [href]="helpPath"
-      >{{ 'help.notFound.action' | transloco }}</ui-button
+    <aside class="doc__toc">
+      <app-help-toc
+        [articleId]="article.id"
+        [sections]="article.sections"
+        [activeId]="activeSection() ?? article.sections[0].id"
+        (selected)="scrollTo($event)"
+      />
+    </aside>
+  </main>
+  } @else {
+  <main class="missing">
+    <ui-empty-state
+      layout="page"
+      illustration="page-not-found"
+      [headingLevel]="1"
+      [heading]="'help.notFound.title' | transloco"
+      [text]="'help.notFound.text' | transloco"
     >
-  </ui-empty-state>
-</main>
-}
+      <ui-button [variant]="BUTTON_VARIANT.Primary" [href]="helpPath"
+        >{{ 'help.notFound.action' | transloco }}</ui-button
+      >
+    </ui-empty-state>
+  </main>
+  }
+</app-help-shell>

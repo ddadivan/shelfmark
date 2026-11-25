@@ -52,24 +52,7 @@
   }
 }
 
-// Shelf `.tip`: a sage note.
-.body__tip {
-  display: flex;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  margin: rem(18px) 0 0;
-  color: var(--note-text);
-  background: var(--ai-bg);
-  border-radius: var(--radius-md);
-
-  @include type(secondary);
-}
-
-.body__tip-icon {
-  flex: none;
-  margin-top: rem(3px);
-}
-
-.body__warn {
+// A tip or a limit to know about: the notice's own look, 18px below the text above.
+.body__note {
   margin-top: rem(18px);
 }

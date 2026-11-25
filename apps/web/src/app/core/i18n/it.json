@@ -5361,6 +5361,7 @@
           }
         }
       }
-    }
+    },
+    "closeMenu": "Chiudi il menu"
   }
 }

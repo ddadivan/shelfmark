@@ -8,4 +8,5 @@ export const NOTICE_KIND_ICON = {
   [NOTICE_KIND.Danger]: 'error',
   [NOTICE_KIND.Info]: 'info',
   [NOTICE_KIND.Quiet]: 'info',
+  [NOTICE_KIND.Tip]: 'bulb',
 } as const satisfies Record<NoticeKind, IconName>;
