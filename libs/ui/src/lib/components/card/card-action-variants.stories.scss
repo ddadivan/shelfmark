@@ -1,0 +1,219 @@
+@use '../../../styles/ui' as *;
+
+// Proposal only: three placements of the card controls, applied from the outside to the shipped
+// `ui-card` (its own styles stay untouched). Story-only classes start with `va-`; never shipped.
+
+.va-stage {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.va-pane {
+  display: grid;
+  gap: var(--space-4);
+  justify-content: start;
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.va-title {
+  margin: 0;
+  font-size: var(--font-size-meta);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.va-row {
+  display: grid;
+  grid-template-columns: repeat(4, rem(240px));
+  gap: var(--space-6);
+}
+
+.va-compare {
+  display: grid;
+  grid-template-columns: repeat(3, rem(260px));
+  gap: var(--space-6);
+}
+
+.va-cell {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  margin: 0;
+}
+
+.va-caption {
+  font-size: var(--font-size-meta);
+  color: var(--text-muted);
+}
+
+// The forced hover (`.is-hover`) and the real hover / focus-within share one rule list.
+@mixin shown {
+  &:hover,
+  &:focus-within,
+  &.is-hover {
+    @content;
+  }
+}
+
+// The select circle: glass like the other controls (unchecked), the accent fill when checked.
+.va ui-card .ui-card__select {
+  --ui-checkbox-hover-bg: var(--glass);
+  --ui-checkbox-pressed-bg: var(--glass);
+
+  .ui-checkbox__input:not(:checked, :indeterminate) + .ui-checkbox__box {
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+
+    @supports (backdrop-filter: blur(1px)) {
+      backdrop-filter: blur(#{rem(10px)});
+    }
+  }
+}
+
+.va ui-card.is-hover {
+  box-shadow: var(--shadow-hover);
+
+  .ui-card__select {
+    opacity: 1;
+  }
+}
+
+// The pill [star | more]: one glass 28px-high capsule around the two buttons, a hairline between.
+@mixin pill {
+  .ui-card__actions {
+    gap: 0;
+    height: rem(28px);
+    background: var(--glass);
+    border-radius: var(--radius-full);
+
+    @supports (backdrop-filter: blur(1px)) {
+      backdrop-filter: blur(#{rem(10px)});
+    }
+  }
+
+  .ui-card__favorite {
+    order: -1;
+  }
+
+  .ui-card__actions .ui-button--glass {
+    background: transparent;
+    backdrop-filter: none;
+
+    &:not([aria-disabled='true']):hover {
+      background: var(--surface-hover);
+      box-shadow: none;
+    }
+  }
+
+  .ui-card__more {
+    opacity: 1;
+    transform: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: rem(7px);
+      inset-inline-start: 0;
+      /* stylelint-disable-next-line unit-disallowed-list -- 1px hairline divider */
+      width: 1px;
+      background: var(--line-strong);
+    }
+  }
+}
+
+// A: clean at rest
+
+.va-a ui-card {
+  @include pill;
+
+  // Rest: nothing, except a small filled star badge when the link is a favorite.
+  .ui-card__actions {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .ui-card__more {
+    display: none;
+  }
+
+  &.ui-card--favorited:not(:hover, :focus-within, .is-hover) {
+    .ui-card__actions {
+      pointer-events: auto;
+      background: transparent;
+      opacity: 1;
+      backdrop-filter: none;
+    }
+
+    .ui-card__favorite .ui-button--glass {
+      --ui-button-glass-size: #{rem(22px)};
+
+      background: var(--glass);
+      backdrop-filter: blur(#{rem(10px)});
+    }
+  }
+
+  @include shown {
+    .ui-card__actions {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    .ui-card__more {
+      display: flex;
+    }
+  }
+}
+
+// B: the pill always
+
+.va-b ui-card {
+  @include pill;
+}
+
+// C: actions in the footer
+
+.va-c ui-card {
+  .ui-card__actions {
+    display: none;
+  }
+
+  .ui-card__source {
+    overflow: visible;
+  }
+
+  // Ghost icon buttons at the end of the site row, above the stretched link.
+  .va-foot {
+    --ui-button-icon-size: #{rem(16px)};
+    --ui-button-sm-size: #{rem(24px)};
+
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .va-foot--first {
+    margin-inline-start: auto;
+  }
+
+  @include shown {
+    .va-foot {
+      opacity: 1;
+    }
+  }
+
+  .va-foot--on {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    .va-foot {
+      opacity: 1;
+    }
+  }
+}
