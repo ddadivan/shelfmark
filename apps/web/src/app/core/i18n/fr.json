@@ -1261,7 +1261,13 @@
       "newest": "Les plus récents d’abord",
       "oldest": "Les plus anciens d’abord",
       "title": "Titre A–Z",
-      "titleDesc": "Titre Z–A"
+      "titleDesc": "Titre Z–A",
+      "opened": "Ouverts récemment",
+      "edited": "Modifiés récemment",
+      "site": "Site A–Z",
+      "favorites": "Favoris d’abord",
+      "groupDate": "Date",
+      "groupName": "Nom"
     },
     "search": {
       "chip": "Recherche : {{query}}",
@@ -2807,8 +2813,8 @@
       "saved": {
         "label": "Ajouté",
         "any": "Toujours",
-        "month": "Le mois dernier",
-        "week": "La semaine dernière"
+        "month": "Mois dernier",
+        "week": "Semaine dernière"
       },
       "only": {
         "label": "Seulement",

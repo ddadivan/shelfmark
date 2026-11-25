@@ -2,7 +2,14 @@ import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_FIXTURE } from './models/mock-fixture.const';
-import { exportButton, selectButton, sortButton, switchView } from './support/library-toolbar';
+import {
+  chooseSort,
+  expectSort,
+  exportButton,
+  selectButton,
+  sortButton,
+  switchView,
+} from './support/library-toolbar';
 import { seedSession } from './support/mock-session';
 import { isCompact, isPhone } from './support/sidebar';
 
@@ -204,10 +211,10 @@ test.describe('library view controls (mock API)', () => {
     await page.keyboard.press('Escape');
     await expect(folderMenu).toBeHidden();
 
-    // Sort and Export are toolbar buttons; Sort lists the four orders and nothing else.
+    // Sort and Export are toolbar buttons; Sort lists the eight orders (under Date and Name) and nothing else.
     await sortButton(page).click();
     const sort = page.getByRole('menu', { name: 'Sort by' });
-    await expect(sort.getByRole('menuitemradio')).toHaveCount(4);
+    await expect(sort.getByRole('menuitemradio')).toHaveCount(8);
     await expect(sort.getByRole('menuitem')).toHaveCount(0);
     await expect(
       sort.getByRole('menuitemradio', { name: /Select|Filter|Side by side|Save|Export/u }),
@@ -250,5 +257,19 @@ test.describe('library view controls (mock API)', () => {
     // Centred in the feed column.
     const centre = (box: { x: number; width: number }) => box.x + box.width / 2;
     expect(Math.abs(centre(barBox) - centre(areaBox))).toBeLessThanOrEqual(12);
+  });
+
+  test('the sort menu offers the newer orders and keeps the choice in ?sort=', async ({ page }) => {
+    await openFeed(page);
+    for (const [name, value] of [
+      ['Recently opened', 'opened'],
+      ['Recently edited', 'edited'],
+      ['Site A–Z', 'site'],
+      ['Favorites first', 'favorites'],
+    ] as const) {
+      await chooseSort(page, name);
+      await expect(page).toHaveURL(new RegExp(`sort=${value}`, 'u'));
+      await expectSort(page, name);
+    }
   });
 });

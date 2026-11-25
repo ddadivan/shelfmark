@@ -8,6 +8,10 @@ describe('parseFeedSort', () => {
     expect(parseFeedSort('title')).toBe(FEED_SORT.Title);
     expect(parseFeedSort('newest')).toBe(FEED_SORT.Newest);
     expect(parseFeedSort('titleDesc')).toBe(FEED_SORT.TitleDesc);
+    expect(parseFeedSort('opened')).toBe(FEED_SORT.Opened);
+    expect(parseFeedSort('edited')).toBe(FEED_SORT.Edited);
+    expect(parseFeedSort('site')).toBe(FEED_SORT.Site);
+    expect(parseFeedSort('favorites')).toBe(FEED_SORT.Favorites);
   });
 
   it('falls back to newest for anything else', () => {
@@ -34,6 +38,25 @@ describe('feedSortQuery', () => {
     });
     expect(feedSortQuery(FEED_SORT.TitleDesc)).toEqual({
       sort: LINK_SORT_FIELD.Title,
+      order: SORT_ORDER.Desc,
+    });
+  });
+
+  it('maps the newer sorts', () => {
+    expect(feedSortQuery(FEED_SORT.Opened)).toEqual({
+      sort: LINK_SORT_FIELD.LastOpenedAt,
+      order: SORT_ORDER.Desc,
+    });
+    expect(feedSortQuery(FEED_SORT.Edited)).toEqual({
+      sort: LINK_SORT_FIELD.UpdatedAt,
+      order: SORT_ORDER.Desc,
+    });
+    expect(feedSortQuery(FEED_SORT.Site)).toEqual({
+      sort: LINK_SORT_FIELD.Host,
+      order: SORT_ORDER.Asc,
+    });
+    expect(feedSortQuery(FEED_SORT.Favorites)).toEqual({
+      sort: LINK_SORT_FIELD.Favorite,
       order: SORT_ORDER.Desc,
     });
   });

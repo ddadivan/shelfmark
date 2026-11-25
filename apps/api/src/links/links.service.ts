@@ -18,7 +18,7 @@ import {
 } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { cursorKey, cursorWhere, decodeCursor, encodeCursor, linkOrderBy } from './link-cursor';
+import { cursorKeys, cursorWhere, decodeCursor, encodeCursor, linkOrderBy } from './link-cursor';
 import { fallbackPreview } from '../preview/extract-preview';
 import { LinkPreviewService } from './link-preview.service';
 import { readLinkSavePrefs, savedUrl } from './link-save-prefs';
@@ -122,7 +122,7 @@ export class LinksService {
             v: LINK_CURSOR_VERSION,
             s: sort,
             o: order,
-            k: cursorKey(sort, last),
+            ...cursorKeys(sort, last),
             id: last.id,
           })
         : null;

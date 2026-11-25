@@ -101,9 +101,12 @@
         </h3>
         <div class="nv__box">
           <div class="nv__row">
-            <span class="nv__row-label" aria-hidden="true">{{
-              'views.new.where.label' | transloco
-            }}</span>
+            <span class="nv__row-label"
+              ><span aria-hidden="true">{{ 'views.new.where.label' | transloco }}</span>
+              @if (sparks().has(FIELD.Scope)) {
+                <ng-container *ngTemplateOutlet="spark" />
+              }
+            </span>
             <ui-select
               labelHidden
               [label]="'views.new.where.label' | transloco"
@@ -113,30 +116,30 @@
               searchable
               [formField]="form.where"
             />
-            @if (sparks().has(FIELD.Scope)) {
-              <ng-container *ngTemplateOutlet="spark" />
-            }
           </div>
 
           <div class="nv__row">
-            <span class="nv__row-label" aria-hidden="true">{{
-              'views.new.kind.label' | transloco
-            }}</span>
+            <span class="nv__row-label"
+              ><span aria-hidden="true">{{ 'views.new.kind.label' | transloco }}</span>
+              @if (sparks().has(FIELD.Kind)) {
+                <ng-container *ngTemplateOutlet="spark" />
+              }
+            </span>
             <ui-select
               labelHidden
               [label]="'views.new.kind.label' | transloco"
               [options]="options.kindOptions()"
               [formField]="form.kind"
             />
-            @if (sparks().has(FIELD.Kind)) {
-              <ng-container *ngTemplateOutlet="spark" />
-            }
           </div>
 
           <div class="nv__row">
-            <span class="nv__row-label" aria-hidden="true">{{
-              'views.new.tags.label' | transloco
-            }}</span>
+            <span class="nv__row-label"
+              ><span aria-hidden="true">{{ 'views.new.tags.label' | transloco }}</span>
+              @if (sparks().has(FIELD.Tags)) {
+                <ng-container *ngTemplateOutlet="spark" />
+              }
+            </span>
             <ui-tag-input
               labelHidden
               [label]="'views.new.tags.label' | transloco"
@@ -151,39 +154,36 @@
               [listLabel]="'links.add.tags.list' | transloco"
               [formField]="form.tags"
             />
-            @if (sparks().has(FIELD.Tags)) {
-              <ng-container *ngTemplateOutlet="spark" />
-            }
           </div>
 
           <div class="nv__row">
-            <span class="nv__row-label" aria-hidden="true">{{
-              'views.new.q.label' | transloco
-            }}</span>
+            <span class="nv__row-label"
+              ><span aria-hidden="true">{{ 'views.new.q.label' | transloco }}</span>
+              @if (sparks().has(FIELD.Q)) {
+                <ng-container *ngTemplateOutlet="spark" />
+              }
+            </span>
             <ui-input
               labelHidden
               [label]="'views.new.q.label' | transloco"
               [placeholder]="'views.new.q.placeholder' | transloco"
               [formField]="form.q"
             />
-            @if (sparks().has(FIELD.Q)) {
-              <ng-container *ngTemplateOutlet="spark" />
-            }
           </div>
 
           <div class="nv__row">
-            <span class="nv__row-label" aria-hidden="true">{{
-              'views.new.sort.label' | transloco
-            }}</span>
+            <span class="nv__row-label"
+              ><span aria-hidden="true">{{ 'views.new.sort.label' | transloco }}</span>
+              @if (sparks().has(FIELD.Sort)) {
+                <ng-container *ngTemplateOutlet="spark" />
+              }
+            </span>
             <ui-select
               labelHidden
               [label]="'views.new.sort.label' | transloco"
               [options]="options.sortOptions()"
               [formField]="form.sort"
             />
-            @if (sparks().has(FIELD.Sort)) {
-              <ng-container *ngTemplateOutlet="spark" />
-            }
           </div>
 
           <div class="nv__row">
@@ -199,9 +199,9 @@
           </div>
 
           <div class="nv__row">
-            <span class="nv__row-label" aria-hidden="true">{{
-              'views.new.only.label' | transloco
-            }}</span>
+            <span class="nv__row-label"
+              ><span aria-hidden="true">{{ 'views.new.only.label' | transloco }}</span></span
+            >
             <ui-checkbox
               [label]="'views.new.only.favorites' | transloco"
               [formField]="form.favorite"

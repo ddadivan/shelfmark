@@ -4,6 +4,11 @@
   display: block;
 }
 
+// Wide enough for the icon choices on one line and the full Saved labels (EN, FR, DE, UK).
+ui-dialog {
+  --ui-dialog-custom-width: #{rem(640px)};
+}
+
 .nv__body {
   display: flex;
   flex-direction: column;
@@ -15,7 +20,7 @@
 }
 
 .nv__lead {
-  @include type(body);
+  @include type(secondary);
 
   margin: 0;
   color: var(--text-muted);
@@ -64,20 +69,20 @@
 }
 
 .nv__row-label {
-  @include type(caption);
+  @include type(label);
 
   color: var(--text-muted);
 }
 
+// The spark of an AI row sits right after its label.
 .nv__row-spark {
-  position: absolute;
-  inset-block-start: var(--space-2);
-  inset-inline-start: calc(var(--space-3) + #{rem(80px)});
+  margin-inline-start: var(--space-1);
+  vertical-align: middle;
 }
 
-// The live count under the rows (12px muted).
+// The live count under the rows (secondary, muted).
 .nv__count {
-  @include type(caption);
+  @include type(secondary);
 
   min-height: 1lh;
   margin: 0;
@@ -109,11 +114,10 @@
 }
 
 .nv__where-heading {
-  @include type(caption);
+  @include type(label);
 
   margin: 0;
-  font-weight: 500;
-  color: var(--text-muted);
+  color: var(--text);
 }
 
 .nv__box {
@@ -122,10 +126,10 @@
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-md);
 
-  // Shelf: the row name in a 96px column (12px muted), the control beside it.
+  // Shelf: the row name in a 112px column (`label` style, muted), the control beside it.
   > .nv__row {
     display: grid;
-    grid-template-columns: rem(96px) minmax(0, 1fr);
+    grid-template-columns: rem(112px) minmax(0, 1fr);
     gap: var(--space-3);
     align-items: center;
     padding: var(--space-2) var(--space-3);

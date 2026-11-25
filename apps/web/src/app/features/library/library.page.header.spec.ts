@@ -144,7 +144,16 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
     ]);
     TestBed.tick();
     const sort = await texts(/^Sort by$/);
-    expect(sort).toEqual(['Newest first', 'Oldest first', 'Title A–Z', 'Title Z–A']);
+    expect(sort).toEqual([
+      'Newest first',
+      'Oldest first',
+      'Recently opened',
+      'Recently edited',
+      'Title A–Z',
+      'Title Z–A',
+      'Site A–Z',
+      'Favorites first',
+    ]);
     // Filter, Select, Side by side and Save view are toolbar buttons now.
     const toolbar = [...element.querySelectorAll('.library__actions ui-button')].map((button) =>
       button.querySelector('button')?.getAttribute('aria-label'),

@@ -1,4 +1,4 @@
-import { normalizeUrl } from '@shelfmark/contracts';
+import { linkSiteKey, normalizeUrl } from '@shelfmark/contracts';
 import { escapeLike } from '../src/common/util/escape-like';
 import type { PrismaService } from '../src/prisma/prisma.service';
 import type { SeedLinkOptions } from './models/seed-link-options.interface';
@@ -30,6 +30,7 @@ export async function seedLink(
       normalizedUrl: normalizeUrl(url),
       title,
       titleSortKey: title.toLowerCase(),
+      host: linkSiteKey(url),
       note: options.note ?? null,
       folderId: options.folderId ?? null,
       isFavorite: options.isFavorite ?? false,
@@ -37,6 +38,7 @@ export async function seedLink(
       lastOpenedAt: options.lastOpenedAt ?? null,
       idempotencyKey: options.idempotencyKey ?? null,
       ...(options.createdAt === undefined ? {} : { createdAt: options.createdAt }),
+      ...(options.updatedAt === undefined ? {} : { updatedAt: options.updatedAt }),
       tags: { create: tagIds.map((tagId) => ({ tagId })) },
     },
     select: { id: true },

@@ -417,3 +417,8 @@
     pointer-events: auto;
   }
 }
+
+// The sort menu's group headings (Date, Name) read from the start, whatever the menu's alignment.
+ui-menu-label {
+  text-align: start;
+}

@@ -9,6 +9,7 @@ import {
   LINK_LIMIT,
   normalizeTagName,
   deriveLinkKind,
+  linkSiteKey,
   normalizeUrl,
   LINK_ERROR_MESSAGE,
   TAG_ERROR_MESSAGE,
@@ -157,6 +158,7 @@ export class LinksWriteService {
             normalizedUrl,
             title: finalTitle,
             titleSortKey: finalTitle.toLowerCase(),
+            host: linkSiteKey(url),
             kind,
             note: noteOrNull(request.note),
             ...userSummary(request.summary),
@@ -441,6 +443,7 @@ export class LinksWriteService {
     if (request.url !== undefined) {
       data.url = request.url;
       data.normalizedUrl = this.normalize(request.url);
+      data.host = linkSiteKey(request.url);
     }
     if (request.title !== undefined) {
       data.title = request.title;

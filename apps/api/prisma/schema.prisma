@@ -264,6 +264,9 @@ model Link {
   title              String             @db.VarChar(300)
   // lower(title), kept in sync by the service: the keyset cursor sorts on it (ADR 0033).
   titleSortKey       String             @map("title_sort_key")
+  // The site (lower-case host, no leading www.; `linkSiteKey`), kept in sync by the service on
+  // create and on a URL change: Site A-Z sorts on it, then on titleSortKey.
+  host               String             @default("")
   note               String?
   // Remote source URLs as sent by the client or found in the preview; the capture fetches them
   // server-side (ADR 0027). The response derives its same-origin image paths from link_images.
@@ -325,6 +328,8 @@ model Link {
   @@index([userId, normalizedUrl])
   @@index([userId, lastOpenedAt])
   @@index([userId, titleSortKey, id])
+  @@index([userId, host, titleSortKey, id])
+  @@index([userId, updatedAt, id])
   @@index([folderId])
   @@index([userId, kind])
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_title_trgm_idx")

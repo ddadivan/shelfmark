@@ -290,7 +290,11 @@
                   @if (wide()) { {{ 'library.toolbar.sort' | transloco }} }
                 </ui-button>
                 <ui-menu #sortMenu align="end" [ariaLabel]="'library.viewMenu.sortBy' | transloco">
-                  @for (option of SORT_OPTIONS; track option) {
+                  @for (group of SORT_GROUPS; track $index) { @if ($index > 0) {
+                  <ui-menu-separator />
+                  } @if (group.labelKey) {
+                  <ui-menu-label>{{ group.labelKey | transloco }}</ui-menu-label>
+                  } @for (option of group.options; track option) {
                   <ui-menu-item
                     type="radio"
                     [selected]="option === filters.feedSort()"
@@ -298,7 +302,7 @@
                   >
                     {{ SORT_OPTION_KEYS[option] | transloco }}
                   </ui-menu-item>
-                  }
+                  } }
                 </ui-menu>
                 }
               </div>
@@ -339,7 +343,9 @@
             <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
               @if (feed.showTools()) {
               <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
-              @for (option of SORT_OPTIONS; track option) {
+              @for (group of SORT_GROUPS; track $index) { @if (group.labelKey) {
+              <ui-menu-label>{{ group.labelKey | transloco }}</ui-menu-label>
+              } @for (option of group.options; track option) {
               <ui-menu-item
                 type="radio"
                 [selected]="option === filters.feedSort()"
@@ -347,7 +353,7 @@
               >
                 {{ SORT_OPTION_KEYS[option] | transloco }}
               </ui-menu-item>
-              }
+              } }
               <ui-menu-separator />
               }
               <ui-menu-item icon="upload" (activated)="exportThisView()">

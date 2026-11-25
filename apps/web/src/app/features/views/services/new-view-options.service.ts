@@ -7,7 +7,8 @@ import { FoldersStore } from '../../../stores/folders.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { ALL_KINDS } from '../../links/models/all-kinds.const';
-import { FEED_SORT } from '../../links/models/feed-sort.const';
+import { SORT_GROUPS } from '../../library/models/sort-groups.const';
+import { SORT_OPTION_KEYS } from '../../library/models/sort-option-keys.const';
 import { buildFolderOptions } from '../../links/utils/folder-options';
 import { linkKindOptions } from '../../links/utils/link-kind-options';
 import { VIEW_SAVED_ANY } from '../models/view-saved-any.const';
@@ -46,12 +47,14 @@ export class NewViewOptionsService {
     ...linkKindOptions((key) => this.t(key)),
   ]);
 
-  readonly sortOptions = computed<SelectOption[]>(() => [
-    { id: FEED_SORT.Newest, name: this.t('library.sort.newest'), icon: 'sort' },
-    { id: FEED_SORT.Oldest, name: this.t('library.sort.oldest'), icon: 'sort' },
-    { id: FEED_SORT.Title, name: this.t('library.sort.title'), icon: 'sort' },
-    { id: FEED_SORT.TitleDesc, name: this.t('library.sort.titleDesc'), icon: 'sort' },
-  ]);
+  /** Every sort of the feed's Sort menu, in its order (Date, Name, Favorites first). */
+  readonly sortOptions = computed<SelectOption[]>(() =>
+    SORT_GROUPS.flatMap((group) => group.options).map((sort) => ({
+      id: sort,
+      name: this.t(SORT_OPTION_KEYS[sort]),
+      icon: 'sort',
+    })),
+  );
 
   /** The Saved row (Shelf 13-views): any time, last month, last week. */
   readonly savedOptions = computed<SegmentedOption[]>(() => [

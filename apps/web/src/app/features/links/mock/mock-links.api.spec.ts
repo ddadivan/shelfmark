@@ -1,5 +1,5 @@
 import { Injector, runInInjectionContext } from '@angular/core';
-import { LINK_FRAMING, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
+import { LINK_FRAMING, LINK_SORT_FIELD, linkSiteKey, SORT_ORDER } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MOCK_HOST } from '../models/mock-host.const';
@@ -191,6 +191,38 @@ describe('MockLinksApi', () => {
       );
       const titles = items.map((link) => link.title.toLowerCase());
       expect(titles).toEqual([...titles].sort((a, b) => a.localeCompare(b)));
+    });
+
+    it('sorts by recently opened with never-opened links last', async () => {
+      const feed = createApi();
+      const { items } = await firstValueFrom(
+        feed.list({ sort: LINK_SORT_FIELD.LastOpenedAt, order: SORT_ORDER.Desc, limit: 100 }),
+      );
+      const opened = items.map((link) => link.lastOpenedAt);
+      const firstNever = opened.indexOf(null);
+      if (firstNever >= 0)
+        expect(opened.slice(firstNever).every((time) => time === null)).toBe(true);
+      const seen = opened.slice(0, firstNever < 0 ? undefined : firstNever) as string[];
+      expect(seen).toEqual([...seen].sort().reverse());
+    });
+
+    it('sorts by site, favorites first and recently edited', async () => {
+      const feed = createApi();
+      const site = await firstValueFrom(
+        feed.list({ sort: LINK_SORT_FIELD.Host, order: SORT_ORDER.Asc, limit: 100 }),
+      );
+      const hosts = site.items.map((link) => linkSiteKey(link.url));
+      expect(hosts).toEqual([...hosts].sort());
+      const favorites = await firstValueFrom(
+        feed.list({ sort: LINK_SORT_FIELD.Favorite, order: SORT_ORDER.Desc, limit: 100 }),
+      );
+      const flags = favorites.items.map((link) => link.isFavorite);
+      expect(flags).toEqual([...flags].sort((a, b) => Number(b) - Number(a)));
+      const edited = await firstValueFrom(
+        feed.list({ sort: LINK_SORT_FIELD.UpdatedAt, order: SORT_ORDER.Desc, limit: 100 }),
+      );
+      const times = edited.items.map((link) => link.updatedAt);
+      expect(times).toEqual([...times].sort().reverse());
     });
 
     it('pages through every link with the cursor', async () => {

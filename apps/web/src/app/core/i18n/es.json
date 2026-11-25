@@ -1261,7 +1261,13 @@
       "newest": "Más recientes primero",
       "oldest": "Más antiguos primero",
       "title": "Título A–Z",
-      "titleDesc": "Título Z–A"
+      "titleDesc": "Título Z–A",
+      "opened": "Abiertos recientemente",
+      "edited": "Editados recientemente",
+      "site": "Sitio A–Z",
+      "favorites": "Favoritos primero",
+      "groupDate": "Fecha",
+      "groupName": "Nombre"
     },
     "search": {
       "chip": "Búsqueda: {{query}}",
