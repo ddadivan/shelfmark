@@ -67,7 +67,8 @@ export class SavedViewChipsComponent {
   private readonly actions = inject(SavedViewActionsService);
   private readonly folders = inject(FoldersStore);
   private readonly transloco = inject(TranslocoService);
-  private readonly phone = inject(ViewportService).phone;
+  /** Phones keep the "Save this view" chip; wider screens save from the toolbar button (author). */
+  protected readonly phone = inject(ViewportService).phone;
   /** Desktop (Shelf): "Save this view" lives in the feed's ⋯ menu, not at the end of the tabs. */
   private readonly injector = inject(Injector);
   private readonly menu = viewChild.required(MenuComponent);

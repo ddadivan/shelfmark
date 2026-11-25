@@ -336,10 +336,11 @@ export default class LibraryPage {
       ? this.transloco.translate('library.toolbar.filter')
       : this.transloco.translate('library.toolbar.filterCount', { count });
   });
-  /** "Save view" shows only with something to save: a filter or a search. */
-  protected readonly saveViewShown = computed(
-    () => !this.feed.emptyLibrary() && (this.filters.filterCount() > 0 || this.filters.searching()),
-  );
+  /**
+   * "Save view" of the toolbar (the only way to start a view on wider screens since the dashed chip
+   * is phone only, author): shown whenever the library has links; the dialog starts from the filter.
+   */
+  protected readonly saveViewShown = computed(() => !this.feed.emptyLibrary());
 
   /** "Save view" of the toolbar: the New view dialog, filled with the current filter. */
   protected async saveView(): Promise<void> {

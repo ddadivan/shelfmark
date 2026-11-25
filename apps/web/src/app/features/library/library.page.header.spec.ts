@@ -146,7 +146,7 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
     const toolbar = [...element.querySelectorAll('.library__actions ui-button')].map((button) =>
       button.querySelector('button')?.getAttribute('aria-label'),
     );
-    expect(toolbar).toEqual(expect.arrayContaining(['Filter', 'Select links']));
+    expect(toolbar).toEqual(expect.arrayContaining(['Filter', 'Select links', 'Save view']));
   });
 
   it('keeps a plain header outside a folder', async () => {

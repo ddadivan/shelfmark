@@ -1,7 +1,7 @@
 import { type Locator, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
-import { openSaveThisView } from './support/library-toolbar';
-import { isCompact } from './support/sidebar';
+import { openSaveThisView, saveThisViewButton } from './support/library-toolbar';
+import { isCompact, isPhone } from './support/sidebar';
 import { expect, test } from './support/test';
 
 // The mock state lives in the page: after the first load every step navigates inside the app.
@@ -39,8 +39,11 @@ test.describe('saved views (mock API)', () => {
     await expect(views(page)).toBeVisible();
     expect(await chipNames(page)).toEqual(['All', 'Videos', 'Articles']);
     await expect(chip(page, /^All \d+$/)).toHaveAttribute('aria-pressed', 'true');
-    // Shelf 13-views: the dashed "Save this view" chip ends the bar on every width.
-    await expect(views(page).getByRole('button', { name: 'Save this view' })).toBeVisible();
+    // The dashed "Save this view" chip ends the bar on phones only; wider screens save from the
+    // toolbar's Save view button (author).
+    await expect(views(page).getByRole('button', { name: 'Save this view' })).toHaveCount(
+      isPhone(page) ? 1 : 0,
+    );
 
     const videos = chip(page, /^Videos \d+$/);
     const count = Number(/(\d+)$/.exec((await videos.textContent())?.trim() ?? '')?.[1]);
@@ -128,7 +131,7 @@ test.describe('saved views (mock API)', () => {
   test('saves a view from its chip with the keyboard', async ({ page }) => {
     await openFeed(page, '/unsorted?kind=shopping');
 
-    await page.getByRole('button', { name: 'Save this view' }).focus();
+    await saveThisViewButton(page).focus();
     await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: 'New view' });
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Keyboard view');

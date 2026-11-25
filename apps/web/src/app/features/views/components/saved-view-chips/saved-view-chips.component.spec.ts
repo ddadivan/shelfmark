@@ -24,8 +24,8 @@ class HostComponent {
   readonly filter = signal<LinksFilter>({ scope: LINKS_SCOPE.All });
 }
 
-/** `compact`: the mobile shell (below 64em), where "Save this view" ends the tabs. */
-async function setup({ compact = false } = {}) {
+/** `compact`: the mobile shell (below 64em); `phone`: below 40em, where "Save this view" ends the tabs. */
+async function setup({ compact = false, phone = false } = {}) {
   const compactSignal = signal(compact);
   const actions = {
     apply: vi.fn(() => Promise.resolve()),
@@ -46,7 +46,7 @@ async function setup({ compact = false } = {}) {
       {
         provide: ViewportService,
         useValue: {
-          phone: signal(false),
+          phone: signal(phone),
           compact: compactSignal,
           desktop: computed(() => !compactSignal()),
           wide: signal(false),
@@ -72,7 +72,7 @@ afterEach(() => {
 
 describe('SavedViewChipsComponent', () => {
   it('shows All with the total, then the views with their counts and the add button', async () => {
-    const { element, chips, text, store } = await setup({ compact: true });
+    const { element, chips, text, store } = await setup({ compact: true, phone: true });
     expect(chips().map((chip) => text(chip))).toEqual([
       `All ${store.total()}`,
       `Videos ${store.items()[0]?.count}`,
@@ -83,12 +83,9 @@ describe('SavedViewChipsComponent', () => {
     );
     expect(element.querySelector('.ui-saved-views__add')?.textContent).toContain('Save this view');
     TestBed.resetTestingModule();
-    // Desktop (Shelf 13-views): the dashed "Save this view" chip ends the bar there too; it is no
-    // longer in the feed's ⋯ menu.
+    // Wider screens save from the toolbar's Save view button (author), so the chip is phone only.
     const desktop = await setup();
-    expect(desktop.element.querySelector('.ui-saved-views__add')?.textContent).toContain(
-      'Save this view',
-    );
+    expect(desktop.element.querySelector('.ui-saved-views__add')).toBeNull();
     expect(
       [...element.querySelectorAll('.ui-saved-views__menu')].map((menu) =>
         menu.getAttribute('aria-label'),
@@ -116,7 +113,7 @@ describe('SavedViewChipsComponent', () => {
   });
 
   it('applies All or a view, and saves the current filter', async () => {
-    const { fixture, chips, actions, store, element } = await setup({ compact: true });
+    const { fixture, chips, actions, store, element } = await setup({ compact: true, phone: true });
     chips()[0]?.click();
     expect(actions.applyAll).toHaveBeenCalledWith({ scope: LINKS_SCOPE.All }, store.items());
     chips()[1]?.click();

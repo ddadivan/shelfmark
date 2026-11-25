@@ -1,14 +1,16 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { isPhone } from './sidebar';
 
 export type LibraryView = 'Masonry' | 'Cards' | 'List' | 'Headlines';
 
 /**
  * The library toolbar (Shelf): Filter, Select links, Side by side (from 80em) and Save view
- * (with a filter or search on) as their own buttons (icon-only below 80em), View (grid size and
+ *  as their own buttons (icon-only below 80em), View (grid size and
  * card fields) from 40em, the Masonry / Cards / List / Headlines switch and the "More view
  * options" ⋯ menu with Sort by and one "Export this view…" item (a bottom sheet in the mobile
  * shell).
- * "Save this view" is the dashed chip that ends the saved views bar. A folder's own actions are
+ * "Save this view" is the dashed chip that ends the saved views bar on phones only; wider screens
+ * use the toolbar's Save view button (author). A folder's own actions are
  * in the menu by its title ("Actions for <name>").
  */
 export async function openMoreMenu(page: Page): Promise<void> {
@@ -72,10 +74,17 @@ export function selectButton(page: Page) {
   return page.getByRole('button', { name: 'Select links', exact: true });
 }
 
-/** The "Save this view" chip that ends the saved views bar (Shelf 13-views), on every width. */
+/**
+ * Saves the current filter: the "Save this view" chip of the saved views bar on a phone, the
+ * toolbar's Save view button elsewhere.
+ */
+export function saveThisViewButton(page: Page): Locator {
+  return isPhone(page)
+    ? page.locator('app-saved-view-chips').getByRole('button', { name: 'Save this view' })
+    : page.getByRole('button', { name: 'Save view', exact: true });
+}
+
+/** Opens the New view dialog for the current filter (see `saveThisViewButton`). */
 export async function openSaveThisView(page: Page): Promise<void> {
-  await page
-    .locator('app-saved-view-chips')
-    .getByRole('button', { name: 'Save this view' })
-    .click();
+  await saveThisViewButton(page).click();
 }
