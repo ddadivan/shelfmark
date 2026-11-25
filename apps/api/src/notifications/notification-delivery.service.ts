@@ -29,12 +29,16 @@ interface SendTally {
 
 /**
  * Web Push delivery (Shelf 12-notify). `run` is the cron (`GET /api/cron/notifications`, the only
- * cross-user reader here): users with reminders on, at least one device and reminders that became
- * due in the last `DueWindowHours` and were not pushed for their current `remind_at`; per user the
- * devices outside their quiet hours (each in its own time zone) get up to `SinglePushesMax` messages
- * one by one or one summary; the links are marked pushed only when a push service accepted one.
- * A 404 / 410 deletes the device. Batches and a time budget keep one run inside the function limit.
- * Nothing is done while the VAPID keys are missing. Logs carry counts only.
+ * cross-user reader here, a Vercel Schedule every 15 minutes): users with reminders on, at least one
+ * device and reminders that became due in the last `DueWindowHours` and were not pushed for their
+ * current `remind_at`; per user the devices outside their quiet hours (each in its own time zone)
+ * get up to `SinglePushesMax` messages one by one or one summary. Idempotent: the reminders are
+ * claimed first by one conditional UPDATE ... RETURNING (`remind_pushed_at`), so two overlapping runs
+ * or a repeated delivery of the same schedule occurrence never push a reminder twice; a claim whose
+ * push no service accepted is released again. Reminders older than the window (an outage) are not
+ * pushed but marked handled (`skipped`), so they are never retried (they stay in Today). A 404 / 410
+ * deletes the device. Batches and a time budget keep one run inside the function limit. Nothing is
+ * done while the VAPID keys are missing. Logs carry counts and the schedule execution id only.
  */
 @Injectable()
 export class NotificationDeliveryService {
@@ -49,7 +53,7 @@ export class NotificationDeliveryService {
   async run(options: NotificationDeliveryOptions = {}): Promise<NotificationDeliveryResponse> {
     const vapid = this.config.vapid;
     if (vapid === null) {
-      return { configured: false, sent: 0, removed: 0, quiet: 0, hasMore: false };
+      return { configured: false, sent: 0, removed: 0, quiet: 0, skipped: 0, hasMore: false };
     }
     const now = options.now ?? new Date();
     const budgetMs = options.budgetMs ?? NOTIFICATION_DELIVERY_LIMIT.BudgetMs;
@@ -59,6 +63,7 @@ export class NotificationDeliveryService {
     const tally: SendTally = { sent: 0, removed: 0 };
     let quiet = 0;
     let hasMore = false;
+    const skipped = await this.skipStale(now);
 
     outer: for (;;) {
       const users = await this.dueUsers(now, done, batch);
@@ -73,9 +78,9 @@ export class NotificationDeliveryService {
       if (users.length < batch) break;
     }
     this.logger.log(
-      `Notifications: sent ${tally.sent}, removed ${tally.removed}, quiet ${quiet}, hasMore=${hasMore}`,
+      `Notifications${options.executionId ? ` [${options.executionId}]` : ''}: sent ${tally.sent}, removed ${tally.removed}, quiet ${quiet}, skipped ${skipped}, hasMore=${hasMore}`,
     );
-    return { configured: true, sent: tally.sent, removed: tally.removed, quiet, hasMore };
+    return { configured: true, sent: tally.sent, removed: tally.removed, quiet, skipped, hasMore };
   }
 
   /** "Send a test": a sample to every device of the session user, quiet hours or not. */
@@ -88,6 +93,31 @@ export class NotificationDeliveryService {
     const tally: SendTally = { sent: 0, removed: 0 };
     const accepted = await this.sendAll(userId, devices, [testMessage()], vapid, new Date(), tally);
     return { sent: accepted.size };
+  }
+
+  /**
+   * Reminders that became due before the window (an outage, or the user's quiet hours that long)
+   * are not pushed: they are marked handled so no later run picks them up. Only users who would have
+   * been pushed (reminders on, a device); one bounded statement per run.
+   */
+  private async skipStale(now: Date): Promise<number> {
+    return this.prisma.$executeRaw`
+      UPDATE links SET remind_pushed_at = ${now}::timestamptz
+      WHERE id IN (
+        SELECT l.id
+        FROM links l
+        JOIN users u ON u.id = l.user_id
+        WHERE l.remind_at IS NOT NULL
+          AND l.remind_at <= ${now}::timestamptz - make_interval(hours => ${NOTIFICATION_DELIVERY_LIMIT.DueWindowHours}::int)
+          AND (l.remind_pushed_at IS NULL OR l.remind_pushed_at < l.remind_at)
+          AND l.deleted_at IS NULL
+          AND u.notify_reminders
+          AND EXISTS (SELECT 1 FROM push_subscriptions p WHERE p.user_id = l.user_id)
+        ORDER BY l.remind_at, l.id
+        LIMIT ${NOTIFICATION_DELIVERY_LIMIT.SkipPerRunMax}
+        FOR UPDATE OF l SKIP LOCKED)
+        AND remind_at <= ${now}::timestamptz - make_interval(hours => ${NOTIFICATION_DELIVERY_LIMIT.DueWindowHours}::int)
+        AND (remind_pushed_at IS NULL OR remind_pushed_at < remind_at)`;
   }
 
   /** Users with due, not yet pushed reminders, reminders on and a device; oldest due first. */
@@ -127,32 +157,62 @@ export class NotificationDeliveryService {
     );
     if (devices.length === 0) return false;
 
-    const links = await this.prisma.$queryRaw<{ id: string; title: string; url: string }[]>`
-      SELECT l.id::text AS id, l.title, l.url
-      FROM links l
-      WHERE l.user_id = ${userId}::uuid
-        AND l.remind_at IS NOT NULL
-        AND l.remind_at <= ${now}::timestamptz
-        AND l.remind_at > ${now}::timestamptz - make_interval(hours => ${NOTIFICATION_DELIVERY_LIMIT.DueWindowHours}::int)
-        AND (l.remind_pushed_at IS NULL OR l.remind_pushed_at < l.remind_at)
-        AND l.deleted_at IS NULL
-      ORDER BY l.remind_at, l.id
-      LIMIT ${NOTIFICATION_DELIVERY_LIMIT.RemindersPerUserMax}`;
-    if (links.length === 0) return true;
+    // Claim first (conditional UPDATE ... RETURNING, repeated conditions are re-checked after a wait
+    // on a concurrent run's row lock), push afterwards: whoever claims a reminder pushes it.
+    const claimed = await this.prisma.$queryRaw<
+      { id: string; title: string; url: string; remind_at: Date }[]
+    >`
+      UPDATE links SET remind_pushed_at = ${now}::timestamptz
+      WHERE id IN (
+        SELECT l.id
+        FROM links l
+        WHERE l.user_id = ${userId}::uuid
+          AND l.remind_at IS NOT NULL
+          AND l.remind_at <= ${now}::timestamptz
+          AND l.remind_at > ${now}::timestamptz - make_interval(hours => ${NOTIFICATION_DELIVERY_LIMIT.DueWindowHours}::int)
+          AND (l.remind_pushed_at IS NULL OR l.remind_pushed_at < l.remind_at)
+          AND l.deleted_at IS NULL
+        ORDER BY l.remind_at, l.id
+        LIMIT ${NOTIFICATION_DELIVERY_LIMIT.RemindersPerUserMax}
+        FOR UPDATE OF l SKIP LOCKED)
+        AND user_id = ${userId}::uuid
+        AND remind_at IS NOT NULL
+        AND remind_at <= ${now}::timestamptz
+        AND remind_at > ${now}::timestamptz - make_interval(hours => ${NOTIFICATION_DELIVERY_LIMIT.DueWindowHours}::int)
+        AND (remind_pushed_at IS NULL OR remind_pushed_at < remind_at)
+        AND deleted_at IS NULL
+      RETURNING id::text AS id, title, url, remind_at`;
+    if (claimed.length === 0) return true;
+    const links = [...claimed].sort(
+      (x, y) => x.remind_at.getTime() - y.remind_at.getTime() || x.id.localeCompare(y.id),
+    );
 
     const messages =
       links.length <= NOTIFICATION_DELIVERY_LIMIT.SinglePushesMax
         ? links.map((link) => reminderMessage(link))
         : [remindersSummaryMessage(links.length)];
-    const accepted = await this.sendAll(userId, devices, messages, vapid, now, tally);
-    if (accepted.size > 0) {
-      const ids = links.map((link) => link.id);
-      await this.prisma.$executeRaw`
-        UPDATE links SET remind_pushed_at = ${now}::timestamptz
-        WHERE user_id = ${userId}::uuid AND id = ANY(${ids}::uuid[])
-          AND remind_at IS NOT NULL AND remind_at <= ${now}::timestamptz`;
+    let accepted: Set<string>;
+    try {
+      accepted = await this.sendAll(userId, devices, messages, vapid, now, tally);
+    } catch (error) {
+      await this.release(userId, links, now);
+      throw error;
     }
+    if (accepted.size === 0) await this.release(userId, links, now);
     return true;
+  }
+
+  /** Gives a claim back (no push service accepted anything): the next run tries again. */
+  private async release(
+    userId: string,
+    links: readonly { id: string }[],
+    claimedAt: Date,
+  ): Promise<void> {
+    const ids = links.map((link) => link.id);
+    await this.prisma.$executeRaw`
+      UPDATE links SET remind_pushed_at = NULL
+      WHERE user_id = ${userId}::uuid AND id = ANY(${ids}::uuid[])
+        AND remind_pushed_at = ${claimedAt}::timestamptz`;
   }
 
   private devicesOf(userId: string): Promise<DeviceRow[]> {

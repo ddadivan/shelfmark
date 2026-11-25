@@ -38,11 +38,17 @@ const b64url = (bytes: number): string => randomBytes(bytes).toString('base64url
 class FakePushSender implements PushSender {
   readonly sent: { endpoint: string; message: PushMessage }[] = [];
   readonly answers = new Map<string, PushSendStatus>();
+  /** When set, every send waits for it first (holds a run between its claim and its push). */
+  gate: Promise<void> | null = null;
+  /** When set, the next send throws it. */
+  failWith: Error | null = null;
 
-  send(target: PushTarget, message: PushMessage): Promise<PushSendStatus> {
+  async send(target: PushTarget, message: PushMessage): Promise<PushSendStatus> {
+    if (this.gate) await this.gate;
+    if (this.failWith) throw this.failWith;
     const answer = this.answers.get(target.endpoint) ?? PUSH_SEND_STATUS.Sent;
     if (answer === PUSH_SEND_STATUS.Sent) this.sent.push({ endpoint: target.endpoint, message });
-    return Promise.resolve(answer);
+    return answer;
   }
 }
 
@@ -78,6 +84,8 @@ describe('notifications API', () => {
     config.vapid = vapid;
     sender.sent.length = 0;
     sender.answers.clear();
+    sender.gate = null;
+    sender.failWith = null;
     await t.db.truncateAll();
   });
 
@@ -224,6 +232,7 @@ describe('notifications API', () => {
       sent: 0,
       removed: 0,
       quiet: 0,
+      skipped: 0,
       hasMore: false,
     });
   });
@@ -276,6 +285,131 @@ describe('notifications API', () => {
         data: { onActionClick: { default: { url: '/today' } } },
       });
       expect((await runCron()).sent).toBe(0);
+    });
+
+    it('answers a Vercel Schedule delivery (ce-id and schedule headers) and needs the secret', async () => {
+      const headers = {
+        'user-agent': 'vercel-cron/1.0',
+        'x-vercel-cron-schedule': '*/15 * * * *',
+        'ce-id': 'exec_0123456789abcdef',
+        'ce-vssscheduledat': new Date().toISOString(),
+      };
+      await addDevice();
+      await dueLink(users.owner.userId);
+      await request(t.app.getHttpServer())
+        .get(CRON_ROUTE.NotificationsPath)
+        .set(headers)
+        .expect(401);
+      await request(t.app.getHttpServer())
+        .get(CRON_ROUTE.NotificationsPath)
+        .set(headers)
+        .set('Authorization', 'Bearer wrong-secret-wrong-secret-wrong-secret')
+        .expect(401);
+      expect(sender.sent).toHaveLength(0);
+
+      const ok = () =>
+        request(t.app.getHttpServer())
+          .get(CRON_ROUTE.NotificationsPath)
+          .set(headers)
+          .set('Authorization', `Bearer ${SECRET}`)
+          .expect(200);
+      expect((await ok()).body).toMatchObject({ configured: true, sent: 1, skipped: 0 });
+      // The same occurrence delivered again pushes nothing.
+      expect((await ok()).body).toMatchObject({ sent: 0 });
+      // A malformed ce-id is ignored, not an error.
+      await request(t.app.getHttpServer())
+        .get(CRON_ROUTE.NotificationsPath)
+        .set('ce-id', 'bad id with spaces')
+        .set('Authorization', `Bearer ${SECRET}`)
+        .expect(200);
+      expect(sender.sent).toHaveLength(1);
+    });
+
+    it('pushes once when two runs overlap', async () => {
+      await addDevice();
+      await dueLink(users.owner.userId, 1, 'One');
+      await dueLink(users.owner.userId, 2, 'Two');
+      const service = t.app.get(NotificationDeliveryService);
+      let open: () => void = () => undefined;
+      sender.gate = new Promise<void>((resolve) => {
+        open = resolve;
+      });
+      // Run 1 claims both reminders and waits at the push; run 2 starts meanwhile.
+      const first = service.run({ executionId: 'exec_1' });
+      await vi.waitFor(async () => {
+        const claimed = await t.db.prisma.link.count({ where: { remindPushedAt: { not: null } } });
+        expect(claimed).toBe(2);
+      });
+      const second = await service.run({ executionId: 'exec_1' });
+      expect(second).toMatchObject({ sent: 0, quiet: 0, hasMore: false });
+      open();
+      expect(await first).toMatchObject({ sent: 2 });
+      expect(sender.sent).toHaveLength(2);
+      expect(sender.sent.map((entry) => entry.message.notification.title).sort()).toEqual([
+        'One',
+        'Two',
+      ]);
+    });
+
+    it('pushes once when two runs start at the same moment', async () => {
+      await addDevice();
+      await dueLink(users.owner.userId, 1, 'One');
+      await dueLink(users.owner.userId, 2, 'Two');
+      const service = t.app.get(NotificationDeliveryService);
+      const now = new Date();
+      const runs = await Promise.all([service.run({ now }), service.run({ now })]);
+      expect(runs[0].sent + runs[1].sent).toBe(2);
+      expect(sender.sent).toHaveLength(2);
+    });
+
+    it('releases the claim when the push throws, so the next run delivers', async () => {
+      await addDevice();
+      const id = await dueLink(users.owner.userId);
+      const service = t.app.get(NotificationDeliveryService);
+      sender.failWith = new Error('network down');
+      await expect(service.run()).rejects.toThrow('network down');
+      const link = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+      expect(link.remindPushedAt).toBeNull();
+      sender.failWith = null;
+      expect(await service.run()).toMatchObject({ sent: 1 });
+    });
+
+    it('does not push reminders past the 24 hour window, marks them handled and keeps them due', async () => {
+      await addDevice();
+      const stale = await dueLink(users.owner.userId, 30, 'Stale');
+      await dueLink(users.owner.userId, 23, 'Fresh');
+      // Another user's old reminder is not touched: no device, nothing to push.
+      const foreign = await dueLink(users.intruder.userId, 30, 'Foreign');
+      const service = t.app.get(NotificationDeliveryService);
+      expect(await service.run()).toMatchObject({ sent: 1, skipped: 1 });
+      expect(sender.sent.map((entry) => entry.message.notification.title)).toEqual(['Fresh']);
+      expect(await service.run()).toMatchObject({ sent: 0, skipped: 0 });
+      const row = await t.db.prisma.link.findUniqueOrThrow({ where: { id: stale } });
+      expect(row.remindPushedAt).not.toBeNull();
+      expect(row.remindAt).not.toBeNull();
+      expect(
+        (await t.db.prisma.link.findUniqueOrThrow({ where: { id: foreign } })).remindPushedAt,
+      ).toBeNull();
+    });
+
+    it('defers through quiet hours without skipping a reminder inside the window', async () => {
+      await addDevice(a, device({ timeZone: 'UTC' }));
+      const id = await dueLink(users.owner.userId);
+      const service = t.app.get(NotificationDeliveryService);
+      const night = new Date();
+      night.setUTCHours(23, 0, 0, 0);
+      await t.db.prisma.link.update({
+        where: { id },
+        data: { remindAt: new Date(night.getTime() - 12 * HOUR) },
+      });
+      await a
+        .patch(NOTIFICATION_ENDPOINT.Settings)
+        .send({ quietFrom: '00:00', quietTo: '23:59' })
+        .expect(200);
+      expect(await service.run({ now: night })).toMatchObject({ sent: 0, quiet: 1, skipped: 0 });
+      expect(
+        (await t.db.prisma.link.findUniqueOrThrow({ where: { id } })).remindPushedAt,
+      ).toBeNull();
     });
 
     it('pushes again after the reminder is set anew', async () => {

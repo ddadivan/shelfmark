@@ -14,6 +14,9 @@ export class NotificationDeliveryResponseDto implements NotificationDeliveryResp
   @ApiProperty({ minimum: 0, example: 0 })
   quiet!: number;
 
+  @ApiProperty({ minimum: 0, example: 0 })
+  skipped!: number;
+
   @ApiProperty({ example: false })
   hasMore!: boolean;
 }

@@ -8,9 +8,12 @@ export const NOTIFICATION_DELIVERY_LIMIT = {
   RemindersPerUserMax: 50,
   /**
    * Only reminders that became due within this window are pushed: turning reminders on (or a first
-   * device) never sends a backlog of old ones. Longer than the cron interval.
+   * device) or an outage never sends a backlog of old ones. Older ones are marked handled, not pushed.
+   * Far longer than the 15-minute schedule and than any quiet hours.
    */
-  DueWindowHours: 48,
+  DueWindowHours: 24,
+  /** Stale reminders marked handled per run (one bounded statement). */
+  SkipPerRunMax: 500,
   /** Time budget of one run; the next run continues (`hasMore`). Below the function's 30 s. */
   BudgetMs: 15_000,
   /** Per push request to a push service. */
