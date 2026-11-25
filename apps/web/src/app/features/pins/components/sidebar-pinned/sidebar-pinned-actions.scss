@@ -4,7 +4,9 @@
 // count), fade in on hover or focus, always there on touch.
 .pinned__actions {
   position: absolute;
-  inset-block-start: 50%;
+  inset-block: 0;
+  block-size: fit-content;
+  margin-block: auto; // centred without a transform, which can land on half a pixel
   inset-inline-end: rem(4px);
   display: flex;
   gap: var(--space-1);
@@ -13,7 +15,6 @@
   border-radius: var(--radius-sm);
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
-  transform: translateY(-50%);
 
   &:focus-within {
     opacity: 1;

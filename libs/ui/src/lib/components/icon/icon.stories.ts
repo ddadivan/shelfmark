@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { IconComponent } from './icon.component';
 import { THEME, THEME_ATTRIBUTE } from '../../models/theme';
+import { ICON_NAMES_16 } from './models/icon-names-16.const';
 import { ICON_NAMES } from './models/icon-names.const';
 
 const meta: Meta<IconComponent> = {
@@ -17,7 +18,7 @@ const meta: Meta<IconComponent> = {
 export default meta;
 type Story = StoryObj<IconComponent>;
 
-/** 24px is the default: the set is drawn on a 24 by 24 grid, so strokes stay crisp. */
+/** 24px is the default: the set is drawn on a 24 by 24 grid; at 16px the redrawn 16px set takes over. */
 export const Default: Story = {};
 
 export const Sizes: Story = {
@@ -88,5 +89,33 @@ export const AllIcons: Story = {
           </li>
         }
       </ul>`,
+  }),
+};
+
+/**
+ * The two sets side by side in both themes: the 24px drawing and the 16px redraw (strokes on the
+ * 16px grid, 1.5px wide, snapped to whole pixels) that `ui-icon` shows whenever it is drawn at
+ * 16px. Zoom the browser to 100% on a 1x screen to compare the edges.
+ */
+export const BothSets: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { names: ICON_NAMES_16, themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ul style="display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: 0.75rem; list-style: none; margin: 0; padding: 0">
+              @for (n of names; track n) {
+                <li style="display: flex; align-items: center; gap: 0.5rem">
+                  <ui-icon [name]="n" [size]="24" />
+                  <ui-icon [name]="n" [size]="16" />
+                  <code style="font-size: 0.6875rem">{{ n }}</code>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>`,
   }),
 };

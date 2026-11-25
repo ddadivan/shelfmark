@@ -31,7 +31,7 @@ describe('IconSwapComponent', () => {
   it('shows the first icon at once, without an enter animation', () => {
     const fixture = setup();
     const root = fixture.nativeElement as HTMLElement;
-    expect(hrefs(root)).toEqual(['/sprite.svg#sm-copy']);
+    expect(hrefs(root)).toEqual(['/sprite.svg#sm-copy', '/sprite.svg#sm-copy-16']);
     expect(root.querySelector('.ui-icon-swap__icon--enter')).toBeNull();
   });
 
