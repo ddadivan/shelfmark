@@ -22,6 +22,7 @@ import { travelFrom } from './tooltip-travel';
 import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
 import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
 import { UiOverlay } from '../../services/overlay/overlay.service';
+import { OpenMenus } from '../../services/overlay/open-menus.service';
 import { sidePositions } from '../../services/overlay/side-positions';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel/tooltip-panel.component';
@@ -77,6 +78,7 @@ export class TooltipDirective implements TooltipGroupMember {
   private readonly document = inject(DOCUMENT);
   private readonly group = inject(TOOLTIP_GROUP, { optional: true });
   private readonly motion = inject(ReducedMotion);
+  private readonly openMenus = inject(OpenMenus);
 
   /** The element that gets listeners, `aria-describedby` and the anchor. */
   private readonly target = computed(() =>
@@ -135,6 +137,17 @@ export class TooltipDirective implements TooltipGroupMember {
       if (target) {
         onCleanup(() => {
           this.removeDescription(target);
+        });
+      }
+    });
+
+    // A tooltip never stays over an open menu or popover, and none opens while one is open.
+    effect(() => {
+      if (this.openMenus.any()) {
+        untracked(() => {
+          this.closeNow();
+          this.clearTimers();
+          this.hide();
         });
       }
     });
@@ -273,7 +286,7 @@ export class TooltipDirective implements TooltipGroupMember {
 
   private show(): void {
     const target = this.target();
-    if (!target || !this.text() || this.visible || !this.canHover()) {
+    if (!target || !this.text() || this.visible || !this.canHover() || this.openMenus.any()) {
       this.disarmEscape();
       return;
     }

@@ -5,6 +5,9 @@ import type { GlobalOverlayConfig } from './models/global-overlay-config.interfa
 import { overlayLayerClass, setOverlayLayer } from './overlay-layer';
 import { KeyboardInset } from '../keyboard-inset/keyboard-inset.service';
 import type { ConnectedOverlayConfig } from './models/connected-overlay-config.interface';
+import { OpenMenus } from './open-menus.service';
+import { OVERLAY_LAYER } from './models/overlay-layer.const';
+import type { OverlayLayer } from './models/overlay-layer.type';
 import { OVERLAY_EDGE } from './models/overlay-edge.const';
 import type { OverlaySide } from './models/overlay-side.type';
 
@@ -19,6 +22,12 @@ import type { OverlaySide } from './models/overlay-side.type';
 export class UiOverlay {
   private readonly overlay = inject(Overlay);
   private readonly injector = inject(Injector);
+  private readonly openMenus = inject(OpenMenus);
+
+  /** Only menu-layer panels count as a menu being open (tooltips hide for them). */
+  private tracker(layer: OverlayLayer): OpenMenus | undefined {
+    return layer === OVERLAY_LAYER.Menu ? this.openMenus : undefined;
+  }
 
   constructor() {
     // Every overlay keeps clear of the on-screen keyboard (`--ui-keyboard-inset`).
@@ -59,6 +68,7 @@ export class UiOverlay {
       strategy,
       options.injector ?? this.injector,
       options.onPositionChange,
+      this.tracker(config.layer),
     );
   }
 
@@ -89,7 +99,13 @@ export class UiOverlay {
       hasBackdrop: false,
     });
     setOverlayLayer(overlayRef.hostElement, config.layer);
-    return new ConnectedOverlay(overlayRef, undefined, options.injector ?? this.injector);
+    return new ConnectedOverlay(
+      overlayRef,
+      undefined,
+      options.injector ?? this.injector,
+      undefined,
+      this.tracker(config.layer),
+    );
   }
 
   /**
@@ -114,6 +130,12 @@ export class UiOverlay {
       backdropClass: ['ui-dialog-scrim', overlayLayerClass(config.layer)],
     });
     setOverlayLayer(overlayRef.hostElement, config.layer);
-    return new ConnectedOverlay(overlayRef, undefined, options.injector ?? this.injector);
+    return new ConnectedOverlay(
+      overlayRef,
+      undefined,
+      options.injector ?? this.injector,
+      undefined,
+      this.tracker(config.layer),
+    );
   }
 }

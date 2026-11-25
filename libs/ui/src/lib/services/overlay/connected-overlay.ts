@@ -9,6 +9,7 @@ import { Subscription, type Observable } from 'rxjs';
 import { raiseOverlayLayers } from './overlay-stacking';
 import { connectedSide, setOverlayOrigin } from './overlay-origin';
 import type { OverlaySide } from './models/overlay-side.type';
+import type { OpenMenus } from './open-menus.service';
 
 /** Longest leave animation (`duration-base`, 200 ms, for sheets) plus a margin. */
 const LEAVE_TIMEOUT_MS = 400;
@@ -27,12 +28,15 @@ export class ConnectedOverlay {
   /** The element last moved into the pane by `attachElement()`. */
   private movedElement: HTMLElement | undefined;
   private readonly unregisterDestroy: () => void;
+  /** Whether this overlay is counted in `OpenMenus` right now. */
+  private counted = false;
 
   constructor(
     private readonly overlayRef: OverlayRef,
     strategy: FlexibleConnectedPositionStrategy | undefined,
     private readonly injector: Injector,
     onPositionChange?: (side: OverlaySide) => void,
+    private readonly openMenus?: OpenMenus,
   ) {
     // A global overlay (toast) has no anchor, so no strategy and no origin to follow.
     if (strategy) {
@@ -51,6 +55,7 @@ export class ConnectedOverlay {
     // a form), a layout jump the user sees when the overlay closes. Hide it in the same task.
     this.subscription.add(
       overlayRef.detachments().subscribe(() => {
+        this.count(false);
         this.movedElement?.style.setProperty('display', 'none');
       }),
     );
@@ -58,6 +63,18 @@ export class ConnectedOverlay {
     this.unregisterDestroy = this.injector.get(DestroyRef).onDestroy(() => {
       this.dispose();
     });
+  }
+
+  private count(open: boolean): void {
+    if (!this.openMenus || this.counted === open) {
+      return;
+    }
+    this.counted = open;
+    if (open) {
+      this.openMenus.opened();
+    } else {
+      this.openMenus.closed();
+    }
   }
 
   /** The pane element (outside view encapsulation); `--ui-origin` is set on it. */
@@ -87,6 +104,7 @@ export class ConnectedOverlay {
   /** Attaches a component (or returns the existing one if it is still attached). */
   attach<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     this.cancelRelease();
+    this.count(true);
     return this.overlayRef.attach(portal);
   }
 
@@ -98,6 +116,7 @@ export class ConnectedOverlay {
     this.cancelRelease();
     element.style.removeProperty('display');
     this.movedElement = element;
+    this.count(true);
     this.overlayRef.attach(new DomPortal(element));
   }
 
@@ -168,6 +187,7 @@ export class ConnectedOverlay {
     this.disposed = true;
     this.unregisterDestroy();
     this.cancelRelease();
+    this.count(false);
     this.subscription.unsubscribe();
     if (this.overlayRef.hasAttached()) {
       this.movedElement?.style.setProperty('display', 'none');

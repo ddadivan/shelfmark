@@ -8,6 +8,7 @@ import type { ConnectedOverlay } from './connected-overlay';
 import type { OverlaySide } from './models/overlay-side.type';
 import { connectedSide, overlayTransformOrigin, setOverlayOrigin } from './overlay-origin';
 import { UiOverlay } from './overlay.service';
+import { OpenMenus } from './open-menus.service';
 import { sidePositions } from './side-positions';
 import { OVERLAY_SIDE } from './models/overlay-side.const';
 import { OVERLAY_LAYER } from './models/overlay-layer.const';
@@ -108,6 +109,23 @@ describe('UiOverlay', () => {
     expect(pane.classList.contains('extra')).toBe(true);
     expect(pane.querySelector('.probe')).not.toBeNull();
     expect(overlay.isAttached).toBe(true);
+  });
+
+  it('counts a menu-layer panel in OpenMenus while it is attached, a tooltip never', () => {
+    const menus = TestBed.inject(OpenMenus);
+    const service = TestBed.inject(UiOverlay);
+    const tooltip = service.connect({
+      origin,
+      positions: sidePositions(OVERLAY_SIDE.Top),
+      layer: OVERLAY_LAYER.Tooltip,
+    });
+    tooltip.attach(new ComponentPortal(ProbeComponent));
+    expect(menus.any()).toBe(false);
+    tooltip.dispose();
+    open(OVERLAY_SIDE.Top);
+    expect(menus.any()).toBe(true);
+    overlay.detach();
+    expect(menus.any()).toBe(false);
   });
 
   it('orders hosts by layer, not by creation: a later menu stays under an earlier tooltip', () => {

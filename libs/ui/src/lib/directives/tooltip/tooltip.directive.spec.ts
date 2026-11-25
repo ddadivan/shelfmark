@@ -3,6 +3,7 @@ import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
 import { ConnectedOverlay } from '../../services/overlay/connected-overlay';
 import { UiOverlay } from '../../services/overlay/overlay.service';
+import { OpenMenus } from '../../services/overlay/open-menus.service';
 import { ButtonComponent } from '../../components/button/button.component';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel/tooltip-panel.component';
@@ -132,6 +133,44 @@ describe('TooltipDirective', () => {
     await vi.advanceTimersByTimeAsync(150);
     settle();
     expect(panelEl()).toBeNull();
+  });
+
+  it('hides an open tooltip when a menu opens and stays hidden until it closes', async () => {
+    const { inner, settle, panelEl } = await setup();
+    const menus = TestBed.inject(OpenMenus);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).not.toBeNull();
+    menus.opened();
+    settle();
+    expect(panelEl()).toBeNull();
+    // Hovering again while the menu is open shows nothing.
+    leave(inner);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(500);
+    settle();
+    expect(panelEl()).toBeNull();
+    menus.closed();
+    settle();
+    leave(inner);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).not.toBeNull();
+  });
+
+  it('cancels a pending show when a menu opens first', async () => {
+    const { inner, settle, panelEl } = await setup();
+    const menus = TestBed.inject(OpenMenus);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(200);
+    menus.opened();
+    settle();
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).toBeNull();
+    menus.closed();
   });
 
   it('reads hover on uiTooltipPointerTarget only; focus and the description stay on the host', async () => {
