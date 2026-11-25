@@ -61,6 +61,14 @@
   margin-inline-start: var(--space-1);
 }
 
+.ask-history__sep {
+  // The foot is its own group: the same room (12px) above and below the hairline.
+  height: 0;
+  margin: var(--space-3) 0 0;
+  border: 0;
+  border-top: 1px solid var(--sep);
+}
+
 .ask-history__foot {
   display: flex;
   flex-wrap: wrap;

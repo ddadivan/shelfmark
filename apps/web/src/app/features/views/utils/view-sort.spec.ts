@@ -20,6 +20,13 @@ describe('view sort', () => {
     });
   });
 
+  it('stores title Z to A as a descending title sort', () => {
+    expect(sortFieldsOf(FEED_SORT.TitleDesc)).toEqual({
+      sort: LINK_SORT_FIELD.Title,
+      order: SORT_ORDER.Desc,
+    });
+  });
+
   it('reads an unknown sort as newest first', () => {
     expect(sortFieldsOf('nonsense')).toEqual({
       sort: LINK_SORT_FIELD.CreatedAt,

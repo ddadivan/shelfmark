@@ -10,6 +10,7 @@ import {
   PickerMenuComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
+  TooltipDirective,
   DragWobbleDirective,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
@@ -51,6 +52,7 @@ const SKELETON_COUNT = 4;
     LoadMoreComponent,
     PanelComponent,
     PickerListComponent,
+    TooltipDirective,
     PickerMenuComponent,
     SkeletonComponent,
   ],

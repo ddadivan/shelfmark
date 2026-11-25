@@ -261,14 +261,30 @@ describe('LibraryHotkeysDirective', () => {
       expect(previewStub.openInNewTab).not.toHaveBeenCalled();
     });
 
-    it('ends a selection with Esc before it closes the preview', async () => {
-      const { selection } = await setup();
+    it('does not select while the preview is open: X and Ctrl A do nothing', async () => {
+      const { fixture, selection } = await setup();
       previewStub.split.set(true);
+      fixture.detectChanges();
+      key({ key: 'x', code: 'KeyX' });
+      expect(selection.selecting()).toBe(false);
+      key({ key: 'a', code: 'KeyA', ctrlKey: true });
+      expect(selection.selecting()).toBe(false);
+      expect(selection.selectedCount()).toBe(0);
+    });
+
+    it('opening the preview ends a running selection; closing it selects again', async () => {
+      const { fixture, selection } = await setup();
       key({ key: 'a', code: 'KeyA', ctrlKey: true });
       expect(selection.selecting()).toBe(true);
-      key({ key: 'Escape' });
+      previewStub.split.set(true);
+      fixture.detectChanges();
+      await fixture.whenStable();
       expect(selection.selecting()).toBe(false);
-      expect(previewStub.close).not.toHaveBeenCalled();
+      expect(selection.selectedCount()).toBe(0);
+      previewStub.split.set(false);
+      fixture.detectChanges();
+      key({ key: 'x', code: 'KeyX' });
+      expect(selection.selecting()).toBe(true);
     });
 
     it('does not take the arrows in a text field', async () => {

@@ -139,7 +139,7 @@
               <ui-icon
                 class="ui-select__option-icon"
                 [name]="rowIcon(row.id)"
-                [size]="ICON_SIZE.Md"
+                [size]="ICON_SIZE.Sm"
               />
             }
             <span class="ui-select__option-label" [attr.lang]="row.lang ?? null">{{
@@ -149,7 +149,7 @@
               <ui-badge [tone]="BADGE_TONE.Accent">{{ row.badge }}</ui-badge>
             }
             @if (row.id === value()) {
-              <ui-icon class="ui-select__check" name="check" [size]="ICON_SIZE.Md" />
+              <ui-icon class="ui-select__check" name="check" [size]="ICON_SIZE.Sm" />
             }
           </div>
         }
@@ -164,7 +164,7 @@
             <ui-icon
               class="ui-select__option-icon"
               [name]="SELECT_ICON.Create"
-              [size]="ICON_SIZE.Md"
+              [size]="ICON_SIZE.Sm"
             />
             <span class="ui-select__option-label">{{ createRowLabel() }}</span>
           </div>

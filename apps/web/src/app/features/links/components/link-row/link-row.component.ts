@@ -55,6 +55,7 @@ import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-ro
   templateUrl: './link-row.component.html',
   styleUrl: './link-row.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.link-row--dense]': 'dense()' },
 })
 export class LinkRowComponent {
   /** Settings › Library › Open links in: a new tab (default) or the same tab. */
@@ -131,6 +132,8 @@ export class LinkRowComponent {
   readonly selecting = input(false);
   /** The link is picked for a bulk action. */
   readonly selected = input(false);
+  /** Off while the page cannot select (the link preview split): no checkbox, not even on hover. */
+  readonly selectable = input(true);
   /** The checkbox, a click while selecting, Space or a long press (phone) asks to toggle. */
   readonly selectToggled = output<LinkSelectToggle>();
 

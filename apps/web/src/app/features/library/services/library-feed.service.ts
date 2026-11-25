@@ -98,9 +98,11 @@ export class LibraryFeedService {
    */
   readonly skeletonVisible = loaderVisible(this.firstLoad);
   readonly failed = computed(() => this.ownError() && this.ownCount() === 0);
-  readonly empty = computed(
-    () => this.ownLoaded() && !this.store.loading() && this.ownCount() === 0,
-  );
+  /**
+   * A settled view without links. It stays empty while the same view is fetched again (a retry, a
+   * refresh): the empty state and the tools do not vanish for the time of the request.
+   */
+  readonly empty = computed(() => this.ownLoaded() && this.ownCount() === 0);
   /** A library without any link (the new-account state): no saved view chips, nothing to filter. */
   readonly emptyLibrary = computed(
     () => this.empty() && !this.filters.filtered() && this.filters.scope() === LINKS_SCOPE.All,
@@ -108,8 +110,16 @@ export class LibraryFeedService {
   /** The 2px bar: a refetch and a view switch (the old content stays on screen meanwhile). */
   readonly refetching = computed(() => this.store.loading() && (this.ownLoaded() || this.stale()));
   readonly showLinks = computed(() => this.ownCount() > 0 || this.stale());
-  /** Sort and view switch: with links, and while the first page loads (so the toolbar keeps its size). */
+  /** What acts on links (Select, Side by side): with links, and while the first page loads (so the toolbar keeps its size). */
   readonly showControls = computed(() => this.showLinks() || this.firstLoad());
+  /**
+   * Filter, Save view, View, the view switch and Sort: everything of `showControls`, and in an
+   * empty RESULT (a filter or a search is on) so the filter can still be changed. Only a truly
+   * empty library or folder, and the error state, drop them.
+   */
+  readonly showTools = computed(
+    () => this.showControls() || (this.empty() && this.filters.filtered()),
+  );
 
   private readonly labels = toSignal(
     combineLatest([

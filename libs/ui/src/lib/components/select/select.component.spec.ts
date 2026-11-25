@@ -199,6 +199,9 @@ describe('SelectComponent', () => {
     expect(angular.style.getPropertyValue('--ui-select-level')).toBe('1');
     expect(options()[1]?.getAttribute('aria-label')).toBeNull();
     expect(angular.querySelector('.ui-select__check')).not.toBeNull();
+    expect(angular.querySelector('.ui-select__check')?.classList.contains('ui-icon--16')).toBe(
+      true,
+    );
     expect(options()[0]?.getAttribute('aria-selected')).toBe('false');
     expect(listbox()?.getAttribute('aria-label')).toBe('Folder');
   });

@@ -640,7 +640,7 @@ describe('LibraryPage of a folder', () => {
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
       const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-      await (await loader.getHarness(UiButtonHarness.with({ name: 'More view options' }))).click();
+      await (await loader.getHarness(UiButtonHarness.with({ name: 'Sort: Newest first' }))).click();
       await (await loader.getHarness(UiMenuItemHarness.with({ text: 'Title A–Z' }))).click();
 
       expect(navigate).toHaveBeenLastCalledWith([], {
@@ -755,7 +755,7 @@ describe('LibraryPage of a folder', () => {
       const { element, fixture } = await setup();
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
-      element.querySelector<HTMLButtonElement>('button[aria-label="More view options"]')?.click();
+      element.querySelector<HTMLButtonElement>('button[aria-label="Sort: Newest first"]')?.click();
       await fixture.whenStable();
       [...document.querySelectorAll<HTMLElement>('[role="menuitemradio"]')]
         .find((item) => item.textContent?.includes('Oldest first'))

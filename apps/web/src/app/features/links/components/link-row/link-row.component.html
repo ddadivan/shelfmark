@@ -13,13 +13,15 @@
   (keydown)="onKeydown($event)"
 >
   <!-- Hover devices reveal it on hover and focus; touch devices (hover: none) see it at rest. -->
-  <ui-checkbox
-    slot="select"
-    hideLabel
-    [label]="'bulk.item.select' | transloco: { title: link().title }"
-    [checked]="selected()"
-    (click)="onCheckboxClick($event)"
-  />
+  @if (selectable()) {
+    <ui-checkbox
+      slot="select"
+      hideLabel
+      [label]="'bulk.item.select' | transloco: { title: link().title }"
+      [checked]="selected()"
+      (click)="onCheckboxClick($event)"
+    />
+  }
   <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
   <span slot="title">{{ link().title }}</span>
   <!-- The summary replaces the domain line (one line); the domain moves to the tooltip (#391). -->

@@ -50,6 +50,7 @@ export class NewViewOptionsService {
     { id: FEED_SORT.Newest, name: this.t('library.sort.newest'), icon: 'sort' },
     { id: FEED_SORT.Oldest, name: this.t('library.sort.oldest'), icon: 'sort' },
     { id: FEED_SORT.Title, name: this.t('library.sort.title'), icon: 'sort' },
+    { id: FEED_SORT.TitleDesc, name: this.t('library.sort.titleDesc'), icon: 'sort' },
   ]);
 
   /** The Saved row (Shelf 13-views): any time, last month, last week. */

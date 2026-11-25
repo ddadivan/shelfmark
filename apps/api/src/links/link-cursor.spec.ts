@@ -79,4 +79,16 @@ describe('link cursor', () => {
       cursorWhere({ ...created, s: LINK_SORT_FIELD.Title, o: SORT_ORDER.Asc, k: 'b' }),
     ).toEqual({ OR: [{ titleSortKey: { gt: 'b' } }, { titleSortKey: 'b', id: { gt: ID } }] });
   });
+
+  it('pages a Z to A title list downwards (the web "Title Z–A")', () => {
+    const desc: LinkCursor = { ...created, s: LINK_SORT_FIELD.Title, o: SORT_ORDER.Desc, k: 'b' };
+    expect(decodeCursor(encodeCursor(desc), LINK_SORT_FIELD.Title, SORT_ORDER.Desc)).toEqual(desc);
+    expect(cursorWhere(desc)).toEqual({
+      OR: [{ titleSortKey: { lt: 'b' } }, { titleSortKey: 'b', id: { lt: ID } }],
+    });
+    expect(linkOrderBy(LINK_SORT_FIELD.Title, SORT_ORDER.Desc)).toEqual([
+      { titleSortKey: 'desc' },
+      { id: 'desc' },
+    ]);
+  });
 });

@@ -117,7 +117,10 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
     expect(
       element.querySelector('.library__toolbar button[aria-label^="Actions for "]'),
     ).not.toBeNull();
-    expect(element.querySelector('button[aria-label="More view options"]')).not.toBeNull();
+    expect(element.querySelector('button[aria-label="Sort: Newest first"]')).not.toBeNull();
+    expect(element.querySelector('button[aria-label="Export this view…"]')).not.toBeNull();
+    // Sort and Export are buttons of their own: no ⋯ menu is left.
+    expect(element.querySelector('button[aria-label="More view options"]')).toBeNull();
   });
 
   it('splits the menus: folder actions by the title, sort, filter and export in the toolbar ⋯', async () => {
@@ -140,13 +143,15 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
       'Delete folder…',
     ]);
     TestBed.tick();
-    const more = await texts(/^More view options$/);
-    expect(more).toEqual(['Newest first', 'Oldest first', 'Title A–Z', 'Export this view…']);
+    const sort = await texts(/^Sort by$/);
+    expect(sort).toEqual(['Newest first', 'Oldest first', 'Title A–Z', 'Title Z–A']);
     // Filter, Select, Side by side and Save view are toolbar buttons now.
     const toolbar = [...element.querySelectorAll('.library__actions ui-button')].map((button) =>
       button.querySelector('button')?.getAttribute('aria-label'),
     );
-    expect(toolbar).toEqual(expect.arrayContaining(['Filter', 'Select links', 'Save view']));
+    expect(toolbar).toEqual(
+      expect.arrayContaining(['Filter', 'Select links', 'Save view', 'Sort: Newest first']),
+    );
   });
 
   it('keeps a plain header outside a folder', async () => {

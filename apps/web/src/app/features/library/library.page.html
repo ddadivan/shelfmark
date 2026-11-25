@@ -44,16 +44,6 @@
   <div class="library__split-head">
     <p class="library__split-title" aria-hidden="true">{{ 'library.split.open' | transloco }}</p>
     <p class="library__split-hint">{{ 'library.split.hint' | transloco }}</p>
-    <ui-button
-      class="library__split-close"
-      variant="ghost"
-      size="sm"
-      iconLeft="close"
-      [ariaLabel]="'library.split.close' | transloco"
-      (click)="splitView.close()"
-    >
-      {{ 'library.split.closeShort' | transloco }}
-    </ui-button>
   </div>
   }
   <div
@@ -232,7 +222,7 @@
             >
               {{ 'library.folderMenu.addHere' | transloco }}
             </ui-button>
-            } @if (feed.showControls() && feed.viewOptions(); as options) {
+            } @if (feed.showTools() && feed.viewOptions(); as options) {
             <div class="library__controls">
               <!-- Shelf toolbar controls of their own (author, Nov 25): Filter, Select, Side by side
                    and Save view; icon-only with a tooltip below 80em and on a phone. -->
@@ -242,28 +232,30 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="filter"
-                  [iconOnly]="!wide()"
+                  [iconOnly]="!wide() || narrow()"
                   [ariaLabel]="filterLabel()"
                   [uiTooltip]="filterLabel()"
                   [ariaPressed]="filters.filterCount() > 0"
                   (click)="openFilter(filterPanel, filterButton)"
                 >
-                  @if (wide()) { {{ filterLabel() }} }
+                  @if (wide() && !narrow()) { {{ filterLabel() }} }
                 </ui-button>
+                @if (feed.showControls() && selection.available()) {
                 <ui-button
                   variant="ghost"
                   size="sm"
                   iconLeft="check"
-                  [iconOnly]="!wide()"
+                  [iconOnly]="!wide() || narrow()"
                   [ariaLabel]="'library.viewMenu.select' | transloco"
                   [uiTooltip]="'library.viewMenu.select' | transloco"
                   [uiTooltipShortcut]="SELECT_SHORTCUT_CAP"
                   (click)="selection.startSelection()"
                 >
-                  @if (wide()) { {{ 'library.toolbar.select' | transloco }} }
+                  @if (wide() && !narrow()) { {{ 'library.toolbar.select' | transloco }} }
                 </ui-button>
-                @if (wide() && !preview.split()) {
+                } @if (wide() && feed.showControls() && !narrow()) {
                 <ui-button
+                  #splitOpener
                   variant="ghost"
                   size="sm"
                   iconLeft="columns"
@@ -272,7 +264,7 @@
                 >
                   {{ 'library.split.open' | transloco }}
                 </ui-button>
-                } @if (!phone() && saveViewShown()) {
+                } @if (!phone() && !narrow() && saveViewShown()) {
                 <ui-button
                   variant="ghost"
                   size="sm"
@@ -284,9 +276,33 @@
                 >
                   @if (wide()) { {{ 'library.toolbar.saveView' | transloco }} }
                 </ui-button>
+                } @if (!narrow()) {
+                <!-- Sort: the current order is in the label; the options are radio items. -->
+                <ui-button
+                  [uiMenuTrigger]="sortMenu"
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="sort"
+                  [iconOnly]="!wide()"
+                  [ariaLabel]="sortLabel()"
+                  [uiTooltip]="sortLabel()"
+                >
+                  @if (wide()) { {{ 'library.toolbar.sort' | transloco }} }
+                </ui-button>
+                <ui-menu #sortMenu align="end" [ariaLabel]="'library.viewMenu.sortBy' | transloco">
+                  @for (option of SORT_OPTIONS; track option) {
+                  <ui-menu-item
+                    type="radio"
+                    [selected]="option === filters.feedSort()"
+                    (activated)="filters.setSort(option)"
+                  >
+                    {{ SORT_OPTION_KEYS[option] | transloco }}
+                  </ui-menu-item>
+                  }
+                </ui-menu>
                 }
               </div>
-              @if (!phone()) {
+              @if (!narrow()) { @if (!phone()) {
               <app-library-view-menu />
               }
               <ui-segmented-control
@@ -296,10 +312,23 @@
                 [ariaLabel]="'library.view.label' | transloco"
                 (valueChange)="feed.setView($event)"
               />
+              }
             </div>
-            }
+            } @if (!narrow()) {
             <ui-button
-              #splitOpener
+              variant="ghost"
+              size="sm"
+              iconLeft="upload"
+              [iconOnly]="!wide()"
+              [ariaLabel]="'export.viewItem' | transloco"
+              [uiTooltip]="'export.viewItem' | transloco"
+              (click)="exportThisView()"
+            >
+              @if (wide()) { {{ 'export.menu' | transloco }} }
+            </ui-button>
+            } @else {
+            <!-- Beside the preview or in side by side the toolbar is slim: Sort and Export are here. -->
+            <ui-button
               [uiMenuTrigger]="moreMenu"
               variant="ghost"
               size="sm"
@@ -307,11 +336,8 @@
               iconLeft="more"
               [ariaLabel]="'library.viewMenu.more' | transloco"
             />
-            <!-- Shelf View "More" (01-library): Sort by and one Export entry, for every scope. Filter,
-                 Select, Side by side and Save view are toolbar buttons; the folder's own actions are
-                 in the menu by its title. -->
             <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
-              @if (feed.showControls()) {
+              @if (feed.showTools()) {
               <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
               @for (option of SORT_OPTIONS; track option) {
               <ui-menu-item
@@ -328,7 +354,7 @@
                 {{ 'export.viewItem' | transloco }}
               </ui-menu-item>
             </ui-menu>
-            }
+            } }
           </div>
         </header>
       </ng-template>
@@ -497,7 +523,7 @@
         (rowsView()) {
         <ul
           class="library__rows library__list"
-          [class.library__rows--headlines]="filters.view() === UI_VIEW.Headlines"
+          [class.library__rows--headlines]="view() === UI_VIEW.Headlines"
           cdkDropList
           cdkDropListSortingDisabled
           [cdkDropListDisabled]="compact()"
@@ -559,11 +585,12 @@
             </ng-template>
             <app-link-row
               [link]="link"
-              [headline]="filters.view() === UI_VIEW.Headlines"
+              [headline]="view() === UI_VIEW.Headlines"
               [dense]="preview.split()"
               [folder]="showFolderChips() && !preview.split() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"
+              [selectable]="selection.available()"
               [selected]="selection.has(link.id)"
               (selectToggled)="selection.toggleSelected(link, $event)"
               [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
@@ -588,7 +615,7 @@
         } @else {
         <ul
           class="library__grid library__list"
-          [class.library__grid--masonry]="filters.view() === UI_VIEW.Masonry"
+          [class.library__grid--masonry]="view() === UI_VIEW.Masonry"
           [style.--library-column]="filters.gridColumn() / 16 + 'rem'"
           cdkDropList
           cdkDropListSortingDisabled
@@ -646,7 +673,7 @@
             <app-link-card
               [link]="link"
               [highlight]="filters.query()"
-              [media]="filters.view() === UI_VIEW.Masonry ? CARD_MEDIA.Natural : CARD_MEDIA.Cover"
+              [media]="view() === UI_VIEW.Masonry ? CARD_MEDIA.Natural : CARD_MEDIA.Cover"
               [showNote]="filters.fieldShown(CARD_FIELD.Note)"
               [showTags]="filters.fieldShown(CARD_FIELD.Tags)"
               [showFolder]="filters.fieldShown(CARD_FIELD.Folder)"

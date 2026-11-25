@@ -2,7 +2,7 @@ import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_FIXTURE } from './models/mock-fixture.const';
-import { openMoreMenu, selectButton, switchView } from './support/library-toolbar';
+import { exportButton, selectButton, sortButton, switchView } from './support/library-toolbar';
 import { seedSession } from './support/mock-session';
 import { isCompact, isPhone } from './support/sidebar';
 
@@ -109,7 +109,7 @@ test.describe('library view controls (mock API)', () => {
     },
   );
 
-  test('the folder page has its own menu; sort and export are in the toolbar ⋯', async ({
+  test('the folder page has its own menu; sort and export are toolbar buttons', async ({
     page,
   }) => {
     test.skip(isCompact(page), 'the desktop folder header; the phone path is the bottom sheet');
@@ -139,16 +139,19 @@ test.describe('library view controls (mock API)', () => {
     await page.keyboard.press('Escape');
     await expect(folderMenu).toBeHidden();
 
-    await openMoreMenu(page);
-    const more = page.getByRole('menu', { name: 'More view options' });
-    await expect(more.getByRole('menuitemradio')).toHaveCount(3);
-    await expect(more.getByRole('menuitem', { name: 'Export this view…' })).toBeVisible();
+    // Sort and Export are toolbar buttons; Sort lists the four orders and nothing else.
+    await sortButton(page).click();
+    const sort = page.getByRole('menu', { name: 'Sort by' });
+    await expect(sort.getByRole('menuitemradio')).toHaveCount(4);
+    await expect(sort.getByRole('menuitem')).toHaveCount(0);
     await expect(
-      more.getByRole('menuitem', { name: /Select|Filter|Side by side|Save/u }),
+      sort.getByRole('menuitemradio', { name: /Select|Filter|Side by side|Save|Export/u }),
     ).toHaveCount(0);
+    await expect(exportButton(page)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'More view options' })).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(selectButton(page)).toBeVisible();
-    await expect(more.getByRole('menuitem', { name: /Rename|Delete folder|Move to/u })).toHaveCount(
+    await expect(sort.getByRole('menuitem', { name: /Rename|Delete folder|Move to/u })).toHaveCount(
       0,
     );
   });

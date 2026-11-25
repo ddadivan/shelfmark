@@ -57,6 +57,19 @@ test.describe('link preview (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Show sidebar' })).toHaveCount(0);
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
     await expect(page.locator('[aria-current="true"]', { hasText: FIRST })).toBeVisible();
+    // Beside the preview the feed is Headlines, whatever view the user keeps; the toolbar is slim
+    // (title, Filter) and there is no selecting: no Select button, no checkboxes, X does nothing.
+    await expect(page.locator('.library__rows--headlines')).toBeVisible();
+    await expect(page.locator('.library__grid')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Filter', exact: true })).toBeVisible();
+    for (const name of ['Select links', 'Save view', 'Side by side']) {
+      await expect(page.getByRole('button', { name, exact: true })).toHaveCount(0);
+    }
+    await expect(page.getByRole('radio', { name: 'Headlines', exact: true })).toHaveCount(0);
+    await expect(page.locator('.library__item ui-checkbox')).toHaveCount(0);
+    await page.evaluate('document.activeElement?.blur()');
+    await page.locator('body').press('x');
+    await expect(page.getByRole('toolbar', { name: /selected/ })).toHaveCount(0);
 
     const frame = panel.locator('iframe');
     await expect(frame).toHaveAttribute(
@@ -80,6 +93,9 @@ test.describe('link preview (mock API)', () => {
     await expect(page.getByRole('region', { name: /^Preview:/ })).toHaveCount(0);
     await expect(page).not.toHaveURL(/[?&]preview=/);
     await expect(page.getByRole('button', { name: 'Show sidebar' })).toHaveCount(0);
+    // The user's own view is back: Cards (the default) draws the grid again.
+    await expect(page.locator('.library__grid')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Select links', exact: true })).toBeVisible();
   });
 
   test('resizes the list with the keyboard and hides it with Wider preview', async ({ page }) => {

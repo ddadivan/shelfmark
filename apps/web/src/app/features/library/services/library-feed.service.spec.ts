@@ -38,17 +38,18 @@ async function setup(items: LinkResponse[], list?: LinksApi['list']) {
   const filters = TestBed.inject(LibraryFilterService);
   const scope = signal<LinksScope>(LINKS_SCOPE.All);
   const tag = signal<string | undefined>(undefined);
+  const kind = signal<string | undefined>(undefined);
   filters.connect({
     scope,
     folderId: signal(undefined),
     tag,
     q: signal(undefined),
     sort: signal(undefined),
-    kind: signal(undefined),
+    kind,
   });
   const feed = TestBed.inject(LibraryFeedService);
   TestBed.tick();
-  return { feed, store: TestBed.inject(LinksStore), tag };
+  return { feed, store: TestBed.inject(LinksStore), tag, kind };
 }
 
 describe('LibraryFeedService', () => {
@@ -71,6 +72,31 @@ describe('LibraryFeedService', () => {
     expect(feed.emptyLibrary()).toBe(true);
     expect(feed.showLinks()).toBe(false);
     expect(feed.shownCount()).toBe(0);
+  });
+
+  it('keeps Filter, Save view and the view tools in an empty RESULT, not in an empty library', async () => {
+    const empty = await setup([]);
+    // Nothing saved and no filter: nothing to filter, the view tools go.
+    expect(empty.feed.showTools()).toBe(false);
+    expect(empty.feed.showControls()).toBe(false);
+    empty.kind.set('video');
+    TestBed.tick();
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(empty.feed.empty()).toBe(true);
+    });
+    // A filter narrowed the feed to nothing: the tools stay (to change the filter), Select goes.
+    expect(empty.feed.emptyLibrary()).toBe(false);
+    expect(empty.feed.showTools()).toBe(true);
+    expect(empty.feed.showControls()).toBe(false);
+  });
+
+  it('keeps the empty state while the same empty view is fetched again', async () => {
+    const { feed, store } = await setup([]);
+    expect(feed.empty()).toBe(true);
+    store.setFilter({ scope: LINKS_SCOPE.All });
+    TestBed.tick();
+    expect(feed.empty()).toBe(true);
   });
 
   it('staggers the landing of a paste of many', async () => {

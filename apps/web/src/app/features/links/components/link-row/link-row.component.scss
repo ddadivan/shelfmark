@@ -76,3 +76,18 @@
     display: none;
   }
 }
+
+// Headlines in the narrow list beside the link preview: only the "…" menu shows on hover and focus
+// (the star and the eye are in it and in the preview's toolbar), so the title keeps the room.
+:host(.link-row--dense) .link-row__secondary {
+  display: none;
+}
+
+// The narrow list beside the preview: the title takes the room, the date stays; the domain and
+// folder columns (184px and 128px) would leave the title none.
+:host(.link-row--dense) {
+  .link-row__col--domain,
+  .link-row__col--folder {
+    display: none;
+  }
+}

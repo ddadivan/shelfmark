@@ -1237,7 +1237,8 @@
       "menu": "Links sortieren",
       "newest": "Neueste zuerst",
       "oldest": "Älteste zuerst",
-      "title": "Titel A–Z"
+      "title": "Titel A–Z",
+      "titleDesc": "Titel Z–A"
     },
     "search": {
       "chip": "Suche: {{query}}",
@@ -1312,8 +1313,7 @@
         "text": "Ziehe Links von links hierher."
       },
       "moveToLeft": "„{{title}}“ nach {{folder}} verschieben",
-      "hint": "Ziehe Links zwischen zwei Feeds, um sie abzulegen. Esc schließt.",
-      "closeShort": "Schließen"
+      "hint": "Ziehe Links zwischen zwei Feeds, um sie abzulegen. Esc schließt."
     },
     "extension": {
       "title": "Seiten direkt aus dem Browser speichern",
@@ -1349,6 +1349,7 @@
       "filter": "Filtern",
       "filterCount": "Filtern · {{count}}",
       "select": "Auswählen",
+      "sort": "Sortierung",
       "saveView": "Ansicht speichern"
     }
   },

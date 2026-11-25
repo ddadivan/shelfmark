@@ -1260,7 +1260,8 @@
       "menu": "Trier les liens",
       "newest": "Les plus récents d’abord",
       "oldest": "Les plus anciens d’abord",
-      "title": "Titre A–Z"
+      "title": "Titre A–Z",
+      "titleDesc": "Titre Z–A"
     },
     "search": {
       "chip": "Recherche : {{query}}",
@@ -1335,8 +1336,7 @@
         "text": "Faites glisser des liens ici depuis la gauche."
       },
       "moveToLeft": "Déplacer « {{title}} » vers {{folder}}",
-      "hint": "Glissez des liens d’un fil à l’autre pour les classer. Échap ferme.",
-      "closeShort": "Fermer"
+      "hint": "Glissez des liens d’un fil à l’autre pour les classer. Échap ferme."
     },
     "extension": {
       "title": "Enregistrez des pages directement depuis votre navigateur",
@@ -1372,6 +1372,7 @@
       "filter": "Filtrer",
       "filterCount": "Filtrer · {{count}}",
       "select": "Sélectionner",
+      "sort": "Tri",
       "saveView": "Enregistrer la vue"
     }
   },
