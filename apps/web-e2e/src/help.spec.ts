@@ -1,6 +1,7 @@
 import { E2E_TAG } from './models/e2e-tag.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
+import { isCompact } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
 
@@ -14,7 +15,7 @@ test.describe('Help center', { tag: E2E_TAG.Mobile }, () => {
 
     await expect(page.getByRole('heading', { level: 1, name: 'How can we help?' })).toBeVisible();
     await expect(page.getByRole('searchbox', { name: 'Search help articles' })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 2 })).toHaveText([
+    await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toHaveText([
       'Getting started',
       'Organise',
       'Find',
@@ -41,7 +42,7 @@ test.describe('Help center', { tag: E2E_TAG.Mobile }, () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Rules: file links automatically' }),
     ).toBeVisible();
-    await expect(page.getByRole('heading', { level: 2 })).toContainText([
+    await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toContainText([
       'Create a rule',
       'Apply a rule to links you already have',
       'When Shelfmark suggests a rule',
@@ -58,6 +59,34 @@ test.describe('Help center', { tag: E2E_TAG.Mobile }, () => {
     ).toBeVisible();
   });
 
+  test('the topics are a full-height sidebar from 64em and a drawer below it', async ({ page }) => {
+    await page.goto('/help/tags');
+    await expect(page.getByRole('heading', { level: 1, name: 'Tags' })).toBeVisible();
+
+    if (isCompact(page)) {
+      await expect(page.getByRole('navigation', { name: 'Help topics' })).toBeHidden();
+      await page.getByRole('button', { name: 'Help topics' }).click();
+      const drawer = page.getByRole('dialog', { name: 'Help topics' });
+      await expect(drawer).toBeVisible();
+      await drawer.getByRole('treeitem', { name: 'Reminders' }).click();
+      await expect(page).toHaveURL('/help/reminders');
+      await expect(drawer).toBeHidden();
+    } else {
+      const sidebar = page.getByRole('navigation', { name: 'Help topics' });
+      await expect(sidebar).toBeVisible();
+      const box = await page.locator('.shell__sidebar').boundingBox();
+      expect(box?.width ?? 0).toBeGreaterThanOrEqual(239);
+      expect(box?.y ?? 1).toBeLessThanOrEqual(1);
+      await sidebar.getByRole('treeitem', { name: 'Reminders' }).click();
+      await expect(page).toHaveURL('/help/reminders');
+      // The document never scrolls: the main area has its own scroll.
+      const doc = await page.evaluate<number>(
+        'document.documentElement.scrollHeight - document.documentElement.clientHeight',
+      );
+      expect(doc).toBeLessThanOrEqual(0);
+    }
+  });
+
   test('searching lists matching articles with the words marked, and an empty search lists all', async ({
     page,
   }) => {
@@ -66,15 +95,15 @@ test.describe('Help center', { tag: E2E_TAG.Mobile }, () => {
 
     await expect(page).toHaveURL(/\/help\?q=remind/);
     await expect(page.getByText('4 articles')).toBeVisible();
-    await expect(page.locator('.result').first()).toContainText('Reminders');
-    await expect(page.locator('.result mark').first()).toBeVisible();
+    await expect(page.locator('.results__list ui-link-tile').first()).toContainText('Reminders');
+    await expect(page.locator('.results__list mark').first()).toBeVisible();
     await expect(page.getByText('Didn’t find it?')).toBeVisible();
 
     await page.getByRole('searchbox', { name: 'Search help articles' }).fill('zzzqqq');
     await expect(page.getByText('Nothing found for “zzzqqq”')).toBeVisible();
 
     await page.goto('/help?q=reminders');
-    await page.locator('.result').first().click();
+    await page.locator('.results__list ui-link-tile').first().click();
     await expect(page).toHaveURL('/help/reminders');
   });
 

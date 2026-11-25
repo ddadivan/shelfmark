@@ -1,0 +1,92 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+  color: var(--text);
+}
+
+.ui-link-tile__link {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  height: 100%;
+  padding: var(--space-3) var(--space-4);
+  color: inherit;
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  transition: box-shadow 200ms ease;
+
+  @include hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+:host(.ui-link-tile--flat) .ui-link-tile__link {
+  background: transparent;
+  border-color: transparent;
+  border-radius: var(--radius-md);
+  transition: background-color 150ms ease;
+
+  @include hover {
+    background: var(--fill);
+    box-shadow: none;
+  }
+}
+
+.ui-link-tile__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--control-md);
+  height: var(--control-md);
+  background: var(--fill);
+  border-radius: var(--radius-md);
+}
+
+.ui-link-tile__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+}
+
+:host(.ui-link-tile--end) .ui-link-tile__body {
+  text-align: end;
+}
+
+.ui-link-tile__eyebrow,
+.ui-link-tile__text {
+  color: var(--text-muted);
+}
+
+.ui-link-tile__eyebrow {
+  @include type(caption);
+}
+
+.ui-link-tile__text {
+  @include type(secondary);
+}
+
+.ui-link-tile__heading {
+  @include type(heading);
+}
+
+.ui-link-tile__eyebrow:empty,
+.ui-link-tile__heading:empty,
+.ui-link-tile__text:empty {
+  display: none;
+}
+
+@include reduced-motion {
+  .ui-link-tile__link {
+    transition: none;
+  }
+}

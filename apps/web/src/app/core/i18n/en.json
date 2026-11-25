@@ -5238,6 +5238,7 @@
           }
         }
       }
-    }
+    },
+    "closeMenu": "Close menu"
   }
 }

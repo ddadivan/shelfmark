@@ -9,25 +9,27 @@ import {
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BUTTON_VARIANT,
   ButtonComponent,
+  BUTTON_SIZE,
   HighlightComponent,
-  IconComponent,
   InputComponent,
   INPUT_TYPE,
+  LinkTileComponent,
 } from '@shelfmark/ui';
 import { map } from 'rxjs';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { APP_PATH } from '../../models/app-path.const';
-import { HelpHeaderComponent } from './components/help-header/help-header.component';
+import { HelpShellComponent } from './components/help-shell/help-shell.component';
 import { HelpTopicCardComponent } from './components/help-topic-card/help-topic-card.component';
 import { HELP_CATEGORIES } from './models/help-categories.const';
 import { HELP_CATEGORY } from './models/help-category-id.const';
 import { HELP_POPULAR } from './models/help-popular.const';
 import { HelpActionsService } from './services/help-actions.service';
+import { HelpNavigationService } from './services/help-navigation.service';
 import { HelpTextService } from './services/help-text.service';
 import { followHelpTitle } from './utils/follow-help-title';
 import { helpQueryWords } from './utils/search-help';
@@ -42,12 +44,11 @@ import { helpQueryWords } from './utils/search-help';
   selector: 'app-help-page',
   imports: [
     ButtonComponent,
-    HelpHeaderComponent,
+    HelpShellComponent,
     HelpTopicCardComponent,
     HighlightComponent,
-    IconComponent,
+    LinkTileComponent,
     InputComponent,
-    RouterLink,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +56,7 @@ import { helpQueryWords } from './utils/search-help';
   styleUrl: './help.page.scss',
 })
 export default class HelpPage {
+  protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly INPUT_TYPE = INPUT_TYPE;
   protected readonly helpPath = `/${APP_PATH.Help}`;
@@ -69,6 +71,7 @@ export default class HelpPage {
   private readonly injector = inject(Injector);
   private readonly text = inject(HelpTextService);
   private readonly actions = inject(HelpActionsService);
+  protected readonly navigation = inject(HelpNavigationService);
   private readonly field = viewChild(InputComponent);
 
   /** `?q=` of the address; null on the home, a string (maybe empty) while searching. */

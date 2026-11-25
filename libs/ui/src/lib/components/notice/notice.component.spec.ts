@@ -78,6 +78,14 @@ describe('NoticeComponent', () => {
     expect(iconHref(notice).endsWith('#sm-info')).toBe(true);
   });
 
+  it('tip is a polite status with the bulb on the sage note', () => {
+    const { notice, update } = setup();
+    update((c) => c.kind.set(NOTICE_KIND.Tip));
+    expect(notice.classList.contains('ui-notice--tip')).toBe(true);
+    expect(notice.getAttribute('role')).toBe('status');
+    expect(iconHref(notice).endsWith('#sm-bulb')).toBe(true);
+  });
+
   it('quiet is a polite status on the plain surface row', () => {
     const { notice, update } = setup();
     update((c) => c.kind.set(NOTICE_KIND.Quiet));

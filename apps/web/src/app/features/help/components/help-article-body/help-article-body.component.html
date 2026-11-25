@@ -18,13 +18,12 @@
           <app-help-rule-mock />
         }
         @case (HELP_BLOCK.Tip) {
-          <p class="body__tip">
-            <ui-icon class="body__tip-icon" name="bulb" />
-            <span><app-help-text [text]="key(block.keys[0]) | transloco" /></span>
-          </p>
+          <ui-notice class="body__note" [kind]="NOTICE_KIND.Tip">
+            <app-help-text [text]="key(block.keys[0]) | transloco" />
+          </ui-notice>
         }
         @case (HELP_BLOCK.Warn) {
-          <ui-notice class="body__warn" [kind]="NOTICE_KIND.Quiet" icon="folder">
+          <ui-notice class="body__note" [kind]="NOTICE_KIND.Quiet" icon="folder">
             <app-help-text [text]="key(block.keys[0]) | transloco" />
           </ui-notice>
         }

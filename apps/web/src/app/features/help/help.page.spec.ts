@@ -25,30 +25,41 @@ describe('HelpPage', () => {
 
     expect(root.querySelector('h1')?.textContent).toContain('How can we help?');
     expect(root.querySelector('input[type="search"]')).not.toBeNull();
-    expect(root.querySelectorAll('.popular__link')).toHaveLength(5);
+    expect(root.querySelectorAll('.popular ui-button')).toHaveLength(5);
     expect(root.querySelectorAll('app-help-topic-card')).toHaveLength(6);
-    expect(root.querySelectorAll('.bar__tile')).toHaveLength(3);
+    expect(root.querySelectorAll('.bar ui-link-tile')).toHaveLength(3);
     expect(root.textContent).toContain('4 articles');
     expect(root.textContent).not.toMatch(/help\.(hero|categories|articles)/);
   });
 
-  it('links a topic card article to its page', async () => {
+  it('lists three articles in a topic card with the article count', async () => {
     provideQuery(null);
     const root = (await createTranslated(HelpPage)).nativeElement as HTMLElement;
-    const link = root.querySelector<HTMLAnchorElement>('.topic__link');
+    const card = root.querySelector('app-help-topic-card') as HTMLElement;
 
-    expect(link?.getAttribute('href')).toBe('/help/save-first-link');
+    expect(card.querySelectorAll('[role="treeitem"]')).toHaveLength(3);
+    expect(card.textContent).toContain('Save your first link');
+    expect(card.querySelector('.topic__count')?.textContent?.trim()).toBe('4 articles');
+  });
+
+  it('shows the topics and articles in the sidebar of the shell', async () => {
+    provideQuery(null);
+    const root = (await createTranslated(HelpPage)).nativeElement as HTMLElement;
+
+    expect(root.querySelectorAll('app-help-sidebar .side__heading')).toHaveLength(7);
   });
 
   it('lists the matching articles with the words marked while searching', async () => {
     provideQuery('remind');
     const root = (await createTranslated(HelpPage)).nativeElement as HTMLElement;
-    const titles = [...root.querySelectorAll('.result__title')].map((el) => el.textContent?.trim());
+    const titles = [...root.querySelectorAll('.results__list [slot="heading"]')].map((el) =>
+      el.textContent?.trim(),
+    );
 
     expect(root.querySelector('.hero__title')).toBeNull();
     expect(titles[0]).toBe('Reminders');
     expect(root.querySelector('.results__count')?.textContent?.trim()).toBe('4 articles');
-    expect(root.querySelector('.result mark')).not.toBeNull();
+    expect(root.querySelector('.results__list mark')).not.toBeNull();
     expect(root.querySelector('.results__empty')).not.toBeNull();
   });
 
@@ -56,14 +67,14 @@ describe('HelpPage', () => {
     provideQuery('');
     const root = (await createTranslated(HelpPage)).nativeElement as HTMLElement;
 
-    expect(root.querySelectorAll('.result')).toHaveLength(HELP_ARTICLES.length);
+    expect(root.querySelectorAll('.results__list ui-link-tile')).toHaveLength(HELP_ARTICLES.length);
   });
 
   it('says so when nothing matches', async () => {
     provideQuery('zzzqqq');
     const root = (await createTranslated(HelpPage)).nativeElement as HTMLElement;
 
-    expect(root.querySelectorAll('.result')).toHaveLength(0);
+    expect(root.querySelectorAll('.results__list ui-link-tile')).toHaveLength(0);
     expect(root.querySelector('.results__count')?.textContent).toContain('Nothing found for');
     expect(root.querySelector('.results__count')?.textContent).toContain('zzzqqq');
   });

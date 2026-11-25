@@ -5357,6 +5357,7 @@
           }
         }
       }
-    }
+    },
+    "closeMenu": "Cerrar el menú"
   }
 }

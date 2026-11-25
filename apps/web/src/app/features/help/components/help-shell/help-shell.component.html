@@ -1,0 +1,15 @@
+@if (!viewport.compact()) {
+  <aside class="shell__sidebar">
+    <app-help-sidebar [currentId]="currentId()" />
+  </aside>
+}
+<div class="shell__column">
+  <app-help-header
+    [compact]="viewport.compact()"
+    (searchRequested)="searchRequested.emit()"
+    (menuRequested)="openMenu()"
+  />
+  <div #scroller class="shell__scroll" (scroll)="scrolled.emit()">
+    <ng-content />
+  </div>
+</div>

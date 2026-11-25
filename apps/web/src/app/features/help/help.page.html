@@ -1,96 +1,100 @@
-<app-help-header (searchRequested)="openSearch()" />
-<main class="help" [class.help--searching]="searching()">
-  <section class="hero" [attr.aria-labelledby]="searching() ? null : 'help-hero-title'">
-    @if (!searching()) {
-    <h1 id="help-hero-title" class="hero__title">{{ 'help.hero.title' | transloco }}</h1>
-    <p class="hero__lead">{{ 'help.hero.lead' | transloco }}</p>
-    } @else {
-    <h1 class="help__sr">{{ 'help.title' | transloco }}</h1>
-    }
-    <ui-input
-      class="hero__search"
-      [type]="INPUT_TYPE.Search"
-      [label]="'help.hero.searchLabel' | transloco"
-      labelHidden
-      [placeholder]="'help.hero.placeholder' | transloco"
-      [value]="query()"
-      (valueChange)="onQuery($event)"
-      clearable
-      [clearLabel]="'help.hero.clear' | transloco"
-    />
-    @if (!searching()) {
-    <nav class="popular" [attr.aria-label]="'help.popularLabel' | transloco">
-      <span class="popular__label">{{ 'help.popular' | transloco }}</span>
-      @for (id of popular; track id) {
-      <a class="popular__link" [routerLink]="[helpPath, id]"
-        >{{ 'help.articles.' + id + '.title' | transloco }}</a
-      >
+<app-help-shell [currentId]="null" (searchRequested)="openSearch()">
+  <main class="help" [class.help--searching]="searching()">
+    <section class="hero" [attr.aria-labelledby]="searching() ? null : 'help-hero-title'">
+      @if (!searching()) {
+      <h1 id="help-hero-title" class="hero__title">{{ 'help.hero.title' | transloco }}</h1>
+      <p class="hero__lead">{{ 'help.hero.lead' | transloco }}</p>
+      } @else {
+      <h1 class="help__sr">{{ 'help.title' | transloco }}</h1>
       }
-    </nav>
-    }
-  </section>
-
-  @if (!searching()) {
-  <div class="topics">
-    @for (category of topics; track category.id) {
-    <app-help-topic-card [category]="category" />
-    }
-  </div>
-
-  <div class="bar">
-    <a class="bar__tile" [href]="aboutHref" (click)="howItWorks($event)">
-      <span class="bar__icon"><ui-icon name="play" /></span>
-      <span class="bar__body"
-        ><b>{{ 'help.bar.how.title' | transloco }}</b
-        ><span>{{ 'help.bar.how.text' | transloco }}</span></span
-      >
-    </a>
-    <a class="bar__tile" [routerLink]="shortcutsHref">
-      <span class="bar__icon"><ui-icon name="keyboard" /></span>
-      <span class="bar__body"
-        ><b>{{ 'help.bar.shortcuts.title' | transloco }}</b
-        ><span>{{ 'help.bar.shortcuts.text' | transloco }}</span></span
-      >
-    </a>
-    <a class="bar__tile" [href]="feedbackHref" (click)="sendFeedback($event)">
-      <span class="bar__icon"><ui-icon name="message" /></span>
-      <span class="bar__body"
-        ><b>{{ 'help.bar.feedback.title' | transloco }}</b
-        ><span>{{ 'help.bar.feedback.text' | transloco }}</span></span
-      >
-    </a>
-  </div>
-  } @else {
-  <section class="results" [attr.aria-label]="'help.search.resultsLabel' | transloco">
-    <p class="results__count" role="status">
-      @if (words().length > 0 && shown().length === 0) { {{ 'help.search.noneTitle' | transloco: {
-      query: query().trim() } }} } @else { {{ countKey() | transloco: { count: shown().length } }} }
-    </p>
-    <ul class="results__list">
-      @for (item of shown(); track item.id) {
-      <li>
-        <a class="result" [routerLink]="[helpPath, item.id]">
-          <span class="result__category">{{ categoryOf(item.id) | transloco }}</span>
-          <b class="result__title">
-            <ui-highlight
-              [text]="'help.articles.' + item.id + '.title' | transloco"
-              [query]="words()"
-            />
-          </b>
-          <span class="result__snippet">
-            <ui-highlight [text]="item.snippet" [query]="words()" />
-          </span>
-        </a>
-      </li>
+      <ui-input
+        class="hero__search"
+        [type]="INPUT_TYPE.Search"
+        [label]="'help.hero.searchLabel' | transloco"
+        labelHidden
+        [placeholder]="'help.hero.placeholder' | transloco"
+        [value]="query()"
+        (valueChange)="onQuery($event)"
+        clearable
+        [clearLabel]="'help.hero.clear' | transloco"
+      />
+      @if (!searching()) {
+      <nav class="popular" [attr.aria-label]="'help.popularLabel' | transloco">
+        <span class="popular__label">{{ 'help.popular' | transloco }}</span>
+        @for (id of popular; track id) {
+        <ui-button
+          [size]="BUTTON_SIZE.Sm"
+          [href]="navigation.articleUrl(id)"
+          (linkClick)="navigation.go($event, navigation.articleUrl(id))"
+          >{{ 'help.articles.' + id + '.title' | transloco }}</ui-button
+        >
+        }
+      </nav>
       }
-    </ul>
-    <div class="results__empty">
-      <b>{{ 'help.search.emptyTitle' | transloco }}</b>
-      <p>{{ 'help.search.emptyText' | transloco }}</p>
-      <ui-button [href]="feedbackHref" (linkClick)="sendFeedback($event)"
-        >{{ 'help.sendFeedback' | transloco }}</ui-button
-      >
+    </section>
+
+    @if (!searching()) {
+    <div class="topics">
+      @for (category of topics; track category.id) {
+      <app-help-topic-card [category]="category" />
+      }
     </div>
-  </section>
-  }
-</main>
+
+    <div class="bar">
+      <ui-link-tile icon="play" [href]="aboutHref" (activated)="howItWorks($event)">
+        <span slot="heading">{{ 'help.bar.how.title' | transloco }}</span>
+        <span slot="text">{{ 'help.bar.how.text' | transloco }}</span>
+      </ui-link-tile>
+      <ui-link-tile
+        icon="keyboard"
+        [href]="shortcutsHref"
+        (activated)="navigation.go($event, shortcutsHref)"
+      >
+        <span slot="heading">{{ 'help.bar.shortcuts.title' | transloco }}</span>
+        <span slot="text">{{ 'help.bar.shortcuts.text' | transloco }}</span>
+      </ui-link-tile>
+      <ui-link-tile icon="message" [href]="feedbackHref" (activated)="sendFeedback($event)">
+        <span slot="heading">{{ 'help.bar.feedback.title' | transloco }}</span>
+        <span slot="text">{{ 'help.bar.feedback.text' | transloco }}</span>
+      </ui-link-tile>
+    </div>
+    } @else {
+    <section class="results" [attr.aria-label]="'help.search.resultsLabel' | transloco">
+      <p class="results__count" role="status">
+        @if (words().length > 0 && shown().length === 0) { {{ 'help.search.noneTitle' | transloco: {
+        query: query().trim() } }} } @else { {{ countKey() | transloco: { count: shown().length } }}
+        }
+      </p>
+      <ul class="results__list">
+        @for (item of shown(); track item.id) {
+        <li>
+          <ui-link-tile
+            flat
+            [href]="navigation.articleUrl(item.id)"
+            (activated)="navigation.go($event, navigation.articleUrl(item.id))"
+          >
+            <span slot="eyebrow">{{ categoryOf(item.id) | transloco }}</span>
+            <span slot="heading">
+              <ui-highlight
+                [text]="'help.articles.' + item.id + '.title' | transloco"
+                [query]="words()"
+              />
+            </span>
+            <span slot="text">
+              <ui-highlight [text]="item.snippet" [query]="words()" />
+            </span>
+          </ui-link-tile>
+        </li>
+        }
+      </ul>
+      <div class="results__empty">
+        <b>{{ 'help.search.emptyTitle' | transloco }}</b>
+        <p>{{ 'help.search.emptyText' | transloco }}</p>
+        <ui-button [href]="feedbackHref" (linkClick)="sendFeedback($event)"
+          >{{ 'help.sendFeedback' | transloco }}</ui-button
+        >
+      </div>
+    </section>
+    }
+  </main>
+</app-help-shell>
