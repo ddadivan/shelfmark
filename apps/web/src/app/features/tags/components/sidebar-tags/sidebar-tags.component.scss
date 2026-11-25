@@ -73,6 +73,13 @@
   flex-basis: 100%;
 }
 
+// In the sidebar the list is a column: a flex-basis there would be a height (the 150px of the
+// pill left a gap under the new tag's field), so the field takes its own height and the width.
+.tags:not(.tags--page) .tags__item--editor {
+  flex: none;
+  min-width: 0;
+}
+
 .tags__editor {
   display: flex;
   flex-direction: column;

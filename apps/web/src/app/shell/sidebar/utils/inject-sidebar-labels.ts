@@ -19,7 +19,6 @@ export function injectSidebarLabels(): Signal<SidebarLabels | undefined> {
       transloco.selectTranslate('shell.sidebar.data'),
       transloco.selectTranslate('whatsNew.unseen'),
       transloco.selectTranslate('shell.sidebar.extension'),
-      transloco.selectTranslate('shell.sidebar.theme'),
     ]).pipe(
       map(
         ([
@@ -33,7 +32,6 @@ export function injectSidebarLabels(): Signal<SidebarLabels | undefined> {
           data,
           whatsNewDot,
           extension,
-          theme,
         ]) => ({
           all,
           unsorted,
@@ -45,7 +43,6 @@ export function injectSidebarLabels(): Signal<SidebarLabels | undefined> {
           data,
           whatsNewDot,
           extension,
-          theme,
         }),
       ),
     ),

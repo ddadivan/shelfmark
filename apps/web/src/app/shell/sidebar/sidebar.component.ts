@@ -31,7 +31,6 @@ import {
   MenuSeparatorComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
-  THEME,
   TooltipDirective,
   TreeComponent,
   UI_TREE_CONTEXT_MENU_TRIGGER,
@@ -57,21 +56,12 @@ import { FeedbackDialogService } from '../../features/feedback/services/feedback
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_DATA_ID } from './models/sidebar-data-id.const';
 import { SIDEBAR_EXTENSION_ID } from './models/sidebar-extension-id.const';
-import { SIDEBAR_THEME_ID } from './models/sidebar-theme-id.const';
-import { THEME_PREFERENCE } from '@shelfmark/contracts';
-import { ThemeService } from '../../core/theme/theme.service';
 import { WhatsNewStore } from '../../features/changelog/services/whats-new.store';
 import { folderTreeNodes } from './utils/folder-tree-nodes';
 import { injectSidebarLabels } from './utils/inject-sidebar-labels';
 import { latched } from './utils/latched';
 import { sidebarActiveId } from './utils/sidebar-active-id';
-import {
-  dataNodes,
-  extensionNodes,
-  fixedNodes,
-  themeNodes,
-  trashNodes,
-} from './utils/sidebar-nodes';
+import { dataNodes, extensionNodes, fixedNodes, trashNodes } from './utils/sidebar-nodes';
 import { sidebarRoute } from './utils/sidebar-route';
 import { SidebarFoldersService } from './services/sidebar-folders.service';
 import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
@@ -205,13 +195,6 @@ export class SidebarComponent {
     return fixedNodes(labels, counts, due > 0 ? due : undefined, note);
   });
 
-  private readonly theme = inject(ThemeService);
-  /** The "Theme" row at the top of the footer (Shelf; not on the phone: the You page has Appearance). */
-  protected readonly themeRows = computed<UiTreeNode[]>(() => {
-    const labels = this.labels();
-    return !labels || this.phone() ? [] : themeNodes(labels, this.theme.resolved() === THEME.Dark);
-  });
-
   /** "Get the extension" above the data row (not on the phone). */
   protected readonly extensionRows = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
@@ -290,14 +273,6 @@ export class SidebarComponent {
   protected async footerSelected(node: UiTreeNode): Promise<void> {
     if (node.id === SIDEBAR_DATA_ID) {
       this.toggleDataMenu(MENU_FOCUS_EDGE.First);
-      return;
-    }
-    if (node.id === SIDEBAR_THEME_ID) {
-      // Switches between the fixed Light and Dark themes and saves the choice on the account.
-      void this.settings.setAppearance({
-        theme:
-          this.theme.resolved() === THEME.Dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
-      });
       return;
     }
     if (node.id === SIDEBAR_EXTENSION_ID) {

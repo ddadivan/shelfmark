@@ -892,7 +892,6 @@
         "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
       },
       "extension": "Obtenir l’extension",
-      "theme": "Thème",
       "data": "Données et aide",
       "dataMenu": "Données et aide",
       "toggle": {

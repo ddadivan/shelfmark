@@ -105,24 +105,14 @@
         (collapsedChange)="sections.setCollapsed(SIDEBAR_SECTION.Tags, $event)"
       />
     }
-
-    @if (!foldersOnly() && howItWorks.cardVisible()) {
-      <app-how-it-works-card class="sidebar__how-it-works" />
-    }
   </div>
 
   @if (!foldersOnly()) {
     <!-- The footer stays put (#335): the "Data & help" row (desktop only; the phone has the same
       entries in the You list) that opens a menu upwards (#387), then Trash under its divider. -->
     <div class="sidebar__footer">
-      @if (themeRows().length) {
-        <ui-tree
-          [fixedNodes]="themeRows()"
-          [activeId]="activeId()"
-          [noDropIds]="drag.treeNoDropIds()"
-          [ariaLabel]="'shell.sidebar.theme' | transloco"
-          (selected)="footerSelected($event)"
-        />
+      @if (howItWorks.cardVisible()) {
+        <app-how-it-works-card class="sidebar__how-it-works" />
       }
       @if (extensionRows().length) {
         <ui-tree
