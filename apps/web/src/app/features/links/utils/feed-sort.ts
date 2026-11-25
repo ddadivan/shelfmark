@@ -22,6 +22,14 @@ export function feedSortQuery(sort: FeedSort): FeedSortQuery {
       return { sort: LINK_SORT_FIELD.Title, order: SORT_ORDER.Asc };
     case FEED_SORT.TitleDesc:
       return { sort: LINK_SORT_FIELD.Title, order: SORT_ORDER.Desc };
+    case FEED_SORT.Opened:
+      return { sort: LINK_SORT_FIELD.LastOpenedAt, order: SORT_ORDER.Desc };
+    case FEED_SORT.Edited:
+      return { sort: LINK_SORT_FIELD.UpdatedAt, order: SORT_ORDER.Desc };
+    case FEED_SORT.Site:
+      return { sort: LINK_SORT_FIELD.Host, order: SORT_ORDER.Asc };
+    case FEED_SORT.Favorites:
+      return { sort: LINK_SORT_FIELD.Favorite, order: SORT_ORDER.Desc };
     default:
       return { sort: LINK_SORT_FIELD.CreatedAt, order: SORT_ORDER.Desc };
   }

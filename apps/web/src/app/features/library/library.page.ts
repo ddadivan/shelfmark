@@ -88,7 +88,7 @@ import { SplitViewService } from './services/split-view.service';
 import { ElementWidthDirective } from './directives/element-width.directive';
 import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
-import { SORT_OPTIONS } from './models/sort-options.const';
+import { SORT_GROUPS } from './models/sort-groups.const';
 import { LinkPreviewService } from '../link-preview/services/link-preview.service';
 import { PreviewPanelComponent } from '../link-preview/components/preview-panel/preview-panel.component';
 import { PreviewPageComponent } from '../link-preview/components/preview-page/preview-page.component';
@@ -277,7 +277,7 @@ export default class LibraryPage {
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly pluralKey = pluralKey;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
-  protected readonly SORT_OPTIONS = SORT_OPTIONS;
+  protected readonly SORT_GROUPS = SORT_GROUPS;
   protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
 
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;

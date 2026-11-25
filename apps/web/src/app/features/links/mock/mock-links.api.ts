@@ -25,6 +25,7 @@ import {
   type DeleteLinksBatchResponse,
   type UpdateLinksBatchRequest,
   type UpdateLinksBatchResponse,
+  linkSiteKey,
   type CreateLinksBatchRequest,
   type CreateLinksBatchResponse,
   type LinkBatchItemError,
@@ -682,9 +683,34 @@ function batchProblems(request: CreateLinksBatchRequest): string[] {
 function sort(links: LinkResponse[], query: ListLinksQuery): LinkResponse[] {
   const field = query.sort ?? LINK_SORT_FIELD.CreatedAt;
   const direction = (query.order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc ? -1 : 1;
-  const key = (link: LinkResponse): string =>
-    field === LINK_SORT_FIELD.Title ? link.title.toLowerCase() : link[field];
-  return [...links].sort((a, b) => direction * key(a).localeCompare(key(b)));
+  const text = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+  const compare = (a: LinkResponse, b: LinkResponse): number => {
+    switch (field) {
+      case LINK_SORT_FIELD.Title:
+        return text(a.title.toLowerCase(), b.title.toLowerCase());
+      case LINK_SORT_FIELD.UpdatedAt:
+        return text(a.updatedAt, b.updatedAt);
+      case LINK_SORT_FIELD.Host:
+        return (
+          text(linkSiteKey(a.url), linkSiteKey(b.url)) ||
+          text(a.title.toLowerCase(), b.title.toLowerCase())
+        );
+      case LINK_SORT_FIELD.Favorite:
+        return Number(a.isFavorite) - Number(b.isFavorite) || text(a.createdAt, b.createdAt);
+      default:
+        return text(a.createdAt, b.createdAt);
+    }
+  };
+  if (field === LINK_SORT_FIELD.LastOpenedAt) {
+    // Like the API: links never opened come last in both directions.
+    return [...links].sort((a, b) => {
+      if (a.lastOpenedAt === null || b.lastOpenedAt === null) {
+        return Number(a.lastOpenedAt === null) - Number(b.lastOpenedAt === null);
+      }
+      return direction * text(a.lastOpenedAt, b.lastOpenedAt);
+    });
+  }
+  return [...links].sort((a, b) => direction * compare(a, b));
 }
 
 function encodeCursor(offset: number): string {
