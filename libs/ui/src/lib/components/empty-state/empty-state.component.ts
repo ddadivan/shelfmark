@@ -16,7 +16,7 @@ import type { EmptyStateLayout } from './models/empty-state-layout.type';
  * heading input is `heading` (not `title`, which would add a native tooltip to the host).
  * `illustration` wins over `icon` when both are set.
  * `layout="page"` is the page-level state (EmptyStates.dc.html, #315): a surface card that grows
- * into the free height of a flex-column parent, with a larger scene on a soft disc, the heading
+ * into the free height of a flex-column parent, with a larger scene standing on the page (no disc), the heading
  * and the text centred both ways. The scene plays once (reduced motion: its final frame).
  */
 @Component({

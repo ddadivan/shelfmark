@@ -14,11 +14,12 @@
 }
 
 // Fills are classes bound to tokens. Resting styles are the final frame of every scene.
-// `--ui-illustration-edge` / `--ui-illustration-key-edge`: stronger edges set by the caller (the
-// page-level empty state, whose disc needs 3:1 edges); unset, the soft look of the design.
+// The scenes stand straight on the page (no disc behind them, author decision 2026-11-25): white
+// parts take the `line-strong` hairline, the pale sage bodies a sage `ai-line` edge.
+// `--ui-illustration-edge` / `--ui-illustration-key-edge` let a caller set other edges.
 .ui-illustration__surface {
   fill: var(--surface);
-  stroke: var(--ui-illustration-edge, var(--border));
+  stroke: var(--ui-illustration-edge, var(--line-strong));
   stroke-width: 1;
 }
 
@@ -40,7 +41,7 @@
 
 // A pale sage body that carries the scene (a folder, a tray, a filter chip).
 .ui-illustration__tint--key {
-  stroke: var(--ui-illustration-key-edge, none);
+  stroke: var(--ui-illustration-key-edge, var(--ai-line));
   stroke-width: 1.5;
 }
 
@@ -50,7 +51,7 @@
 
 // A mark that stands on the ground, not on a white part (the offline break marks).
 .ui-illustration__line--ground {
-  fill: var(--ui-illustration-edge, var(--surface-pressed));
+  fill: var(--ui-illustration-edge, var(--line-strong));
 }
 
 .ui-illustration__mark {

@@ -461,36 +461,21 @@ describe('folder colour contrast (WCAG AA 4.5:1)', () => {
   });
 });
 
-/** The hex behind `--illustration-disc`: sage `ai-bg` at 75% over the page `bg` (StateScene). */
-function discHex(theme: 'light' | 'dark'): string {
-  const out = css(`:root { @include ${theme}; }`);
-  const mix =
-    /--illustration-disc:\s*color-mix\(in srgb, var\(--([a-z-]+)\) (\d+)%, transparent\)/.exec(out);
-  if (!mix?.[1] || !mix[2]) {
-    throw new Error(`token --illustration-disc is not a sage mix in ${theme}`);
-  }
-  return mixHex(tokenHex(theme, mix[1]), tokenHex(theme, 'bg'), Number(mix[2]) / 100);
-}
-
-describe('empty-state scene disc (StateScene)', () => {
-  it('is sage ai-bg at 75% in both themes, as in the design', () => {
+describe('empty-state scenes (no disc)', () => {
+  it('draws the scene edges and key shapes at 3:1 on the page and the surface (WCAG 1.4.11)', () => {
     for (const theme of ['light', 'dark'] as const) {
-      expect(discHex(theme)).toBe(mixHex(tokenHex(theme, 'ai-bg'), tokenHex(theme, 'bg'), 0.75));
+      for (const ground of ['bg', 'surface']) {
+        for (const edge of ['ai', 'primary']) {
+          const ratio = contrast(tokenHex(theme, edge), tokenHex(theme, ground));
+          expect(ratio, `${theme} ${edge} on ${ground}`).toBeGreaterThanOrEqual(3);
+        }
+      }
     }
   });
 
-  it('keeps the scene edges and key shapes at 3:1 on the disc in light (WCAG 1.4.11)', () => {
-    for (const edge of ['border-control', 'ai', 'primary']) {
-      const ratio = contrast(tokenHex('light', edge), discHex('light'));
-      expect(ratio, `light ${edge}`).toBeGreaterThanOrEqual(3);
-    }
-  });
-
-  it('keeps the key shapes and the ink at 3:1 in dark (the author kept the sage disc, Nov 24, 2026)', () => {
-    // Known gap the author accepted: `border-control` on the dark sage disc is about 2.6:1.
-    for (const edge of ['ai', 'primary']) {
-      const ratio = contrast(tokenHex('dark', edge), discHex('dark'));
-      expect(ratio, `dark ${edge}`).toBeGreaterThanOrEqual(3);
+  it('has no illustration disc token any more', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      expect(css(`:root { @include ${theme}; }`)).not.toContain('--illustration-disc');
     }
   });
 });

@@ -114,7 +114,7 @@ describe('EmptyStateComponent', () => {
       c.illustration.set('empty-trash');
     });
     expect(state?.classList.contains('ui-empty-state--page')).toBe(true);
-    // The scene stands on its stage (the soft disc of the page layout).
+    // The scene stands on its stage (no disc behind the scene).
     expect(host.querySelector('.ui-empty-state__stage ui-illustration')).not.toBeNull();
     expect(await axeViolations(host)).toEqual([]);
   });

@@ -23,7 +23,6 @@ export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
   'ai-fill': 'Fill of the AI action button: 24% ai over surface.',
   'ai-fill-hover': 'Hover of the AI action button: 30% ai over surface.',
   'ai-fill-pressed': 'Pressed AI action button: 36% ai over surface.',
-  'illustration-disc': 'Empty-state disc: ai-bg at 75% (author decision, ADR 0061 point 7).',
   'card-hover-bg': 'Hovered card fill: the surface, 4% lighter in dark (Shelf shadow-hover usage).',
   'skeleton-shimmer': 'Moving highlight of skeletons, mixed from surface or text.',
   // Values the prototypes draw that tokens.json does not name.

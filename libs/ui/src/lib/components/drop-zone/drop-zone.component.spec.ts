@@ -241,9 +241,9 @@ describe('DropZoneComponent', () => {
       }
     });
 
-    it('puts the 160px scene on the illustration disc', () => {
+    it('draws the 160px scene straight on the page, without a disc', () => {
       const css = compileScss('lib/components/drop-zone/drop-zone.component.scss');
-      expect(css).toContain('var(--illustration-disc)');
+      expect(css).not.toContain('illustration-disc');
       expect(css).toMatch(/--ui-illustration-width:\s*10rem/);
     });
   });

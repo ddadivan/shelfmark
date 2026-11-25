@@ -11,16 +11,16 @@
   text-align: center;
 }
 
-// Page layout (#315, Shelf `sm-empty`): the state is the page's content, centred across the
-// content area with no card around it and 48px under the page head (not centred in the height);
-// the 240 x 150 scene, then 16px to the heading, the sentence and the actions.
+// Page layout (#315, Shelf `sm-empty`): the state is the page's content, centred both ways in
+// the free area under the page head (author decision, 2026-11-25) with no card around it; the
+// 240 x 150 scene, then 16px to the heading, the sentence and the actions.
 :host(.ui-empty-state--page) {
   --ui-illustration-width: #{rem(240px)};
 
   box-sizing: border-box;
   flex: 1 0 auto;
   gap: var(--space-4);
-  justify-content: flex-start;
+  justify-content: center;
   width: 100%;
   max-width: none;
   padding: var(--space-12) var(--space-6);
@@ -31,26 +31,9 @@
   }
 }
 
-// The scene stands on a soft disc (`illustration-disc`, Shelf `il-disc`: r 70 in the 240 x 150
-// scene), so it reads as one object on the page.
 .ui-empty-state__stage {
   display: grid;
   place-items: center;
-}
-
-:host(.ui-empty-state--page) .ui-empty-state__stage {
-  position: relative;
-  isolation: isolate;
-
-  &::before {
-    position: absolute;
-    z-index: -1;
-    width: 58.4%;
-    aspect-ratio: 1;
-    content: '';
-    background: var(--illustration-disc);
-    border-radius: var(--radius-full);
-  }
 }
 
 .ui-empty-state__illustration {
@@ -58,11 +41,7 @@
 }
 
 :host(.ui-empty-state--page) .ui-empty-state__illustration {
-  // On the disc the key shapes need edges of 3:1 (WCAG 1.4.11, #315): white parts take the
-  // control border, the pale sage bodies (folder, tray, filter chip) a sage `ai` outline.
   --ui-illustration-width: inherit;
-  --ui-illustration-edge: var(--border-control);
-  --ui-illustration-key-edge: var(--ai);
 }
 
 .ui-empty-state__art {

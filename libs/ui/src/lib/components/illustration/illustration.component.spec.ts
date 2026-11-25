@@ -118,15 +118,15 @@ describe('IllustrationComponent', () => {
       expect(host.querySelectorAll('.ui-illustration__line--ground')).toHaveLength(2);
     });
 
-    it('takes the caller edges and keeps the soft look without them', () => {
+    it('takes the caller edges and draws hairline and sage edges without them', () => {
       expect(css).toMatch(
-        /\.ui-illustration__surface\s*\{[^}]*stroke:\s*var\(--ui-illustration-edge,\s*var\(--border\)\)/,
+        /\.ui-illustration__surface\s*\{[^}]*stroke:\s*var\(--ui-illustration-edge,\s*var\(--line-strong\)\)/,
       );
       expect(css).toMatch(
-        /\.ui-illustration__tint--key\s*\{[^}]*stroke:\s*var\(--ui-illustration-key-edge,\s*none\)/,
+        /\.ui-illustration__tint--key\s*\{[^}]*stroke:\s*var\(--ui-illustration-key-edge,\s*var\(--ai-line\)\)/,
       );
       expect(css).toMatch(
-        /\.ui-illustration__line--ground\s*\{[^}]*fill:\s*var\(--ui-illustration-edge,\s*var\(--surface-pressed\)\)/,
+        /\.ui-illustration__line--ground\s*\{[^}]*fill:\s*var\(--ui-illustration-edge,\s*var\(--line-strong\)\)/,
       );
     });
   });

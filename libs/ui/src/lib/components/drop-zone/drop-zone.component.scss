@@ -61,29 +61,13 @@
   }
 }
 
-// The scene on the soft disc of the page empty states (`illustration-disc`), smaller (160px).
 .ui-drop-zone__stage {
-  position: relative;
   display: grid;
   place-items: center;
-  isolation: isolate;
-
-  &::before {
-    position: absolute;
-    z-index: -1;
-    width: 72%;
-    aspect-ratio: 1;
-    content: '';
-    background: var(--illustration-disc);
-    border-radius: var(--radius-full);
-  }
 }
 
 .ui-drop-zone__illustration {
-  // On the disc the key shapes keep 3:1 edges (WCAG 1.4.11), as in the page empty states.
   --ui-illustration-width: #{rem(160px)};
-  --ui-illustration-edge: var(--border-control);
-  --ui-illustration-key-edge: var(--accent);
 }
 
 .ui-drop-zone__copy {

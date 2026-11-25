@@ -87,7 +87,7 @@ export const TwoActions: Story = {
 
 /**
  * Page layout (#315): the page-level state of Trash, Recently opened and the library feeds. A
- * centred block (no card) that fills the free height of the page column, the scene on a soft disc.
+ * centred block (no card) that fills the free height of the page column, the scene straight on the page (no disc).
  */
 export const Page: Story = {
   args: {
@@ -111,8 +111,8 @@ export const Page: Story = {
 
 /**
  * Every page-level scene in both themes (#315): the library feeds, a folder, Trash, Recently
- * opened, Favorites, Unsorted, Tags, filters, not found and offline. Each scene keeps 3:1 edges on
- * its disc (WCAG 1.4.11).
+ * opened, Favorites, Unsorted, Tags, filters, not found and offline, the pre-Shelf scenes recoloured to the
+ * Shelf tokens and standing on the page (no disc).
  */
 export const PageScenes: Story = {
   parameters: { layout: 'padded' },
@@ -129,6 +129,10 @@ export const PageScenes: Story = {
         { heading: 'Nothing matches these filters', scene: 'empty-filter' },
         { heading: 'Nothing found', scene: 'not-found' },
         { heading: 'You are offline', scene: 'offline' },
+        { heading: 'This page is gone', scene: 'page-not-found' },
+        { heading: 'Something went wrong', scene: 'error' },
+        { heading: 'You are signed out', scene: 'signed-out' },
+        { heading: 'All done', scene: 'all-done' },
       ],
       themes: Object.values(THEME),
     },
