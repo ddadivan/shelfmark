@@ -69,7 +69,11 @@
   flex: 1 1 0;
   flex-direction: column;
   min-height: 0;
-  overflow-y: auto;
+
+  // Never a horizontal bar: `overflow-y: auto` makes `overflow-x` compute to `auto` too, so any
+  // sub-pixel overflow (zoom, fractional scale) or a classic scrollbar gutter showed one. Rows
+  // keep their focus ring room inside through the inline padding below.
+  overflow: hidden auto;
   overscroll-behavior: contain;
 
   // Soft edges when the tree scrolls (#352), in the sidebar card's colour.

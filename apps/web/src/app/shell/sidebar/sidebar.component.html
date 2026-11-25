@@ -6,7 +6,7 @@
   @if (showLogo()) {
     <a class="sidebar__logo" routerLink="/links"><ui-logo /></a>
   }
-  <div class="sidebar__scroll">
+  <div class="sidebar__scroll" uiScrollFade>
     @if (!foldersOnly()) {
       <ui-tree
         [fixedNodes]="fixedNodes()"

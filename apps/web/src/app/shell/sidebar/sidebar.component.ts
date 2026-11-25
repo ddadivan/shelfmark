@@ -36,6 +36,7 @@ import {
   UI_TREE_CONTEXT_MENU_TRIGGER,
   type UiTreeContextMenuEvent,
   type UiTreeNode,
+  ScrollFadeDirective,
 } from '@shelfmark/ui';
 import { filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
@@ -81,6 +82,7 @@ import { SIDEBAR_SECTION } from './models/sidebar-section.const';
 @Component({
   selector: 'app-sidebar',
   imports: [
+    ScrollFadeDirective,
     BadgeComponent,
     HowItWorksCardComponent,
     ButtonComponent,

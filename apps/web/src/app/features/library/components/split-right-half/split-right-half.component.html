@@ -91,7 +91,7 @@
         (click)="split.close()"
       />
     </div>
-    <div class="split-right__scroll">
+    <div class="split-right__scroll" uiScrollFade>
       @if (feed.error() && feed.count() === 0) {
         <div class="split-right__state">
           <p class="split-right__text">{{ 'library.error.text' | transloco }}</p>

@@ -42,6 +42,7 @@ import {
   SkeletonComponent,
   type BreadcrumbClick,
   DragWobbleDirective,
+  ScrollFadeDirective,
 } from '@shelfmark/ui';
 import { PIN_KIND } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
@@ -109,6 +110,7 @@ const SKELETON_COUNT = 8;
 @Component({
   selector: 'app-library-page',
   imports: [
+    ScrollFadeDirective,
     LibraryViewMenuComponent,
     LibraryFilterPanelComponent,
     CdkDrag,

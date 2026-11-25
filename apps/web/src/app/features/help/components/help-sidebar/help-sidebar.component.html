@@ -3,7 +3,7 @@
     <ui-logo class="side__logo" [wordmark]="'landing.header.brand' | transloco" />
     <span class="side__tag">{{ 'help.brand' | transloco }}</span>
   </a>
-  <div class="side__scroll">
+  <div class="side__scroll" uiScrollFade>
     @for (group of groups(); track group.id) {
       <section class="side__group" [attr.aria-labelledby]="'help-side-' + group.id">
         <h2 class="side__heading" [id]="'help-side-' + group.id">{{ group.title }}</h2>

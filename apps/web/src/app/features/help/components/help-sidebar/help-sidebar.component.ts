@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { LogoComponent, TreeComponent, type UiTreeNode } from '@shelfmark/ui';
+import { LogoComponent, ScrollFadeDirective, TreeComponent, type UiTreeNode } from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { HELP_CATEGORIES } from '../../models/help-categories.const';
 import { HelpNavigationService } from '../../services/help-navigation.service';
@@ -15,7 +15,7 @@ import { HelpTextService } from '../../services/help-text.service';
  */
 @Component({
   selector: 'app-help-sidebar',
-  imports: [LogoComponent, RouterLink, TranslocoPipe, TreeComponent],
+  imports: [LogoComponent, ScrollFadeDirective, RouterLink, TranslocoPipe, TreeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './help-sidebar.component.html',
   styleUrl: './help-sidebar.component.scss',
