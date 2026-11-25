@@ -169,21 +169,24 @@ test.describe('mobile polish (mock API)', () => {
     }) => {
       await page.goto('/links');
       await expect(page.locator('ui-card').first()).toBeVisible();
-      // Shelf block 1: the Masonry / Cards / List switch stays, the rest is in ⋯ (a sheet).
+      // Shelf: the Masonry / Cards / List / Headlines switch stays, the rest is in ⋯ (a sheet).
       await expect(page.getByRole('button', { name: /^Sort: / })).toHaveCount(0);
       await expect(page.getByRole('radiogroup', { name: 'View' }).getByRole('radio')).toHaveCount(
-        3,
+        4,
       );
       await expect(page.getByRole('button', { name: 'Export' })).toHaveCount(0);
 
       await page.getByRole('button', { name: 'More view options' }).click();
       const menu = page.getByRole('menu', { name: 'More view options' });
       await expect(menu.getByText('Sort by', { exact: true })).toBeVisible();
-      await expect(menu.getByText('Export', { exact: true })).toBeVisible();
       await expect(menu.getByRole('menuitemradio', { name: 'Newest first' })).toBeVisible();
-      await expect(menu.getByRole('menuitem', { name: 'Select links' })).toBeVisible();
-      await expect(menu.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
+      await expect(menu.getByRole('menuitem', { name: 'Select links' })).toHaveCount(0);
+      await expect(menu.getByRole('menuitem', { name: 'Export this view…' })).toBeVisible();
+      await expect(menu.getByRole('menuitem', { name: /JSON|CSV/ })).toHaveCount(0);
       await page.keyboard.press('Escape');
+      // Filter and Select are icon buttons in the toolbar.
+      await expect(page.getByRole('button', { name: 'Filter', exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Select links', exact: true })).toBeVisible();
 
       // The saved views are one row that scrolls sideways, the first chip flush left.
       const bar = page.getByRole('toolbar', { name: 'Saved views' });

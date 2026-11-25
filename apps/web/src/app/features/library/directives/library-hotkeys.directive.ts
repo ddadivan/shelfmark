@@ -88,7 +88,7 @@ export class LibraryHotkeysDirective {
       return false;
     }
     if (
-      event.key === 'F2' &&
+      event.key === KEYBOARD_KEY.F2 &&
       !event.metaKey &&
       !event.ctrlKey &&
       !event.altKey &&

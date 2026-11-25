@@ -234,6 +234,58 @@
             </ui-button>
             } @if (feed.showControls() && feed.viewOptions(); as options) {
             <div class="library__controls">
+              <!-- Shelf toolbar controls of their own (author, Nov 25): Filter, Select, Side by side
+                   and Save view; icon-only with a tooltip below 80em and on a phone. -->
+              <div class="library__actions">
+                <ui-button
+                  #filterButton
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="filter"
+                  [iconOnly]="!wide()"
+                  [ariaLabel]="filterLabel()"
+                  [uiTooltip]="filterLabel()"
+                  [ariaPressed]="filters.filterCount() > 0"
+                  (click)="openFilter(filterPanel, filterButton)"
+                >
+                  @if (wide()) { {{ filterLabel() }} }
+                </ui-button>
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="check"
+                  [iconOnly]="!wide()"
+                  [ariaLabel]="'library.viewMenu.select' | transloco"
+                  [uiTooltip]="'library.viewMenu.select' | transloco"
+                  [uiTooltipShortcut]="SELECT_SHORTCUT_CAP"
+                  (click)="selection.startSelection()"
+                >
+                  @if (wide()) { {{ 'library.toolbar.select' | transloco }} }
+                </ui-button>
+                @if (wide() && !preview.split()) {
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="columns"
+                  [ariaPressed]="splitView.open()"
+                  (click)="splitView.toggle()"
+                >
+                  {{ 'library.split.open' | transloco }}
+                </ui-button>
+                } @if (!phone() && saveViewShown()) {
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="add"
+                  [iconOnly]="!wide()"
+                  [ariaLabel]="'library.toolbar.saveView' | transloco"
+                  [uiTooltip]="'library.toolbar.saveView' | transloco"
+                  (click)="saveView()"
+                >
+                  @if (wide()) { {{ 'library.toolbar.saveView' | transloco }} }
+                </ui-button>
+                }
+              </div>
               @if (!phone()) {
               <app-library-view-menu />
               }
@@ -255,8 +307,9 @@
               iconLeft="more"
               [ariaLabel]="'library.viewMenu.more' | transloco"
             />
-            <!-- Shelf View "More" (01-library): sort, filter, select, side by side and one Export
-                 entry, for every scope. The folder's own actions are in the menu by its title. -->
+            <!-- Shelf View "More" (01-library): Sort by and one Export entry, for every scope. Filter,
+                 Select, Side by side and Save view are toolbar buttons; the folder's own actions are
+                 in the menu by its title. -->
             <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
               @if (feed.showControls()) {
               <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
@@ -270,27 +323,6 @@
               </ui-menu-item>
               }
               <ui-menu-separator />
-              <ui-menu-item icon="filter" (activated)="openFilter(filterPanel, splitOpener)">
-                {{ filters.filterCount() === 0 ? ('library.filterPanel.menuItem' | transloco) :
-                ('library.filterPanel.menuItemCount' | transloco: { count: filters.filterCount() })
-                }}
-              </ui-menu-item>
-              <ui-menu-item
-                icon="check"
-                [shortcut]="SELECT_SHORTCUT_CAP"
-                (activated)="selection.startSelection()"
-              >
-                {{ 'library.viewMenu.select' | transloco }}
-              </ui-menu-item>
-              } @if (wide() && !preview.split()) {
-              <ui-menu-item
-                icon="columns"
-                type="checkbox"
-                [selected]="splitView.open()"
-                (activated)="splitView.toggle()"
-              >
-                {{ 'library.split.open' | transloco }}
-              </ui-menu-item>
               }
               <ui-menu-item icon="upload" (activated)="exportThisView()">
                 {{ 'export.viewItem' | transloco }}

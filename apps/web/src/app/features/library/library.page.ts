@@ -11,7 +11,9 @@ import {
   input,
   viewChild,
 } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { SavedViewActionsService } from '../views/services/saved-view-actions.service';
 import {
   BadgeComponent,
   BreadcrumbsComponent,
@@ -34,6 +36,7 @@ import {
   ProgressBarComponent,
   ResizeHandleComponent,
   SegmentedControlComponent,
+  TooltipDirective,
   TooltipGroupDirective,
   SKELETON_SHAPE,
   SkeletonComponent,
@@ -148,6 +151,7 @@ const SKELETON_COUNT = 8;
     ResizeHandleComponent,
     SavedViewChipsComponent,
     SegmentedControlComponent,
+    TooltipDirective,
     TooltipGroupDirective,
     SkeletonComponent,
     SplitRightHalfComponent,
@@ -217,6 +221,11 @@ export default class LibraryPage {
   protected readonly drag = inject(LinkDragService);
   protected readonly dnd = inject(LibraryDragService);
   private readonly exportDialog = inject(ExportDialogService);
+  private readonly savedViews = inject(SavedViewActionsService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly lang = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
   private readonly router = inject(Router);
 
   /** From the route data. */
@@ -319,6 +328,24 @@ export default class LibraryPage {
   protected readonly SELECT_SHORTCUT_CAP = LINK_SELECT_SHORTCUT.SelectKey.toUpperCase();
 
   /** Opens the Filter popover under the menu's button (the menu has closed and handed focus back). */
+  /** Filter button text: "Filter", with the number of active filters. */
+  protected readonly filterLabel = computed(() => {
+    this.lang();
+    const count = this.filters.filterCount();
+    return count === 0
+      ? this.transloco.translate('library.toolbar.filter')
+      : this.transloco.translate('library.toolbar.filterCount', { count });
+  });
+  /** "Save view" shows only with something to save: a filter or a search. */
+  protected readonly saveViewShown = computed(
+    () => !this.feed.emptyLibrary() && (this.filters.filterCount() > 0 || this.filters.searching()),
+  );
+
+  /** "Save view" of the toolbar: the New view dialog, filled with the current filter. */
+  protected async saveView(): Promise<void> {
+    await this.savedViews.saveCurrent(this.filters.filter());
+  }
+
   protected openFilter(panel: LibraryFilterPanelComponent, button: ButtonComponent): void {
     const anchor = button.element();
     if (anchor) {

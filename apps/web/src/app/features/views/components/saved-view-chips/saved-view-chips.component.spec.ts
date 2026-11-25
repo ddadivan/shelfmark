@@ -83,9 +83,12 @@ describe('SavedViewChipsComponent', () => {
     );
     expect(element.querySelector('.ui-saved-views__add')?.textContent).toContain('Save this view');
     TestBed.resetTestingModule();
-    // Desktop (Shelf): "Save this view" is in the feed's ⋯ menu, not after the tabs.
+    // Desktop (Shelf 13-views): the dashed "Save this view" chip ends the bar there too; it is no
+    // longer in the feed's ⋯ menu.
     const desktop = await setup();
-    expect(desktop.element.querySelector('.ui-saved-views__add')).toBeNull();
+    expect(desktop.element.querySelector('.ui-saved-views__add')?.textContent).toContain(
+      'Save this view',
+    );
     expect(
       [...element.querySelectorAll('.ui-saved-views__menu')].map((menu) =>
         menu.getAttribute('aria-label'),

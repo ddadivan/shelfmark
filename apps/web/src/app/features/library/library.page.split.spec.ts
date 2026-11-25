@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
-import { UiButtonHarness, UiMenuItemHarness, UiPickerMenuHarness } from '@shelfmark/ui/testing';
+import { UiButtonHarness, UiPickerMenuHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { of } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
@@ -115,38 +115,35 @@ const loader = (fixture: ComponentFixture<LibraryPage>) =>
 const moreButton = (fixture: ComponentFixture<LibraryPage>) =>
   loader(fixture).getHarness(UiButtonHarness.with({ name: 'More view options' }));
 
-/** Opens the toolbar's "More view options" menu and returns its "Side by side" items. */
-async function sideBySideItems(fixture: ComponentFixture<LibraryPage>) {
-  await (await moreButton(fixture)).click();
-  return TestbedHarnessEnvironment.documentRootLoader(fixture).getAllHarnesses(
-    UiMenuItemHarness.with({ text: 'Side by side' }),
-  );
+/** The toolbar's "Side by side" toggle buttons (none below 80em). */
+async function sideBySideButtons(fixture: ComponentFixture<LibraryPage>) {
+  return loader(fixture).getAllHarnesses(UiButtonHarness.with({ name: 'Side by side' }));
 }
 
 describe('LibraryPage side by side', () => {
   beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
-  it('has one feed and a "Side by side" menu item without ?split, from 80em', async () => {
+  it('has one feed and a "Side by side" toolbar button without ?split, from 80em', async () => {
     const { element, fixture } = await setup();
 
     expect(element.querySelector('app-split-right-half')).toBeNull();
     expect(element.querySelector('ui-picker-menu')).toBeNull();
-    const items = await sideBySideItems(fixture);
+    const items = await sideBySideButtons(fixture);
     expect(items).toHaveLength(1);
-    expect(await items[0].getRole()).toBe('menuitemcheckbox');
+    expect(await items[0].getPressed()).toBe('false');
   });
 
-  it('has no "Side by side" menu item and ignores ?split below 80em', async () => {
+  it('has no "Side by side" button and ignores ?split below 80em', async () => {
     const { element, fixture } = await setup({ wide: false, split: B });
 
     expect(element.querySelector('app-split-right-half')).toBeNull();
-    expect(await sideBySideItems(fixture)).toHaveLength(0);
+    expect(await sideBySideButtons(fixture)).toHaveLength(0);
   });
 
   it('opens the right half with the picker', async () => {
     const { fixture, navigate } = await setup();
-    const [item] = await sideBySideItems(fixture);
+    const [item] = await sideBySideButtons(fixture);
 
     await item.click();
 
@@ -342,11 +339,11 @@ describe('LibraryPage side by side', () => {
     });
   });
 
-  it('shows the "Side by side" item as a checked toggle while open and closes with it', async () => {
+  it('shows the "Side by side" button as a pressed toggle while open and closes with it', async () => {
     const { fixture, navigate } = await setup({ split: B });
-    const [toggle] = await sideBySideItems(fixture);
+    const [toggle] = await sideBySideButtons(fixture);
 
-    expect(await toggle.getChecked()).toBe(true);
+    expect(await toggle.getPressed()).toBe('true');
     await toggle.click();
     expect(navigate).toHaveBeenCalledWith([], {
       queryParams: { split: null, related: null },
@@ -354,11 +351,11 @@ describe('LibraryPage side by side', () => {
     });
   });
 
-  it('is not checked while the split is closed', async () => {
+  it('is not pressed while the split is closed', async () => {
     const { fixture } = await setup();
-    const [toggle] = await sideBySideItems(fixture);
+    const [toggle] = await sideBySideButtons(fixture);
 
-    expect(await toggle.getChecked()).toBe(false);
+    expect(await toggle.getPressed()).toBe('false');
   });
 
   it('marks both halves as the area the toasts centre on, only while split', async () => {

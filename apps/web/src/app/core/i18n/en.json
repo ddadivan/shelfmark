@@ -1343,6 +1343,12 @@
       "addHere": "Add link here",
       "view": "View and sort",
       "for": "Actions for {{name}}"
+    },
+    "toolbar": {
+      "filter": "Filter",
+      "filterCount": "Filter · {{count}}",
+      "select": "Select",
+      "saveView": "Save view"
     }
   },
   "export": {

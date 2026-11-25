@@ -17,4 +17,5 @@ export const KEYBOARD_KEY = {
   Backspace: 'Backspace',
   ContextMenu: 'ContextMenu',
   F10: 'F10',
+  F2: 'F2',
 } as const;

@@ -263,7 +263,7 @@ test.describe('select links and bulk actions (mock API)', () => {
       { width: 1024, height: 768 },
       { width: 1280, height: 600 },
     ]) {
-      test(`the bar's bottom is on the sidebar's bottom line at ${size.width}x${size.height} (#352)`, async ({
+      test(`the bar floats 16px above the sidebar's bottom line at ${size.width}x${size.height} (#352)`, async ({
         page,
       }) => {
         await page.setViewportSize(size);
@@ -277,7 +277,7 @@ test.describe('select links and bulk actions (mock API)', () => {
         };
         const sidebarBottom = await bottom(page.locator('.shell__sidebar'));
         expect(
-          Math.abs((await bottom(page.locator('ui-bulk-bar'))) - sidebarBottom),
+          Math.abs(sidebarBottom - (await bottom(page.locator('ui-bulk-bar'))) - 16),
         ).toBeLessThanOrEqual(1);
 
         // The last row stays reachable: at the end of the feed (every page loaded) it ends above the bar.

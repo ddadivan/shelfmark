@@ -100,6 +100,12 @@
   align-items: center;
 }
 
+.library__actions {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
 .library__crumbs {
   // Over the top padding of the main column (24px on a phone) and the room above the title: 8px
   // from the top edge, a 24px line, then the 12px gap above the title. The same space in every

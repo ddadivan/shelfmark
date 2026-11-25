@@ -69,14 +69,16 @@
 // the scroll area reaches the window edge, which is also the sidebar's bottom line (#352).
 .library__bulk {
   position: sticky;
-  inset-block-end: 0;
+  inset-block-end: var(--space-4);
   z-index: 3;
 
-  // Shelf: the inline bar spans the feed, Delete at its end.
-  align-self: stretch;
-  max-width: 100%;
-  padding-block-start: var(--space-4);
-  margin-block-start: auto;
+  // Shelf (`01-library` `.bulk`): a floating bar sized to its content and centred in the feed
+  // column, 16px above the bottom edge of the scroll area; Delete follows after a small gap. It
+  // sits after the last row in the flow, so the last cards scroll clear of it.
+  align-self: center;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  margin-block: auto var(--space-4);
 
   // The mobile shell's scroll area (app-shell `.shell__main`) already keeps
   // `$shell-tab-bar-room` (plus the safe area) of end padding for the tab bar, and a sticky inset
@@ -87,7 +89,9 @@
   @include compact {
     inset-block-end: #{rem(8px + 64px + 12px) - $shell-tab-bar-room};
     align-self: stretch;
-    margin-block-end: #{rem(8px + 64px + 12px) - $shell-tab-bar-room};
+    inline-size: auto;
+    padding-block-start: var(--space-4);
+    margin-block: auto #{rem(8px + 64px + 12px) - $shell-tab-bar-room};
   }
 
   // A tablet keeps the stacked bar as wide as the centred tab bar under it (560px, #316).

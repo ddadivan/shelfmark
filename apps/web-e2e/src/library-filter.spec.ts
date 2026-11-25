@@ -1,10 +1,10 @@
 import { type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
-import { openMoreMenu } from './support/library-toolbar';
+import { filterButton, selectButton } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { expect, test } from './support/test';
 
-// Shelf ⋯ menu: "Filter…" opens the Filter popover (Type, Saved, Tags, Only favorites), "Select
+// Shelf toolbar: "Filter" opens the Filter popover (Type, Saved, Tags, Only favorites), "Select
 // links" (X) starts selecting with nothing picked.
 test.describe('library Filter and Select links (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
@@ -12,8 +12,7 @@ test.describe('library Filter and Select links (mock API)', () => {
   const filter = (page: Page) => page.getByRole('dialog', { name: 'Filter' });
 
   async function openFilter(page: Page): Promise<void> {
-    await openMoreMenu(page);
-    await page.getByRole('menuitem', { name: /^Filter…/ }).click();
+    await filterButton(page).click();
     await expect(filter(page)).toBeVisible();
   }
 
@@ -40,9 +39,8 @@ test.describe('library Filter and Select links (mock API)', () => {
       await expect(chips).toContainText('Articles');
       await expect(chips).toContainText('Past month');
       await expect(chips).toContainText('Only favorites');
-      await openMoreMenu(page);
-      await expect(page.getByRole('menuitem', { name: 'Filter… (3)' })).toBeVisible();
-      await page.keyboard.press('Escape');
+      await expect(page.getByRole('button', { name: 'Filter · 3' })).toBeVisible();
+      // Something to save: the toolbar offers Save view (not on a phone, which has the chip).
 
       await chips.getByRole('button', { name: 'Remove filter: Past month' }).click();
       await expect(page).not.toHaveURL(/saved=/);
@@ -53,8 +51,7 @@ test.describe('library Filter and Select links (mock API)', () => {
 
   test('Select links and X start selecting with nothing picked; Esc ends it', async ({ page }) => {
     await openFeed(page);
-    await openMoreMenu(page);
-    await page.getByRole('menuitem', { name: 'Select links' }).click();
+    await selectButton(page).click();
 
     const bar = page.getByRole('toolbar', { name: /selected/ });
     await expect(bar).toBeVisible();

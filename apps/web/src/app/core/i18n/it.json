@@ -1366,6 +1366,12 @@
       "addHere": "Aggiungi link qui",
       "view": "Vista e ordine",
       "for": "Azioni per {{name}}"
+    },
+    "toolbar": {
+      "filter": "Filtra",
+      "filterCount": "Filtra · {{count}}",
+      "select": "Seleziona",
+      "saveView": "Salva vista"
     }
   },
   "export": {

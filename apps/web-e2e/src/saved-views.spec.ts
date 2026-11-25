@@ -39,8 +39,8 @@ test.describe('saved views (mock API)', () => {
     await expect(views(page)).toBeVisible();
     expect(await chipNames(page)).toEqual(['All', 'Videos', 'Articles']);
     await expect(chip(page, /^All \d+$/)).toHaveAttribute('aria-pressed', 'true');
-    // Desktop (Shelf): "Save this view" is in the ⋯ menu, not after the tabs.
-    await expect(views(page).getByRole('button', { name: 'Save this view' })).toHaveCount(0);
+    // Shelf 13-views: the dashed "Save this view" chip ends the bar on every width.
+    await expect(views(page).getByRole('button', { name: 'Save this view' })).toBeVisible();
 
     const videos = chip(page, /^Videos \d+$/);
     const count = Number(/(\d+)$/.exec((await videos.textContent())?.trim() ?? '')?.[1]);
@@ -125,14 +125,10 @@ test.describe('saved views (mock API)', () => {
     await expect(page).toHaveURL(/\/folders\/00000000-0000-4000-8000-000000000101$/u);
   });
 
-  test('saves a view from the ⋯ menu with the keyboard', async ({ page }) => {
+  test('saves a view from its chip with the keyboard', async ({ page }) => {
     await openFeed(page, '/unsorted?kind=shopping');
 
-    await page.getByRole('button', { name: 'More view options' }).focus();
-    await page.keyboard.press('Enter');
-    // Typeahead moves the menu's active item (focus() alone would not tell Angular Aria).
-    await page.keyboard.type('Save this');
-    await expect(page.getByRole('menuitem', { name: 'Save this view' })).toBeFocused();
+    await page.getByRole('button', { name: 'Save this view' }).focus();
     await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: 'New view' });
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Keyboard view');

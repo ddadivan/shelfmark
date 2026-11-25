@@ -246,6 +246,20 @@ describe('AddLinkDialogComponent', () => {
       expect(button('Add several links')).toBeDefined();
     });
 
+    it('keeps "Add several links" reachable with an address in the field, and carries it over', async () => {
+      await setup(fakeApi(() => of(PLAIN)));
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(dialog().textContent).not.toContain('Tip: press Ctrl V');
+        expect(button('Add several links')).toBeDefined();
+      });
+
+      button('Add several links').click();
+      await until(() => {
+        expect(textArea().value).toBe('https://example.org/post');
+      });
+    });
+
     it('switches to a text area with focus in it, and back to one link', async () => {
       await setup(fakeApi(() => of(PLAIN)));
       button('Add several links').click();

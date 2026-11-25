@@ -121,7 +121,7 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
   });
 
   it('splits the menus: folder actions by the title, sort, filter and export in the toolbar ⋯', async () => {
-    const { fixture } = await setup(LINKS_SCOPE.Folder, 'f2');
+    const { fixture, element } = await setup(LINKS_SCOPE.Folder, 'f2');
     const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
     const texts = async (label: RegExp) => {
       const menu = await loader.getHarness(UiMenuHarness.with({ label }));
@@ -141,15 +141,12 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
     ]);
     TestBed.tick();
     const more = await texts(/^More view options$/);
-    expect(more).toEqual(
-      expect.arrayContaining(['Newest first', 'Oldest first', 'Title A–Z', 'Select links']),
+    expect(more).toEqual(['Newest first', 'Oldest first', 'Title A–Z', 'Export this view…']);
+    // Filter, Select, Side by side and Save view are toolbar buttons now.
+    const toolbar = [...element.querySelectorAll('.library__actions ui-button')].map((button) =>
+      button.querySelector('button')?.getAttribute('aria-label'),
     );
-    expect(more.some((text) => text.startsWith('Filter'))).toBe(true);
-    expect(more).toContain('Export this view…');
-    expect(more.filter((text) => /JSON|CSV|HTML/.test(text))).toEqual([]);
-    for (const folderOnly of ['Rename', 'Move to…', 'Delete folder…', 'Pin to sidebar']) {
-      expect(more).not.toContain(folderOnly);
-    }
+    expect(toolbar).toEqual(expect.arrayContaining(['Filter', 'Select links']));
   });
 
   it('keeps a plain header outside a folder', async () => {

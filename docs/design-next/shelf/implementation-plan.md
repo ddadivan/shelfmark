@@ -241,6 +241,14 @@ From `06-public.html`, `07-extension.html` and `16-landing.html` (with the DS-sc
 - Block 4: nothing (organise uses the existing folders, tags, rules, trash, links batch, saved views and AI tidy / view draft endpoints).
 - API phase 1 (branch `redesign/shelf-api`): **Account deletion grace period** is built (`DELETE /api/me` schedules 7 days ahead and signs every device out; Settings › Account shows only the warning notice with "Keep my account" while it is scheduled, `AccountDeletionStatusStore`; `GET /api/cron/account-purge` deletes for good). Mock: `features/account-deletion/mock/mock-account-deletion.api.ts` keeps the date in `localStorage` `sm-mock-account-deletion-scheduled` and never purges.
 
+## Library fixes (branch `redesign/shelf-fix-library`, author feedback Nov 25)
+
+- **Grid size** (View popover, `GRID_COLUMNS` 130 to 300px): it did nothing on a tablet, where the feed forced three columns below 64em. Only the phone (no Grid size) keeps two columns now; the masonry gap and row spacing follow the step (`clamp(12px, 10% of the column, 28px)`, as `01-library`). e2e: `library-view-controls.spec.ts`.
+- **Headlines view** (the fourth view, icon `lines`): `LIBRARY_VIEW.Headlines` (contract, API DTO through `Object.values`, migration `20261230100000_default_view_headlines` widens the `default_view` check), `ui-list-item` `headline` (40px / 48px phone row, L1 panel with hairline dividers in the feed), `app-link-row` `headline` (favicon, title, domain, folder, date; phones keep title and date). Settings › Library › Default view lists it.
+- **Menus split** (`01-library` More menu, `04-organise` Folder menu): folder menu by the title; toolbar ⋯ with Sort, Filter, Select, Side by side and one "Export this view…" (Export dialog with "This view · N" next to the whole library); F2 renames on a folder page; "Save this view" is the dashed chip in the saved views bar on desktop too (`13-views`).
+- **Bulk bar** (desktop): floating, content-sized, centred, 16px above the bottom; tablet and phone keep the stacked bar.
+- **Add link**: "Add several links" stays reachable with an address typed (and takes the address along).
+
 ## For the author at the end (manual setup, not done by agents)
 
 - **Later, after the redesign (author, Nov 24, 2026): MCP `save_link` tool.** "Read and save" tokens can be created and stay visible, but the MCP server is read-only (ADR 0054), so they act as read-only today. Plan: a `save_link` tool (url, optional title, note, folder, tags) through the normal create path (rules, duplicates, SSRF-safe preview), allowed only for `save` tokens, its own rate limit and idempotency, isolation and access tests; needs an ADR 0054 update and the shared create logic moved where `McpModule` can use it without importing `LinksModule`. About one to two hours of agent work.
