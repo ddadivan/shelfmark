@@ -416,7 +416,8 @@
         </ui-chip>
         }
         <ui-button variant="ghost" size="sm" (click)="filters.clearFilters()">
-          {{ 'tags.filter.clear' | transloco }}
+          {{ (filters.filterCount() > 1 ? 'library.emptyFilters.clear' : 'tags.filter.clear') |
+          transloco }}
         </ui-button>
       </div>
       } }
