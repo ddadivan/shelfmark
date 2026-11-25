@@ -177,15 +177,11 @@
 
 .library__grid {
   // Shelf Grid size (View menu, six steps): the narrowest column comes from the feed as
-  // `--library-column` (130 to 300px); as many columns as fit. A phone has two columns, a tablet
-  // three (below 64em, Shelf layout).
+  // `--library-column` (130 to 300px); as many columns as fit, on a tablet too (the View menu's
+  // Grid size works there). Only a phone, which has no Grid size, is fixed at two columns.
   display: grid;
   gap: var(--density-feed-gap);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--library-column, 14.5rem)), 1fr));
-
-  @include tablet {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 
   @include phone {
     gap: var(--space-3);
@@ -218,12 +214,7 @@
   // Shelf reference: the gap grows with the column, 12px to 28px.
   column-gap: clamp(0.75rem, calc(var(--library-column, 13.75rem) * 0.1), 1.75rem);
 
-  // Shelf below 64em: 16px gaps on a tablet, 12px on a phone.
-  @include tablet {
-    columns: 3;
-    column-gap: var(--space-4);
-  }
-
+  // Shelf phone: two columns with 12px gaps.
   @include phone {
     columns: 2;
     column-gap: var(--space-3);
@@ -231,12 +222,8 @@
 
   > li {
     display: block;
-    margin-block-end: rem(20px);
+    margin-block-end: clamp(0.75rem, calc(var(--library-column, 13.75rem) * 0.1), 1.75rem);
     break-inside: avoid;
-
-    @include tablet {
-      margin-block-end: var(--space-4);
-    }
 
     @include phone {
       margin-block-end: var(--space-3);
