@@ -10,6 +10,16 @@
   align-items: center;
 }
 
+// Headlines on a pointer device: the controls cover the row's end on hover and focus over a
+// translucent row tint, so the date under them steps aside instead of showing through beside the
+// "…" (author, Nov 25). Touch keeps the controls in the row, next to the date.
+@media (hover: hover) {
+  ui-list-item.ui-list-item--headline:hover .link-row__col--date,
+  ui-list-item.ui-list-item--headline:has(:focus-visible) .link-row__col--date {
+    visibility: hidden;
+  }
+}
+
 .link-row__tags {
   display: flex;
   gap: var(--space-1);

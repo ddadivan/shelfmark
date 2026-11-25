@@ -71,11 +71,16 @@
 
 .ask-history__foot {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: var(--space-1);
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
   padding: var(--space-3) rem(10px) 0;
+
+  // "Clear all" lines up with the text above: the ghost button's 12px side padding hangs out to
+  // the left instead of indenting the label (author, Nov 25).
+  > ui-button {
+    margin-inline-start: calc(-1 * var(--ui-button-sm-padding, #{rem(12px)}));
+  }
 }
 
 .ask-history__kept {
