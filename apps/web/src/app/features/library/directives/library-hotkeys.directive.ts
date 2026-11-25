@@ -9,6 +9,7 @@ import { isLetter } from '../../links/utils/link-select-keys';
 import { isEditableTarget } from '../../shortcuts/utils/is-editable-target';
 import { LibraryFeedService } from '../services/library-feed.service';
 import { LibraryFilterService } from '../services/library-filter.service';
+import { LibraryFolderService } from '../services/library-folder.service';
 import { LibrarySelectionService } from '../services/library-selection.service';
 import { scrollFeedForKey } from '../utils/feed-keyboard-scroll';
 import { PREVIEW_KEY } from '../../link-preview/models/preview-key.const';
@@ -36,6 +37,8 @@ export class LibraryHotkeysDirective {
   private readonly filters = inject(LibraryFilterService);
   private readonly selection = inject(LibrarySelectionService);
   private readonly preview = inject(LinkPreviewService);
+  /** The folder page's actions (F2 renames); absent where the page does not provide them. */
+  private readonly folder = inject(LibraryFolderService, { optional: true });
 
   constructor() {
     effect(() => {
@@ -68,7 +71,7 @@ export class LibraryHotkeysDirective {
   }
 
   /**
-   * Page keys: Esc clears the selection, X starts selecting, Cmd/Ctrl+A selects every link on screen (not in a field,
+   * Page keys: F2 renames the folder of a folder page, Esc clears the selection, X starts selecting, Cmd/Ctrl+A selects every link on screen (not in a field,
    * dialog or menu); with nothing focused the paging keys scroll the feed area. While the desktop
    * link preview is open (#553), ↑ / ↓ move it, ↵ opens its link in a new tab, F turns full screen
    * on and off and Esc leaves full screen, else closes it.
@@ -83,6 +86,20 @@ export class LibraryHotkeysDirective {
   private selectionKey(event: KeyboardEvent): boolean {
     if (event.defaultPrevented || event.isComposing || isTypingTarget(event.target)) {
       return false;
+    }
+    if (
+      event.key === 'F2' &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.altKey &&
+      !event.shiftKey &&
+      this.folder?.folder() &&
+      this.cdkDialogs.openDialogs.length === 0
+    ) {
+      // The folder menu's "Rename" (F2), on a folder page.
+      event.preventDefault();
+      this.folder.rename();
+      return true;
     }
     if (event.key === KEYBOARD_KEY.Escape && this.selection.selecting()) {
       this.selection.endSelection();

@@ -17,6 +17,7 @@ import { KEYBOARD_KEY } from '../../models/keyboard';
       [selected]="selected()"
       [compact]="compact()"
       [tile]="tile()"
+      [headline]="headline()"
       [thumb]="thumb()"
       [description]="description()"
       [reveal]="reveal()"
@@ -52,6 +53,7 @@ class HostComponent {
   readonly selected = signal(false);
   readonly compact = signal(false);
   readonly tile = signal(false);
+  readonly headline = signal(false);
   readonly thumb = signal<string | undefined>(undefined);
   readonly description = signal<string | undefined>(undefined);
   readonly reveal = signal(false);
@@ -153,6 +155,18 @@ describe('ListItemComponent', () => {
     expect(description.textContent).toBe('opens in a new tab');
     expect(main().getAttribute('aria-describedby')).toBe(description.id);
     expect(main().contains(description)).toBe(false);
+  });
+
+  it('is a headline row: one line with the favicon, the title and the meta columns', async () => {
+    const { row, update } = setup();
+    update((c) => {
+      c.headline.set(true);
+      c.selected.set(true);
+    });
+    expect(row.classList.contains('ui-list-item--headline')).toBe(true);
+    expect(row.querySelector('.ui-list-item__leading ui-favicon')).not.toBeNull();
+    expect(row.querySelector('.ui-list-item__link')?.getAttribute('aria-current')).toBe('true');
+    expect(await axeViolations(row)).toEqual([]);
   });
 
   it('shows no thumb unless one is set, then the image or a picture icon', () => {

@@ -55,6 +55,30 @@ describe('LinkRowComponent', () => {
     expect(meta?.getAttribute('title')).toBe('angular.dev');
   });
 
+  it('is a headline: title, domain and date in columns, no tags or summary', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        { provide: ViewportService, useValue: { phone: signal(false), compact: signal(false) } },
+      ],
+    });
+    await loadEnglish();
+    const fixture = TestBed.createComponent(LinkRowComponent);
+    fixture.componentRef.setInput('link', { ...LINK, summary: 'Five patterns.' });
+    fixture.componentRef.setInput('headline', true);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelector('ui-list-item.ui-list-item--headline')).not.toBeNull();
+    expect(element.querySelector('.link-row__col--domain')?.textContent?.trim()).toBe(
+      'angular.dev',
+    );
+    expect(element.querySelector('.link-row__col--date')?.textContent?.trim()).not.toBe('');
+    expect(element.querySelector('.link-row__tags')).toBeNull();
+    expect(element.querySelector('.link-row__meta')?.textContent).not.toContain('Five patterns.');
+    expect(element.querySelector('a')?.textContent).toContain('Angular overview');
+  });
+
   it('renders the tags on a desktop and leaves them out of the DOM on a phone', async () => {
     const desktop = await setup();
     expect(desktop.element.querySelector('.link-row__tags')).not.toBeNull();

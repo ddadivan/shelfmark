@@ -11,6 +11,7 @@ import { LinkActionsService } from '../../links/services/link-actions.service';
 import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryFeedService } from '../services/library-feed.service';
 import { LibraryFilterService } from '../services/library-filter.service';
+import { LibraryFolderService } from '../services/library-folder.service';
 import { LibrarySelectionService } from '../services/library-selection.service';
 import { LibraryHotkeysDirective } from './library-hotkeys.directive';
 import { LinkPreviewService } from '../../link-preview/services/link-preview.service';
@@ -89,6 +90,53 @@ function paste(text: string): Event {
   document.body.dispatchEvent(event);
   return event;
 }
+
+describe('LibraryHotkeysDirective F2', () => {
+  async function setupFolder(folder: object | null) {
+    const rename = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        {
+          provide: LINKS_API,
+          useValue: { list: () => of(page([link(1)])), recent: () => of({ items: [] }) },
+        },
+        { provide: LinkActionsService, useValue: { addLink: vi.fn() } },
+      ],
+    });
+    TestBed.overrideComponent(HostComponent, {
+      add: {
+        providers: [{ provide: LibraryFolderService, useValue: { folder: () => folder, rename } }],
+      },
+    });
+    await loadEnglish();
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.debugElement.injector.get(LibraryFilterService).connect({
+      scope: signal(LINKS_SCOPE.All),
+      folderId: signal(undefined),
+      tag: signal(undefined),
+      q: signal(undefined),
+      sort: signal(undefined),
+      kind: signal(undefined),
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    return rename;
+  }
+
+  it('renames the folder of a folder page', async () => {
+    const rename = await setupFolder({ id: 'f1' });
+    const press = key({ key: 'F2' });
+    expect(press.defaultPrevented).toBe(true);
+    expect(rename).toHaveBeenCalledOnce();
+  });
+
+  it('does nothing outside a folder page', async () => {
+    const rename = await setupFolder(null);
+    key({ key: 'F2' });
+    expect(rename).not.toHaveBeenCalled();
+  });
+});
 
 describe('LibraryHotkeysDirective', () => {
   beforeEach(() => {

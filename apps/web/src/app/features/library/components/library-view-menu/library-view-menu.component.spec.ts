@@ -81,11 +81,15 @@ describe('LibraryViewMenuComponent', () => {
     expect(filters.fieldShown('tags')).toBe(true);
   });
 
-  it('turns the Grid size slider off in the List view only', async () => {
+  it('turns the Grid size slider off in the List and Headlines views only', async () => {
     const { menu } = await setup();
     expect(await menu.isGridDisabled()).toBe(false);
 
     TestBed.inject(FeedMemoryService).remember('all', { view: LIBRARY_VIEW.List });
+    TestBed.tick();
+    expect(await menu.isGridDisabled()).toBe(true);
+
+    TestBed.inject(FeedMemoryService).remember('all', { view: LIBRARY_VIEW.Headlines });
     TestBed.tick();
     expect(await menu.isGridDisabled()).toBe(true);
 

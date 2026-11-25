@@ -125,6 +125,33 @@ export const Tile: Story = {
   }),
 };
 
+/**
+ * `headline`: the Headlines view row (Shelf LinkRow): 40px, favicon, title in `label`, then the
+ * meta as columns (domain, folder, date). Selected is `accent-bg`; the trailing controls show on
+ * hover and focus. Rows sit in an L1 panel with hairline dividers.
+ */
+export const Headline: Story = {
+  args: { headline: true, href: undefined },
+  render: (args) => ({
+    props: withProps(args),
+    template: `
+      <div class="cs-list" style="max-width: 48rem; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg)">
+        <ui-list-item headline>
+          <ui-favicon slot="leading" letter="a" />
+          <span slot="title">Angular overview</span>
+          <span slot="meta"><span style="inline-size: 11.5rem">angular.dev</span><span style="inline-size: 8rem">Angular</span><span style="inline-size: 4rem; text-align: end">Nov 1</span></span>
+          <ui-button slot="trailing" variant="ghost" size="sm" iconLeft="more" iconOnly ariaLabel="More" />
+        </ui-list-item>
+        <ui-list-item headline selected style="border-block-start: 1px solid var(--line)">
+          <ui-favicon slot="leading" letter="s" />
+          <span slot="title">Saved article 2, the current one</span>
+          <span slot="meta"><span style="inline-size: 11.5rem">site2.example.com</span><span style="inline-size: 8rem">Reading</span><span style="inline-size: 4rem; text-align: end">Oct 31</span></span>
+          <ui-button slot="trailing" variant="ghost" size="sm" iconLeft="more" iconOnly ariaLabel="More" />
+        </ui-list-item>
+      </div>`,
+  }),
+};
+
 /** A 56 x 40 preview thumb before the text; an empty or failed image shows a picture icon. */
 export const WithThumb: Story = {
   args: { thumb: CARD_STORY_IMAGE.Preview },
