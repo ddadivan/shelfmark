@@ -1,5 +1,14 @@
 import { AI_JOB_STATUS, LINK_KIND, normalizeRuleDomain } from '@shelfmark/contracts';
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BadgeComponent,
@@ -19,7 +28,6 @@ import {
   MenuItemComponent,
   MenuSeparatorComponent,
   MenuTriggerDirective,
-  PointerShadowDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
 import type { LinkCardItem } from '../../models/link-card-item.type';
@@ -30,7 +38,7 @@ import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
 import type { LinkSelectToggle } from '../../models/link-select-toggle.interface';
 import { LocaleService } from '../../../../core/i18n/locale.service';
-import { BADGE_TONE } from '@shelfmark/ui';
+import { BADGE_TONE, KEYBOARD_KEY } from '@shelfmark/ui';
 import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 import {
   linkAddress,
@@ -69,7 +77,6 @@ import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-ro
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
-    PointerShadowDirective,
     TooltipDirective,
   ],
   templateUrl: './link-card.component.html',
@@ -86,6 +93,9 @@ export class LinkCardComponent {
   private readonly now = Date.now();
   protected readonly BADGE_TONE = BADGE_TONE;
   protected readonly AI_JOB_STATUS = AI_JOB_STATUS;
+
+  private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly menu = viewChild(MenuComponent);
 
   readonly link = input.required<LinkCardItem>();
   /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
@@ -109,6 +119,8 @@ export class LinkCardComponent {
   readonly showTags = input(true);
   readonly showFolder = input(true);
   readonly showDate = input(true);
+  /** The description (the site's or AI's summary) under the site row; the View menu's switch. */
+  readonly showDescription = input(true);
   protected readonly cardMedia = computed<CardMedia>(() =>
     this.link().kind === LINK_KIND.Shopping ? CARD_MEDIA.Contain : this.media(),
   );
@@ -186,9 +198,28 @@ export class LinkCardComponent {
     }
   }
 
+  /** Right click: the card menu at the pointer (the same menu the keyboard opens). */
+  protected onContextMenu(event: MouseEvent): void {
+    const menu = this.menu();
+    if (this.readOnly() || !menu) {
+      return;
+    }
+    event.preventDefault();
+    menu.openAt({ x: event.clientX, y: event.clientY });
+  }
+
   /** Space previews (where the page offers it, #553) or toggles the selection; M moves the link. */
   protected onKeydown(event: KeyboardEvent): void {
     if (this.readOnly()) {
+      return;
+    }
+    if (
+      event.key === KEYBOARD_KEY.ContextMenu ||
+      (event.shiftKey && event.key === KEYBOARD_KEY.F10)
+    ) {
+      // The context-menu key and Shift+F10 open the card menu under the card.
+      event.preventDefault();
+      this.menu()?.openFrom(this.hostElement);
       return;
     }
     const intent = linkKeyIntent(event);

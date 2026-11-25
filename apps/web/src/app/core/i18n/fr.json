@@ -1300,7 +1300,8 @@
         "note": "Note",
         "tags": "Hashtags",
         "folder": "Dossier",
-        "date": "Date"
+        "date": "Date",
+        "description": "Description"
       }
     },
     "split": {

@@ -709,35 +709,37 @@ describe('scroll-fade (#352)', () => {
     expect(output).not.toMatch(/mask/);
   });
 
-  it('ties the opacity to the scroll and hides the fades while the area does not scroll', () => {
-    expect(output).toContain('@supports (animation-timeline: scroll())');
-    expect(output).toContain('animation-timeline: scroll(nearest)');
-    expect(output).toContain('animation-name: ui-scroll-fade-top');
-    expect(output).toContain('animation-name: ui-scroll-fade-bottom');
+  it('draws each fade only under the attribute the uiScrollFade directive sets', () => {
     expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*opacity: 0/);
+    expect(output).toMatch(/\.area\[data-scroll-top\]::before\s*\{[^}]*opacity: 1/);
+    expect(output).toMatch(/\.area\[data-scroll-bottom\]::after\s*\{[^}]*opacity: 1/);
+    expect(output).not.toContain('animation-timeline');
+    expect(output).not.toContain('@supports');
   });
 
-  it('draws nothing without scroll timelines (no always-on fade over the first row)', () => {
-    const [base] = output.split('@supports (animation-timeline: scroll())');
-    expect(base).not.toContain('::before');
-    expect(base).not.toContain('::after');
+  it('fades with a short opacity transition, none under reduced motion', () => {
+    expect(output).toMatch(
+      /\.area::before,\s*\.area::after\s*\{[^}]*transition: opacity var\(--duration-fast\)/,
+    );
+    expect(output).toContain('prefers-reduced-motion');
+    expect(output).toMatch(/transition: none/);
     expect(output).toMatch(/\.area::before\s*\{[^}]*margin-block-end: calc\(1\.5rem \* -1\)/);
     expect(output).toMatch(/\.area::after\s*\{[^}]*margin-block-start: calc\(1\.5rem \* -1\)/);
+  });
+
+  it('sits flush with a padded area through $inset-start / $inset-end', () => {
+    const padded = css(
+      '.feed { padding: 4px; overflow-y: auto; @include scroll-fade(var(--bg), $inset-start: -0.25rem, $inset-end: -1rem); }',
+    );
+    expect(padded).toMatch(/\.feed::before\s*\{[^}]*inset-block-start: -0\.25rem/);
+    expect(padded).toMatch(/\.feed::after\s*\{[^}]*inset-block-end: -1rem/);
   });
 
   it('draws only the top fade with $bottom: false', () => {
     const top = css('.feed { overflow-y: auto; @include scroll-fade(var(--bg), $bottom: false); }');
     expect(top).toContain('.feed::before');
     expect(top).not.toContain('.feed::after');
-    expect(top).not.toContain('ui-scroll-fade-bottom');
-  });
-
-  it('has its keyframes once in the global styles', () => {
-    const global = compile(resolve(STYLES_DIR, 'global.scss'), {
-      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
-    }).css;
-    expect(global.match(/@keyframes ui-scroll-fade-top/g)).toHaveLength(1);
-    expect(global.match(/@keyframes ui-scroll-fade-bottom/g)).toHaveLength(1);
+    expect(top).not.toContain('data-scroll-bottom');
   });
 });
 

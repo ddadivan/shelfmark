@@ -4,10 +4,6 @@
 // toggle, the actions, the play mark and the selection checkbox sit above it (z-index 2), so
 // they never activate the card.
 
-// Shelf LinkCard: the preview zooms 3.5% over 900 ms (slower than any duration token: it is a
-// slow settle, not feedback).
-$zoom-duration: 900ms;
-
 :host {
   position: relative;
   display: flex;
@@ -34,36 +30,13 @@ $zoom-duration: 900ms;
   @include enter(fade);
 }
 
-// Hover: pointer devices only (Motion principle 7). The card never moves.
+// Hover (Shelf reference `.card:hover`): pointer devices only (Motion principle 7); only a slight
+// colour change of the card (light: the soft hover shadow, dark: a 4% white overlay through
+// `--card-hover-bg`). No lift, no image zoom, nothing appears over the preview.
 :host {
   @include hover {
     background: var(--card-hover-bg);
     box-shadow: var(--shadow-card-hover);
-
-    // `--shadow-x` / `--shadow-y` come from `uiPointerShadow` (a few px, away from the pointer);
-    // without the directive they are 0 and the layer is just a soft halo. A filter, because the
-    // hover shadow token is `none` in dark and a `none` cannot join a box-shadow list.
-    filter: drop-shadow(
-      var(--shadow-x, 0) var(--shadow-y, 0) #{rem(12px)} var(--shadow-card-pointer)
-    );
-
-    .ui-card__overlay {
-      pointer-events: auto;
-      opacity: 1;
-      transform: none;
-    }
-
-    .ui-card__more {
-      opacity: 1;
-      transform: none;
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      .ui-card__image,
-      .ui-card__placeholder {
-        transform: scale(1.035);
-      }
-    }
   }
 }
 
@@ -141,7 +114,6 @@ $zoom-duration: 900ms;
   width: 100%;
   height: var(--ui-card-image-height, 100%);
   object-fit: cover;
-  transition: transform #{$zoom-duration} var(--ease-out);
 }
 
 // The strip crops whatever the ratio is.
@@ -162,7 +134,6 @@ $zoom-duration: 900ms;
   position: absolute;
   inset: 0;
   background: var(--surface-hover);
-  transition: transform #{$zoom-duration} var(--ease-out);
 
   &[data-tone='0'] {
     background: var(--accent-bg);

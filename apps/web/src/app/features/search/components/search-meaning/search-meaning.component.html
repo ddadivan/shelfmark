@@ -25,6 +25,7 @@
             [showTags]="filters.fieldShown(CARD_FIELD.Tags)"
             [showFolder]="filters.fieldShown(CARD_FIELD.Folder)"
             [showDate]="filters.fieldShown(CARD_FIELD.Date)"
+            [showDescription]="filters.fieldShown(CARD_FIELD.Description)"
             [folder]="folderChips.of(row.link.folderId)"
             [previewable]="true"
             (previewRequested)="preview.open(row.link)"

@@ -395,15 +395,20 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(header(page)).toHaveCount(0);
     });
 
-    test('the checkboxes are visible at rest and a tap on one starts the selection', async ({
+    test('the checkboxes show only in select mode: a long press starts it, a tap on one toggles', async ({
       page,
     }) => {
       await openFeed(page);
-      const box = cards(page).first().locator('ui-checkbox .ui-checkbox__box');
-      await expect(cards(page).first().locator('.ui-card__select')).toHaveCSS('opacity', '1');
+      const first = cards(page).first();
+      const box = first.locator('ui-checkbox .ui-checkbox__box');
+      // Nothing but the star and the more button on a resting card, also on touch.
+      await expect(first.locator('.ui-card__select')).toHaveCSS('opacity', '0');
+      await longPress(page, first);
+      await expect(selectedText(page)).toHaveText('1 selected');
+      await expect(first.locator('.ui-card__select')).toHaveCSS('opacity', '1');
       await expect(box).toBeVisible();
       await box.tap();
-      await expect(selectedText(page)).toHaveText('1 selected');
+      await expect(selectedText(page)).toHaveCount(0);
     });
 
     test('moves three selected links from the bar with one tap in the sheet, and Undo puts them back', async ({

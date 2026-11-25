@@ -1300,7 +1300,8 @@
         "note": "Nota",
         "tags": "Hashtags",
         "folder": "Pasta",
-        "date": "Data"
+        "date": "Data",
+        "description": "Descrição"
       }
     },
     "split": {

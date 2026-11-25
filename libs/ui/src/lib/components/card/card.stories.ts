@@ -42,9 +42,9 @@ const meta: Meta<CardComponent> = {
       description: {
         component:
           "The link card of the feed (Shelf LinkCard): the preview full bleed at the top (`media`: `natural` keeps the picture's own ratio for masonry, `cover` is 4:3, `contain` shows a product whole), a folder and date row, the title (16/24, two lines), the source (favicon and channel, repository or price and domain), up to three `#tags` and the person's note on sage. " +
-          'White with a hairline at rest (a lighter fill in dark); on hover (pointer devices only) the `shadow-hover` shadow settles in 200 ms and the preview zooms 3.5% over 900 ms. `selected` (open in the preview pane) takes the `pick` fill; `checked` (a bulk pick) adds a 2px accent ring. ' +
-          'Over the preview sit glass buttons: `play` top left, `favorite` top right, `actions` (the ⋯) beside the star on hover, and `select` in place of the play mark on hover, focus or while selecting. The title sits in one native link (or button) stretched over the card: one tab stop, nothing nested. ' +
-          'Slots: `title`, `meta`, `date`, `source`, `tags`, `note`, `play`, `favorite`, `actions`, `select`, `overlay`, `fallback`; the default slot is for anything else. Every empty slot takes no room. Under reduced motion there is no zoom or slide.',
+          'White with a hairline at rest (a lighter fill in dark); on hover (pointer devices only) only the colour changes (`shadow-hover` in light, a 4% lighter fill in dark): no lift, no zoom. `selected` (open in the preview pane) takes the `pick` fill; `checked` (a bulk pick) adds a 2px accent ring. ' +
+          'Over the preview sit glass buttons: `play` top left, `favorite` top right, the star is always there, and on hover or keyboard focus its glass circle grows into a pill with `actions` (the ⋯) in front of it (always open on touch); `select` takes the place of the play mark on hover, focus or while selecting. The title sits in one native link (or button) stretched over the card: one tab stop, nothing nested. ' +
+          'Slots: `title`, `meta`, `date`, `source`, `tags`, `note`, `play`, `favorite`, `actions`, `select`, `overlay`, `fallback`; the default slot is for anything else. Every empty slot takes no room. Under reduced motion the pill opens without animation.',
       },
     },
   },
@@ -82,8 +82,8 @@ const content = (title = TITLE, favorite = false) => `
   <span slot="meta">Angular</span>
   <span slot="date">today</span>
   <ui-checkbox slot="select" hideLabel label="Select link" [checked]="checked" />
-  <ui-button slot="play" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="play" ariaLabel="Video" />
-  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" hitArea="${BUTTON_HIT_AREA.Overlay}" iconOnly
+  <ui-button slot="play" variant="${BUTTON_VARIANT.Glass}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="play" ariaLabel="Video" />
+  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Glass}" size="${BUTTON_SIZE.Sm}" hitArea="${BUTTON_HIT_AREA.Overlay}" iconOnly
     [iconLeft]="${favorite ? "'star-filled'" : "'star'"}"
     [ariaPressed]="${favorite}"
     ariaLabel="${favorite ? 'Remove from favorites' : 'Add to favorites'}" />
@@ -92,7 +92,7 @@ const content = (title = TITLE, favorite = false) => `
   <span slot="source">Fireship</span>
   <span slot="tags">#video #angular</span>
   <span slot="note">Watch on the weekend</span>
-  <ui-button slot="actions" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="more" ariaLabel="More actions" />`;
+  <ui-button slot="actions" variant="${BUTTON_VARIANT.Glass}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="more" ariaLabel="More actions" />`;
 
 const cardTemplate = (inner: string, attrs = '') => `
   <div class="cs-grid cs-grid--single">
@@ -106,7 +106,7 @@ const withProps = (args: object) => ({
   favicon: CARD_STORY_IMAGE.Favicon,
 });
 
-/** Folder and date, title, source, tags and note. Hover it with a mouse to see the motion. */
+/** Folder and date, title, source, tags and note. Hover it with a mouse to open the pill. */
 export const Default: Story = {
   render: (args) => ({ props: withProps(args), template: cardTemplate(content()) }),
 };
@@ -166,9 +166,14 @@ export const Bare: Story = {
   }),
 };
 
-/** The "..." actions kept visible (`actionsPinned`) and the favorite switched on. */
+/** The pill open (`actionsPinned`: the ⋯ in front of the star) and the favorite switched on. */
 export const WithActions: Story = {
   args: { actionsPinned: true },
+  render: (args) => ({ props: withProps(args), template: cardTemplate(content(TITLE, true)) }),
+};
+
+/** A favorite at rest: only the filled star shows on the preview, the ⋯ waits for hover or focus. */
+export const FavoriteAtRest: Story = {
   render: (args) => ({ props: withProps(args), template: cardTemplate(content(TITLE, true)) }),
 };
 
@@ -184,7 +189,7 @@ export const LongTitle: Story = {
   }),
 };
 
-/** Keyboard focus: one ring around the whole card, the overlay and the actions show. */
+/** Keyboard focus: one ring around the whole card, the pill with the ⋯ opens. */
 export const Focus: Story = {
   render: (args) => ({ props: withProps(args), template: cardTemplate(content()) }),
   play: ({ canvasElement }) => {
@@ -211,7 +216,7 @@ export const WithMenu: Story = {
           <span slot="title">${TITLE}</span>
           <ui-favicon slot="source" [src]="favicon" letter="y" />
           <span slot="source">youtube.com</span>
-          <ui-button slot="actions" [uiMenuTrigger]="menu" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly
+          <ui-button slot="actions" [uiMenuTrigger]="menu" variant="${BUTTON_VARIANT.Glass}" size="${BUTTON_SIZE.Sm}" iconOnly
             iconLeft="more" ariaLabel="More actions" />
         </ui-card>
         <ui-menu #menu align="end" ariaLabel="Link actions" (opened)="open.set(true)" (closed)="open.set(false)">

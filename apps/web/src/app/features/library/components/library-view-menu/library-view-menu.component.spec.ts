@@ -43,7 +43,7 @@ describe('LibraryViewMenuComponent', () => {
   beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
-  it('is the "View" button with the default step and the four fields switched on', async () => {
+  it('is the "View" button with the default step and the five fields switched on', async () => {
     const { menu } = await setup();
 
     expect(await menu.getLabel()).toBe('View');
@@ -54,6 +54,7 @@ describe('LibraryViewMenuComponent', () => {
       { label: 'Hashtags', checked: true },
       { label: 'Folder', checked: true },
       { label: 'Date', checked: true },
+      { label: 'Description', checked: true },
     ]);
   });
 

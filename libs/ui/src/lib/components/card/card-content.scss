@@ -136,6 +136,7 @@
 // Source (favicon and channel, repository, or price and domain), hashtags and the note: each one
 // is gone, with its spacing, while its slot is empty.
 .ui-card__source,
+.ui-card__summary,
 .ui-card__tags {
   @include type(caption);
 
@@ -155,6 +156,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// The description (the site's or AI's summary) under the source row, before tags and note.
+.ui-card__summary {
+  display: block;
+  padding-block-start: var(--space-1);
 }
 
 // Up to three `#tag` words as plain text, not chips.

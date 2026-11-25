@@ -162,6 +162,18 @@ a.ui-button {
 .ui-button--glass {
   @include glass-button;
 
+  // A feature that groups glass buttons in one glass capsule (the card's star and ⋯) makes the
+  // buttons themselves clear: `--ui-button-glass-bg`, `-filter` and `-hover-bg` (and `--shadow-hover: none` for the shadow).
+  background: var(--ui-button-glass-bg, var(--glass));
+
+  @supports (backdrop-filter: blur(1px)) {
+    backdrop-filter: var(--ui-button-glass-filter, blur(#{rem(10px)}));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    backdrop-filter: none;
+  }
+
   --ui-icon-size: var(--ui-button-icon-size, var(--icon-size-sm));
 
   width: var(--ui-button-glass-size, #{rem(28px)});
@@ -170,6 +182,7 @@ a.ui-button {
 
   &:not([aria-disabled='true']) {
     @include hover {
+      background: var(--ui-button-glass-hover-bg, var(--ui-button-glass-bg, var(--glass)));
       box-shadow: var(--shadow-hover);
     }
   }

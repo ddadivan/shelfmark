@@ -12,6 +12,7 @@ import {
   SkeletonComponent,
   TooltipDirective,
   DragWobbleDirective,
+  ScrollFadeDirective,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { DragSlotComponent } from '../../../links/components/drag-slot/drag-slot.component';
@@ -38,6 +39,7 @@ const SKELETON_COUNT = 4;
 @Component({
   selector: 'app-split-right-half',
   imports: [
+    ScrollFadeDirective,
     CdkDrag,
     CdkDragPlaceholder,
     CdkDragPreview,

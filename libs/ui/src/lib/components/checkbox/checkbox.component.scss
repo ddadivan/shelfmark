@@ -39,8 +39,9 @@
   width: var(--ui-checkbox-size, #{rem(22px)});
   height: var(--ui-checkbox-size, #{rem(22px)});
   color: var(--on-primary);
-  background: var(--surface);
-  border: 1.5px solid var(--border-control);
+  background: var(--ui-checkbox-bg, var(--surface));
+  backdrop-filter: var(--ui-checkbox-filter, none);
+  border: 1.5px solid var(--ui-checkbox-border, var(--border-control));
   border-radius: var(--ui-checkbox-radius, var(--radius-tile-sm));
   transition:
     background-color var(--duration-fast) var(--ease-out),

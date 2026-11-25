@@ -421,7 +421,7 @@
         </ui-button>
       </div>
       } }
-      <div appLibraryHotkeys appToastArea class="library__scroll" tabindex="-1">
+      <div appLibraryHotkeys appToastArea class="library__scroll" uiScrollFade tabindex="-1">
         @if (store.error() && store.count() > 0 && !filters.folderMissing()) {
         <ui-notice kind="danger" class="library__notice">
           {{ 'library.refetchFailed' | transloco }}
@@ -587,6 +587,7 @@
             <app-link-row
               [link]="link"
               [headline]="view() === UI_VIEW.Headlines"
+              [showDescription]="filters.fieldShown(CARD_FIELD.Description)"
               [dense]="preview.split()"
               [folder]="showFolderChips() && !preview.split() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
@@ -679,6 +680,7 @@
               [showTags]="filters.fieldShown(CARD_FIELD.Tags)"
               [showFolder]="filters.fieldShown(CARD_FIELD.Folder)"
               [showDate]="filters.fieldShown(CARD_FIELD.Date)"
+              [showDescription]="filters.fieldShown(CARD_FIELD.Description)"
               [folder]="showFolderChips() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"
