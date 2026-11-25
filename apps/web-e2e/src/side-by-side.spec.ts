@@ -3,7 +3,7 @@ import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { documentScrollTop, mainScrollTop } from './support/scroll';
 import { isCompact } from './support/sidebar';
-import { openMoreMenu, sideBySideItem, toggleSideBySide } from './support/library-toolbar';
+import { sideBySideItem, toggleSideBySide } from './support/library-toolbar';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted) and the MOCK_FOLDERS names (libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -166,7 +166,6 @@ test.describe('side by side (mock API)', () => {
   test('closes with the toggle, the cross and Esc in the right half', async ({ page }) => {
     test.skip(isCompact(page), 'side by side starts at 80em');
     await openWithReading(page);
-    const more = page.getByRole('button', { name: 'More view options' });
     const rightRegion = page.getByRole('region', { name: /^Right:/ });
     // Inside side by side the left toolbar is slim: no "Side by side" button, Save view or view
     // switch, but Filter and Select stay (selection moves links with the bulk bar).
@@ -175,13 +174,14 @@ test.describe('side by side (mock API)', () => {
     await expect(page.getByRole('radio', { name: 'Cards', exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Filter', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Select links', exact: true })).toBeVisible();
-    // The Close of the "Side by side" line (the right half has its own ×).
-    await page.getByRole('button', { name: 'Close side by side' }).first().click();
+    // The one Close of side by side is the × of the right half (no second one on the top line).
+    await expect(page.getByRole('button', { name: 'Close side by side' })).toHaveCount(1);
+    await page.getByRole('button', { name: 'Close side by side' }).click();
     await expect(rightRegion).toHaveCount(0);
     await expect(page).not.toHaveURL(/split=/);
     await expect(sideBySideItem(page)).toHaveAttribute('aria-pressed', 'false');
-    // The ⋯ button that holds the toggle takes the focus back.
-    await expect(more).toBeFocused();
+    // The "Side by side" button takes the focus the close control had.
+    await expect(sideBySideItem(page)).toBeFocused();
 
     // Esc counts only with the focus in the right half.
     await toggleSideBySide(page);

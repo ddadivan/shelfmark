@@ -6,15 +6,26 @@ export type LibraryView = 'Masonry' | 'Cards' | 'List' | 'Headlines';
 /**
  * The library toolbar (Shelf): Filter, Select links, Side by side (from 80em) and Save view
  *  as their own buttons (icon-only below 80em), View (grid size and
- * card fields) from 40em, the Masonry / Cards / List / Headlines switch and the "More view
- * options" ⋯ menu with Sort by and one "Export this view…" item (a bottom sheet in the mobile
- * shell).
+ * card fields) from 40em, the Masonry / Cards / List / Headlines switch, Sort (a menu of the four
+ * orders, a bottom sheet in the mobile shell) and Export ("Export this view…") as buttons of their
+ * own. The "More view options" ⋯ menu (Sort by and Export) exists only while the toolbar is slim:
+ * beside the link preview and in side by side.
  * "Save this view" is the dashed chip that ends the saved views bar on phones only; wider screens
  * use the toolbar's Save view button (author). A folder's own actions are
  * in the menu by its title ("Actions for <name>").
  */
 export async function openMoreMenu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'More view options' }).click();
+}
+
+/** The toolbar's Sort button: named "Sort: <current order>". */
+export function sortButton(page: Page): Locator {
+  return page.getByRole('button', { name: /^Sort: / });
+}
+
+/** The toolbar's Export button ("Export this view…"; opens the Export dialog). */
+export function exportButton(page: Page): Locator {
+  return page.getByRole('button', { name: 'Export this view…' });
 }
 
 /** Switches the feed to Masonry, Cards, List or Headlines. */
@@ -24,8 +35,7 @@ export async function switchView(page: Page, view: LibraryView): Promise<void> {
 
 /** "Export this view…" of the ⋯ menu: opens the Export dialog and returns it. */
 export async function openExportView(page: Page): Promise<Locator> {
-  await openMoreMenu(page);
-  await page.getByRole('menuitem', { name: 'Export this view…' }).click();
+  await exportButton(page).click();
   const dialog = page.getByRole('dialog', { name: 'Export links' });
   await expect(dialog).toBeVisible();
   return dialog;
@@ -42,13 +52,13 @@ export async function exportAs(
 
 /** Picks a sort order from the sort items. */
 export async function chooseSort(page: Page, name: string): Promise<void> {
-  await openMoreMenu(page);
+  await sortButton(page).click();
   await page.getByRole('menuitemradio', { name }).click();
 }
 
 /** The feed is sorted as `name` (the checked sort item of the menu). */
 export async function expectSort(page: Page, name: string): Promise<void> {
-  await openMoreMenu(page);
+  await sortButton(page).click();
   await expect(page.getByRole('menuitemradio', { name })).toHaveAttribute('aria-checked', 'true');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('menu')).toBeHidden();

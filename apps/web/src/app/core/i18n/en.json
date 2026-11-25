@@ -1237,7 +1237,8 @@
       "menu": "Sort links",
       "newest": "Newest first",
       "oldest": "Oldest first",
-      "title": "Title A–Z"
+      "title": "Title A–Z",
+      "titleDesc": "Title Z–A"
     },
     "search": {
       "chip": "Search: {{query}}",
@@ -1312,8 +1313,7 @@
         "text": "Drag links here from the left."
       },
       "moveToLeft": "Move “{{title}}” to {{folder}}",
-      "hint": "Drag links between two feeds to file them. Esc closes.",
-      "closeShort": "Close"
+      "hint": "Drag links between two feeds to file them. Esc closes."
     },
     "extension": {
       "title": "Save pages straight from your browser",
@@ -1349,6 +1349,7 @@
       "filter": "Filter",
       "filterCount": "Filter · {{count}}",
       "select": "Select",
+      "sort": "Sort",
       "saveView": "Save view"
     }
   },

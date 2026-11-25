@@ -126,12 +126,19 @@ describe('LibraryPage beside the link preview', () => {
   it('slims the toolbar to Filter (icon only) and the menu, no Select, Save view, View or switch', async () => {
     const { fixture, element, route } = await setup();
     expect(toolLabels(element)).toEqual(
-      expect.arrayContaining(['Filter', 'Select links', 'Save view', 'More view options']),
+      expect.arrayContaining([
+        'Filter',
+        'Select links',
+        'Save view',
+        'Sort: Newest first',
+        'Export this view…',
+      ]),
     );
     expect(element.querySelector('ui-segmented-control')).not.toBeNull();
 
     route.split.set(true);
     await fixture.whenStable();
+    // Sort and Export move into the ⋯ menu while split.
     expect(toolLabels(element)).toEqual(['Filter', 'More view options']);
     expect(element.querySelector('ui-segmented-control')).toBeNull();
     expect(element.querySelector('app-library-view-menu')).toBeNull();
@@ -190,7 +197,9 @@ describe('LibraryPage with an empty result', () => {
       'Nothing matches these filters',
     );
     const labels = toolLabels(element);
-    expect(labels).toEqual(expect.arrayContaining(['Filter · 1', 'More view options']));
+    expect(labels).toEqual(
+      expect.arrayContaining(['Filter · 1', 'Sort: Newest first', 'Export this view…']),
+    );
     expect(element.querySelector('ui-segmented-control')).not.toBeNull();
     expect(element.querySelector('app-library-view-menu')).not.toBeNull();
     // Nothing to act on: no Select, no Side by side.
@@ -201,6 +210,7 @@ describe('LibraryPage with an empty result', () => {
   it('drops the view tools in a truly empty library', async () => {
     const { element } = await setup([]);
     expect(element.querySelector('ui-segmented-control')).toBeNull();
-    expect(toolLabels(element)).toEqual(['More view options']);
+    // Nothing to filter or sort; Export stays.
+    expect(toolLabels(element)).toEqual(['Export this view…']);
   });
 });

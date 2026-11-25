@@ -284,6 +284,14 @@ export default class LibraryPage {
   protected readonly CARD_MEDIA = CARD_MEDIA;
   protected readonly CARD_FIELD = CARD_FIELD;
 
+  /** Sort button: "Sort: Newest first" (the visible word "Sort" is the start of it). */
+  protected readonly sortLabel = computed(() => {
+    this.lang();
+    return this.transloco.translate('library.sort.label', {
+      sort: this.transloco.translate(SORT_OPTION_KEYS[this.filters.feedSort()]),
+    });
+  });
+
   /** The "Side by side" toggle: after the split closes it takes the focus the close control had. */
   private readonly splitOpener = viewChild<ButtonComponent>('splitOpener');
 

@@ -5,14 +5,12 @@ import type { FeedSort } from '../models/feed-sort.type';
 
 /** The sort of `?sort=`; an absent, repeated or unknown value is `newest`. */
 export function parseFeedSort(raw: unknown): FeedSort {
-  return raw === FEED_SORT.Oldest || raw === FEED_SORT.Title ? raw : FEED_SORT.Newest;
+  return explicitFeedSort(raw) ?? FEED_SORT.Newest;
 }
 
 /** The sort a `?sort=` names, or `undefined` when it names none (absent, repeated or unknown). */
 export function explicitFeedSort(raw: unknown): FeedSort | undefined {
-  return raw === FEED_SORT.Newest || raw === FEED_SORT.Oldest || raw === FEED_SORT.Title
-    ? raw
-    : undefined;
+  return Object.values(FEED_SORT).find((sort) => sort === raw);
 }
 
 /** The API's `sort` and `order` of a feed sort. */
@@ -22,6 +20,8 @@ export function feedSortQuery(sort: FeedSort): FeedSortQuery {
       return { sort: LINK_SORT_FIELD.CreatedAt, order: SORT_ORDER.Asc };
     case FEED_SORT.Title:
       return { sort: LINK_SORT_FIELD.Title, order: SORT_ORDER.Asc };
+    case FEED_SORT.TitleDesc:
+      return { sort: LINK_SORT_FIELD.Title, order: SORT_ORDER.Desc };
     default:
       return { sort: LINK_SORT_FIELD.CreatedAt, order: SORT_ORDER.Desc };
   }

@@ -7,6 +7,7 @@ describe('parseFeedSort', () => {
     expect(parseFeedSort('oldest')).toBe(FEED_SORT.Oldest);
     expect(parseFeedSort('title')).toBe(FEED_SORT.Title);
     expect(parseFeedSort('newest')).toBe(FEED_SORT.Newest);
+    expect(parseFeedSort('titleDesc')).toBe(FEED_SORT.TitleDesc);
   });
 
   it('falls back to newest for anything else', () => {
@@ -30,6 +31,10 @@ describe('feedSortQuery', () => {
     expect(feedSortQuery(FEED_SORT.Title)).toEqual({
       sort: LINK_SORT_FIELD.Title,
       order: SORT_ORDER.Asc,
+    });
+    expect(feedSortQuery(FEED_SORT.TitleDesc)).toEqual({
+      sort: LINK_SORT_FIELD.Title,
+      order: SORT_ORDER.Desc,
     });
   });
 });

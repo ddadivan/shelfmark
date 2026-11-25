@@ -1260,7 +1260,8 @@
       "menu": "Ordenar enlaces",
       "newest": "Más recientes primero",
       "oldest": "Más antiguos primero",
-      "title": "Título A–Z"
+      "title": "Título A–Z",
+      "titleDesc": "Título Z–A"
     },
     "search": {
       "chip": "Búsqueda: {{query}}",
@@ -1335,8 +1336,7 @@
         "text": "Arrastra enlaces aquí desde la izquierda."
       },
       "moveToLeft": "Mover «{{title}}» a {{folder}}",
-      "hint": "Arrastra enlaces entre dos listas para archivarlos. Esc cierra.",
-      "closeShort": "Cerrar"
+      "hint": "Arrastra enlaces entre dos listas para archivarlos. Esc cierra."
     },
     "extension": {
       "title": "Guarda páginas directamente desde el navegador",
@@ -1372,6 +1372,7 @@
       "filter": "Filtrar",
       "filterCount": "Filtrar · {{count}}",
       "select": "Seleccionar",
+      "sort": "Orden",
       "saveView": "Guardar vista"
     }
   },

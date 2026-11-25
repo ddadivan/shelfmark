@@ -112,9 +112,6 @@ async function setup({
 const loader = (fixture: ComponentFixture<LibraryPage>) =>
   TestbedHarnessEnvironment.loader(fixture);
 
-const moreButton = (fixture: ComponentFixture<LibraryPage>) =>
-  loader(fixture).getHarness(UiButtonHarness.with({ name: 'More view options' }));
-
 /** The toolbar's "Side by side" toggle buttons (none below 80em). */
 async function sideBySideButtons(fixture: ComponentFixture<LibraryPage>) {
   return loader(fixture).getAllHarnesses(UiButtonHarness.with({ name: 'Side by side' }));
@@ -165,13 +162,15 @@ describe('LibraryPage side by side', () => {
     expect(element.querySelector('h1')?.textContent).toBe('Unsorted');
   });
 
-  it('puts the Shelf "Side by side" line with the hint and Close over both feeds', async () => {
+  it('puts the Shelf "Side by side" line with the hint over both feeds; Close is the right half\'s ×', async () => {
     const { element } = await setup({ split: '' });
 
     const head = element.querySelector('.library__split-head') as HTMLElement;
     expect(head.querySelector('.library__split-title')?.textContent?.trim()).toBe('Side by side');
     expect(head.textContent).toContain('Drag links between two feeds to file them.');
-    expect(head.querySelector('button[aria-label="Close side by side"]')).not.toBeNull();
+    // One close only: the × of the right half (Esc closes too).
+    expect(head.querySelector('button')).toBeNull();
+    expect(element.querySelectorAll('button[aria-label="Close side by side"]')).toHaveLength(1);
   });
 
   it('shows the left picker menu, a hidden title and the drop values of both halves', async () => {
@@ -390,7 +389,7 @@ describe('LibraryPage side by side', () => {
     expect(navigate).toHaveBeenCalledWith([], closed);
   });
 
-  it('puts the focus on the "More view options" button after the split closes', async () => {
+  it('puts the focus on the "Side by side" button after the split closes', async () => {
     const { fixture, element } = await setup({ split: B });
     document.body.append(element);
     const close = await loader(fixture).getHarness(
@@ -401,8 +400,10 @@ describe('LibraryPage side by side', () => {
     fixture.componentRef.setInput('split', undefined);
     await fixture.whenStable();
 
-    const opener = element.querySelector('button[aria-label="More view options"]');
-    expect(opener).not.toBeNull();
+    const opener = [...element.querySelectorAll('button')].find(
+      (button) => button.textContent?.trim() === 'Side by side',
+    );
+    expect(opener).toBeDefined();
     expect(document.activeElement).toBe(opener);
     element.remove();
   });
