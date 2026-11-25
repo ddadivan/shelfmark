@@ -16,6 +16,7 @@ import { BUTTON_TYPE } from './models/button-type.const';
         [href]="href()"
         [iconLeft]="iconLeft()"
         [iconOnly]="iconOnly()"
+        [wrap]="wrap()"
         [ariaLabel]="iconOnly() ? 'Save' : undefined"
         (click)="clicks.set(clicks() + 1)"
         (linkClick)="linkClicks.set(linkClicks() + 1)"
@@ -30,6 +31,7 @@ class HostComponent {
   readonly href = signal<string | undefined>(undefined);
   readonly iconLeft = signal<'add' | undefined>(undefined);
   readonly iconOnly = signal(false);
+  readonly wrap = signal(false);
   readonly clicks = signal(0);
   readonly linkClicks = signal(0);
   readonly submits = signal(0);
@@ -85,6 +87,17 @@ describe('ButtonComponent loading', () => {
     expect(control().style.width).toBe(`${REST_WIDTH}px`);
     expect(control().offsetWidth).toBe(LOADING_WIDTH);
     expect(REST_WIDTH).not.toBe(LOADING_WIDTH);
+  });
+
+  it('locks only a minimum width on a wrap button, so the busy label stays on one line', async () => {
+    const { host, control, settle } = await setup();
+    host.wrap.set(true);
+    await settle();
+    host.loading.set(true);
+    await settle();
+
+    expect(control().style.width).toBe('');
+    expect(control().style.minWidth).toBe(`${REST_WIDTH}px`);
   });
 
   it('releases the width and aria-busy when loading ends', async () => {

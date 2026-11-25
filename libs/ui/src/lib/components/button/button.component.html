@@ -44,7 +44,8 @@
     [attr.aria-pressed]="ariaPressed() ?? null"
     [attr.aria-busy]="loading() ? 'true' : null"
     [attr.tabindex]="tabIndex() ?? null"
-    [style.width.px]="lockedWidth() ?? null"
+    [style.width.px]="wrap() ? null : (lockedWidth() ?? null)"
+    [style.min-width.px]="wrap() ? (lockedWidth() ?? null) : null"
     (click)="onLinkClick($event)"
   >
     <ng-container *ngTemplateOutlet="content" />
@@ -65,7 +66,8 @@
     [attr.aria-pressed]="ariaPressed() ?? null"
     [attr.aria-busy]="loading() ? 'true' : null"
     [attr.tabindex]="tabIndex() ?? null"
-    [style.width.px]="lockedWidth() ?? null"
+    [style.width.px]="wrap() ? null : (lockedWidth() ?? null)"
+    [style.min-width.px]="wrap() ? (lockedWidth() ?? null) : null"
     [disabled]="disabled()"
   >
     <ng-container *ngTemplateOutlet="content" />

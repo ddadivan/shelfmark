@@ -27,6 +27,12 @@
   overflow-wrap: anywhere;
 }
 
+// Busy `wrap` button: the label stays on one line while the spinner shows (author, Nov 25). The
+// rest width is a minimum there, so the button grows by the spinner instead of wrapping its label.
+:host(.ui-button-host--wrap) .ui-button[aria-busy='true'] {
+  white-space: nowrap;
+}
+
 .ui-button {
   @include type(label);
 
