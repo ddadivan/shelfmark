@@ -109,6 +109,52 @@ test.describe('library view controls (mock API)', () => {
     },
   );
 
+  test('the View menu has a Description switch that is on by default and remembered', async ({
+    page,
+  }) => {
+    await openFeed(page);
+    const open = async () => {
+      await page.getByRole('button', { name: 'View', exact: true }).click();
+      return page.getByRole('switch', { name: 'Description' });
+    };
+    await expect(await open()).toBeChecked();
+    await page.getByRole('switch', { name: 'Description' }).click();
+    await expect(page.getByRole('switch', { name: 'Description' })).not.toBeChecked();
+    await page.keyboard.press('Escape');
+
+    await page.reload();
+    await expect(page.locator('ui-card').first()).toBeVisible({ timeout: 20_000 });
+    await expect(await open()).not.toBeChecked();
+    await page.keyboard.press('Escape');
+  });
+
+  test(
+    'card: the ⋯ joins the star on hover, and the card menu opens with a right click',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await openFeed(page);
+      const card = page.locator('ui-card').first();
+      const more = card.getByRole('button', { name: /^Actions for / });
+      const star = card.getByRole('button', { name: /^Favorite: / });
+      await expect(star).toBeVisible();
+      const touch = await page.evaluate(() => matchMedia('(hover: none)').matches);
+      if (!touch) {
+        await page.mouse.move(2, 2);
+        await expect(card.locator('.ui-card__more')).toHaveCSS('opacity', '0');
+        await card.hover();
+        await expect(card.locator('.ui-card__more')).toHaveCSS('opacity', '1');
+        // The select circle shows on hover, the star stays where it was.
+        await expect(card.getByRole('checkbox')).toBeVisible();
+        // A right click opens the card menu at the pointer.
+        await card.click({ button: 'right', position: { x: 60, y: 60 } });
+        await expect(page.getByRole('menuitem', { name: 'Edit' })).toBeVisible();
+        await page.keyboard.press('Escape');
+      } else {
+        await expect(card.locator('.ui-card__more')).toHaveCSS('opacity', '1');
+      }
+    },
+  );
+
   test('the folder page has its own menu; sort and export are in the toolbar ⋯', async ({
     page,
   }) => {

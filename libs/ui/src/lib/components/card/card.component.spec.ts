@@ -388,7 +388,9 @@ describe('CardComponent', () => {
       expect(css).toMatch(
         /:host\(:has\(:focus-visible\)\)[^{]*\.ui-card__more\s*{[^}]*opacity: 1;/,
       );
-      expect(css).toMatch(/\.ui-card__more\s*{[^}]*inline-size: 0;[^}]*opacity: 0;/);
+      expect(css).toMatch(/\.ui-card__more\s*{\s*opacity: 0;/);
+      // The glass behind the buttons widens from a circle to a pill.
+      expect(css).toMatch(/::before\s*{[^}]*inline-size: calc\(var\(--ui-card-action\) \* 2\)/);
     });
 
     it('moves the ⋯ in without animation under reduced motion', () => {

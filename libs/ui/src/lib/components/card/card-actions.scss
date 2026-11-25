@@ -30,13 +30,14 @@
 }
 
 // The favourite star is always on the preview: a 28px glass circle (Shelf `.fstar`). On hover and
-// keyboard focus the circle grows into one glass pill [⋯ | ☆]: the ⋯ (More) button opens in front
-// of the star, which stays where it is (the pill is anchored to the preview's end edge); the width
-// and opacity move over `--duration-fast` (instantly under reduced motion). Under `(hover: none)`
-// the pill is always open (touch has no hover and no context-menu key). The ⋯ stays a tab stop
-// while it is shut (`overflow: clip`, zero width): focusing it with the keyboard opens the pill.
-// The two buttons stay separate buttons with their own names; inside the pill they are clear
-// (`--ui-button-glass-*`, `--shadow-hover: none`) and the pill carries the glass.
+// keyboard focus the circle grows into one glass pill [⋯ | ☆]: the ⋯ (More) button fades in in
+// front of the star, which stays where it is (the actions sit at the preview's end edge); the glass
+// behind them (`::before`) widens and the ⋯ fades over `--duration-fast` (instantly under reduced
+// motion). Under `(hover: none)` the pill is always open (touch has no hover and no context-menu
+// key). The ⋯ is laid out all the time (a tab stop, and a hover on the card has already opened it
+// by the time a mouse reaches it); it is only invisible while shut. The two buttons stay separate
+// buttons with their own names; the pill carries the glass, so they are clear
+// (`--ui-button-glass-*`, `--shadow-hover: none`) inside it.
 .ui-card__actions {
   --ui-card-action: #{rem(28px)};
   --ui-button-glass-size: var(--ui-card-action);
@@ -49,15 +50,31 @@
   display: flex;
   block-size: var(--ui-card-action);
   color: var(--on-glass);
-  background: var(--glass);
-  border-radius: var(--radius-full);
 
-  @supports (backdrop-filter: blur(1px)) {
-    backdrop-filter: blur(#{rem(10px)});
-  }
+  // The glass: a circle behind the star, a pill once the ⋯ shows.
+  &::before {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    z-index: 0;
+    inline-size: var(--ui-card-action);
+    pointer-events: none;
+    content: '';
+    background: var(--glass);
+    border-radius: var(--radius-full);
+    transition: inline-size var(--duration-fast) var(--ease-out);
 
-  @media (prefers-reduced-motion: reduce) {
-    backdrop-filter: none;
+    @supports (backdrop-filter: blur(1px)) {
+      backdrop-filter: blur(#{rem(10px)});
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      backdrop-filter: none;
+    }
+
+    @include reduced-motion {
+      transition: none;
+    }
   }
 }
 
@@ -74,13 +91,8 @@
 }
 
 .ui-card__more {
-  inline-size: 0;
-  overflow: clip;
-  pointer-events: none;
   opacity: 0;
-  transition:
-    inline-size var(--duration-fast) var(--ease-out),
-    opacity var(--duration-fast) var(--ease-out);
+  transition: opacity var(--duration-fast) var(--ease-out);
 
   // A hairline between the ⋯ and the star.
   &::after {
@@ -99,10 +111,11 @@
 
 @mixin more-shown {
   .ui-card__more {
-    inline-size: var(--ui-card-action);
-    overflow: visible;
-    pointer-events: auto;
     opacity: 1;
+  }
+
+  .ui-card__actions:has(.ui-card__more:not(:empty))::before {
+    inline-size: calc(var(--ui-card-action) * 2);
   }
 }
 
