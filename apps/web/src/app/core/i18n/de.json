@@ -1284,7 +1284,14 @@
         "tags": "Hashtags",
         "folder": "Ordner",
         "date": "Datum",
-        "description": "Beschreibung"
+        "description": "Beschreibung",
+        "site": "Website zeigen"
+      },
+      "preview": {
+        "label": "Vorschaubild",
+        "large": "Groß",
+        "small": "Klein",
+        "off": "Aus"
       }
     },
     "split": {
@@ -1820,28 +1827,6 @@
           "compact": "Kompakt"
         }
       },
-      "cards": {
-        "title": "Karten",
-        "preview": {
-          "label": "Vorschaubild",
-          "hint": "Das Bild oben auf jeder Karte",
-          "large": "Groß",
-          "small": "Klein",
-          "off": "Aus"
-        },
-        "site": {
-          "label": "Website zeigen",
-          "hint": "Domain und Favicon über dem Titel"
-        },
-        "notes": {
-          "label": "Notizen zeigen",
-          "hint": "Deine Notiz unter dem Titel"
-        },
-        "tags": {
-          "label": "Tags zeigen",
-          "hint": "Tag-Chips unten auf der Karte"
-        }
-      },
       "sidebar": {
         "colours": {
           "label": "Ordnerfarben",
@@ -1856,41 +1841,11 @@
         "full": "Voll",
         "reduced": "Reduziert"
       },
-      "preview": {
-        "title": "Live-Vorschau",
-        "label": "Vorschau deiner Einstellungen",
-        "hint": "Änderungen gelten sofort für die ganze App.",
-        "folders": {
-          "angular": "Angular",
-          "clothes": "Kleidung",
-          "recipes": "Rezepte"
-        },
-        "cards": {
-          "one": {
-            "site": "youtube.com",
-            "title": "Signal Forms in 20 Minuten",
-            "tag": "angular",
-            "note": "Am Wochenende ansehen"
-          },
-          "two": {
-            "site": "cos.com",
-            "title": "Wollmantel, gerader Schnitt",
-            "tag": "kleidung",
-            "note": "Auf den Sale warten"
-          }
-        },
-        "recent": "Zuletzt geöffnet"
-      },
       "failed": "Darstellung konnte nicht gespeichert werden",
       "failedDetail": "Sie ist wieder wie vorher.",
       "accent": {
         "label": "Akzent",
         "hint": "Graphit hält die Oberfläche ruhig; Tinte und Salbei bringen eine Farbe dazu."
-      },
-      "customRow": {
-        "label": "Eigenes Design",
-        "hint": "Eigener Akzent und Hintergrund, auf Kontrast geprüft.",
-        "action": "Anpassen"
       }
     },
     "privacy": {

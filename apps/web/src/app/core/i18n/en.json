@@ -1284,7 +1284,14 @@
         "tags": "Hashtags",
         "folder": "Folder",
         "date": "Date",
-        "description": "Description"
+        "description": "Description",
+        "site": "Show site"
+      },
+      "preview": {
+        "label": "Preview image",
+        "large": "Large",
+        "small": "Small",
+        "off": "Off"
       }
     },
     "split": {
@@ -1820,28 +1827,6 @@
           "compact": "Compact"
         }
       },
-      "cards": {
-        "title": "Cards",
-        "preview": {
-          "label": "Preview image",
-          "hint": "The picture at the top of each card",
-          "large": "Large",
-          "small": "Small",
-          "off": "Off"
-        },
-        "site": {
-          "label": "Show site",
-          "hint": "Domain and favicon above the title"
-        },
-        "notes": {
-          "label": "Show notes",
-          "hint": "Your note under the title"
-        },
-        "tags": {
-          "label": "Show tags",
-          "hint": "Tag chips at the bottom of the card"
-        }
-      },
       "sidebar": {
         "colours": {
           "label": "Folder colors",
@@ -1856,41 +1841,11 @@
         "full": "Full",
         "reduced": "Reduced"
       },
-      "preview": {
-        "title": "Live preview",
-        "label": "Preview of your settings",
-        "hint": "Changes apply to the whole app at once.",
-        "folders": {
-          "angular": "Angular",
-          "clothes": "Clothes",
-          "recipes": "Recipes"
-        },
-        "cards": {
-          "one": {
-            "site": "youtube.com",
-            "title": "Signal Forms in 20 minutes",
-            "tag": "angular",
-            "note": "Watch on the weekend"
-          },
-          "two": {
-            "site": "cos.com",
-            "title": "Wool coat, straight cut",
-            "tag": "clothes",
-            "note": "Wait for the sale"
-          }
-        },
-        "recent": "Recently opened"
-      },
       "failed": "Couldn't save the appearance",
       "failedDetail": "It is back to how it was.",
       "accent": {
         "label": "Accent",
         "hint": "Graphite keeps the interface quiet; Ink and Sage add one colour."
-      },
-      "customRow": {
-        "label": "Custom theme",
-        "hint": "Your own accent and background, checked for contrast.",
-        "action": "Customize"
       }
     },
     "privacy": {

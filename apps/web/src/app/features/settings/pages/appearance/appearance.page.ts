@@ -3,7 +3,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   APP_FONT,
-  CARD_PREVIEW,
   DENSITY,
   TEXT_SIZE,
   CUSTOM_THEME_ACCENT,
@@ -32,10 +31,8 @@ import {
   THEME_CUSTOM,
   THEME_PICKER_KIND,
   ThemePickerComponent,
-  ThemePreviewComponent,
   type SegmentedOption,
   type ThemePickerOption,
-  type ThemePreviewCard,
   customBackgroundTokens,
   customAccentTokens,
 } from '@shelfmark/ui';
@@ -53,14 +50,13 @@ const SYSTEM_THUMB = 'system';
 
 /**
  * `/settings/appearance` (Themes mockup, issues #273 and #285): Theme (System, Light, Dark,
- * Custom); for Custom the base, accent, background and corners and "Reset custom theme"; a live
- * preview; Text and layout (text size, font, density); Cards (preview image, site, notes, tags);
+ * Custom); for Custom the base, accent, background and corners and "Reset custom theme";
+ * Text and layout (text size, font, density);
  * Dates and numbers (date format, clock, week start, preview; moved from Language in #315);
  * Sidebar and motion (folder colours, how folders are highlighted in the sidebar, Animations). Link counts live in Library, "Remember
  * recently opened" in Privacy and data (#315). Every change applies to the whole app at once
- * (ThemeService) and is saved on the account right away, so the preview simply shows a sample in
- * the current tokens; a failed save puts the old appearance back and says so. Light and Dark never
- * change. The page builds the options and the preview; every change goes through the page-scoped
+ * (ThemeService) and is saved on the account right away, a failed save puts the old appearance back and says so. Light and Dark never
+ * change. The page builds the options; every change goes through the page-scoped
  * `AppearanceSettingsService`.
  */
 @Component({
@@ -76,7 +72,6 @@ const SYSTEM_THUMB = 'system';
     SettingsSectionComponent,
     SwitchComponent,
     ThemePickerComponent,
-    ThemePreviewComponent,
   ],
   providers: [AppearanceSettingsService],
   templateUrl: './appearance.page.html',
@@ -105,12 +100,9 @@ export default class AppearancePage {
   protected readonly themeOptions = computed<ThemePickerOption[]>(() => {
     this.translation();
     const custom = this.theme.customTheme();
-    // Shelf 05-settings: System, Light and Dark; the Custom tile shows only while Custom is on
-    // (it is reached through "Custom theme › Customize" or an accent).
-    const values = Object.values(THEME_PREFERENCE).filter(
-      (value) => value !== THEME_PREFERENCE.Custom || this.isCustom(),
-    );
-    return values.map((value) => ({
+    // System, Light, Dark and Custom are four tiles of one row, so the Custom theme is as easy to
+    // find as the others (the pre-Shelf look, restyled).
+    return Object.values(THEME_PREFERENCE).map((value) => ({
       value,
       label: this.transloco.translate(THEME_OPTION_KEYS[value]),
       ...(value === THEME_PREFERENCE.System
@@ -203,32 +195,6 @@ export default class AppearancePage {
   protected readonly densityOptions = computed<SegmentedOption[]>(() =>
     this.labels(Object.values(DENSITY), `${KEY}.layout.density`),
   );
-
-  protected readonly previewImageOptions = computed<SegmentedOption[]>(() =>
-    this.labels(Object.values(CARD_PREVIEW), `${KEY}.cards.preview`),
-  );
-
-  /** Sample link counts of the preview's sidebar rows. */
-  protected readonly previewCounts = [12, 7, 23];
-
-  protected readonly previewRecent = computed(() => {
-    this.translation();
-    return this.settings.historyPaused() ? '' : this.transloco.translate(`${KEY}.preview.recent`);
-  });
-
-  protected readonly previewFolders = computed<string[]>(() =>
-    this.labels(['angular', 'clothes', 'recipes'], `${KEY}.preview.folders`).map((o) => o.label),
-  );
-
-  protected readonly previewCards = computed<ThemePreviewCard[]>(() => {
-    this.translation();
-    return ['one', 'two'].map((card) => ({
-      site: this.transloco.translate(`${KEY}.preview.cards.${card}.site`),
-      title: this.transloco.translate(`${KEY}.preview.cards.${card}.title`),
-      note: this.transloco.translate(`${KEY}.preview.cards.${card}.note`),
-      tag: this.transloco.translate(`${KEY}.preview.cards.${card}.tag`),
-    }));
-  });
 
   /**
    * The remove action of an own swatch (#350): only for colours the account lists. The colour the

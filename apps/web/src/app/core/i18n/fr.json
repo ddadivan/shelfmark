@@ -1307,7 +1307,14 @@
         "tags": "Hashtags",
         "folder": "Dossier",
         "date": "Date",
-        "description": "Description"
+        "description": "Description",
+        "site": "Afficher le site"
+      },
+      "preview": {
+        "label": "Image d’aperçu",
+        "large": "Grande",
+        "small": "Petite",
+        "off": "Aucune"
       }
     },
     "split": {
@@ -1865,28 +1872,6 @@
           "compact": "Compacte"
         }
       },
-      "cards": {
-        "title": "Cartes",
-        "preview": {
-          "label": "Image d’aperçu",
-          "hint": "L’image en haut de chaque carte",
-          "large": "Grande",
-          "small": "Petite",
-          "off": "Aucune"
-        },
-        "site": {
-          "label": "Afficher le site",
-          "hint": "Domaine et favicon au-dessus du titre"
-        },
-        "notes": {
-          "label": "Afficher les notes",
-          "hint": "Votre note sous le titre"
-        },
-        "tags": {
-          "label": "Afficher les tags",
-          "hint": "Les tags en bas de la carte"
-        }
-      },
       "sidebar": {
         "colours": {
           "label": "Couleurs des dossiers",
@@ -1901,41 +1886,11 @@
         "full": "Complètes",
         "reduced": "Réduites"
       },
-      "preview": {
-        "title": "Aperçu en direct",
-        "label": "Aperçu de vos paramètres",
-        "hint": "Les changements s’appliquent à toute l’application immédiatement.",
-        "folders": {
-          "angular": "Angular",
-          "clothes": "Vêtements",
-          "recipes": "Recettes"
-        },
-        "cards": {
-          "one": {
-            "site": "youtube.com",
-            "title": "Signal Forms en 20 minutes",
-            "tag": "angular",
-            "note": "À regarder ce week-end"
-          },
-          "two": {
-            "site": "cos.com",
-            "title": "Manteau en laine, coupe droite",
-            "tag": "vêtements",
-            "note": "Attendre les soldes"
-          }
-        },
-        "recent": "Ouverts récemment"
-      },
       "failed": "Impossible d’enregistrer l’apparence",
       "failedDetail": "Elle est revenue comme avant.",
       "accent": {
         "label": "Accent",
         "hint": "Graphite garde l’interface sobre ; Encre et Sauge ajoutent une couleur."
-      },
-      "customRow": {
-        "label": "Thème personnalisé",
-        "hint": "Votre accent et votre fond, avec contraste vérifié.",
-        "action": "Personnaliser"
       }
     },
     "privacy": {

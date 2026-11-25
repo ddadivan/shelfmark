@@ -47,6 +47,18 @@
           <span>{{ largeLabel() }}</span>
         </div>
       </div>
+      @if (choice(); as choice) {
+        <div class="ui-view-menu__choice">
+          <span class="ui-view-menu__heading" [id]="id + '-choice'">{{ choice.label }}</span>
+          <ui-segmented-control
+            block
+            [ariaLabelledby]="id + '-choice'"
+            [options]="choice.options"
+            [value]="choice.value"
+            (valueChange)="choiceChange.emit($event)"
+          />
+        </div>
+      }
       @if (fields().length > 0) {
         @for (field of fields(); track field.id) {
           <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- the switch is a native button inside the label, so a press on the row activates it -->

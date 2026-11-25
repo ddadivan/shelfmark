@@ -67,6 +67,32 @@ export const Open: Story = {
   },
 };
 
+/** An extra one-of-few setting under the grid size (the card preview image size). */
+export const WithChoice: Story = {
+  args: {
+    choice: {
+      label: 'Preview image',
+      value: 'large',
+      options: [
+        { value: 'large', label: 'Large' },
+        { value: 'small', label: 'Small' },
+        { value: 'off', label: 'Off' },
+      ],
+    },
+  },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="ms-panel" style="display: flex; justify-content: flex-end; min-block-size: 24rem">
+        <ui-view-menu [label]="label" [heading]="heading" [steps]="steps" [(step)]="step"
+          [smallLabel]="smallLabel" [largeLabel]="largeLabel" [fields]="fields" [choice]="choice" />
+      </div>`,
+  }),
+  play: async ({ canvasElement }) => {
+    canvasElement.querySelector<HTMLButtonElement>('.ui-view-menu__trigger')?.click();
+  },
+};
+
 /** The List view has no grid: the slider is off, the switches stay. */
 export const GridDisabled: Story = {
   args: { gridDisabled: true },
