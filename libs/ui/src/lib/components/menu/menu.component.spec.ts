@@ -382,6 +382,8 @@ describe('MenuComponent', () => {
       expect(items().at(-1)?.classList.contains('ui-menu-item--danger')).toBe(true);
       expect(items()[0].classList.contains('ui-menu-item--danger')).toBe(false);
       expect(items()[0].querySelector('ui-icon')).not.toBeNull();
+      // Shelf: menu item icons are 16px, like the toolbar, sidebar and settings rows.
+      expect(items()[0].querySelector('ui-icon')?.classList.contains('ui-icon--16')).toBe(true);
       expect(items()[0].querySelector('.ui-menu-item__hint')?.textContent).toBe('↵');
       expect(items()[1].querySelector('.ui-menu-item__hint')).toBeNull();
       expect(menuHost.querySelector('ui-menu-separator')?.getAttribute('role')).toBe('separator');
