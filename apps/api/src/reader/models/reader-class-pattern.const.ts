@@ -6,7 +6,7 @@
  */
 export const READER_CLASS_PATTERN = {
   Unlikely:
-    /(?:^|[\s_-])(?:comments?|disqus|share|sharing|social|related|recommended|promo|sponsored?|advert|ads?|banner|newsletter|subscribe|signup|cookies?|consent|popup|modal|breadcrumbs?|pagination|pager|menu|navbar|nav|sidebar|footer|masthead|widget|tags)(?:[\s_-]|$)/i,
+    /(?:^|[\s_-])(?:comments?|disqus|share|sharing|social|related|recommended|promo|sponsored?|advert|ads?|banner|newsletter|subscribe|signup|cookies?|consent|popup|modal|breadcrumbs?|pagination|pager|menu|navbar|nav|sidebar|footer|masthead|widget|tags|drawers?|off-?canvas|mini-?cart)(?:[\s_-]|$)/i,
   Likely:
     /(?:^|[\s_-])(?:article|body|content|entry|main|post|text|blog|story|prose|markdown)(?:[\s_-]|$)/i,
 } as const;
