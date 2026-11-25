@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { UiButtonHarness } from '@shelfmark/ui/testing';
+import { UiAskButtonHarness } from '@shelfmark/ui/testing';
 import { axeViolations } from '../../../../../testing/axe';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
@@ -29,9 +29,9 @@ describe('SearchQuestionHintComponent', () => {
     const { fixture, asker, element } = await setup('which angular video should I watch first?');
 
     expect(element.textContent).toContain('Looks like a question.');
-    const button = await TestbedHarnessEnvironment.loader(fixture).getHarness(
-      UiButtonHarness.with({ text: 'Ask your shelf' }),
-    );
+    // The header's Ask pill (author), not a ghost button.
+    expect(element.querySelector('ui-ask-button')?.textContent).toContain('Ask your shelf');
+    const button = await TestbedHarnessEnvironment.loader(fixture).getHarness(UiAskButtonHarness);
     await button.click();
 
     expect(asker.ask).toHaveBeenCalledWith('which angular video should I watch first?');

@@ -1,6 +1,7 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
 import { BUTTON_VARIANT } from '../button/models/button-variant.const';
+import { AskButtonComponent } from '../ask-button/ask-button.component';
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
@@ -15,7 +16,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  */
 @Component({
   selector: 'ui-ai-line',
-  imports: [ButtonComponent, IconComponent],
+  imports: [AskButtonComponent, ButtonComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ui-ai-line', '[class.ui-ai-line--banner]': 'banner()' },
   templateUrl: './ai-line.component.html',
@@ -35,6 +36,11 @@ export class AiLineComponent {
    * button at the end of the line. Still no colour but the mark and the tint.
    */
   readonly banner = input(false, { transform: booleanAttribute });
+  /**
+   * The action is an Ask hand-over ("Ask your shelf"): drawn as `ui-ask-button`, the header's Ask
+   * pill with its hover glow, instead of the ghost button (author, Nov 25).
+   */
+  readonly askAction = input(false, { transform: booleanAttribute });
 
   /** The ghost button was pressed. */
   readonly action = output<void>();

@@ -11,6 +11,7 @@ import { AiLineComponent } from './ai-line.component';
       text="Suggestions aren't available right now. Your link saves as usual."
       [actionLabel]="actionLabel()"
       [banner]="banner()"
+      [askAction]="askAction()"
       (action)="actions.set(actions() + 1)"
     />
   `,
@@ -18,6 +19,7 @@ import { AiLineComponent } from './ai-line.component';
 class HostComponent {
   readonly actionLabel = signal('');
   readonly banner = signal(false);
+  readonly askAction = signal(false);
   readonly actions = signal(0);
 }
 
@@ -57,6 +59,19 @@ describe('ui-ai-line', () => {
 
     update((c) => c.actionLabel.set(''));
     expect(host.querySelector('ui-button')).toBeNull();
+  });
+
+  it('askAction draws the action as the Ask pill (ui-ask-button) and still emits action', () => {
+    const { host, update, cmp } = setup();
+    update((c) => {
+      c.actionLabel.set('Ask your shelf');
+      c.askAction.set(true);
+    });
+    expect(host.querySelector('ui-button')).toBeNull();
+    const ask = host.querySelector<HTMLButtonElement>('ui-ask-button button');
+    expect(ask?.textContent).toContain('Ask your shelf');
+    ask?.click();
+    expect(cmp.actions()).toBe(1);
   });
 
   it('banner: a sage band with the sentence in text (Shelf search)', () => {
