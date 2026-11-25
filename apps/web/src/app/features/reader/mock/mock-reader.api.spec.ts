@@ -29,18 +29,25 @@ describe('MockReaderApi', () => {
 
   it('answers typed blocks for an article and no article for a video', async () => {
     const { api, library } = setup();
-    const article = library.links.find((link) => link.kind === LINK_KIND.Article);
+    const articles = library.links.filter((link) => link.kind === LINK_KIND.Article);
     const video = library.links.find((link) => link.kind === LINK_KIND.Video);
-    const text = await run(api.article(article?.id ?? ''));
-    // A real page, parsed by the API's extractor: typed blocks with spans, code, notes or tables.
-    expect(text.article?.version).toBe(READER_ARTICLE_VERSION);
-    expect(text.article?.minutes).toBeGreaterThan(0);
-    const kinds = new Set(text.article?.blocks.map((block) => block.kind));
-    expect(kinds.has(READER_BLOCK_KIND.Paragraph)).toBe(true);
-    expect(kinds.has(READER_BLOCK_KIND.Code)).toBe(true);
-    expect(text.article?.blocks.some((block) => block.spans.some((span) => span.code))).toBe(true);
+    // Which of the three real samples a link gets depends on its id, so the checks run over every
+    // article link: each is a real page parsed by the API's extractor, typed blocks with spans.
+    const texts = [];
+    for (const article of articles) {
+      texts.push((await run(api.article(article.id))).article);
+    }
+    expect(texts.length).toBeGreaterThan(2);
+    const blocks = texts.flatMap((text) => text?.blocks ?? []);
+    for (const text of texts) {
+      expect(text?.version).toBe(READER_ARTICLE_VERSION);
+      expect(text?.minutes).toBeGreaterThan(0);
+      expect(text?.blocks.some((block) => block.kind === READER_BLOCK_KIND.Paragraph)).toBe(true);
+    }
+    expect(blocks.some((block) => block.kind === READER_BLOCK_KIND.Code)).toBe(true);
+    expect(blocks.some((block) => block.spans.some((span) => span.code))).toBe(true);
     expect(
-      text.article?.blocks.every((block) =>
+      blocks.every((block) =>
         block.spans.every((span) => span.href === null || /^https:\/\//.test(span.href)),
       ),
     ).toBe(true);
