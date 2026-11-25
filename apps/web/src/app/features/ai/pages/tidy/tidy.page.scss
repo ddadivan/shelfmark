@@ -15,8 +15,9 @@
   gap: var(--space-4);
   width: 100%;
 
-  // Shelf Tidy up: left-aligned like the other pages, the list up to 880px wide.
+  // Shelf Tidy up: the list up to 880px wide, centred in the column (author, Nov 25).
   max-width: rem(880px);
+  margin-inline: auto;
   padding-block: var(--space-2) 0;
 }
 
