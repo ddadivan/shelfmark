@@ -388,7 +388,9 @@ describe('CardComponent', () => {
       expect(css).toMatch(
         /:host\(:has\(:focus-visible\)\)[^{]*\.ui-card__more\s*{[^}]*opacity: 1;/,
       );
-      expect(css).toMatch(/\.ui-card__more\s*{\s*opacity: 0;/);
+      // Shut, the ⋯ slot takes no width at the end edge: the star sits in the corner [☆ | ⋯].
+      expect(css).toMatch(/\.ui-card__more\s*{\s*inline-size: 0;[^}]*opacity: 0;/);
+      expect(hover).toMatch(/\.ui-card__more\s*{[^}]*inline-size: var\(--ui-card-action\);/);
       // The glass behind the buttons widens from a circle to a pill.
       expect(css).toMatch(/::before\s*{[^}]*inline-size: calc\(var\(--ui-card-action\) \* 2\)/);
     });

@@ -29,15 +29,15 @@
   }
 }
 
-// The favourite star is always on the preview: a 28px glass circle (Shelf `.fstar`). On hover and
-// keyboard focus the circle grows into one glass pill [⋯ | ☆]: the ⋯ (More) button fades in in
-// front of the star, which stays where it is (the actions sit at the preview's end edge); the glass
-// behind them (`::before`) widens and the ⋯ fades over `--duration-fast` (instantly under reduced
-// motion). Under `(hover: none)` the pill is always open (touch has no hover and no context-menu
-// key). The ⋯ is laid out all the time (a tab stop, and a hover on the card has already opened it
-// by the time a mouse reaches it); it is only invisible while shut. The two buttons stay separate
-// buttons with their own names; the pill carries the glass, so they are clear
-// (`--ui-button-glass-*`, `--shadow-hover: none`) inside it.
+// The favourite star is always on the preview: a 28px glass circle (Shelf `.fstar`) in the corner.
+// On hover and keyboard focus the circle grows into one glass pill [☆ | ⋯] (author, Nov 25: the
+// star first, More next to it): the ⋯ (More) slot opens from 0 to 28px at the end edge and fades
+// in, the star slides inwards with it; the glass behind them (`::before`) widens. Both over
+// `--duration-fast` (instantly under reduced motion). Under `(hover: none)` the pill is always open
+// (touch has no hover and no context-menu key). The ⋯ stays a tab stop while shut (its slot is
+// clipped to no width); focus opens the pill. The two buttons stay separate buttons with their own
+// names; the pill carries the glass, so they are clear (`--ui-button-glass-*`,
+// `--shadow-hover: none`) inside it.
 .ui-card__actions {
   --ui-card-action: #{rem(28px)};
   --ui-button-glass-size: var(--ui-card-action);
@@ -91,14 +91,18 @@
 }
 
 .ui-card__more {
+  inline-size: 0;
+  overflow: hidden;
   opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-out);
+  transition:
+    inline-size var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
 
-  // A hairline between the ⋯ and the star.
+  // A hairline between the star and the ⋯.
   &::after {
     position: absolute;
     inset-block: rem(7px);
-    inset-inline-end: 0;
+    inset-inline-start: 0;
     inline-size: 0;
     content: '';
     border-inline-start: 1px solid var(--glass-line);
@@ -111,6 +115,8 @@
 
 @mixin more-shown {
   .ui-card__more {
+    inline-size: var(--ui-card-action);
+    overflow: visible;
     opacity: 1;
   }
 
