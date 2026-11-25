@@ -16,8 +16,7 @@ import { PreviewReaderService } from '../../services/preview-reader.service';
 
 /**
  * The ⋯ menu of the Link page (Shelf `01-library.html`): Open in browser, Edit, favorite, pin to
- * the top of the folder, pin to the sidebar, Move, Remind me, Copy link, the site rule, "Wider
- * preview" (desktop, not in full screen), Details (the phone head) and Delete. The trigger binds `[uiMenuTrigger]="more.menu()"`.
+ * the top of the folder, pin to the sidebar, Move, Remind me, Copy link, the site rule, Details (the phone head) and Delete. The trigger binds `[uiMenuTrigger]="more.menu()"`.
  */
 @Component({
   selector: 'app-preview-menu',
@@ -26,8 +25,6 @@ import { PreviewReaderService } from '../../services/preview-reader.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PreviewMenuComponent {
-  /** The desktop panel: offers "Wider preview" / "Show the list". */
-  readonly wide = input(false, { transform: booleanAttribute });
   /** The phone head: offers the Details toggle (its button moved into this menu). */
   readonly details = input(false, { transform: booleanAttribute });
 

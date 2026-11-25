@@ -100,13 +100,17 @@ describe('PreviewPanelComponent', () => {
     expect(await (await button('Favorite')).getPressed()).toBe('true');
   });
 
-  it('edits, copies and widens from the ⋯ menu', async () => {
+  it('edits and copies from the ⋯ menu', async () => {
     const { stub, actions, menu } = await setup();
     await (await menu()).clickItem({ text: 'Edit' });
     expect(actions.edit).toHaveBeenCalledWith(PREVIEW_STUB_LINK);
     await (await menu()).clickItem({ text: 'Copy link' });
     expect(stub.copyLink).toHaveBeenCalledTimes(1);
-    await (await menu()).clickItem({ text: 'Wider preview' });
+  });
+
+  it('widens the preview from its own toolbar button, not from the ⋯ menu', async () => {
+    const { stub, button } = await setup();
+    await (await button('Wider preview')).click();
     expect(stub.toggleList).toHaveBeenCalledTimes(1);
   });
 

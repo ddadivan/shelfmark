@@ -91,6 +91,18 @@
           "
           (click)="preview.toggleFavorite()"
         />
+        @if (!preview.fullScreen()) {
+          <ui-button
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="widen"
+            [ariaPressed]="preview.listHidden()"
+            [ariaLabel]="(preview.listHidden() ? 'preview.narrower' : 'preview.wider') | transloco"
+            [uiTooltip]="(preview.listHidden() ? 'preview.narrower' : 'preview.wider') | transloco"
+            (click)="preview.toggleList()"
+          />
+        }
         <ui-button
           variant="ghost"
           size="sm"
@@ -152,5 +164,5 @@
     }
   </div>
 </section>
-<app-preview-menu #more wide />
+<app-preview-menu #more />
 <app-reading-settings #readingSettings />
