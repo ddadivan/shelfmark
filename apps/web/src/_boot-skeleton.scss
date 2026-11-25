@@ -293,6 +293,12 @@
     }
   }
 
+  // Phone: the tools drop under the title (library.page.scss), so the title row is only as tall
+  // as the title: 20px above it.
+  @include phone {
+    margin-block-start: rem(20px);
+  }
+
   // Desktop (Shelf): the real title is centred in the 32px row of the toolbar's buttons: 1px of
   // room above it.
   @include desktop {
@@ -311,17 +317,23 @@
 
   // Below 64em (measured on the real page): the rest of the title row and the saved views, 38px
   // under the count line; touch: 62px (the 44px targets of the toolbar and the tabs).
+  // The saved views sit 22px under the title row (10px more than the reference, library.page.scss).
   @include compact {
-    margin-block-end: rem(38px);
+    margin-block-end: rem(48px);
 
     @include coarse {
-      margin-block-end: rem(62px);
+      margin-block-end: rem(72px);
     }
+  }
+
+  // Phone: the tools wrap onto their own row (44px and the 12px gap) under the title.
+  @include phone {
+    margin-block-end: rem(118px);
   }
 
   @include desktop {
     height: rem(1px);
-    margin-block: 0 rem(64px);
+    margin-block: 0 rem(74px);
   }
 }
 
