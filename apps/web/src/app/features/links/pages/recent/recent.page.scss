@@ -45,6 +45,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+
+  // The Opened / Forgotten switch and the ghost buttons share one centre line (author, Nov 25).
+  align-items: center;
 }
 
 // The history (or its empty state) takes the rest of the page.
