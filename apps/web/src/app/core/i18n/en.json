@@ -4727,7 +4727,6 @@
   "help": {
     "title": "Help center",
     "brand": "Help",
-    "homeLabel": "Shelfmark Help home",
     "searchTrigger": "Search help",
     "searchShortcut": "Ctrl K",
     "menu": "Help center",

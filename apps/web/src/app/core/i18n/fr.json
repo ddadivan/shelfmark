@@ -4843,7 +4843,6 @@
   "help": {
     "title": "Centre d’aide",
     "brand": "Aide",
-    "homeLabel": "Accueil de l’aide Shelfmark",
     "searchTrigger": "Rechercher dans l’aide",
     "searchShortcut": "Ctrl K",
     "menu": "Centre d’aide",

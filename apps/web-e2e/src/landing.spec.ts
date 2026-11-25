@@ -32,6 +32,22 @@ test.describe('landing', () => {
     },
   );
 
+  test('the hero fills the first screen under the header and centres its content', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto('/');
+    const hero = page.locator('.landing-hero');
+    await expect(hero).toBeVisible();
+
+    const box = await hero.boundingBox();
+    const preview = await page.locator('app-landing-hero-preview').boundingBox();
+    // 100svh minus the 64px sticky header, and the live preview is larger than the old 460px.
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(1080 - 64 - 1);
+    expect(preview?.height ?? 0).toBeGreaterThan(560);
+    expect(box?.width ?? 0).toBeGreaterThan(1300);
+  });
+
   test('"How it works" in the header scrolls to and focuses the section', async ({ page }) => {
     // The header links are hidden on a phone by design (sign-in stays), so use a desktop width.
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -201,6 +217,7 @@ test.describe('landing variants', () => {
           'How it works',
           'AI',
           /^What.s new$/,
+          'Help',
           'Privacy',
         ]);
       } else {

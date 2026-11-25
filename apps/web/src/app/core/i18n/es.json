@@ -4843,7 +4843,6 @@
   "help": {
     "title": "Centro de ayuda",
     "brand": "Ayuda",
-    "homeLabel": "Inicio de la ayuda de Shelfmark",
     "searchTrigger": "Buscar en la ayuda",
     "searchShortcut": "Ctrl K",
     "menu": "Centro de ayuda",
