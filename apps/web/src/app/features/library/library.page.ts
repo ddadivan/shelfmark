@@ -263,8 +263,16 @@ export default class LibraryPage {
       this.libraryFolders.counts().all === 0,
   );
   protected readonly UI_VIEW = UI_VIEW;
+  /**
+   * The view the feed draws: the saved preference, except beside the link preview (author, Nov 25),
+   * where the narrow feed is Headlines. The preference itself is untouched, so the user's view
+   * is back when the preview closes.
+   */
+  protected readonly view = computed(() =>
+    this.preview.split() ? UI_VIEW.Headlines : this.filters.view(),
+  );
   /** The List or Headlines view: rows in a column instead of cards. */
-  protected readonly rowsView = computed(() => isRowsView(this.filters.view()));
+  protected readonly rowsView = computed(() => isRowsView(this.view()));
   protected readonly LINKS_SCOPE = LINKS_SCOPE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly pluralKey = pluralKey;

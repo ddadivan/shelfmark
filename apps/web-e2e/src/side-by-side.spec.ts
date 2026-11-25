@@ -168,18 +168,18 @@ test.describe('side by side (mock API)', () => {
     await openWithReading(page);
     const more = page.getByRole('button', { name: 'More view options' });
     const rightRegion = page.getByRole('region', { name: /^Right:/ });
-    await expect(sideBySideItem(page)).toHaveAttribute('aria-pressed', 'true');
-
-    await sideBySideItem(page).click();
-    await expect(rightRegion).toHaveCount(0);
-    await expect(page).not.toHaveURL(/split=/);
-    await expect(sideBySideItem(page)).toHaveAttribute('aria-pressed', 'false');
-
-    await sideBySideItem(page).click();
-    await expect(rightRegion).toBeVisible();
+    // Inside side by side the left toolbar is slim: no "Side by side" button, Save view or view
+    // switch, but Filter and Select stay (selection moves links with the bulk bar).
+    await expect(sideBySideItem(page)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Save view', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('radio', { name: 'Cards', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Filter', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Select links', exact: true })).toBeVisible();
     // The Close of the "Side by side" line (the right half has its own ×).
     await page.getByRole('button', { name: 'Close side by side' }).first().click();
     await expect(rightRegion).toHaveCount(0);
+    await expect(page).not.toHaveURL(/split=/);
+    await expect(sideBySideItem(page)).toHaveAttribute('aria-pressed', 'false');
     // The ⋯ button that holds the toggle takes the focus back.
     await expect(more).toBeFocused();
 

@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
-import { filterButton, selectButton } from './support/library-toolbar';
+import { seedSession } from './support/mock-session';
+import { filterButton, saveThisViewButton, selectButton } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { expect, test } from './support/test';
 
@@ -75,4 +76,30 @@ test.describe('library Filter and Select links (mock API)', () => {
     await page.keyboard.press('Escape');
     await expect(bar).toBeHidden();
   });
+
+  test(
+    'a filter that matches nothing keeps the toolbar and the empty state, in a folder too',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      // Mirrors MOCK_FOLDERS (the e2e project cannot import them): the Reading folder.
+      await seedSession(page);
+      await page.goto(
+        '/folders/00000000-0000-4000-8000-000000000101?kind=video&saved=week&tag=docs',
+      );
+
+      const empty = page.getByText('Nothing matches these filters');
+      await expect(empty).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Clear filters' })).toBeVisible();
+      // The tools stay: Filter (to change the filters), View and the view switch; Save view too
+      // (the phone has the chip). Select cannot act on nothing.
+      await expect(filterButton(page)).toBeVisible();
+      await expect(saveThisViewButton(page)).toBeVisible();
+      await expect(page.getByRole('radio', { name: 'Headlines', exact: true })).toBeVisible();
+      await expect(selectButton(page)).toHaveCount(0);
+
+      await page.getByRole('button', { name: 'Clear filters' }).click();
+      await expect(page).not.toHaveURL(/kind=|saved=|tag=/);
+      await expect(selectButton(page)).toBeVisible();
+    },
+  );
 });

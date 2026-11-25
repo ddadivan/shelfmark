@@ -19,6 +19,7 @@ import { FEED_ITEM_FOCUS_SELECTOR } from '../models/feed-item-focus-selector.con
 import { FEED_ITEM_SELECTOR } from '../models/feed-item-selector.const';
 import { LibraryFeedService } from './library-feed.service';
 import { LibraryFilterService } from './library-filter.service';
+import { LinkPreviewService } from '../../link-preview/services/link-preview.service';
 
 /**
  * The selection of the library page: which of the links on screen are picked (the app-wide
@@ -32,6 +33,7 @@ export class LibrarySelectionService {
   private readonly feed = inject(LibraryFeedService);
   private readonly filters = inject(LibraryFilterService);
   private readonly transloco = inject(TranslocoService);
+  private readonly preview = inject(LinkPreviewService);
   private readonly doc = inject(DOCUMENT);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -46,8 +48,15 @@ export class LibrarySelectionService {
   readonly selectedCount = computed(() => this.selectedLinks().length);
   /** "Select links" (⋯ menu, X) turned selecting on with nothing picked yet (Shelf). */
   private readonly started = signal(false);
+  /**
+   * Selecting is off while the link preview split is open (author, Nov 25): no checkboxes, no X,
+   * Shift-click or Ctrl A, no Select button. Opening the preview ends a running selection.
+   */
+  readonly available = computed(() => !this.preview.split());
   /** A selection is in progress: checkboxes everywhere, the header and the bulk bar show. */
-  readonly selecting = computed(() => this.started() || this.selectedCount() > 0);
+  readonly selecting = computed(
+    () => this.available() && (this.started() || this.selectedCount() > 0),
+  );
   readonly allSelected = computed(
     () => this.selectedCount() > 0 && this.selectedCount() === this.feed.shownCount(),
   );
@@ -75,6 +84,15 @@ export class LibrarySelectionService {
     effect(() => {
       this.filters.filter();
       untracked(() => this.store.clear());
+    });
+    // Opening the preview split ends a running selection (the bulk bar closes with it).
+    effect(() => {
+      if (!this.available()) {
+        untracked(() => {
+          this.started.set(false);
+          this.store.clear();
+        });
+      }
     });
     effect(() => {
       const order = this.order();
@@ -107,6 +125,9 @@ export class LibrarySelectionService {
    * goes to the first checkbox, so the keyboard can pick at once. Done or Esc ends it.
    */
   startSelection(): void {
+    if (!this.available()) {
+      return;
+    }
     this.started.set(true);
     // After the render that shows the checkboxes, and after the menu that may have opened this
     // has handed focus back to its button.
@@ -124,10 +145,16 @@ export class LibrarySelectionService {
 
   /** A card or row asked to toggle (checkbox, click while selecting, Space, long press). */
   toggleSelected(link: LinkResponse, toggle: LinkSelectToggle): void {
+    if (!this.available()) {
+      return;
+    }
     this.store.toggle(link.id, this.order(), toggle.range);
   }
 
   selectAll(): void {
+    if (!this.available()) {
+      return;
+    }
     this.store.selectAll(this.order());
   }
 

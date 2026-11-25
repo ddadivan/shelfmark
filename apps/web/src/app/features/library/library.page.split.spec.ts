@@ -339,12 +339,20 @@ describe('LibraryPage side by side', () => {
     });
   });
 
-  it('shows the "Side by side" button as a pressed toggle while open and closes with it', async () => {
-    const { fixture, navigate } = await setup({ split: B });
-    const [toggle] = await sideBySideButtons(fixture);
+  it('has no "Side by side" button inside side by side (Close ends it), only Filter and Select in the half', async () => {
+    const { element, fixture, navigate } = await setup({ split: B });
 
-    expect(await toggle.getPressed()).toBe('true');
-    await toggle.click();
+    expect(await sideBySideButtons(fixture)).toHaveLength(0);
+    const tools = element.querySelector('.library__tools');
+    expect(tools?.querySelector('[aria-label="Filter"]')).not.toBeNull();
+    expect(tools?.querySelector('[aria-label="Select links"]')).not.toBeNull();
+    expect(tools?.querySelector('[aria-label="Save view"]')).toBeNull();
+    expect(tools?.querySelector('ui-segmented-control')).toBeNull();
+    expect(tools?.querySelector('app-library-view-menu')).toBeNull();
+    const [close] = await loader(fixture).getAllHarnesses(
+      UiButtonHarness.with({ label: 'Close side by side' }),
+    );
+    await close.click();
     expect(navigate).toHaveBeenCalledWith([], {
       queryParams: { split: null, related: null },
       queryParamsHandling: 'merge',
