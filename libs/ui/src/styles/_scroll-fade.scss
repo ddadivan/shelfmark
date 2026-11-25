@@ -16,14 +16,17 @@
 // at its bottom edge, where a fade only got in the way).
 // A sticky edge is measured from the scrollport's content edge, so an area with padding needs
 // `$inset-start` / `$inset-end` (the negative padding, `calc(var(--space-1) * -1)`) to make the
-// fade flush with the area's visible edge instead of leaving a gap.
+// fade flush with the area's visible edge instead of leaving a gap. `$bleed` (the same negative
+// inline padding) widens the fades over that padding, so they reach the area's side edges and a
+// card's edge or shadow never shows beside them.
 @mixin scroll-fade(
   $bg: var(--bg),
   $size: rem(24px),
   $layer: 2,
   $bottom: true,
   $inset-start: 0,
-  $inset-end: 0
+  $inset-end: 0,
+  $bleed: 0
 ) {
   $edges: if($bottom, '&::before, &::after', '&::before');
 
@@ -33,6 +36,7 @@
     display: block;
     flex: none;
     block-size: $size;
+    margin-inline: $bleed;
     pointer-events: none;
     content: '';
     opacity: 0;

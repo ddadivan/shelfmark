@@ -31,6 +31,10 @@
 
 .library__split--open > .library__half,
 .library__split--open > app-split-right-half {
+  // The feed's top fade blends into the card, not the page (author, Nov 25: a page-coloured band
+  // showed inside the card, off its edges).
+  --feed-fade-bg: var(--surface);
+
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
