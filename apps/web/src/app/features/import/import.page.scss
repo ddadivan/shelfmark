@@ -1,6 +1,6 @@
 @use 'ui' as *;
 
-// Shelf 09-data "Import bookmarks": a 720px column under the shell header.
+// Shelf 09-data "Import bookmarks": a 720px column under the shell header, centred (author).
 :host {
   display: block;
 }
@@ -11,6 +11,7 @@
   gap: var(--space-6);
   width: 100%;
   max-width: rem(720px);
+  margin-inline: auto;
   padding-block-end: var(--space-8);
 }
 
