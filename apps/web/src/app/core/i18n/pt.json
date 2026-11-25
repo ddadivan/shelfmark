@@ -2794,7 +2794,7 @@
         "unknown": "“{{name}}” não é uma das suas tags. Escolha uma da lista."
       },
       "q": {
-        "label": "Palavras da busca",
+        "label": "Busca",
         "placeholder": "Palavras do título, da nota ou do endereço",
         "tooLong": "Use no máximo {{max}} caracteres"
       },
@@ -2812,9 +2812,9 @@
       "showWhere": "Mostrar links em que",
       "saved": {
         "label": "Salvos",
-        "any": "Qualquer data",
-        "month": "Último mês",
-        "week": "Última semana"
+        "any": "Sempre",
+        "month": "30 dias",
+        "week": "7 dias"
       },
       "only": {
         "label": "Só",

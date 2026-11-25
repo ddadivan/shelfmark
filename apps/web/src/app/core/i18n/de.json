@@ -2750,8 +2750,8 @@
       "saved": {
         "label": "Gespeichert",
         "any": "Jederzeit",
-        "month": "Letzter Monat",
-        "week": "Letzte Woche"
+        "month": "30 Tage",
+        "week": "7 Tage"
       },
       "only": {
         "label": "Nur",

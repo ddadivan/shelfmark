@@ -2813,8 +2813,8 @@
       "saved": {
         "label": "Salvati",
         "any": "Sempre",
-        "month": "Ultimo mese",
-        "week": "Ultima settimana"
+        "month": "30 giorni",
+        "week": "7 giorni"
       },
       "only": {
         "label": "Solo",

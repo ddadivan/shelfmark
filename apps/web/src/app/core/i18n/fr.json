@@ -2813,8 +2813,8 @@
       "saved": {
         "label": "Ajouté",
         "any": "Toujours",
-        "month": "Mois dernier",
-        "week": "Semaine dernière"
+        "month": "30 jours",
+        "week": "7 jours"
       },
       "only": {
         "label": "Seulement",
