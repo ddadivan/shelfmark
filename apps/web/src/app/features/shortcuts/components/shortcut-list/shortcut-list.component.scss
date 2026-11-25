@@ -11,20 +11,21 @@
 }
 
 .shortcut-list__row {
+  // Shelf 13-views "Keyboard shortcuts" (`.kr`): 12px text, 5px above and below, the caps at the
+  // end; the author found the 16px rows big and heavy (Nov 25).
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-2);
   align-items: center;
   justify-content: space-between;
-  min-height: rem(44px);
-  padding-block: var(--space-2);
+  padding-block: rem(5px);
 
   & + & {
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--sep);
   }
 }
 
 .shortcut-list__label {
-  @include type(body);
+  @include type(caption);
 
   min-width: 0;
   color: var(--text);
@@ -33,26 +34,24 @@
 .shortcut-list__keys {
   display: flex;
   flex: none;
-  gap: var(--space-1);
+  gap: rem(3px);
   align-items: center;
 }
 
-// Keyboard cap (`kbd` of the search dialog): `--text-muted` on `--bg` is AA in both themes.
+// Key cap (Shelf `sm-kbd`): a 24px `surface-pressed` pill with 12px muted text, no edge.
 .shortcut-list__cap {
   @include type(caption);
 
   display: inline-grid;
   place-items: center;
-  min-width: rem(28px);
-  height: rem(28px);
-  padding: 0 rem(8px);
-  font-family: var(--font-mono);
+  min-width: rem(24px);
+  height: rem(24px);
+  padding: 0 var(--space-2);
   line-height: 1;
   color: var(--text-muted);
   text-align: center;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  background: var(--surface-pressed);
+  border-radius: var(--radius-tile-sm);
 }
 
 .shortcut-list__sr {
