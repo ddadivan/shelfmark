@@ -62,9 +62,8 @@
   }
 }
 
-// The middle scrolls (nav, Pinned, Folders, Tags, the how-it-works card); the logo above and the
-// footer below stay put, so the scrollbar never runs under them (#335). The how-it-works card is
-// pushed to the bottom of this part, right above the footer.
+// The middle scrolls (nav, Pinned, Folders, Tags); the logo above and the
+// footer below stay put, so the scrollbar never runs under them (#335).
 .sidebar__scroll {
   display: flex;
   flex: 1 1 0;
@@ -75,6 +74,9 @@
 
   // Soft edges when the tree scrolls (#352), in the sidebar card's colour.
   @include scroll-fade(var(--sidebar));
+
+  // A focused field (the new tag / folder name) scrolls clear of the bottom fade.
+  scroll-padding-block: rem(24px);
 
   > * {
     flex: none;
@@ -97,11 +99,10 @@
   border-block-start: 1px solid var(--sep);
 }
 
-// "New here? Watch how it works": a section gap under Tags (#315), at the bottom of the middle.
+// "New here? Watch how it works" (Shelf `.foot > .intro`): the first thing of the fixed footer, so
+// it never scrolls with the lists; the card brings its own 8px under it.
 .sidebar__how-it-works {
-  // The card brings its own 8px under it (Shelf reference); it sits right above the footer.
-  margin-block: auto 0;
-  padding-block-start: var(--space-6);
+  padding-block-start: var(--space-2);
 }
 
 // Footer, fixed at the bottom of the card: the "Data & help" row, then Trash under a divider (#335, #387).

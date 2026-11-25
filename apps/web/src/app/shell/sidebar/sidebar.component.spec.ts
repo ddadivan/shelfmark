@@ -4,10 +4,7 @@ import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestKey } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter, Router } from '@angular/router';
-import { REDISCOVER_MODE, THEME_PREFERENCE } from '@shelfmark/contracts';
-import { THEME } from '@shelfmark/ui';
-import { ThemeService } from '../../core/theme/theme.service';
-import { THEME_STORAGE_KEY } from '../../core/theme/models/theme-storage-key.const';
+import { REDISCOVER_MODE } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_LINKS, MOCK_NAME } from '@shelfmark/contracts/testing';
 import { UiButtonHarness, UiMenuHarness, UiTreeItemHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
@@ -263,51 +260,9 @@ describe('SidebarComponent', () => {
     open.mockRestore();
   });
 
-  describe('Theme row (Shelf)', () => {
-    afterEach(() => {
-      localStorage.removeItem(THEME_STORAGE_KEY);
-    });
-
-    it('is the first row of the footer, above Data & help', async () => {
-      const { fixture } = await setup();
-      const names = await rowNames(fixture);
-      expect(names).toContain('Theme');
-      expect(names.indexOf('Theme')).toBeLessThan(names.indexOf('Data & help'));
-    });
-
-    it('switches to Dark and saves it on the account when the theme is light', async () => {
-      const { fixture } = await setup();
-      const save = vi.spyOn(TestBed.inject(UserSettingsStore), 'setAppearance');
-      vi.spyOn(TestBed.inject(ThemeService), 'resolved').mockReturnValue(THEME.Light);
-      await (await treeRow(fixture, 'Theme')).select();
-      expect(save).toHaveBeenCalledExactlyOnceWith({ theme: THEME_PREFERENCE.Dark });
-    });
-
-    it('switches to Light when the theme is dark', async () => {
-      const { fixture } = await setup();
-      const save = vi.spyOn(TestBed.inject(UserSettingsStore), 'setAppearance');
-      vi.spyOn(TestBed.inject(ThemeService), 'resolved').mockReturnValue(THEME.Dark);
-      await (await treeRow(fixture, 'Theme')).select();
-      expect(save).toHaveBeenCalledExactlyOnceWith({ theme: THEME_PREFERENCE.Light });
-    });
-
-    it('is left out on a phone (the You page has Appearance)', async () => {
-      TestBed.configureTestingModule({
-        providers: [
-          {
-            provide: ViewportService,
-            useValue: {
-              phone: signal(true),
-              compact: signal(true),
-              desktop: signal(false),
-              wide: signal(false),
-            },
-          },
-        ],
-      });
-      const { fixture } = await setup();
-      expect(await rowNames(fixture)).not.toContain('Theme');
-    });
+  it('has no Theme row in the footer (Settings has Appearance)', async () => {
+    const { fixture } = await setup();
+    expect(await rowNames(fixture)).not.toContain('Theme');
   });
 
   it('leaves the "Data & help" row out on a phone (the You list has the entries)', async () => {

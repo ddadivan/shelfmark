@@ -5,9 +5,9 @@
 // visible part. Overlay pseudo-elements, sticky to the area's edges, never a mask, so the
 // scrollbar stays crisp; `pointer-events: none`. Where scroll-driven animations exist the top
 // fade shows only once the area is scrolled and the bottom fade goes away at the end (no JS,
-// no movement, so reduced motion needs nothing); without them both are always on, so each fade
-// takes its own room there (like a padding of `$size` at both ends): the first row is not
-// covered at scroll 0, nor the last at the end. Include it
+// no movement, so reduced motion needs nothing); without them there are no fades at all (nothing
+// can tell a scrolled area from one at its start, and a fade over the first row of an area that
+// is not scrolled looked like a stray shadow). Include it
 // in the scroll container itself (`scroll(nearest)` is then the area). The fades take the
 // content width (the area's padding and scrollbar stay clear) and sit at `$layer`: keep sticky
 // bars that must stay on top above it. The keyframes are global (`scroll-fade-keyframes`, in
@@ -16,34 +16,20 @@
 @mixin scroll-fade($bg: var(--bg), $size: rem(24px), $layer: 2, $bottom: true) {
   $edges: if($bottom, '&::before, &::after', '&::before');
 
-  #{$edges} {
-    position: sticky;
-    z-index: $layer;
-    display: block;
-    flex: none;
-    block-size: $size;
-    pointer-events: none;
-    content: '';
-  }
-
-  // Without scroll timelines the fades are always on, so each takes its own room at its end (no
-  // negative margin): the first and last rows stay clear at the two ends of the area.
-  &::before {
-    inset-block-start: 0;
-    background: linear-gradient(to bottom, #{$bg}, transparent);
-  }
-
-  @if $bottom {
-    &::after {
-      inset-block-end: 0;
-      background: linear-gradient(to top, #{$bg}, transparent);
-    }
-  }
-
+  // Only where scroll timelines exist: without them nothing tells a scrolled area from one at
+  // its start, and always-on fades would shade the first row of an area that is not scrolled.
   @supports (animation-timeline: scroll()) {
-    // Hidden unless the timeline says otherwise: an area that does not scroll (inactive
-    // timeline) shows no fades over its last row.
     #{$edges} {
+      position: sticky;
+      z-index: $layer;
+      display: block;
+      flex: none;
+      block-size: $size;
+      pointer-events: none;
+      content: '';
+
+      // Hidden unless the timeline says otherwise: an area that does not scroll (inactive
+      // timeline) shows no fades over its last row.
       opacity: 0;
       animation-timeline: scroll(nearest);
       animation-timing-function: linear;
@@ -52,14 +38,18 @@
 
     // Hidden at the ends, so they lie over the content instead of taking room.
     &::before {
+      inset-block-start: 0;
       margin-block-end: calc(#{$size} * -1);
+      background: linear-gradient(to bottom, #{$bg}, transparent);
       animation-name: ui-scroll-fade-top;
       animation-range: 0 $size;
     }
 
     @if $bottom {
       &::after {
+        inset-block-end: 0;
         margin-block-start: calc(#{$size} * -1);
+        background: linear-gradient(to top, #{$bg}, transparent);
         animation-name: ui-scroll-fade-bottom;
         animation-range: calc(100% - #{$size}) 100%;
       }

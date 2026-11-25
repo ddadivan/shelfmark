@@ -878,7 +878,6 @@
         "movedDown": "Moved down, position {{position}} of {{total}}"
       },
       "extension": "Get the extension",
-      "theme": "Theme",
       "data": "Data & help",
       "dataMenu": "Data and help",
       "toggle": {

@@ -16,5 +16,4 @@ export interface SidebarLabels {
   /** "Get the extension" (#455). */
   extension: string;
   /** "Theme" (Shelf): the footer row that switches Light and Dark. */
-  theme: string;
 }

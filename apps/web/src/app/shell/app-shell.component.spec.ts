@@ -20,8 +20,6 @@ import type { AuthUser } from '@shelfmark/contracts';
 import { APP_LANG } from '../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
-import { THEME_PREFERENCE } from '@shelfmark/contracts';
-import { ThemeService } from '../core/theme/theme.service';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
@@ -400,21 +398,6 @@ describe('AppShellComponent', () => {
         root.querySelectorAll('.shell__sidebar > .shell__add .ui-button--primary'),
       ).toHaveLength(1);
       expect(root.querySelectorAll('.shell__header .ui-button--primary')).toHaveLength(0);
-    });
-
-    it('switches the theme from the sidebar Theme row', async () => {
-      const { harness, root } = await setup(false);
-      const theme = TestBed.inject(ThemeService);
-      theme.setPreference(THEME_PREFERENCE.Light);
-      await harness.fixture.whenStable();
-
-      const row = Array.from(root.querySelectorAll<HTMLElement>('[role="treeitem"]')).find(
-        (item) => item.textContent?.trim() === 'Theme',
-      );
-      row?.click();
-      await harness.fixture.whenStable();
-
-      expect(theme.preference()).toBe(THEME_PREFERENCE.Dark);
     });
 
     const bar = (root: ParentNode) => root.querySelector('ui-tab-bar');

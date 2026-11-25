@@ -709,18 +709,20 @@ describe('scroll-fade (#352)', () => {
     expect(output).not.toMatch(/mask/);
   });
 
-  it('ties the opacity to the scroll where scroll-driven animations exist', () => {
+  it('ties the opacity to the scroll and hides the fades while the area does not scroll', () => {
     expect(output).toContain('@supports (animation-timeline: scroll())');
     expect(output).toContain('animation-timeline: scroll(nearest)');
     expect(output).toContain('animation-name: ui-scroll-fade-top');
     expect(output).toContain('animation-name: ui-scroll-fade-bottom');
+    expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*opacity: 0/);
   });
 
-  it('overlaps the content only where scroll-driven animations exist; else each fade takes room', () => {
-    const [base, timeline] = output.split('@supports (animation-timeline: scroll())');
-    expect(base).not.toContain('margin-block');
-    expect(timeline).toMatch(/\.area::before\s*\{[^}]*margin-block-end: calc\(1\.5rem \* -1\)/);
-    expect(timeline).toMatch(/\.area::after\s*\{[^}]*margin-block-start: calc\(1\.5rem \* -1\)/);
+  it('draws nothing without scroll timelines (no always-on fade over the first row)', () => {
+    const [base] = output.split('@supports (animation-timeline: scroll())');
+    expect(base).not.toContain('::before');
+    expect(base).not.toContain('::after');
+    expect(output).toMatch(/\.area::before\s*\{[^}]*margin-block-end: calc\(1\.5rem \* -1\)/);
+    expect(output).toMatch(/\.area::after\s*\{[^}]*margin-block-start: calc\(1\.5rem \* -1\)/);
   });
 
   it('draws only the top fade with $bottom: false', () => {

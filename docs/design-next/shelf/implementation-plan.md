@@ -248,3 +248,9 @@ From `06-public.html`, `07-extension.html` and `16-landing.html` (with the DS-sc
 - **Vercel Schedules (before deploying the `redesign/shelf-schedules` change):** enable Schedules (beta) for the team, otherwise the deploy fails; then check that the Schedules page lists `notifications` (every 15 minutes), `account-purge` and `ask-history`, and **Run once** `notifications`. Reminders then arrive within about 15 to 30 minutes. Run budget on Hobby and the remaining Cron Jobs: `docs/SETUP.md` 5.12, ADR 0034 amendment 2026-11-25.
 - **Web Push keys in Vercel:** `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (e.g. `mailto:` of the project). Without them the API answers "not configured" for push notifications and sends nothing.
 - **Weekly email:** postponed by the author (Nov 24, 2026): the screen stays as designed with mocked data; delivery needs a mail provider and is not built.
+
+## Sidebar fixes (2026-11-25, `redesign/shelf-fix-sidebar`)
+
+- The desktop sidebar footer has no Theme row any more (author's choice, overrides 01-library); the theme stays in Settings › Appearance. The footer is the "New here? Watch how it works" card (Shelf `.foot > .intro`, so it never scrolls), then Get the extension, Data & help, Trash.
+- The inline new-tag field in the column list is `flex: none` (its `flex-basis: 150px` was a height there); section headings keep 4px between label and chevron (`--space-1`).
+- `scroll-fade` draws nothing without scroll-driven animations (it used to be always on there).
