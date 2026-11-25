@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   AiLineComponent,
+  AskButtonComponent,
   ButtonComponent,
   EmptyStateComponent,
   IconComponent,
@@ -33,6 +34,7 @@ import { SearchAskService } from '../../services/search-ask.service';
   imports: [
     TranslocoPipe,
     AiLineComponent,
+    AskButtonComponent,
     ButtonComponent,
     EmptyStateComponent,
     IconComponent,

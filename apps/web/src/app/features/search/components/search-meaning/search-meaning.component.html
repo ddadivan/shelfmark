@@ -59,9 +59,7 @@
       </ui-button>
     }
     @if (ai.askOn()) {
-      <ui-button variant="ai-ghost" iconLeft="spark" (click)="ask()">
-        {{ 'search.askShelf' | transloco }}
-      </ui-button>
+      <ui-ask-button [label]="'search.askShelf' | transloco" (activated)="ask()" />
     }
   </ui-empty-state>
 }

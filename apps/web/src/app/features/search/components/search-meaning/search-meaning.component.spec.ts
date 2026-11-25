@@ -8,7 +8,7 @@ import {
   type MeaningSearchResponse,
 } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
-import { UiButtonHarness } from '@shelfmark/ui/testing';
+import { UiAskButtonHarness, UiButtonHarness } from '@shelfmark/ui/testing';
 import { of } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
@@ -162,7 +162,9 @@ describe('SearchMeaningComponent', () => {
     expect(element.textContent).toContain('Nothing found');
     expect(element.textContent).toContain('it also searches by meaning');
     await (await loader.getHarness(UiButtonHarness.with({ text: 'Clear search' }))).click();
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Ask your shelf' }))).click();
+    // Ask your shelf is the header's Ask pill (author): the same hover glow, no sage icon.
+    expect(element.querySelector('ui-ask-button')?.textContent).toContain('Ask your shelf');
+    await (await loader.getHarness(UiAskButtonHarness)).click();
 
     expect(filters.clearSearch).toHaveBeenCalledTimes(1);
     expect(asker.ask).toHaveBeenCalledWith('signals talk');
