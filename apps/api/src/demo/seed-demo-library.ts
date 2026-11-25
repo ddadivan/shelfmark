@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import {
   AI_JOB_STATUS,
   deriveLinkKind,
+  linkSiteKey,
   normalizeTagName,
   normalizeUrl,
   SUGGESTION_KIND,
@@ -98,6 +99,7 @@ export async function seedDemoLibrary(
       normalizedUrl: normalizeUrl(link.url),
       title: link.title,
       titleSortKey: link.title.toLowerCase(),
+      host: linkSiteKey(link.url),
       kind: link.kind === undefined ? deriveLinkKind(link.url) : toLinkKind(link.kind),
       note: link.note ?? null,
       isFavorite: link.isFavorite,

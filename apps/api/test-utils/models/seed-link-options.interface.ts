@@ -7,6 +7,7 @@ export interface SeedLinkOptions {
   folderId?: string | null;
   isFavorite?: boolean;
   createdAt?: Date;
+  updatedAt?: Date;
   lastOpenedAt?: Date | null;
   /** Tag names; created for the user when missing. */
   tags?: string[];

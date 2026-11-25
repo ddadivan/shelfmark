@@ -48,6 +48,7 @@ export { isHttpUrl } from './links/is-http-url';
 export { normalizeUrl } from './links/normalize-url';
 export { withDefaultScheme } from './links/with-default-scheme';
 export { linkHost } from './links/link-host';
+export { linkSiteKey } from './links/link-site-key';
 export { LINK_FRAMING } from './links/link-framing.const';
 export type { LinkFraming } from './links/link-framing.type';
 export type { LinkFrameCheckResponse } from './links/link-frame-check-response.interface';

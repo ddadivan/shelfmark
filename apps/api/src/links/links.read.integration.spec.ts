@@ -182,9 +182,23 @@ describe('links API: reads', () => {
       async (sort, order) => {
         const same = new Date('2026-03-01T00:00:00Z');
         // Equal timestamps and equal titles force the id tie-breaker.
-        for (let i = 0; i < 7; i++) await seed({ title: 'Tie', createdAt: same });
+        for (let i = 0; i < 7; i++) {
+          await seed({
+            title: 'Tie',
+            createdAt: same,
+            url: `https://${i % 2 === 0 ? 'www.a' : 'b'}.example.test/${i}`,
+            isFavorite: i % 3 === 0,
+            lastOpenedAt: i % 2 === 0 ? new Date(same.getTime() + (i % 3) * 1000) : null,
+            updatedAt: new Date(same.getTime() + (i % 2) * 1000),
+          });
+        }
         for (let i = 0; i < 5; i++) {
-          await seed({ title: `T${i % 3}`, createdAt: new Date(same.getTime() + i * 1000) });
+          await seed({
+            title: `T${i % 3}`,
+            createdAt: new Date(same.getTime() + i * 1000),
+            isFavorite: i === 1,
+            lastOpenedAt: i === 4 ? same : null,
+          });
         }
         await seed({ title: 'Ünï', createdAt: new Date(same.getTime() - 1000) });
 
@@ -226,6 +240,73 @@ describe('links API: reads', () => {
       await seed({ title: 'Apple' });
       await seed({ title: 'cherry' });
       expect(titles(await list(a, '?sort=title&order=asc'))).toEqual(['Apple', 'banana', 'cherry']);
+    });
+
+    it('sorts by recently opened, never-opened links last, in both directions', async () => {
+      await seed({ title: 'never-1' });
+      await seed({ title: 'old', lastOpenedAt: daysAgo(5) });
+      await seed({ title: 'new', lastOpenedAt: daysAgo(1) });
+      await seed({ title: 'never-2' });
+      await seed({ title: 'foreign', lastOpenedAt: daysAgo(0) }, users.intruder);
+      const desc = titles(await list(a, '?sort=lastOpenedAt&order=desc'));
+      expect(desc.slice(0, 2)).toEqual(['new', 'old']);
+      expect(desc.slice(2).sort()).toEqual(['never-1', 'never-2']);
+      const asc = titles(await list(a, '?sort=lastOpenedAt&order=asc'));
+      expect(asc.slice(0, 2)).toEqual(['old', 'new']);
+      expect(asc).toHaveLength(4);
+    });
+
+    it('sorts by site (www. ignored), then title', async () => {
+      await seed({ title: 'z', url: 'https://www.apple.test/1' });
+      await seed({ title: 'b', url: 'https://banana.test/1' });
+      await seed({ title: 'a', url: 'https://banana.test/2' });
+      await seed({ title: 'c', url: 'https://Cherry.test/1' });
+      await seed({ title: 'other', url: 'https://aaa.test/1' }, users.intruder);
+      expect(titles(await list(a, '?sort=host&order=asc'))).toEqual(['z', 'a', 'b', 'c']);
+      expect(titles(await list(a, '?sort=host&order=desc'))).toEqual(['c', 'b', 'a', 'z']);
+    });
+
+    it('sorts by recently edited and favorites first', async () => {
+      await seed({ title: 'edited-old', updatedAt: new Date('2026-01-01T00:00:00Z') });
+      await seed({ title: 'edited-new', updatedAt: new Date('2026-03-01T00:00:00Z') });
+      await seed({
+        title: 'fav-old',
+        isFavorite: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-02-01T00:00:00Z'),
+      });
+      await seed({
+        title: 'fav-new',
+        isFavorite: true,
+        createdAt: new Date('2026-02-01T00:00:00Z'),
+        updatedAt: new Date('2026-02-02T00:00:00Z'),
+      });
+      expect(titles(await list(a, '?sort=updatedAt&order=desc'))).toEqual([
+        'edited-new',
+        'fav-new',
+        'fav-old',
+        'edited-old',
+      ]);
+      const favoritesFirst = titles(await list(a, '?sort=favorite&order=desc'));
+      expect(favoritesFirst.slice(0, 2)).toEqual(['fav-new', 'fav-old']);
+    });
+
+    it('moves a link to the top of recently edited when it is edited, and keeps the site in sync', async () => {
+      const first = await seed({ title: 'first', updatedAt: new Date('2026-01-01T00:00:00Z') });
+      await seed({ title: 'second', updatedAt: new Date('2026-02-01T00:00:00Z') });
+      await a.patch(`${BASE}/${first}`).send({ note: 'edited' }).expect(200);
+      expect(titles(await list(a, '?sort=updatedAt&order=desc'))[0]).toBe('first');
+      await a.patch(`${BASE}/${first}`).send({ url: 'https://www.zzz-site.test/x' }).expect(200);
+      const row = await t.db.prisma.link.findUniqueOrThrow({ where: { id: first } });
+      expect(row.host).toBe('zzz-site.test');
+    });
+
+    it('rejects a cursor of one of the new sorts used for another sort', async () => {
+      await seed({ title: 'a', lastOpenedAt: daysAgo(1) });
+      await seed({ title: 'b', lastOpenedAt: daysAgo(2) });
+      const cursor = (await list(a, '?sort=lastOpenedAt&limit=1')).nextCursor ?? '';
+      await a.get(`${BASE}?sort=host&limit=1&cursor=${cursor}`).expect(400);
+      await a.get(`${BASE}?sort=lastOpenedAt&limit=1&cursor=${cursor}`).expect(200);
     });
 
     it('rejects bad limits and cursors', async () => {

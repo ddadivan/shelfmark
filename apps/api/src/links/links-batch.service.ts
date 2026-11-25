@@ -12,6 +12,7 @@ import {
   type LinkBatchItemError,
   type LinkResponse,
   deriveLinkKind,
+  linkSiteKey,
 } from '@shelfmark/contracts';
 import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
@@ -218,6 +219,7 @@ export class LinksBatchService {
           normalizedUrl: entry.normalizedUrl,
           title,
           titleSortKey: title.toLowerCase(),
+          host: linkSiteKey(item.url),
           // Like a single save: the type comes from known hosts (no page is fetched here).
           kind: deriveLinkKind(item.url),
           faviconSourceUrl: item.faviconUrl ?? null,
