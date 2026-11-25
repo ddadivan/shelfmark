@@ -94,6 +94,16 @@
       $bleed: calc(var(--space-1) * -1)
     );
 
+    // Headlines are one surface panel: the fade takes the panel's colour and stays inside its
+    // 1px side borders, so no page-coloured band shows over the rows (author, Nov 25).
+    &:has(> .library__rows--headlines) {
+      --feed-fade-bg: var(--surface);
+
+      &::before {
+        margin-inline: rem(1px);
+      }
+    }
+
     // Focusable by script and by a click (so the keys scroll it), but not a tab stop; the cards
     // inside are the focus targets, so no ring on the area itself.
     &:focus {

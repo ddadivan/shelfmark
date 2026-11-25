@@ -128,6 +128,9 @@
 
 // Headlines (Shelf LinkRow): the rows are one L1 panel with hairline dividers, no gaps.
 .library__rows--headlines {
+  // The clip (for the rounded corners) would let the flex column shrink the panel to the scroll
+  // area's height, cutting the rows below and leaving nothing to scroll: keep its own height.
+  flex-shrink: 0;
   gap: 0;
   overflow: hidden;
   background: var(--surface);
