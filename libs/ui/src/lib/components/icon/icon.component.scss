@@ -2,26 +2,64 @@
 
 // `--ui-icon-size` lets a context (a dialog) set one size for the icons of its controls;
 // `--ui-icon-scale` (unitless, default 1) multiplies it (`ui-button` passes `--ui-button-scale`).
+// Whole pixels: a size that falls between device pixels (20px, or 24px at a 112.5% root, every size
+// at 90%) puts the edges of the drawing on fractional pixels and blurs it, so where the engine
+// has `round()` the size is rounded to an even number of pixels (even, so an icon centred in an
+// even box stays on whole pixels).
+@mixin icon-size($size) {
+  $calc: calc(var(--ui-icon-size, #{$size}) * var(--ui-icon-scale, 1));
+
+  width: $calc;
+  height: $calc;
+
+  @supports (width: round(nearest, 1.5px, 2px)) {
+    // stylelint-disable-next-line unit-disallowed-list -- the rounding step is a device pixel, not a design size
+    width: round(nearest, $calc, 2px);
+
+    // stylelint-disable-next-line unit-disallowed-list -- the rounding step is a device pixel, not a design size
+    height: round(nearest, $calc, 2px);
+  }
+}
+
 :host {
+  @include icon-size(var(--icon-size-lg));
+
   display: inline-flex;
   flex: none;
-  width: calc(var(--ui-icon-size, var(--icon-size-lg)) * var(--ui-icon-scale, 1));
-  height: calc(var(--ui-icon-size, var(--icon-size-lg)) * var(--ui-icon-scale, 1));
   color: inherit;
   line-height: 0;
+
+  // The 16px drawing is chosen by the drawn size (see the component doc), so the host is the
+  // size container of its own SVGs.
+  container: ui-icon / size;
 }
 
 :host(.ui-icon--20) {
-  width: calc(var(--ui-icon-size, var(--icon-size-md)) * var(--ui-icon-scale, 1));
-  height: calc(var(--ui-icon-size, var(--icon-size-md)) * var(--ui-icon-scale, 1));
+  @include icon-size(var(--icon-size-md));
 }
 
 :host(.ui-icon--16) {
-  width: calc(var(--ui-icon-size, var(--icon-size-sm)) * var(--ui-icon-scale, 1));
-  height: calc(var(--ui-icon-size, var(--icon-size-sm)) * var(--ui-icon-scale, 1));
+  @include icon-size(var(--icon-size-sm));
 }
 
 .ui-icon__svg {
+  display: block;
   width: 100%;
   height: 100%;
+}
+
+.ui-icon__svg--16 {
+  display: none;
+}
+
+// Up to 18px at the default root size (16px = 1rem, 20px = 1.25rem; rem keeps the cut-off
+// between the two where it is under every text size).
+@container ui-icon (max-width: #{rem(18px)}) {
+  .ui-icon__svg--16 {
+    display: block;
+  }
+
+  .ui-icon__svg--24 {
+    display: none;
+  }
 }

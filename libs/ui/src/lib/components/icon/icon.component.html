@@ -1,1 +1,8 @@
-<svg class="ui-icon__svg" fill="currentColor" focusable="false"><use [attr.href]="href()" /></svg>
+<svg class="ui-icon__svg ui-icon__svg--24" fill="currentColor" focusable="false">
+  <use [attr.href]="href()" />
+</svg>
+@if (href16(); as small) {
+  <svg class="ui-icon__svg ui-icon__svg--16" fill="currentColor" focusable="false">
+    <use [attr.href]="small" />
+  </svg>
+}

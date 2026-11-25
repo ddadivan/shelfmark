@@ -177,11 +177,14 @@ describe('ButtonComponent', () => {
     host.iconLeft.set('add');
     host.iconRight.set('chevron-down');
     await settle();
+    // Every `ui-icon` draws its 24px symbol and, for these two, the 16px one the container query shows.
     const hrefs = [...root.querySelectorAll('use')].map((u) => u.getAttribute('href'));
 
     expect(hrefs).toEqual([
       'assets/ui/icons/sprite.svg#sm-add',
+      'assets/ui/icons/sprite.svg#sm-add-16',
       'assets/ui/icons/sprite.svg#sm-chevron-down',
+      'assets/ui/icons/sprite.svg#sm-chevron-down-16',
     ]);
   });
 

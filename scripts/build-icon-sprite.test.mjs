@@ -4,7 +4,13 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { buildNamesFile, buildSprite, optimizeIcon } from './build-icon-sprite.mjs';
+import {
+  buildNames16File,
+  buildNamesFile,
+  buildSprite,
+  iconNames16,
+  optimizeIcon,
+} from './build-icon-sprite.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const wrap = (inner, attributes = '') =>
@@ -59,7 +65,7 @@ test('every source file builds and the committed output is fresh', () => {
   assert.ok(sources.length >= 46);
   execFileSync('node', [join(ROOT, 'scripts/build-icon-sprite.mjs'), '--check'], { stdio: 'pipe' });
   const sprite = readFileSync(join(ROOT, 'libs/ui/src/assets/icons/sprite.svg'), 'utf8');
-  assert.equal(sprite.match(/<symbol /g)?.length, sources.length);
+  assert.equal(sprite.match(/<symbol /g)?.length, sources.length + iconNames16().length);
 });
 
 test('strips nested comment markers to a fixed point and refuses leftovers', () => {
@@ -71,5 +77,36 @@ test('strips nested comment markers to a fixed point and refuses leftovers', () 
   assert.throws(
     () => optimizeIcon('add', wrap('<!<!-- x --><path d="M0 0h1"/>')),
     /must be removable/,
+  );
+});
+
+const wrap16 = (inner) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">${inner}</svg>`;
+
+test('emits sm-<name>-16 symbols on the 16px grid after the 24px ones', () => {
+  const sprite = buildSprite(
+    ['a', 'b'],
+    () => wrap('<path d="M0 0"/>'),
+    ['b'],
+    () => wrap16('<path d="M1 1"/>'),
+  );
+  assert.ok(
+    sprite.endsWith(
+      '<symbol id="sm-b" viewBox="0 0 24 24"><path d="M0 0"/></symbol><symbol id="sm-b-16" viewBox="0 0 16 16"><path d="M1 1"/></symbol></svg>\n',
+    ),
+  );
+  assert.match(buildNames16File(['b']), /ICON_NAMES_16 = \[\n {2}'b',\n\] as const;/);
+});
+
+test('a 16px file needs a 24px source and the 16px grid, and keeps the allowlist', () => {
+  const read = () => wrap('<path d="M0 0"/>');
+  assert.throws(
+    () => buildSprite(['a'], read, ['z'], () => wrap16('<path d="M0 0"/>')),
+    /no 24px source/,
+  );
+  assert.throws(() => buildSprite(['a'], read, ['a'], read), /viewBox must be "0 0 16 16"/);
+  assert.throws(
+    () => buildSprite(['a'], read, ['a'], () => wrap16('<path d="M0 0" stroke="red"/>')),
+    /filled outlines/,
   );
 });

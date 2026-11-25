@@ -32,7 +32,8 @@
       ],
       "outputs": [
         "{workspaceRoot}/libs/ui/src/assets/icons/sprite.svg",
-        "{workspaceRoot}/libs/ui/src/lib/components/icon/models/icon-names.const.ts"
+        "{workspaceRoot}/libs/ui/src/lib/components/icon/models/icon-names.const.ts",
+        "{workspaceRoot}/libs/ui/src/lib/components/icon/models/icon-names-16.const.ts"
       ],
       "options": {
         "command": "node scripts/build-icon-sprite.mjs",

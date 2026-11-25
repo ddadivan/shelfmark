@@ -36,6 +36,25 @@ describe('IconComponent', () => {
     );
   });
 
+  it('draws the 24px symbol and, when one exists, the 16px symbol (the drawn size picks)', () => {
+    const host = render({ name: 'search', size: 16 });
+    const uses = [...host.querySelectorAll('use')].map((use) => use.getAttribute('href'));
+
+    expect(uses).toEqual([
+      'assets/ui/icons/sprite.svg#sm-search',
+      'assets/ui/icons/sprite.svg#sm-search-16',
+    ]);
+    expect(host.classList.contains('ui-icon--has-16')).toBe(true);
+    expect(host.querySelector('.ui-icon__svg--16')).not.toBeNull();
+  });
+
+  it('has only the 24px symbol for a brand mark', () => {
+    const host = render({ name: 'google', size: 16 });
+
+    expect(host.querySelectorAll('use')).toHaveLength(1);
+    expect(host.classList.contains('ui-icon--has-16')).toBe(false);
+  });
+
   it('is decorative without a label', () => {
     const host = render({ name: 'add' });
 
