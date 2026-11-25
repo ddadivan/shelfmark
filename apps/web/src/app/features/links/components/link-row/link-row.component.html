@@ -3,6 +3,7 @@
   [newTab]="newTab()"
   [reveal]="reveal()"
   [headline]="headline()"
+  [actionsPinned]="menu.isOpen()"
   [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
   [checked]="selected()"
   [selecting]="selecting()"

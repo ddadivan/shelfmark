@@ -54,6 +54,7 @@ let nextId = 0;
     '[class.ui-list-item--compact]': 'compact()',
     '[class.ui-list-item--tile]': 'tile()',
     '[class.ui-list-item--headline]': 'headline()',
+    '[class.ui-list-item--pinned]': 'actionsPinned()',
     '[class.ui-list-item--reveal]': 'reveal()',
   },
   templateUrl: './list-item.component.html',
@@ -88,6 +89,11 @@ export class ListItemComponent {
    * on hover and focus (always on touch). `selected` is `accent-bg`.
    */
   readonly headline = input(false, { transform: booleanAttribute });
+  /**
+   * Keeps the row highlighted and its `trailing` controls shown while one of them has a menu open
+   * (the pointer may have left the row), like `ui-card` `actionsPinned`.
+   */
+  readonly actionsPinned = input(false, { transform: booleanAttribute });
   /**
    * Preview image URL. Setting it (even to an empty string) reserves the 56 x 40 thumb: the
    * image when it loads, a picture icon when it is empty or fails. Unset: no thumb.
