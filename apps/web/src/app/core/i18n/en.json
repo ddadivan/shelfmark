@@ -727,47 +727,47 @@
       },
       "or": "or",
       "tiles": {
-        "signalForms": {
-          "title": "Angular in 100 Seconds"
+        "stretching": {
+          "title": "A ten-minute morning stretch"
         },
         "woolCoat": {
-          "title": "The Ojai Jacket"
+          "title": "Wool coat, straight cut"
         },
-        "nestjs": {
-          "title": "Microservices explained"
+        "photography": {
+          "title": "Photography basics in four weeks"
         },
         "ramen": {
           "title": "The best weeknight ramen"
         },
-        "zoneless": {
-          "title": "Zoneless change detection, explained"
+        "balcony": {
+          "title": "Small balcony garden ideas"
         },
         "lisbon": {
           "title": "Lisbon in May: a long weekend"
         },
-        "icons": {
-          "title": "Excalidraw"
+        "palettes": {
+          "title": "Colour palettes from old travel posters"
         },
-        "grid": {
-          "title": "A complete guide to CSS grid"
+        "watercolour": {
+          "title": "Watercolour for complete beginners"
         },
         "sourdough": {
           "title": "Beginner sourdough, step by step"
         },
         "sneakers": {
-          "title": "Tree Runners – Thunder Green"
+          "title": "Minimal leather sneakers"
         },
-        "typeScale": {
-          "title": "Type scales that actually work"
+        "framing": {
+          "title": "How to frame prints at home"
         },
         "kyoto": {
-          "title": "Optimistic Nihilism"
+          "title": "Kyoto away from the crowds"
         },
-        "containerQueries": {
-          "title": "Container queries in practice"
+        "boardGames": {
+          "title": "Board games for two players"
         },
         "linenShirt": {
-          "title": "The Crater Shirt in Denver Plaid"
+          "title": "Linen shirt in sage green"
         },
         "bikepacking": {
           "title": "Bikepacking the Dolomites in five days"
@@ -775,20 +775,20 @@
         "typefaces": {
           "title": "How to pair two typefaces"
         },
-        "rxjs": {
-          "title": "But what is a neural network?"
+        "houseplants": {
+          "title": "Houseplants that like a north window"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe without the clumps"
         },
         "standingDesk": {
-          "title": "Tree Dasher 2 – Natural White"
+          "title": "The best standing desks, tested"
         },
-        "contrast": {
-          "title": "A practical guide to color contrast"
+        "paint": {
+          "title": "Paint colours for a small room"
         },
-        "hydration": {
-          "title": "Hydration and incremental rendering"
+        "running": {
+          "title": "Start running without getting hurt"
         },
         "ferry": {
           "title": "Hidden beaches you can reach by ferry"
@@ -796,13 +796,15 @@
       },
       "tags": {
         "video": "video",
-        "angular": "angular",
         "shopping": "shopping",
         "course": "course",
         "recipes": "recipes",
         "travel": "travel",
         "design": "design",
-        "css": "css"
+        "fitness": "fitness",
+        "home": "home",
+        "sport": "sport",
+        "games": "games"
       },
       "privacyBefore": "By continuing you agree to the",
       "privacyLink": "privacy policy",

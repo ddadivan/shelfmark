@@ -740,47 +740,47 @@
       },
       "or": "ou",
       "tiles": {
-        "signalForms": {
-          "title": "Angular in 100 Seconds"
+        "stretching": {
+          "title": "Dix minutes d’étirements le matin"
         },
         "woolCoat": {
-          "title": "The Ojai Jacket"
+          "title": "Manteau en laine, coupe droite"
         },
-        "nestjs": {
-          "title": "Microservices explained"
+        "photography": {
+          "title": "Les bases de la photo en quatre semaines"
         },
         "ramen": {
           "title": "Les meilleurs ramen de la semaine"
         },
-        "zoneless": {
-          "title": "La détection de changements sans zone, expliquée"
+        "balcony": {
+          "title": "Idées de jardin pour petit balcon"
         },
         "lisbon": {
           "title": "Lisbonne en mai : un long week-end"
         },
-        "icons": {
-          "title": "Excalidraw"
+        "palettes": {
+          "title": "Des palettes tirées de vieilles affiches de voyage"
         },
-        "grid": {
-          "title": "Le guide complet de CSS grid"
+        "watercolour": {
+          "title": "L’aquarelle pour grands débutants"
         },
         "sourdough": {
           "title": "Pain au levain pour débutants, pas à pas"
         },
         "sneakers": {
-          "title": "Tree Runners – Thunder Green"
+          "title": "Baskets minimalistes en cuir"
         },
-        "typeScale": {
-          "title": "Des échelles typographiques qui marchent"
+        "framing": {
+          "title": "Encadrer ses affiches soi-même"
         },
         "kyoto": {
-          "title": "Optimistic Nihilism"
+          "title": "Kyoto loin de la foule"
         },
-        "containerQueries": {
-          "title": "Les container queries en pratique"
+        "boardGames": {
+          "title": "Jeux de société à deux"
         },
         "linenShirt": {
-          "title": "The Crater Shirt in Denver Plaid"
+          "title": "Chemise en lin vert sauge"
         },
         "bikepacking": {
           "title": "Les Dolomites à vélo en cinq jours"
@@ -788,20 +788,20 @@
         "typefaces": {
           "title": "Comment associer deux polices"
         },
-        "rxjs": {
-          "title": "But what is a neural network?"
+        "houseplants": {
+          "title": "Plantes d’intérieur pour une fenêtre au nord"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe sans grumeaux"
         },
         "standingDesk": {
-          "title": "Tree Dasher 2 – Natural White"
+          "title": "Les meilleurs bureaux assis-debout, testés"
         },
-        "contrast": {
-          "title": "Guide pratique du contraste des couleurs"
+        "paint": {
+          "title": "Quelles couleurs pour une petite pièce"
         },
-        "hydration": {
-          "title": "Hydratation et rendu incrémental"
+        "running": {
+          "title": "Commencer à courir sans se blesser"
         },
         "ferry": {
           "title": "Plages secrètes accessibles en ferry"
@@ -809,13 +809,15 @@
       },
       "tags": {
         "video": "vidéo",
-        "angular": "angular",
         "shopping": "achats",
         "course": "cours",
         "recipes": "recettes",
         "travel": "voyage",
         "design": "design",
-        "css": "css"
+        "fitness": "forme",
+        "home": "maison",
+        "sport": "sport",
+        "games": "jeux"
       },
       "privacyBefore": "En continuant, vous acceptez la",
       "privacyLink": "politique de confidentialité",

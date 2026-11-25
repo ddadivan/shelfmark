@@ -753,47 +753,47 @@
       },
       "or": "або",
       "tiles": {
-        "signalForms": {
-          "title": "Angular in 100 Seconds"
+        "stretching": {
+          "title": "Десятихвилинна ранкова розтяжка"
         },
         "woolCoat": {
-          "title": "The Ojai Jacket"
+          "title": "Вовняне пальто прямого крою"
         },
-        "nestjs": {
-          "title": "Microservices explained"
+        "photography": {
+          "title": "Основи фотографії за чотири тижні"
         },
         "ramen": {
           "title": "Найкращий рамен на будній вечір"
         },
-        "zoneless": {
-          "title": "Zoneless change detection простими словами"
+        "balcony": {
+          "title": "Ідеї для садочка на маленькому балконі"
         },
         "lisbon": {
           "title": "Лісабон у травні: довгі вихідні"
         },
-        "icons": {
-          "title": "Excalidraw"
+        "palettes": {
+          "title": "Палітри зі старих туристичних постерів"
         },
-        "grid": {
-          "title": "Повний посібник із CSS grid"
+        "watercolour": {
+          "title": "Акварель для повних новачків"
         },
         "sourdough": {
           "title": "Хліб на заквасці для початківців, крок за кроком"
         },
         "sneakers": {
-          "title": "Tree Runners – Thunder Green"
+          "title": "Мінімалістичні шкіряні кеди"
         },
-        "typeScale": {
-          "title": "Типографічні шкали, які справді працюють"
+        "framing": {
+          "title": "Як оформити постер у рамку вдома"
         },
         "kyoto": {
-          "title": "Optimistic Nihilism"
+          "title": "Кіото подалі від натовпів"
         },
-        "containerQueries": {
-          "title": "Container queries на практиці"
+        "boardGames": {
+          "title": "Настільні ігри на двох"
         },
         "linenShirt": {
-          "title": "The Crater Shirt in Denver Plaid"
+          "title": "Лляна сорочка шавлієвого кольору"
         },
         "bikepacking": {
           "title": "Байкпекінг Доломітами за п’ять днів"
@@ -801,20 +801,20 @@
         "typefaces": {
           "title": "Як поєднати два шрифти"
         },
-        "rxjs": {
-          "title": "But what is a neural network?"
+        "houseplants": {
+          "title": "Кімнатні рослини для північного вікна"
         },
         "cacioEPepe": {
           "title": "Качо е пепе без грудочок"
         },
         "standingDesk": {
-          "title": "Tree Dasher 2 – Natural White"
+          "title": "Найкращі столи для роботи стоячи, перевірено"
         },
-        "contrast": {
-          "title": "Практичний посібник із контрасту кольорів"
+        "paint": {
+          "title": "Кольори фарби для маленької кімнати"
         },
-        "hydration": {
-          "title": "Гідратація та інкрементальний рендеринг"
+        "running": {
+          "title": "Почати бігати й не травмуватися"
         },
         "ferry": {
           "title": "Приховані пляжі, до яких можна дістатися поромом"
@@ -822,13 +822,15 @@
       },
       "tags": {
         "video": "відео",
-        "angular": "angular",
         "shopping": "покупки",
         "course": "курс",
         "recipes": "рецепти",
         "travel": "подорожі",
         "design": "дизайн",
-        "css": "css"
+        "fitness": "фітнес",
+        "home": "дім",
+        "sport": "спорт",
+        "games": "ігри"
       },
       "privacyBefore": "Продовжуючи, ви погоджуєтеся з",
       "privacyLink": "політикою конфіденційності",

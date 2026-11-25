@@ -23,19 +23,13 @@
         <div class="sd-fly">
           <div class="sd-float">
             <div class="sd-tilt">
-              <ui-card
-                [headingLevel]="3"
-                [image]="item.card.image?.src"
-                [imageRatio]="
-                  item.card.image ? item.card.image.width / item.card.image.height : undefined
-                "
-                [media]="item.card.product ? CARD_MEDIA.Contain : CARD_MEDIA.Cover"
-                [placeholderTone]="item.card.tone"
-              >
-                <span slot="title">{{
-                  'auth.signIn.tiles.' + item.card.id + '.title' | transloco
-                }}</span>
-              </ui-card>
+              <app-link-preview-card
+                [title]="'auth.signIn.tiles.' + item.card.id + '.title' | transloco"
+                [host]="item.card.host"
+                [daysAgo]="item.card.daysAgo"
+                [tone]="item.card.tone"
+                [tags]="item.tags"
+              />
               <span class="sd-ring"></span>
             </div>
           </div>

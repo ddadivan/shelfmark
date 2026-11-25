@@ -727,47 +727,47 @@
       },
       "or": "oder",
       "tiles": {
-        "signalForms": {
-          "title": "Angular in 100 Seconds"
+        "stretching": {
+          "title": "Zehn Minuten Dehnen am Morgen"
         },
         "woolCoat": {
-          "title": "The Ojai Jacket"
+          "title": "Wollmantel, gerader Schnitt"
         },
-        "nestjs": {
-          "title": "Microservices explained"
+        "photography": {
+          "title": "Fotografie-Grundlagen in vier Wochen"
         },
         "ramen": {
           "title": "Die besten Ramen für unter der Woche"
         },
-        "zoneless": {
-          "title": "Zoneless Change Detection erklärt"
+        "balcony": {
+          "title": "Ideen für den kleinen Balkongarten"
         },
         "lisbon": {
           "title": "Lissabon im Mai: ein langes Wochenende"
         },
-        "icons": {
-          "title": "Excalidraw"
+        "palettes": {
+          "title": "Farbpaletten aus alten Reiseplakaten"
         },
-        "grid": {
-          "title": "Der komplette Guide zu CSS Grid"
+        "watercolour": {
+          "title": "Aquarell für absolute Anfänger"
         },
         "sourdough": {
           "title": "Sauerteigbrot für Anfänger, Schritt für Schritt"
         },
         "sneakers": {
-          "title": "Tree Runners – Thunder Green"
+          "title": "Minimalistische Ledersneaker"
         },
-        "typeScale": {
-          "title": "Typo-Skalen, die wirklich funktionieren"
+        "framing": {
+          "title": "Poster zu Hause selbst rahmen"
         },
         "kyoto": {
-          "title": "Optimistic Nihilism"
+          "title": "Kyoto abseits der Massen"
         },
-        "containerQueries": {
-          "title": "Container Queries in der Praxis"
+        "boardGames": {
+          "title": "Brettspiele für zwei"
         },
         "linenShirt": {
-          "title": "The Crater Shirt in Denver Plaid"
+          "title": "Leinenhemd in Salbeigrün"
         },
         "bikepacking": {
           "title": "Fünf Tage mit dem Rad durch die Dolomiten"
@@ -775,20 +775,20 @@
         "typefaces": {
           "title": "Zwei Schriften richtig kombinieren"
         },
-        "rxjs": {
-          "title": "But what is a neural network?"
+        "houseplants": {
+          "title": "Zimmerpflanzen für ein Nordfenster"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe ohne Klumpen"
         },
         "standingDesk": {
-          "title": "Tree Dasher 2 – Natural White"
+          "title": "Die besten Stehpulte im Test"
         },
-        "contrast": {
-          "title": "Ein praktischer Leitfaden zum Farbkontrast"
+        "paint": {
+          "title": "Wandfarben für ein kleines Zimmer"
         },
-        "hydration": {
-          "title": "Hydration und inkrementelles Rendering"
+        "running": {
+          "title": "Mit dem Laufen anfangen, ohne sich zu verletzen"
         },
         "ferry": {
           "title": "Versteckte Strände, die man per Fähre erreicht"
@@ -796,13 +796,15 @@
       },
       "tags": {
         "video": "Video",
-        "angular": "Angular",
         "shopping": "Einkauf",
         "course": "Kurs",
         "recipes": "Rezepte",
         "travel": "Reisen",
         "design": "Design",
-        "css": "CSS"
+        "fitness": "fitness",
+        "home": "zuhause",
+        "sport": "sport",
+        "games": "spiele"
       },
       "privacyBefore": "Mit dem Fortfahren stimmst du der",
       "privacyLink": "Datenschutzerklärung",

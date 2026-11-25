@@ -740,47 +740,47 @@
       },
       "or": "o",
       "tiles": {
-        "signalForms": {
-          "title": "Angular in 100 Seconds"
+        "stretching": {
+          "title": "Diez minutos de estiramientos por la mañana"
         },
         "woolCoat": {
-          "title": "The Ojai Jacket"
+          "title": "Abrigo de lana, corte recto"
         },
-        "nestjs": {
-          "title": "Microservices explained"
+        "photography": {
+          "title": "Fotografía básica en cuatro semanas"
         },
         "ramen": {
           "title": "El mejor ramen para entre semana"
         },
-        "zoneless": {
-          "title": "La detección de cambios sin zonas, explicada"
+        "balcony": {
+          "title": "Ideas para un jardín en un balcón pequeño"
         },
         "lisbon": {
           "title": "Lisboa en mayo: un fin de semana largo"
         },
-        "icons": {
-          "title": "Excalidraw"
+        "palettes": {
+          "title": "Paletas de color de viejos carteles de viaje"
         },
-        "grid": {
-          "title": "La guía completa de CSS grid"
+        "watercolour": {
+          "title": "Acuarela para principiantes absolutos"
         },
         "sourdough": {
           "title": "Pan de masa madre para principiantes, paso a paso"
         },
         "sneakers": {
-          "title": "Tree Runners – Thunder Green"
+          "title": "Zapatillas de cuero minimalistas"
         },
-        "typeScale": {
-          "title": "Escalas tipográficas que funcionan de verdad"
+        "framing": {
+          "title": "Cómo enmarcar láminas en casa"
         },
         "kyoto": {
-          "title": "Optimistic Nihilism"
+          "title": "Kioto lejos de las multitudes"
         },
-        "containerQueries": {
-          "title": "Container queries en la práctica"
+        "boardGames": {
+          "title": "Juegos de mesa para dos"
         },
         "linenShirt": {
-          "title": "The Crater Shirt in Denver Plaid"
+          "title": "Camisa de lino verde salvia"
         },
         "bikepacking": {
           "title": "Las Dolomitas en bicicleta en cinco días"
@@ -788,20 +788,20 @@
         "typefaces": {
           "title": "Cómo combinar dos tipografías"
         },
-        "rxjs": {
-          "title": "But what is a neural network?"
+        "houseplants": {
+          "title": "Plantas de interior para una ventana al norte"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe sin grumos"
         },
         "standingDesk": {
-          "title": "Tree Dasher 2 – Natural White"
+          "title": "Los mejores escritorios elevables, probados"
         },
-        "contrast": {
-          "title": "Guía práctica del contraste de color"
+        "paint": {
+          "title": "Colores de pintura para una habitación pequeña"
         },
-        "hydration": {
-          "title": "Hidratación y renderizado incremental"
+        "running": {
+          "title": "Empezar a correr sin lesionarse"
         },
         "ferry": {
           "title": "Playas escondidas a las que se llega en ferry"
@@ -809,13 +809,15 @@
       },
       "tags": {
         "video": "vídeo",
-        "angular": "angular",
         "shopping": "compras",
         "course": "curso",
         "recipes": "recetas",
         "travel": "viajes",
         "design": "diseño",
-        "css": "css"
+        "fitness": "ejercicio",
+        "home": "hogar",
+        "sport": "deporte",
+        "games": "juegos"
       },
       "privacyBefore": "Al continuar aceptas la",
       "privacyLink": "política de privacidad",

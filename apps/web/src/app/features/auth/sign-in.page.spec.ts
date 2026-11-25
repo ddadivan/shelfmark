@@ -113,7 +113,7 @@ describe('SignInPage', () => {
     expect(drift?.getAttribute('aria-hidden')).toBe('true');
     expect(drift?.hasAttribute('inert')).toBe(true);
     expect(drift?.querySelectorAll('.sd-card')).toHaveLength(14);
-    expect(drift?.textContent).toContain('Angular in 100 Seconds');
+    expect(drift?.textContent).toContain('A ten-minute morning stretch');
   });
 
   it('shows the card alone below 64em, with the "or" divider (Shelf 06-public)', async () => {
