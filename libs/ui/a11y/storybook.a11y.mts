@@ -44,6 +44,13 @@ const DOCS_AXE_EXCLUDES: readonly string[] = [
 // still checked for `landmark-unique` on its own page.
 const DOCS_AXE_DISABLED_RULES: readonly string[] = ['landmark-unique'];
 
+// Author-accepted contrast gap (ADR 0061 point 7, libs/ui/CLAUDE.md): `--text-muted` on `--pick`
+// (the selected card and list row) is 4.42:1 light / 4.49:1 dark. Only `color-contrast` nodes with
+// exactly that foreground and background pair are dropped; every other contrast failure still fails.
+const ACCEPTED_CONTRAST_PAIRS: readonly (readonly [string, string])[] = [
+  ['--text-muted', '--pick'],
+];
+
 function loadStories(): IndexEntry[] {
   const file = new URL('../storybook-static/index.json', import.meta.url);
   const index = JSON.parse(readFileSync(file, 'utf8')) as { entries: Record<string, IndexEntry> };
@@ -122,10 +129,31 @@ for (const story of stories) {
                 // The Storybook a11y addon runs its own axe on render; axe allows one run at a time.
                 for (let attempt = 0; attempt < 25; attempt++) {
                   try {
-                    return await axe.run(context, {
+                    const result = await axe.run(context, {
                       runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] },
                       rules: Object.fromEntries(${JSON.stringify(disabledRules)}.map((id) => [id, { enabled: false }])),
                     });
+                    // Resolve each accepted token pair to the colour axe reports (#rrggbb), next to the
+                    // node itself, so a dark block inside a light story uses its own theme's tokens.
+                    const hex = (token, host) => {
+                      const probe = document.createElement('span');
+                      probe.style.color = 'var(' + token + ')';
+                      host.append(probe);
+                      const [r, g, b] = getComputedStyle(probe).color.match(/[0-9.]+/g).map(Number);
+                      probe.remove();
+                      return '#' + [r, g, b].map((n) => Math.round(n).toString(16).padStart(2, '0')).join('');
+                    };
+                    const isAccepted = (node) => {
+                      const host = document.querySelector(node.target[0]);
+                      if (!host) return false;
+                      const accepted = ${JSON.stringify(ACCEPTED_CONTRAST_PAIRS)}.map(([fg, bg]) => hex(fg, host) + '/' + hex(bg, host));
+                      return node.any.some((check) =>
+                        check.data && accepted.includes(String(check.data.fgColor).toLowerCase() + '/' + String(check.data.bgColor).toLowerCase()));
+                    };
+                    result.violations = result.violations
+                      .map((v) => v.id === 'color-contrast' ? { ...v, nodes: v.nodes.filter((node) => !isAccepted(node)) } : v)
+                      .filter((v) => v.nodes.length > 0);
+                    return result;
                   } catch (error) {
                     if (!String(error).includes('already running')) throw error;
                     await new Promise((resolve) => setTimeout(resolve, 200));
