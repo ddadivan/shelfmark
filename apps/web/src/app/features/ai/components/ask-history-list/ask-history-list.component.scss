@@ -24,6 +24,8 @@
 }
 
 .ask-history__new {
+  // Full width of the list card (author, Nov 25); the inline margin is taken out of the width.
+  inline-size: calc(100% - 2 * var(--space-1));
   margin: 0 var(--space-1) var(--space-2);
 }
 
