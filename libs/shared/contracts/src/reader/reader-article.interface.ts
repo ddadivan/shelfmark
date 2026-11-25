@@ -2,6 +2,8 @@ import type { ReaderBlock } from './reader-block.interface';
 
 /** The readable text of a saved link's page (Reader mode of the Link page). */
 export interface ReaderArticle {
+  /** Shape version (`READER_ARTICLE_VERSION`). */
+  version: number;
   /** The article's own title (may differ from the link title). */
   title: string;
   /** Author or byline as the page names it; `null` when unknown. */

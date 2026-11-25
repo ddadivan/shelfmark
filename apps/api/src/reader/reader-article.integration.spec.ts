@@ -1,5 +1,10 @@
 import { readFileSync } from 'node:fs';
-import { LINK_KIND, READER_BLOCK_KIND, type ReaderArticleResponse } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  READER_ARTICLE_VERSION,
+  READER_BLOCK_KIND,
+  type ReaderArticleResponse,
+} from '@shelfmark/contracts';
 import { vi } from 'vitest';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
@@ -152,6 +157,54 @@ describe('GET /api/links/:id/reader', () => {
     });
     expect((await read(id)).article?.title).toBe('Slow bread at home');
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  describe('an article stored before spans (version 1)', () => {
+    const legacy = {
+      title: 'Old title',
+      author: null,
+      publishedAt: null,
+      minutes: 1,
+      blocks: [{ kind: 'paragraph', text: 'Old text', items: [], imageUrl: null }],
+    };
+    const storeLegacy = (linkId: string): Promise<unknown> =>
+      t.db.prisma.linkReaderArticle.create({
+        data: { linkId, userId: users.owner.userId, article: legacy, extractedAt: new Date() },
+      });
+
+    it('is extracted again and replaced by the new shape', async () => {
+      const id = await link();
+      await storeLegacy(id);
+      const result = await read(id);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(result.article?.title).toBe('Slow bread at home');
+      expect(result.article?.version).toBe(READER_ARTICLE_VERSION);
+      expect(await storedRow(id)).toMatchObject({
+        article: expect.objectContaining({ version: READER_ARTICLE_VERSION }),
+      });
+      await read(id);
+      expect(fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('is still read, upgraded, when the page cannot be fetched now', async () => {
+      fetch.mockRejectedValue(new SafeFetchError(SAFE_FETCH_ERROR_CODE.Timeout, 'Timed out'));
+      const id = await link();
+      await storeLegacy(id);
+      const result = await read(id);
+      expect(result.article?.title).toBe('Old title');
+      expect(result.article?.blocks[0]?.spans[0]?.text).toBe('Old text');
+      expect(result.article?.version).toBe(READER_ARTICLE_VERSION);
+      expect(await storedRow(id)).toMatchObject({
+        article: expect.objectContaining({ title: 'Old title' }),
+      });
+    });
+
+    it('is still read, upgraded, for a video (no request)', async () => {
+      const id = await link({ kind: LINK_KIND.Video });
+      await storeLegacy(id);
+      expect((await read(id)).article?.title).toBe('Old title');
+      expect(fetch).not.toHaveBeenCalled();
+    });
   });
 
   it('drops the stored article when PATCH gives the link a new page', async () => {

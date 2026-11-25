@@ -29,6 +29,23 @@ export const READER_EXTRACT_LIMIT = {
   LinkDensityMax: 0.6,
   /** Reading speed for `minutes`. */
   WordsPerMinute: 230,
+  /** Spans kept in one block. */
+  SpansMax: 300,
+  /** Nesting of lists kept (deeper items are dropped). */
+  ListDepthMax: 4,
+  TableRowsMax: 60,
+  TableColumnsMax: 10,
+  CellCharsMax: 300,
+  /** Image blocks kept in one article. */
+  ImagesMax: 30,
+  /** A link or image address longer than this is dropped. */
+  UrlCharsMax: 2048,
+  LabelCharsMax: 40,
+  AltCharsMax: 300,
+  /** A block of text a callout may hold when it is flattened to spans. */
+  NoteCharsMax: 1_500,
+  /** Content roots tried before the page is read as a whole. */
+  RootCandidatesMax: 4,
   TitleCharsMax: 300,
   AuthorCharsMax: 120,
 } as const;

@@ -557,6 +557,10 @@ export type { ImportGroupsResponse } from './imports/import-groups-response.inte
 export { READER_BLOCK_KIND } from './reader/reader-block-kind.const';
 export type { ReaderBlockKind } from './reader/reader-block-kind.type';
 export type { ReaderBlock } from './reader/reader-block.interface';
+export type { ReaderSpan } from './reader/reader-span.interface';
+export type { ReaderListItem } from './reader/reader-list-item.interface';
+export type { ReaderHeadingLevel } from './reader/reader-heading-level.type';
+export { READER_ARTICLE_VERSION } from './reader/reader-article-version.const';
 export type { ReaderArticle } from './reader/reader-article.interface';
 export type { ReaderArticleResponse } from './reader/reader-article-response.interface';
 export type { ReaderProgress } from './reader/reader-progress.interface';

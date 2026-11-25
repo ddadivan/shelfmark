@@ -1,8 +1,11 @@
 import type { HtmlElement } from '../../preview/models/html-element.type';
 import type { HtmlNode } from '../../preview/models/html-node.type';
 import { HTML_NODE_NAME } from '../../preview/models/html-node-name.const';
+import { READER_CHROME_PATTERN } from '../models/reader-chrome-pattern.const';
+import { READER_CHROME_ROLE } from '../models/reader-chrome-role.const';
 import { READER_CLASS_PATTERN } from '../models/reader-class-pattern.const';
 import { READER_EXTRACT_LIMIT } from '../models/reader-extract-limit.const';
+import { READER_NOTE_PATTERN } from '../models/reader-note-pattern.const';
 import { READER_INLINE_TAGS } from '../models/reader-inline-tags.const';
 import { READER_SKIPPED_TAGS } from '../models/reader-skipped-tags.const';
 import type { ReaderTextMeasure } from '../models/reader-text-measure.interface';
@@ -43,11 +46,40 @@ function isUnlikely(element: HtmlElement): boolean {
   return READER_CLASS_PATTERN.Unlikely.test(names) && !READER_CLASS_PATTERN.Likely.test(names);
 }
 
+/** Class and id words of an element. */
+export function namesOf(element: HtmlElement): string {
+  return `${attributeOf(element, 'class') ?? ''} ${attributeOf(element, 'id') ?? ''}`;
+}
+
+/** An element that is a callout box (Note, Tip, Warning): by role, or class words, or an `<aside>` that says so. */
+export function isNoteBox(element: HtmlElement): boolean {
+  const role = attributeOf(element, 'role');
+  const names = attributeOf(element, 'class') ?? '';
+  if (READER_NOTE_PATTERN.Not.test(names)) return false;
+  if (role === 'note') return true;
+  if (element.tagName === 'aside') return READER_NOTE_PATTERN.Class.test(names) || role === 'alert';
+  if (!['div', 'section', 'blockquote', 'p'].includes(element.tagName)) return false;
+  return READER_NOTE_PATTERN.Class.test(names);
+}
+
+/** Whether an element is page chrome by its tag, role or markup, in every pass. */
+function isChrome(element: HtmlElement): boolean {
+  const tag = element.tagName;
+  if (tag === 'aside') return !isNoteBox(element);
+  if (tag === 'article' && READER_CHROME_PATTERN.Card.test(namesOf(element))) return true;
+  if (tag.includes('-') && READER_CHROME_PATTERN.CustomTag.test(tag)) return true;
+  const role = attributeOf(element, 'role');
+  if (role !== undefined && READER_CHROME_ROLE.has(role)) return true;
+  const names = namesOf(element);
+  return READER_CHROME_PATTERN.Hidden.test(names) || READER_CHROME_PATTERN.Control.test(names);
+}
+
 /** Whether a pass drops this element with everything under it. */
 export function isDropped(element: HtmlElement, options: ReaderWalkOptions): boolean {
   return (
     READER_SKIPPED_TAGS.has(element.tagName) ||
     isHidden(element) ||
+    isChrome(element) ||
     (options.skipUnlikely && isUnlikely(element))
   );
 }
@@ -105,4 +137,24 @@ export function measureText(
     }
   }
   return { text: parts.join(''), linkChars };
+}
+
+/**
+ * The first descendant (breadth first, at most `limit` nodes looked at) that `match` accepts, or
+ * `null`. Dropped elements are not entered.
+ */
+export function findDescendant(
+  root: HtmlNode,
+  match: (element: HtmlElement) => boolean,
+  options: ReaderWalkOptions,
+  limit = 400,
+): HtmlElement | null {
+  const queue: HtmlNode[] = [...childrenOf(root)];
+  for (let index = 0; index < queue.length && index < limit; index++) {
+    const node = queue[index];
+    if (node === undefined || !isElement(node) || isDropped(node, options)) continue;
+    if (match(node)) return node;
+    queue.push(...childrenOf(node));
+  }
+  return null;
 }
