@@ -329,7 +329,8 @@
   inset-block-start: var(--space-3);
   inset-inline-start: 50%;
   z-index: 2;
-  background: var(--surface);
+
+  // A primary (filled) round button like Add link, so it stands out on the divider (author).
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-card);
   translate: -50% 0;
