@@ -35,3 +35,13 @@ Visitors must be able to try Shelfmark without an account: one click gives a 24 
 - **Rely on the in-memory throttler for the quota** - bypassed by instance spread and cold starts (ADR 0031).
 - **Redis or a Postgres rate-limit store now** - a new service or a per-request query for every route; undecided (ADR 0031); the demo only needs one table lookup.
 - **Delete expired sandboxes lazily on sign-in** - no guarantee they are ever removed, and puts deletes on a public path.
+
+## Amendment 2026-11-25: Vercel Schedules for reminders (author-approved)
+
+Reminders pushed once a day arrived the next morning. Three routes move from `crons` to `schedules` in `vercel.json` (Vercel Schedules, beta): `notifications` (`*/15 * * * *`), `account-purge` (`37 2 * * *`) and `ask-history` (`27 4 * * *`). `demo-cleanup`, `trash-cleanup` and `ai-sweep` stay Cron Jobs. A path never appears in both lists (a run would happen twice).
+
+- **Path targets, not function targets.** The schedule calls the existing NestJS route through our rewrites, like a Cron Job, with `Authorization: Bearer <CRON_SECRET>`, so `CronSecretGuard` and `PUBLIC_ROUTES` are unchanged and no secret is added. Function targets would need separate private functions; our API is one NestJS function behind a rewrite. `@vercel/schedules` is not a dependency.
+- **Hobby limits.** Every 15 minutes is the most frequent run, with up to 15 minutes of jitter (due reminders arrive within about 15 to 30 minutes). 5,000 runs per billing period, scheduled and manual: every 15 minutes is 96 a day, 2,976 in a 31-day month, plus the two daily schedules (62) is 3,038, which leaves about 1,960 runs for manual ones. The three remaining Cron Jobs are a separate feature and do not count against it. Past the budget runs are skipped until the next period.
+- **Delivery semantics.** No retries for path targets, runs can overlap, an occurrence can be delivered more than once, and around a deploy a run can reach the previous deployment. So delivery is idempotent: reminders are claimed by a conditional `UPDATE … RETURNING` on `links.remind_pushed_at` before pushing (a failed push releases the claim), and the `ce-id` header (the occurrence, optional, absent on manual calls) is only logged. A run that never arrives is harmless: the next one finds the reminder still due.
+- **Outages.** `DueWindowHours` drops from 48 to 24: a reminder older than that is not pushed but marked handled, so it is never retried, and stays due in Today. Quiet hours still defer (nothing is claimed).
+- **Preview** schedules start inactive; Schedules must be enabled for the team before this is deployed (SETUP 5.12).
