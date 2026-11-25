@@ -39,43 +39,138 @@
     @for (block of blocks(); track $index) {
       @switch (block.kind) {
         @case (BLOCK.Heading) {
-          <h3 class="ui-reader__heading">{{ block.text }}</h3>
+          @switch (block.level) {
+            @case (3) {
+              <h4 class="ui-reader__heading ui-reader__heading--3">
+                <ui-reader-spans [spans]="spansOf(block)" [newTabLabel]="newTabLabel()" />
+              </h4>
+            }
+            @case (4) {
+              <h5 class="ui-reader__heading ui-reader__heading--4">
+                <ui-reader-spans [spans]="spansOf(block)" [newTabLabel]="newTabLabel()" />
+              </h5>
+            }
+            @default {
+              <h3 class="ui-reader__heading">
+                <ui-reader-spans [spans]="spansOf(block)" [newTabLabel]="newTabLabel()" />
+              </h3>
+            }
+          }
         }
         @case (BLOCK.List) {
-          <ul class="ui-reader__list">
-            @for (item of block.items; track $index) {
-              <li>{{ item }}</li>
-            }
-          </ul>
+          <ng-container
+            *ngTemplateOutlet="
+              listTemplate;
+              context: { $implicit: block.items ?? [], ordered: block.ordered }
+            "
+          />
         }
         @case (BLOCK.Quote) {
-          <blockquote class="ui-reader__quote">{{ block.text }}</blockquote>
+          <blockquote class="ui-reader__quote">
+            <ui-reader-spans [spans]="spansOf(block)" [newTabLabel]="newTabLabel()" />
+          </blockquote>
+        }
+        @case (BLOCK.Note) {
+          <aside class="ui-reader__note" role="note">
+            @if (block.label) {
+              <p class="ui-reader__note-label">{{ block.label }}</p>
+            }
+            <p class="ui-reader__note-text">
+              <ui-reader-spans [spans]="spansOf(block)" [newTabLabel]="newTabLabel()" />
+            </p>
+          </aside>
         }
         @case (BLOCK.Code) {
-          <pre class="ui-reader__code" tabindex="0"><code>{{ block.text }}</code></pre>
+          <div class="ui-reader__code-box">
+            @if (block.language) {
+              <span class="ui-reader__code-language">{{ block.language }}</span>
+            }
+            <pre class="ui-reader__code" tabindex="0"><code>{{ block.text }}</code></pre>
+          </div>
+        }
+        @case (BLOCK.Table) {
+          <div
+            class="ui-reader__table-scroll"
+            tabindex="0"
+            role="region"
+            [attr.aria-label]="tableLabel()"
+          >
+            <table class="ui-reader__table">
+              @for (row of block.rows ?? []; track $index; let rowIndex = $index) {
+                <tr>
+                  @for (cell of row; track $index) {
+                    @if (block.header && rowIndex === 0) {
+                      <th scope="col">{{ cell }}</th>
+                    } @else {
+                      <td>{{ cell }}</td>
+                    }
+                  }
+                </tr>
+              }
+            </table>
+          </div>
         }
         @case (BLOCK.Image) {
+          <!-- The app's CSP is img-src 'self': the page's own picture cannot load, so a captioned
+               placeholder with a link to the original stands in (image proxy: issue #57). -->
           <figure class="ui-reader__figure">
-            @if (block.imageUrl) {
-              <img
-                class="ui-reader__image"
-                [src]="block.imageUrl"
-                alt=""
-                decoding="async"
-                loading="lazy"
-                referrerpolicy="no-referrer"
-              />
-            }
+            <div class="ui-reader__placeholder">
+              <ui-icon name="image" [size]="ICON_SIZE.Lg" />
+              @if (block.alt || block.text) {
+                <span class="ui-reader__placeholder-text">{{ block.alt || block.text }}</span>
+              }
+              @if (block.imageUrl; as src) {
+                <a
+                  class="ui-reader__placeholder-link"
+                  [href]="src"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ openOriginalLabel() }}</a
+                >
+              }
+            </div>
             @if (block.text) {
               <figcaption class="ui-reader__caption">{{ block.text }}</figcaption>
             }
           </figure>
         }
         @default {
-          <p class="ui-reader__paragraph">{{ block.text }}</p>
+          <p class="ui-reader__paragraph">
+            <ui-reader-spans [spans]="spansOf(block)" [newTabLabel]="newTabLabel()" />
+          </p>
         }
       }
     }
     <ng-content />
   </article>
 </div>
+
+<ng-template #listTemplate let-items let-ordered="ordered">
+  @if (ordered) {
+    <ol class="ui-reader__list">
+      @for (item of items; track $index) {
+        <li>
+          <ui-reader-spans [spans]="item.spans" [newTabLabel]="newTabLabel()" />
+          @if (item.items.length > 0) {
+            <ng-container
+              *ngTemplateOutlet="listTemplate; context: { $implicit: item.items, ordered: false }"
+            />
+          }
+        </li>
+      }
+    </ol>
+  } @else {
+    <ul class="ui-reader__list">
+      @for (item of items; track $index) {
+        <li>
+          <ui-reader-spans [spans]="item.spans" [newTabLabel]="newTabLabel()" />
+          @if (item.items.length > 0) {
+            <ng-container
+              *ngTemplateOutlet="listTemplate; context: { $implicit: item.items, ordered: false }"
+            />
+          }
+        </li>
+      }
+    </ul>
+  }
+</ng-template>

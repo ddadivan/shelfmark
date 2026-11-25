@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { READER_BLOCK_KIND, type ReaderArticle } from '@shelfmark/contracts';
+import { READER_BLOCK_KIND, type ReaderArticle, type ReaderBlock } from '@shelfmark/contracts';
 import { READER_EXTRACT_LIMIT } from '../models/reader-extract-limit.const';
 import { cleanCode, cleanText, countWords } from './clean-text';
 import { extractReaderArticle } from './extract-reader-article';
@@ -11,8 +11,17 @@ function fixture(name: string): string {
   return readFileSync(new URL(`../fixtures/${name}.html`, import.meta.url), 'utf8');
 }
 
+function itemTexts(items: ReaderBlock['items']): string[] {
+  return items.flatMap((item) => [
+    item.spans.map((span) => span.text).join(''),
+    ...itemTexts(item.items),
+  ]);
+}
+
 function allText(article: ReaderArticle): string {
-  return article.blocks.map((block) => [block.text, ...block.items].join(' ')).join(' ');
+  return article.blocks
+    .map((block) => [block.text, ...itemTexts(block.items), ...block.rows.flat()].join(' '))
+    .join(' ');
 }
 
 const sentence =
@@ -24,7 +33,7 @@ function paragraphs(count: number, words = sentence): string {
 
 describe('extractReaderArticle', () => {
   describe('an article page', () => {
-    const article = extractReaderArticle(fixture('article'), 'Link title', NOW);
+    const article = extractReaderArticle(fixture('article'), 'Link title', null, NOW);
 
     it('reads the head: og:title, author and publication date', () => {
       expect(article).not.toBeNull();
@@ -43,25 +52,32 @@ describe('extractReaderArticle', () => {
         READER_BLOCK_KIND.Paragraph,
         READER_BLOCK_KIND.List,
         READER_BLOCK_KIND.Quote,
+        READER_BLOCK_KIND.Image,
         READER_BLOCK_KIND.Heading,
         READER_BLOCK_KIND.Paragraph,
         READER_BLOCK_KIND.Code,
         READER_BLOCK_KIND.Paragraph,
       ]);
       expect(article?.blocks[2]?.text).toBe('The overnight rise');
-      expect(article?.blocks[4]?.items).toEqual([
+      expect(itemTexts(article?.blocks[4]?.items ?? [])).toEqual([
         '500 g bread flour',
         '375 g cool water',
         '10 g salt',
         '2 g instant yeast',
       ]);
+      expect(article?.blocks[2]?.level).toBe(2);
       expect(article?.blocks[5]?.text).toBe(
         'Time is the one ingredient you cannot buy, but it costs nothing.',
       );
-      expect(article?.blocks[8]?.text).toBe(
+      expect(article?.blocks[9]?.text).toBe(
         'bake(covered: 20 min, 250 °C)\nbake(open: 25 min, 230 °C)',
       );
-      expect(article?.blocks.every((block) => block.imageUrl === null)).toBe(true);
+      // The page's own figure is an image block (absolute source, alt, caption), never loaded here.
+      expect(article?.blocks[6]).toMatchObject({
+        imageUrl: 'https://cdn.example/loaf.jpg',
+        alt: 'A loaf',
+        text: 'The finished loaf.',
+      });
     });
 
     it('drops chrome: navigation, share bar, related links, comments, sidebar, footer, forms, figures', () => {
@@ -75,7 +91,6 @@ describe('extractReaderArticle', () => {
         'Subscribe',
         'Copyright',
         'Join',
-        'The finished loaf',
         'never read',
       ]) {
         expect(text).not.toContain(chrome);
@@ -84,11 +99,11 @@ describe('extractReaderArticle', () => {
   });
 
   it('answers null for a page without an article (a shop)', () => {
-    expect(extractReaderArticle(fixture('no-article'), 'Shoe', NOW)).toBeNull();
+    expect(extractReaderArticle(fixture('no-article'), 'Shoe', null, NOW)).toBeNull();
   });
 
   it('reads text written straight into a table cell with line breaks', () => {
-    const article = extractReaderArticle(fixture('plain-text'), 'Plain', NOW);
+    const article = extractReaderArticle(fixture('plain-text'), 'Plain', null, NOW);
     expect(article?.title).toBe('Notes on a plain old page');
     expect(article?.blocks.map((block) => block.kind)).toEqual([
       READER_BLOCK_KIND.Paragraph,
@@ -103,7 +118,7 @@ describe('extractReaderArticle', () => {
       'Control characters such as',
       'Controls \u0000 \u001b[31m',
     );
-    const article = extractReaderArticle(html, 'Fallback', NOW);
+    const article = extractReaderArticle(html, 'Fallback', null, NOW);
     expect(article).not.toBeNull();
     const text = allText(article as ReaderArticle);
     expect(text).not.toMatch(/never be read|written by a script|alert\(2\)/);
@@ -117,12 +132,15 @@ describe('extractReaderArticle', () => {
     expect(article?.author).toBeNull();
     expect(article?.publishedAt).toBeNull();
     expect(article?.blocks.every((block) => block.imageUrl === null)).toBe(true);
+    expect(article?.blocks.every((block) => block.spans.every((span) => span.href === null))).toBe(
+      true,
+    );
   });
 
   it('keeps a huge page within the block and text limits', () => {
     const html = `<html><body><article>${paragraphs(6_000)}</article></body></html>`;
     expect(html.length).toBeGreaterThan(READER_EXTRACT_LIMIT.HtmlCharsMax);
-    const article = extractReaderArticle(html, 'Huge', NOW);
+    const article = extractReaderArticle(html, 'Huge', null, NOW);
     expect(article).not.toBeNull();
     const blocks = article?.blocks ?? [];
     expect(blocks.length).toBeLessThanOrEqual(READER_EXTRACT_LIMIT.BlocksMax);
@@ -139,7 +157,7 @@ describe('extractReaderArticle', () => {
       (_, i) => `<li>Item number ${i} of a very long list</li>`,
     ).join('');
     const html = `<html><body><article><p>${giant}</p><p>${sentence} ${sentence}</p><ul>${items}</ul></article></body></html>`;
-    const article = extractReaderArticle(html, 'Giant', NOW);
+    const article = extractReaderArticle(html, 'Giant', null, NOW);
     expect(article?.blocks[0]?.text.length).toBeLessThanOrEqual(READER_EXTRACT_LIMIT.BlockCharsMax);
     expect(article?.blocks[0]?.text.endsWith('…')).toBe(true);
     expect(article?.blocks[2]?.items).toHaveLength(READER_EXTRACT_LIMIT.ListItemsMax);
@@ -148,30 +166,32 @@ describe('extractReaderArticle', () => {
   it('survives very deep nesting without overflowing the stack', () => {
     const depth = 20_000;
     const html = `<html><body>${'<div>'.repeat(depth)}${paragraphs(4)}${'</div>'.repeat(depth)}</body></html>`;
-    expect(() => extractReaderArticle(html, 'Deep', NOW)).not.toThrow();
+    expect(() => extractReaderArticle(html, 'Deep', null, NOW)).not.toThrow();
   });
 
   it('prefers the parent of an article split into sibling boxes', () => {
     const html = `<html><body><div id="story"><div>${paragraphs(3)}</div><div>${paragraphs(3)}</div></div><div class="x"><p>${sentence}</p></div></body></html>`;
-    const article = extractReaderArticle(html, 'Split', NOW);
+    const article = extractReaderArticle(html, 'Split', null, NOW);
     expect(article?.blocks).toHaveLength(6);
   });
 
   it('falls back to a second pass when chrome words hide the whole page', () => {
     const html = `<html><body><div class="sidebar-layout">${paragraphs(4)}</div></body></html>`;
-    expect(extractReaderArticle(html, 'Pass', NOW)?.blocks).toHaveLength(4);
+    expect(extractReaderArticle(html, 'Pass', null, NOW)?.blocks).toHaveLength(4);
   });
 
   it('uses the fallback title and the first <time> when the head names nothing', () => {
     const html = `<html><body><article><time datetime="2025-01-02">2 Jan</time>${paragraphs(4)}</article></body></html>`;
-    const article = extractReaderArticle(html, 'Fallback title', NOW);
+    const article = extractReaderArticle(html, 'Fallback title', null, NOW);
     expect(article?.title).toBe('Fallback title');
     expect(article?.publishedAt).toBe('2025-01-02T00:00:00.000Z');
   });
 
   it('answers null for an empty or text-free document', () => {
-    expect(extractReaderArticle('', 'Empty', NOW)).toBeNull();
-    expect(extractReaderArticle('<html><body><img src="x"></body></html>', 'Img', NOW)).toBeNull();
+    expect(extractReaderArticle('', 'Empty', null, NOW)).toBeNull();
+    expect(
+      extractReaderArticle('<html><body><img src="x"></body></html>', 'Img', null, NOW),
+    ).toBeNull();
   });
 });
 

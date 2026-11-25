@@ -4768,7 +4768,11 @@
       "noText": "Esta página não tem texto de artigo. A leitura mostra a imagem, o que a página diz de si e a sua nota.",
       "noTextVideo": "Um vídeo não tem texto para ler. A leitura mostra a imagem, a descrição e a sua nota; assista no site.",
       "blockedNotice": "Mostrando a leitura: {{domain}} não permite exibir a página aqui.",
-      "openSite": "Abrir {{domain}}"
+      "openSite": "Abrir {{domain}}",
+      "openOriginal": "Abrir o original",
+      "newTab": "(abre em uma nova aba)",
+      "table": "Tabela",
+      "sampleNote": "Texto de exemplo: execute a API para ver artigos reais"
     },
     "details": {
       "toggle": "Detalhes",

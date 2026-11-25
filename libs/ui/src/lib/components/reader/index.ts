@@ -13,3 +13,6 @@ export type { ReaderTheme } from './models/reader-theme.type';
 export { READER_VIEW_BLOCK } from './models/reader-block-kind.const';
 export type { ReaderViewBlockKind } from './models/reader-block-kind.type';
 export type { ReaderViewBlock } from './models/reader-view-block.interface';
+export type { ReaderViewSpan } from './models/reader-view-span.interface';
+export type { ReaderViewListItem } from './models/reader-view-list-item.interface';
+export type { ReaderViewHeadingLevel } from './models/reader-view-heading-level.type';

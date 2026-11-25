@@ -209,3 +209,123 @@
 
   @include type(caption);
 }
+
+.ui-reader__heading--3 {
+  margin-block-start: var(--space-6);
+  /* stylelint-disable-next-line shelf/font-size-token -- an article heading scales with the reading text size the person picks (em of the Reader body) */
+  font-size: 1.12em;
+}
+
+.ui-reader__heading--4 {
+  margin-block-start: var(--space-5);
+  /* stylelint-disable-next-line shelf/font-size-token -- an article heading scales with the reading text size the person picks (em of the Reader body) */
+  font-size: 1em;
+}
+
+.ui-reader__list {
+  .ui-reader__list {
+    margin-block: 0.25em 0;
+  }
+
+  li + li {
+    margin-block-start: 0.25em;
+  }
+}
+
+.ui-reader__note {
+  padding: var(--space-3) var(--space-4);
+  margin: 1.25em 0;
+  background: var(--surface-hover);
+  border-inline-start: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+
+.ui-reader__note-label {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-sans);
+  color: var(--ui-reader-muted);
+
+  @include type(label);
+}
+
+.ui-reader__note-text {
+  margin: 0;
+}
+
+.ui-reader__code-box {
+  margin: 0 0 1em;
+}
+
+.ui-reader__code-language {
+  display: block;
+  margin-block-end: var(--space-1);
+  font-family: var(--font-mono);
+  color: var(--ui-reader-muted);
+
+  @include type(caption);
+}
+
+.ui-reader__code-box .ui-reader__code {
+  margin: 0;
+}
+
+.ui-reader__table-scroll {
+  margin: 0 0 1em;
+  overflow-x: auto;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.ui-reader__table {
+  inline-size: 100%;
+  border-collapse: collapse;
+
+  @include type(secondary);
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    text-align: start;
+    vertical-align: top;
+    border-block-end: 1px solid var(--sep);
+  }
+
+  th {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+// Stands in for a picture of the page: the app's CSP does not load other sites' images.
+.ui-reader__placeholder {
+  display: flex;
+  flex-flow: column;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  min-block-size: rem(160px);
+  padding: var(--space-4);
+  font-family: var(--font-sans);
+  color: var(--ui-reader-muted);
+  text-align: center;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+
+  @include type(secondary);
+}
+
+.ui-reader__placeholder-text {
+  max-inline-size: 36ch;
+}
+
+.ui-reader__placeholder-link {
+  color: var(--ui-reader-text);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

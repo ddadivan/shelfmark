@@ -4653,7 +4653,11 @@
       "noText": "This page has no article text. Reader shows the picture, what the page says about itself and your note.",
       "noTextVideo": "A video has no text to read. Reader shows its picture, description and your note; play it on the site.",
       "blockedNotice": "Showing Reader: {{domain}} doesn't allow showing the page here.",
-      "openSite": "Open {{domain}}"
+      "openSite": "Open {{domain}}",
+      "openOriginal": "Open original",
+      "newTab": "(opens in a new tab)",
+      "table": "Table",
+      "sampleNote": "Sample text: run the API for real articles"
     },
     "details": {
       "toggle": "Details",

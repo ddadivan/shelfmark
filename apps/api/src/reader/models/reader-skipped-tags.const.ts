@@ -1,7 +1,7 @@
 /**
- * Elements never read as article text: code, chrome, forms, media and embedded documents. Images
- * and figures are dropped on purpose: no remote image URL reaches the client (CSP `img-src 'self'`);
- * Reader shows the link's own captured picture instead.
+ * Elements never read as article text: scripts, chrome, forms, media and embedded documents.
+ * (`<aside>` is chrome unless it is a callout, see `isNoteBox`; images and figures are read as
+ * image blocks.)
  */
 export const READER_SKIPPED_TAGS: ReadonlySet<string> = new Set([
   'script',
@@ -10,7 +10,6 @@ export const READER_SKIPPED_TAGS: ReadonlySet<string> = new Set([
   'nav',
   'header',
   'footer',
-  'aside',
   'form',
   'button',
   'input',
@@ -28,9 +27,6 @@ export const READER_SKIPPED_TAGS: ReadonlySet<string> = new Set([
   'embed',
   'video',
   'audio',
-  'picture',
-  'img',
-  'figure',
   'dialog',
   'menu',
   'link',

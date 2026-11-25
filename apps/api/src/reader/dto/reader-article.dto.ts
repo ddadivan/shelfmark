@@ -3,6 +3,9 @@ import type { ReaderArticle } from '@shelfmark/contracts';
 import { ReaderBlockDto } from './reader-block.dto';
 
 export class ReaderArticleDto implements ReaderArticle {
+  @ApiProperty({ example: 2, description: 'Shape version of the article' })
+  version!: number;
+
   @ApiProperty({ example: 'Slow bread at home' })
   title!: string;
 

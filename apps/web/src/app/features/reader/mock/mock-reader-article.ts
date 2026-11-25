@@ -1,12 +1,12 @@
 import {
   LINK_KIND,
-  linkHost,
-  READER_BLOCK_KIND,
   type LinkKind,
   type LinkResponse,
   type ReaderArticle,
-  type ReaderBlock,
 } from '@shelfmark/contracts';
+import { MOCK_READER_ANGULAR_ARTICLE } from './mock-reader-angular-article.const';
+import { MOCK_READER_MDN_ARTICLE } from './mock-reader-mdn-article.const';
+import { MOCK_READER_WEBDEV_ARTICLE } from './mock-reader-webdev-article.const';
 
 /** Kinds whose mock page has article text; the others answer "no article". */
 const READABLE_KINDS: ReadonlySet<LinkKind> = new Set<LinkKind>([
@@ -16,62 +16,31 @@ const READABLE_KINDS: ReadonlySet<LinkKind> = new Set<LinkKind>([
   LINK_KIND.Recipe,
 ]);
 
-function capitalize(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
+const SAMPLES: readonly ReaderArticle[] = [
+  MOCK_READER_ANGULAR_ARTICLE,
+  MOCK_READER_MDN_ARTICLE,
+  MOCK_READER_WEBDEV_ARTICLE,
+];
 
-/** Words per minute of the reading-time estimate. */
-const WORDS_PER_MINUTE = 220;
-
-function block(kind: ReaderBlock['kind'], text: string, items: string[] = []): ReaderBlock {
-  return { kind, text, items, imageUrl: null };
+/** A stable pick per link, so the same link always shows the same sample. */
+function sampleIndex(id: string): number {
+  let hash = 5381;
+  for (const char of id) {
+    hash = (hash * 33 + (char.codePointAt(0) ?? 0)) % 1_000_003;
+  }
+  return hash % SAMPLES.length;
 }
 
 /**
- * MOCK (Shelf): the article text the mock Reader shows for a link of the mock library. There is
- * no extraction in the API yet; the text is generic and names the link, so every readable mock
- * link has an article with each block kind once. `null` for kinds without text (video, shop, app).
+ * MOCK (Shelf): the article text the mock Reader shows for a link of the mock library: the opening
+ * of one of three real pages (angular.dev, MDN, web.dev), parsed by the API's extractor, so dev shows real
+ * headings, inline code, links, notes, tables and code blocks. Every readable link gets one of them
+ * (the app labels it as sample text: `preview.reader.sampleNote`). `null` for kinds without text
+ * (video, shop, app).
  */
 export function mockReaderArticle(link: LinkResponse): ReaderArticle | null {
   if (!READABLE_KINDS.has(link.kind)) {
     return null;
   }
-  const site = linkHost(link.url) ?? link.url;
-  const blocks: ReaderBlock[] = [
-    block(
-      READER_BLOCK_KIND.Paragraph,
-      `${link.title} is the page you saved from ${site}. Reader shows its text on a calm page, in the font and size you pick, without the site's menus and banners.`,
-    ),
-    block(READER_BLOCK_KIND.Heading, 'What it covers'),
-    block(
-      READER_BLOCK_KIND.Paragraph,
-      'The text keeps its headings, paragraphs, lists, quotes and code. Links inside the text open in a new tab, so your place here stays where it was.',
-    ),
-    block(READER_BLOCK_KIND.List, '', [
-      'Start with the summary at the top when there is one.',
-      'Change the text size, font and line width in Reading settings.',
-      'Come back later: Revisit keeps the articles you started.',
-    ]),
-    block(
-      READER_BLOCK_KIND.Quote,
-      'A good page reads the same tomorrow as it does today; Reader keeps it that way.',
-    ),
-    block(READER_BLOCK_KIND.Heading, 'Before you go'),
-    block(READER_BLOCK_KIND.Code, `open ${link.url}`),
-    block(
-      READER_BLOCK_KIND.Paragraph,
-      'Most pages need only a few minutes. Open the site when you want its pictures, comments or anything Reader leaves out.',
-    ),
-  ];
-  const words = blocks
-    .flatMap((part) => [part.text, ...part.items])
-    .join(' ')
-    .split(/\s+/).length;
-  return {
-    title: link.title,
-    author: `${capitalize(site.split('.')[0] ?? site)} team`,
-    publishedAt: link.createdAt,
-    minutes: Math.max(1, Math.round(words / WORDS_PER_MINUTE) + 4),
-    blocks,
-  };
+  return SAMPLES[sampleIndex(link.id)] ?? null;
 }

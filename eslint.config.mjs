@@ -31,6 +31,8 @@ export default [
       // Real browser bookmark exports (test fixtures, kept byte for byte).
       'apps/web/src/app/features/import/utils/fixtures/**',
       '**/features/import/utils/fixtures/**',
+      // Real article pages (Reader extraction test data, kept as fetched).
+      'apps/api/src/reader/fixtures/real/**',
     ],
   },
   {

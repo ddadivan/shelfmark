@@ -5,6 +5,7 @@ import { LINK_KIND, READER_LIMIT, type ReaderArticle } from '@shelfmark/contract
 import { firstValueFrom } from 'rxjs';
 import { LocaleService } from '../../../core/i18n/locale.service';
 import { READER_API } from '../../reader/models/reader-api.const';
+import { READER_SAMPLE } from '../../reader/models/reader-sample.const';
 import type { ReaderSettings } from '../../reader/models/reader-settings.interface';
 import { ReaderSettingsService } from '../../reader/services/reader-settings.service';
 import { progressToSave } from '../../reader/utils/progress-to-save';
@@ -25,6 +26,7 @@ import { LinkPreviewService } from './link-preview.service';
 export class PreviewReaderService {
   private readonly preview = inject(LinkPreviewService);
   private readonly api = inject(READER_API);
+  private readonly sample = inject(READER_SAMPLE);
   private readonly readerSettings = inject(ReaderSettingsService);
   private readonly transloco = inject(TranslocoService);
   private readonly locale = inject(LocaleService);
@@ -81,6 +83,10 @@ export class PreviewReaderService {
       return this.transloco.translate(
         link.kind === LINK_KIND.Video ? 'preview.reader.noTextVideo' : 'preview.reader.noText',
       );
+    }
+    if (this.sample) {
+      // MOCK (Shelf): the dev API serves canned articles; say so.
+      return this.transloco.translate('preview.reader.sampleNote');
     }
     return this.preview.body() === PREVIEW_BODY_KIND.Blocked
       ? this.transloco.translate('preview.reader.blockedNotice', { domain: this.preview.host() })

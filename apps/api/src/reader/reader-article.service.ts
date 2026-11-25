@@ -2,6 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   LINK_ERROR_MESSAGE,
   LINK_KIND,
+  READER_ARTICLE_VERSION,
   type ReaderArticle,
   type ReaderArticleResponse,
 } from '@shelfmark/contracts';
@@ -12,7 +13,7 @@ import { extractReaderArticle } from './extract/extract-reader-article';
 import { READER_CACHE } from './models/reader-cache.const';
 import { READER_FETCH_LIMITS } from './models/reader-fetch-limits.const';
 import type { ReaderFetchOutcome } from './models/reader-fetch-outcome.interface';
-import { parseStoredArticle } from './parse-stored-article';
+import { parseStoredArticle, storedArticleVersion } from './parse-stored-article';
 
 const HTTP_OK_MIN = 200;
 const HTTP_OK_MAX = 299;
@@ -49,16 +50,25 @@ export class ReaderArticleService {
       where: { linkId, userId },
       select: { article: true, failed: true, extractedAt: true },
     });
+    let outdated: ReaderArticle | null = null;
     if (stored) {
       if (!stored.failed && stored.article === null) return NO_ARTICLE;
       const article = stored.failed ? null : parseStoredArticle(stored.article);
-      if (article !== null) return { article };
+      if (article !== null) {
+        // An article of an older shape reads as it is (upgraded) and is extracted again below.
+        if (storedArticleVersion(stored.article) >= READER_ARTICLE_VERSION) return { article };
+        outdated = article;
+      }
       const retryDue = Date.now() - stored.extractedAt.getTime() >= READER_CACHE.FailedRetryMs;
       if (stored.failed && !retryDue) return NO_ARTICLE;
     }
-    if (link.kind === LINK_KIND.Video) return NO_ARTICLE;
+    if (link.kind === LINK_KIND.Video) return outdated ? { article: outdated } : NO_ARTICLE;
 
     const outcome = await this.load(link.url, link.title);
+    if (outdated !== null && outcome.article === null) {
+      // The page cannot be read now (or no longer has an article): keep the older text.
+      return { article: outdated };
+    }
     await this.store(userId, linkId, link.url, outcome);
     return { article: outcome.article };
   }
@@ -70,7 +80,7 @@ export class ReaderArticleService {
       if (page.status < HTTP_OK_MIN || page.status > HTTP_OK_MAX) {
         return { article: null, failed: true };
       }
-      const article = extractReaderArticle(page.body, title);
+      const article = extractReaderArticle(page.body, title, page.finalUrl);
       this.logger.log(
         `Reader extraction: ${article === null ? 'none' : `${article.blocks.length} blocks`} in ${Date.now() - startedAt} ms`,
       );
