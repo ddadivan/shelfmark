@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Renders contact sheets of the 16px icon set with Playwright (a review tool, not part of the build).
 //
-//   node scripts/icons-16/contact-sheet.mjs <outDir> [--before <dir-with-old-svgs> name,name,...]
+//   node scripts/icons-16/contact-sheet.mjs <outDir> [--before <dir-with-old-svgs> name,name,...] [--zoom 4]
 //
 // Writes contact-sheet-1x-{light,dark}.png (real 1x pixels, with names), contact-sheet-4x-{light,dark}.png
 // (the 1x rasterisation magnified 4x without smoothing, so the pixel grid is visible) and, with
-// --before, before-after-<theme>.png (old | new of the redrawn icons, 1x and 8x).
+// --before, before-after-<theme>.png (old | new of the redrawn icons, 1x and --zoom, default 8x).
 import { mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
@@ -27,6 +27,8 @@ const outDir = resolve(args[0] ?? '.');
 const beforeAt = args.indexOf('--before');
 const beforeDir = beforeAt > -1 ? resolve(args[beforeAt + 1]) : null;
 const changed = beforeAt > -1 ? args[beforeAt + 2].split(',') : [];
+const zoomAt = args.indexOf('--zoom');
+const ZOOM = zoomAt > -1 ? Number(args[zoomAt + 1]) : 8;
 mkdirSync(outDir, { recursive: true });
 
 const load = (dir, name) => readFileSync(join(dir, `${name}.svg`), 'utf8').match(/d="([^"]+)"/)[1];
@@ -108,7 +110,7 @@ for (const [themeName, t] of Object.entries(THEMES)) {
         )
       ).toString('base64');
     const box = (img, label) =>
-      `<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="display:flex;align-items:center;gap:20px"><img src="data:image/png;base64,${img}" width="16" height="16"><img src="data:image/png;base64,${img}" width="128" height="128" style="image-rendering:pixelated;outline:1px solid ${t.mute}55"></div><span style="color:${t.mute}">${label}</span></div>`;
+      `<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="display:flex;align-items:center;gap:20px"><img src="data:image/png;base64,${img}" width="16" height="16"><img src="data:image/png;base64,${img}" width="${16 * ZOOM}" height="${16 * ZOOM}" style="image-rendering:pixelated;outline:1px solid ${t.mute}55"></div><span style="color:${t.mute}">${label}</span></div>`;
     const crops = [];
     for (const n of changed) {
       crops.push(
