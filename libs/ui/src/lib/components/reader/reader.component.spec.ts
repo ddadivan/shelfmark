@@ -189,6 +189,16 @@ describe('ReaderComponent', () => {
     );
   });
 
+  it('names several tables apart so their scroll regions are distinct landmarks', () => {
+    const { reader, update } = setup();
+    const table = { kind: READER_VIEW_BLOCK.Table, text: '', rows: [['a'], ['b']] } as const;
+    update((c) => c.blocks.set([table, { kind: READER_VIEW_BLOCK.Paragraph, text: 'Mid' }, table]));
+    const labels = Array.from(reader.querySelectorAll('.ui-reader__table-scroll')).map((region) =>
+      region.getAttribute('aria-label'),
+    );
+    expect(labels).toEqual(['Table 1', 'Table 2']);
+  });
+
   it('shows an image block without a source as its caption only', () => {
     const { reader, update } = setup();
     update((c) =>

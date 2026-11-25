@@ -36,7 +36,7 @@
         </figure>
       }
     }
-    @for (block of blocks(); track $index) {
+    @for (block of blocks(); track $index; let blockIndex = $index) {
       @switch (block.kind) {
         @case (BLOCK.Heading) {
           @switch (block.level) {
@@ -93,7 +93,7 @@
             class="ui-reader__table-scroll"
             tabindex="0"
             role="region"
-            [attr.aria-label]="tableLabel()"
+            [attr.aria-label]="tableLabels()[blockIndex]"
           >
             <table class="ui-reader__table">
               @for (row of block.rows ?? []; track $index; let rowIndex = $index) {

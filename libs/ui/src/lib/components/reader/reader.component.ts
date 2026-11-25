@@ -104,6 +104,21 @@ export class ReaderComponent {
   /** Share of the text scrolled past, 0 to 1 (at most once per frame). */
   readonly progressed = output<number>();
 
+  /**
+   * The accessible name of every block that is a table: "Table" for a lone one, "Table 1", "Table 2"
+   * when there are several, so the scrollable regions are distinct landmarks.
+   */
+  protected readonly tableLabels = computed(() => {
+    const blocks = this.blocks();
+    const tables = blocks.filter((block) => block.kind === READER_VIEW_BLOCK.Table).length;
+    let seen = 0;
+    return blocks.map((block) => {
+      if (block.kind !== READER_VIEW_BLOCK.Table) return null;
+      seen += 1;
+      return tables > 1 ? `${this.tableLabel()} ${seen}` : this.tableLabel();
+    });
+  });
+
   protected readonly sizeRem = computed(() => {
     const size = Number.isFinite(this.textSize()) ? this.textSize() : READER_TEXT_SIZE.Default;
     const clamped = Math.min(READER_TEXT_SIZE.Max, Math.max(READER_TEXT_SIZE.Min, size));
