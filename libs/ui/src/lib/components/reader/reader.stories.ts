@@ -186,7 +186,7 @@ export const RichSepiaAndBlack: Story = {
         @for (theme of themes; track theme) {
           <ui-reader style="block-size: 36rem" [theme]="theme" [site]="site" [faviconLetter]="faviconLetter"
             [heading]="heading + ' (' + theme + ')'" [meta]="meta" [blocks]="blocks"
-            [openOriginalLabel]="openOriginalLabel" [newTabLabel]="newTabLabel" [tableLabel]="tableLabel" />
+            [openOriginalLabel]="openOriginalLabel" [newTabLabel]="newTabLabel" [tableLabel]="tableLabel + ' (' + theme + ')'" />
         }
       </div>`,
   }),
