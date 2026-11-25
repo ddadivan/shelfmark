@@ -1,0 +1,21 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  padding-top: var(--space-6);
+  margin-top: rem(40px);
+  border-top: 1px solid var(--sep);
+}
+
+.feedback__question {
+  margin-inline-end: auto;
+
+  @include type(body);
+}

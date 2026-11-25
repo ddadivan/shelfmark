@@ -10,6 +10,8 @@ export const LANDING_LINKS = {
   Privacy: `/${APP_PATH.Privacy}`,
   /** The public changelog (#424): the footer and "What's new" on `/about`. */
   Changelog: `/${APP_PATH.Changelog}`,
+  /** The public Help center (Shelf 17-help). */
+  Help: `/${APP_PATH.Help}`,
   Repository: 'https://github.com/ddadivan/shelfmark',
   DecisionLog: 'https://github.com/ddadivan/shelfmark/tree/main/docs/adr',
   HowItsBuilt: '#how',

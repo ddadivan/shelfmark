@@ -1,0 +1,86 @@
+@use 'ui' as *;
+
+// Shelf 17-help `.hdr`: a 64px sticky bar over a `sep` line, the content 1280px wide.
+:host {
+  position: sticky;
+  top: env(safe-area-inset-top, 0);
+  z-index: 20;
+  display: block;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border-block-end: 1px solid var(--sep);
+  backdrop-filter: blur(rem(12px));
+}
+
+.help-header__bar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  width: 100%;
+  max-width: rem(1280px);
+  block-size: rem(64px);
+  padding-inline: max(var(--space-4), env(safe-area-inset-left, 0rem))
+    max(var(--space-4), env(safe-area-inset-right, 0rem));
+  margin-inline: auto;
+}
+
+.help-header__home {
+  display: inline-flex;
+  gap: rem(10px);
+  align-items: center;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.help-header__logo {
+  --ui-logo-size: #{rem(24px)};
+  --ui-logo-wordmark-size: var(--font-size-title-s);
+  --ui-logo-wordmark-line: var(--line-height-title-s);
+  --ui-logo-gap: #{rem(8px)};
+}
+
+.help-header__tag {
+  padding-inline-start: rem(10px);
+  color: var(--text-muted);
+  border-inline-start: 1px solid var(--sep);
+
+  @include type(heading);
+
+  font-weight: 400;
+}
+
+.help-header__search {
+  flex: 0 1 rem(420px);
+  margin-inline-start: auto;
+}
+
+.help-header__search-icon {
+  display: none;
+  margin-inline-start: auto;
+}
+
+.help-header__action {
+  flex: none;
+}
+
+// Phone and small tablet: the search pill becomes an icon, the tag steps aside on the narrowest.
+@media (width < 53.75em) {
+  .help-header__search {
+    display: none;
+  }
+
+  .help-header__search-icon {
+    display: inline-flex;
+  }
+}
+
+@media (width < 35em) {
+  .help-header__tag {
+    display: none;
+  }
+}

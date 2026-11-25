@@ -1,0 +1,31 @@
+<div class="mock-shot" aria-hidden="true" inert data-ds-ignore>
+  <div class="mock">
+    <div class="mock__head">
+      <ui-icon name="sort" />
+      <span>{{ 'help.mock.title' | transloco }}</span>
+      <span class="mock__path">{{ 'help.mock.path' | transloco }}</span>
+    </div>
+    <div class="mock__field">
+      <span class="mock__label">{{ 'help.mock.when' | transloco }}</span>
+      <div class="mock__box mock__box--ring">{{ 'help.mock.site' | transloco }}</div>
+    </div>
+    <div class="mock__field">
+      <span class="mock__label">{{ 'help.mock.put' | transloco }}</span>
+      <div class="mock__box">
+        <ui-icon class="mock__folder" name="folder" />
+        <span>{{ 'help.mock.folder' | transloco }}</span>
+        <ui-icon class="mock__chevron" name="chevron-down" />
+      </div>
+    </div>
+    <div class="mock__field">
+      <span class="mock__label">{{ 'help.mock.tags' | transloco }}</span>
+      <div class="mock__box">
+        <span class="mock__tag">{{ 'help.mock.tag' | transloco }}</span>
+      </div>
+    </div>
+    <div class="mock__foot">
+      <ui-button>{{ 'help.mock.cancel' | transloco }}</ui-button>
+      <ui-button [variant]="BUTTON_VARIANT.Primary">{{ 'help.mock.save' | transloco }}</ui-button>
+    </div>
+  </div>
+</div>

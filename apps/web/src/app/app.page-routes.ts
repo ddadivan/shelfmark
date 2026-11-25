@@ -83,6 +83,12 @@ export const pageRoutes: Routes = [
   { path: APP_PATH.Privacy, loadComponent: () => import('./features/privacy/privacy.page') },
   // The public changelog (#424): no guard, like the privacy policy.
   { path: APP_PATH.Changelog, loadComponent: () => import('./features/changelog/changelog.page') },
+  // The Help center (Shelf 17-help): public, outside the shell, so it opens in its own tab.
+  { path: APP_PATH.Help, loadComponent: () => import('./features/help/help.page') },
+  {
+    path: `${APP_PATH.Help}/:articleId`,
+    loadComponent: () => import('./features/help/pages/help-article/help-article.page'),
+  },
   // A public collection (#276): no guard, outside the shell; guests and signed-in people alike.
   {
     path: `${APP_PATH.Collection}/:token`,

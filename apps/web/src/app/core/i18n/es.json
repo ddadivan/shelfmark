@@ -4839,5 +4839,513 @@
     "text": "Puede que la dirección esté mal escrita o que la página se haya movido.",
     "links": "Ir a tus enlaces",
     "home": "Ir a Shelfmark"
+  },
+  "help": {
+    "title": "Centro de ayuda",
+    "brand": "Ayuda",
+    "homeLabel": "Inicio de la ayuda de Shelfmark",
+    "searchTrigger": "Buscar en la ayuda",
+    "searchShortcut": "Ctrl K",
+    "menu": "Centro de ayuda",
+    "learnMore": "Más información",
+    "hero": {
+      "title": "¿Cómo podemos ayudarte?",
+      "lead": "Guías de todo lo que hace Shelfmark, desde guardar tu primer enlace hasta hacerle una pregunta a tu estantería.",
+      "placeholder": "Buscar: reglas, recordatorios, exportar…",
+      "searchLabel": "Buscar en los artículos de ayuda",
+      "clear": "Borrar la búsqueda"
+    },
+    "popular": "Populares:",
+    "popularLabel": "Artículos populares",
+    "articleCount": {
+      "one": "{{count}} artículo",
+      "many": "{{count}} artículos",
+      "other": "{{count}} artículos"
+    },
+    "bar": {
+      "how": {
+        "title": "Cómo funciona",
+        "text": "Un recorrido en vídeo de 3 minutos."
+      },
+      "shortcuts": {
+        "title": "Atajos de teclado",
+        "text": "Todas las teclas, en una sola lista."
+      },
+      "feedback": {
+        "title": "¿Sigues atascado?",
+        "text": "Envía tus comentarios; el autor responde."
+      }
+    },
+    "nav": "Temas de ayuda",
+    "toc": "En esta página",
+    "crumbs": "Ruta de navegación",
+    "topics": "Temas",
+    "minutes": {
+      "one": "{{count}} min de lectura",
+      "many": "{{count}} min de lectura",
+      "other": "{{count}} min de lectura"
+    },
+    "updated": "Actualizado el {{date}}",
+    "related": "Relacionados",
+    "wasHelpful": "¿Te ha resultado útil?",
+    "yes": "Sí",
+    "no": "No",
+    "thanksYes": "Gracias por decírnoslo.",
+    "thanksNo": "Lo sentimos. Cuéntanos qué faltaba.",
+    "sendFeedback": "Enviar comentarios",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "articleNav": "Más artículos",
+    "search": {
+      "count": {
+        "one": "{{count}} artículo",
+        "many": "{{count}} artículos",
+        "other": "{{count}} artículos"
+      },
+      "resultsLabel": "Resultados de la búsqueda",
+      "emptyTitle": "¿No lo encuentras?",
+      "emptyText": "Prueba con otras palabras o cuéntale al autor qué falta.",
+      "noneTitle": "No hay resultados para «{{query}}»"
+    },
+    "notFound": {
+      "title": "Artículo no encontrado",
+      "text": "Este artículo de ayuda no existe o se ha movido.",
+      "action": "Volver al centro de ayuda"
+    },
+    "categories": {
+      "getting-started": {
+        "title": "Primeros pasos",
+        "text": "Guarda tus primeros enlaces y trae lo que ya tienes."
+      },
+      "organise": {
+        "title": "Organizar",
+        "text": "Carpetas, etiquetas y reglas para mantener la estantería ordenada."
+      },
+      "find": {
+        "title": "Encontrar",
+        "text": "Recupera cualquier enlace con unas pocas teclas."
+      },
+      "come-back": {
+        "title": "Volver",
+        "text": "Los recordatorios y Hoy traen los enlaces de vuelta en el momento justo."
+      },
+      "read": {
+        "title": "Leer",
+        "text": "Abre los enlaces en el sitio o léelos sin distracciones en el Lector."
+      },
+      "ai": {
+        "title": "IA",
+        "text": "Ayuda opcional para ordenar, encontrar y preguntar."
+      },
+      "account": {
+        "title": "Cuenta y datos",
+        "text": "Exportar, temas, atajos y tu cuenta."
+      }
+    },
+    "mock": {
+      "title": "Nueva regla",
+      "path": "Ajustes › Biblioteca › Reglas",
+      "when": "Cuando un enlace sea de",
+      "site": "taylorstitch.com",
+      "put": "Ponerlo en",
+      "folder": "Compras",
+      "tags": "Añadir etiquetas",
+      "tag": "#ropa",
+      "cancel": "Cancelar",
+      "save": "Guardar regla"
+    },
+    "articles": {
+      "save-first-link": {
+        "title": "Guarda tu primer enlace",
+        "lead": "Pega una dirección web y Shelfmark rellena la imagen, el título y el sitio por ti.",
+        "sections": {
+          "s1": {
+            "title": "Pega un enlace",
+            "b0": "Elige Añadir enlace, pega la dirección y pulsa Guardar. La vista previa aparece en un momento y puedes cambiar el título antes de guardar."
+          },
+          "s2": {
+            "title": "Añade una nota",
+            "b0": "Una nota breve sobre por qué lo guardaste te ayuda a encontrar el enlace más adelante. Las notas se pueden buscar."
+          }
+        }
+      },
+      "install-extension": {
+        "title": "Instala la extensión",
+        "lead": "Guarda la página en la que estás con un clic, sin salir de ella.",
+        "sections": {
+          "s1": {
+            "title": "Añádela a tu navegador",
+            "b0": "Instala la extensión de Shelfmark desde Chrome Web Store. Funciona en Chrome, Edge, Brave y Arc."
+          },
+          "s2": {
+            "title": "Guarda una página",
+            "b0": "Haz clic en el botón de la barra de herramientas o pulsa Alt+Mayús+S. El título y la carpeta ya están rellenados, así que la mayoría de las páginas necesitan un clic más."
+          }
+        }
+      },
+      "import-bookmarks": {
+        "title": "Importar marcadores",
+        "lead": "Trae los marcadores que ya tienes de Chrome, Safari, Firefox o Edge.",
+        "sections": {
+          "s1": {
+            "title": "Exporta desde tu navegador",
+            "b0": "Todos los navegadores pueden exportar sus marcadores como archivo HTML. Busca Exportar marcadores en su administrador de marcadores."
+          },
+          "s2": {
+            "title": "Importa el archivo",
+            "b0": "Abre Datos y ayuda, elige Importar enlaces y selecciona el archivo. Las carpetas se conservan y los enlaces ya guardados se omiten."
+          }
+        }
+      },
+      "use-on-phone": {
+        "title": "Usar Shelfmark en el móvil",
+        "lead": "Guarda desde el menú Compartir y encuentra todo en la misma estantería.",
+        "sections": {
+          "s1": {
+            "title": "Añádela a la pantalla de inicio",
+            "b0": "Abre Shelfmark en el navegador del móvil y elige Añadir a la pantalla de inicio. Luego se abre como cualquier otra aplicación."
+          },
+          "s2": {
+            "title": "Guarda desde cualquier aplicación",
+            "b0": "En Android, elige Shelfmark en el menú Compartir de una página o aplicación y el enlace llega a Sin clasificar."
+          }
+        }
+      },
+      "folders": {
+        "title": "Carpetas y subcarpetas",
+        "lead": "Pon los enlaces donde corresponden, con toda la profundidad que quieras.",
+        "sections": {
+          "s1": {
+            "title": "Crea una carpeta",
+            "b0": "Usa el signo más junto a Carpetas en la barra lateral. Arrastra una carpeta sobre otra para convertirla en subcarpeta."
+          },
+          "s2": {
+            "title": "Mueve enlaces",
+            "b0": "Arrastra un enlace a una carpeta, o abre su menú ⋯ y elige Mover a una carpeta. Selecciona varios enlaces para moverlos juntos."
+          }
+        }
+      },
+      "tags": {
+        "title": "Etiquetas",
+        "lead": "Rótulos cortos que atraviesan las carpetas.",
+        "sections": {
+          "s1": {
+            "title": "Añade etiquetas",
+            "b0": "Escribe una etiqueta al guardar o editar un enlace. Un enlace puede llevar hasta 20 etiquetas."
+          },
+          "s2": {
+            "title": "Filtra por etiqueta",
+            "b0": "Elige una etiqueta en la barra lateral o en la página Etiquetas para ver todos los enlaces que la llevan."
+          }
+        }
+      },
+      "favorites-pins": {
+        "title": "Favoritos y enlaces fijados",
+        "lead": "Ten a un clic los enlaces que más usas.",
+        "sections": {
+          "s1": {
+            "title": "Favoritos",
+            "b0": "Toca la estrella de un enlace para añadirlo a Favoritos, una lista aparte en la barra lateral."
+          },
+          "s2": {
+            "title": "Fija una carpeta o etiqueta",
+            "b0": "Las carpetas y etiquetas fijadas se quedan arriba en la barra lateral, por encima del resto."
+          }
+        }
+      },
+      "trash": {
+        "title": "Papelera",
+        "lead": "Los enlaces eliminados esperan aquí antes de desaparecer del todo.",
+        "sections": {
+          "s1": {
+            "title": "Restaurar",
+            "b0": "Abre la Papelera, selecciona un enlace o una carpeta y elige Restaurar. Vuelve a donde estaba."
+          },
+          "s2": {
+            "title": "Eliminado del todo",
+            "b0": "Los elementos se eliminan definitivamente cuando termina su tiempo en la Papelera. También puedes vaciarla antes."
+          }
+        }
+      },
+      "search": {
+        "title": "Búsqueda",
+        "lead": "Encuentra un enlace por cualquier palabra de su título, nota, etiquetas o dirección.",
+        "sections": {
+          "s1": {
+            "title": "Abre la búsqueda",
+            "b0": "Pulsa Ctrl K (Cmd K en Mac) en cualquier sitio, o usa el campo de búsqueda de arriba."
+          },
+          "s2": {
+            "title": "Afina los resultados",
+            "b0": "Añade una carpeta o etiqueta a la búsqueda para afinar los resultados. Las palabras encontradas se resaltan."
+          }
+        }
+      },
+      "search-by-meaning": {
+        "title": "Búsqueda por significado",
+        "lead": "Encuentra enlaces cercanos a tus palabras, incluso sin esas palabras exactas.",
+        "sections": {
+          "s1": {
+            "title": "Actívala",
+            "b0": "La búsqueda por significado forma parte de la IA. Activa la IA en Ajustes y funciona en el campo de búsqueda."
+          },
+          "s2": {
+            "title": "Relacionados por significado",
+            "b0": "Los resultados que encajan con la idea aparecen bajo Relacionados por significado, después de las coincidencias exactas."
+          }
+        }
+      },
+      "saved-views": {
+        "title": "Vistas guardadas",
+        "lead": "Guarda una búsqueda o un filtro como una pestaña a la que volver.",
+        "sections": {
+          "s1": {
+            "title": "Guarda una vista",
+            "b0": "Configura los filtros que quieras y elige Guardar vista. Aparece como una pestaña sobre la lista."
+          },
+          "s2": {
+            "title": "Edítala o elimínala",
+            "b0": "Abre el menú de la pestaña para renombrar o eliminar una vista. Eliminar una vista nunca elimina enlaces."
+          }
+        }
+      },
+      "side-by-side": {
+        "title": "Lado a lado",
+        "lead": "Lee un enlace junto a tu lista sin perder el sitio.",
+        "sections": {
+          "s1": {
+            "title": "Abre un enlace",
+            "b0": "En una pantalla ancha, un enlace se abre en un panel junto a la lista en lugar de taparla."
+          },
+          "s2": {
+            "title": "Recorre la lista",
+            "b0": "Usa las teclas de flecha para ir al siguiente enlace y el panel te sigue."
+          }
+        }
+      },
+      "today": {
+        "title": "Hoy",
+        "lead": "Una página con lo que merece tu tiempo ahora mismo.",
+        "sections": {
+          "s1": {
+            "title": "Qué ves",
+            "b0": "Recordatorios vencidos, artículos a medio leer y un enlace olvidado, todo en un solo sitio."
+          },
+          "s2": {
+            "title": "Despéjala",
+            "b0": "Abre un enlace, posponlo o márcalo como hecho y sale de la página."
+          }
+        }
+      },
+      "reminders": {
+        "title": "Recordatorios",
+        "lead": "Pon un recordatorio en cualquier enlace: más tarde hoy, mañana, este fin de semana o una fecha que elijas.",
+        "sections": {
+          "s1": {
+            "title": "Pon un recordatorio",
+            "b0": "Abre el menú ⋯ de un enlace, elige Recordármelo y escoge una hora. Pulsa R en el enlace seleccionado como atajo."
+          },
+          "s2": {
+            "title": "Cuando vence",
+            "b0": "Un recordatorio vencido aparece en Hoy y en Recordatorios. También puedes recibir un aviso en el navegador o por correo."
+          }
+        }
+      },
+      "recently-opened": {
+        "title": "Abiertos recientemente",
+        "lead": "Los enlaces que abriste hace poco, los más nuevos primero.",
+        "sections": {
+          "s1": {
+            "title": "Encuéntralo otra vez",
+            "b0": "Abre Abiertos recientemente desde la barra lateral para ver tus enlaces agrupados por día."
+          },
+          "s2": {
+            "title": "Quita una entrada",
+            "b0": "Quita una entrada desde su menú. Eso nunca elimina el enlace."
+          }
+        }
+      },
+      "link-preview": {
+        "title": "Vista previa del enlace",
+        "lead": "Mira un enlace en el sitio antes de salir de la estantería.",
+        "sections": {
+          "s1": {
+            "title": "Abre la vista previa",
+            "b0": "Elige un enlace para abrir su vista previa con la imagen, el resumen, las etiquetas y la nota."
+          },
+          "s2": {
+            "title": "Cuando una página no se puede mostrar",
+            "b0": "Algunos sitios se niegan a aparecer dentro de otra página. Entonces la vista previa ofrece Abrir en una pestaña nueva."
+          }
+        }
+      },
+      "reader": {
+        "title": "Lector",
+        "lead": "Una vista limpia y sin distracciones de un artículo.",
+        "sections": {
+          "s1": {
+            "title": "Abre el Lector",
+            "b0": "Elige Lector en un enlace que sea un artículo. El texto se abre sin anuncios ni menús."
+          },
+          "s2": {
+            "title": "Hazlo cómodo",
+            "b0": "Cambia el tamaño del texto, la fuente, el interlineado y el tema en los ajustes de lectura. Tus elecciones se recuerdan."
+          }
+        }
+      },
+      "turn-on-ai": {
+        "title": "Activar la IA",
+        "lead": "La IA es opcional y sigue desactivada hasta que la actives.",
+        "sections": {
+          "s1": {
+            "title": "Actívala",
+            "b0": "Abre Ajustes, luego IA, y actívala. Eliges por separado para carpetas y para etiquetas."
+          },
+          "s2": {
+            "title": "Desactívala otra vez",
+            "b0": "Desactivar la IA detiene todas las sugerencias al instante. También puedes eliminar tus datos de IA en Privacidad y datos."
+          }
+        }
+      },
+      "ai-suggestions": {
+        "title": "Sugerencias de carpetas y etiquetas",
+        "lead": "La IA propone una carpeta y etiquetas para cada enlace nuevo.",
+        "sections": {
+          "s1": {
+            "title": "Acepta con un toque",
+            "b0": "Las sugerencias salen de las carpetas y etiquetas que ya tienes. Nada se mueve hasta que lo toques."
+          },
+          "s2": {
+            "title": "Ordena Sin clasificar",
+            "b0": "Abre Ordenar en Sin clasificar para revisar las sugerencias de muchos enlaces a la vez."
+          }
+        }
+      },
+      "ask-your-shelf": {
+        "title": "Pregunta a tu estantería",
+        "lead": "Haz una pregunta con tus propias palabras y obtén una respuesta de tus enlaces.",
+        "sections": {
+          "s1": {
+            "title": "Haz una pregunta",
+            "b0": "Abre Preguntar, escribe una pregunta y envíala. La respuesta se escribe a partir de tus propios enlaces."
+          },
+          "s2": {
+            "title": "Comprueba las fuentes",
+            "b0": "Cada respuesta enumera los enlaces que usó, para que puedas abrirlos y comprobarlo."
+          }
+        }
+      },
+      "ai-privacy": {
+        "title": "Qué ve y guarda la IA",
+        "lead": "Qué sale de tu estantería mientras la IA está activada.",
+        "sections": {
+          "s1": {
+            "title": "Qué se envía",
+            "b0": "Solo se envían la dirección, el título y el texto necesarios para la tarea, y solo mientras la IA está activada."
+          },
+          "s2": {
+            "title": "Qué se guarda",
+            "b0": "Las sugerencias y los resúmenes se guardan con tu enlace. Tus enlaces nunca se usan para entrenar modelos de IA."
+          }
+        }
+      },
+      "export": {
+        "title": "Exporta tus enlaces",
+        "lead": "Llévate todo cuando quieras.",
+        "sections": {
+          "s1": {
+            "title": "Elige un formato",
+            "b0": "Abre Datos y ayuda, elige Exportar y selecciona JSON, HTML de marcadores o CSV."
+          },
+          "s2": {
+            "title": "Qué incluye",
+            "b0": "Enlaces, carpetas, etiquetas y notas. El archivo se crea para ti y no se conserva."
+          }
+        }
+      },
+      "themes": {
+        "title": "Temas y apariencia",
+        "lead": "Claro, oscuro o el que use tu dispositivo.",
+        "sections": {
+          "s1": {
+            "title": "Cambia de tema",
+            "b0": "Usa la fila Tema de la barra lateral, o elige Claro, Oscuro o Sistema en Ajustes."
+          },
+          "s2": {
+            "title": "Hazlo tuyo",
+            "b0": "En Ajustes también puedes elegir un color de acento y lo redondeadas que son las esquinas."
+          }
+        }
+      },
+      "keyboard-shortcuts": {
+        "title": "Atajos de teclado",
+        "lead": "Todas las teclas, en una sola lista.",
+        "sections": {
+          "s1": {
+            "title": "Mira la lista",
+            "b0": "Pulsa ? en cualquier sitio de la aplicación para abrir la lista de atajos."
+          },
+          "s2": {
+            "title": "Unos cuantos para empezar",
+            "b0": "Ctrl K busca, R pone un recordatorio en el enlace seleccionado y Mayús ? abre la ayuda."
+          }
+        }
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "lead": "Un aviso en el navegador o por correo cuando vence un recordatorio.",
+        "sections": {
+          "s1": {
+            "title": "Elige dónde",
+            "b0": "Abre Ajustes, luego Notificaciones, y activa las notificaciones del navegador, el correo o ambos."
+          },
+          "s2": {
+            "title": "Silencioso por defecto",
+            "b0": "No se envía nada hasta que lo actives, y puedes desactivarlo en cualquier momento."
+          }
+        }
+      },
+      "delete-account": {
+        "title": "Eliminar tu cuenta",
+        "lead": "Elimina tu cuenta y todo lo que hay guardado en ella.",
+        "sections": {
+          "s1": {
+            "title": "Antes de irte",
+            "b0": "Exporta primero tus enlaces si quieres conservarlos. Eliminar es definitivo."
+          },
+          "s2": {
+            "title": "Eliminar",
+            "b0": "Abre Ajustes, luego Cuenta, y elige Eliminar cuenta. Confirmas una vez y tus datos se eliminan."
+          }
+        }
+      },
+      "rules": {
+        "title": "Reglas: archivar enlaces automáticamente",
+        "lead": "Una regla pone cada enlace de un sitio en la carpeta que elijas, con etiquetas si quieres. Guarda un enlace de taylorstitch.com y acaba solo en Compras.",
+        "sections": {
+          "create": {
+            "title": "Crear una regla",
+            "steps": {
+              "0": "Abre **Ajustes › Biblioteca › Reglas** y elige **Añadir regla**.",
+              "1": "Escribe el sitio, por ejemplo `taylorstitch.com`. Coinciden las páginas de ese sitio y de sus subdominios.",
+              "2": "Elige la carpeta y, si quieres, etiquetas. Después **Guardar regla**."
+            },
+            "tip": "**Más rápido:** abre el menú ⋯ de un enlace y elige **Regla para taylorstitch.com…**. El sitio y su carpeta actual ya vienen rellenados."
+          },
+          "existing": {
+            "title": "Aplicar una regla a los enlaces que ya tienes",
+            "b0": "Después de guardar una regla, Shelfmark te ofrece mover los enlaces de ese sitio que aún están en Sin clasificar. Los enlaces que ya pusiste en una carpeta se quedan donde están."
+          },
+          "offer": {
+            "title": "Cuando Shelfmark sugiere una regla",
+            "b0": "Si mueves tres enlaces del mismo sitio a la misma carpeta, Shelfmark te pregunta una vez si quieres hacerlo automáticamente a partir de ahora. **Ahora no** oculta la oferta para ese sitio durante 30 días."
+          },
+          "limits": {
+            "title": "Conviene saber",
+            "warn": "Si la carpeta de una regla va a la papelera, la regla se pausa y los nuevos enlaces de ese sitio van a Sin clasificar hasta que elijas otra carpeta."
+          }
+        }
+      }
+    }
   }
 }

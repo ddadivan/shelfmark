@@ -1,0 +1,42 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.help-toc {
+  display: flex;
+  flex-direction: column;
+  gap: rem(6px);
+
+  @include type(secondary);
+}
+
+.help-toc__heading {
+  margin: 0 0 rem(4px);
+  color: var(--text-muted);
+
+  @include type(caption);
+
+  font-weight: 500;
+}
+
+.help-toc__link {
+  padding-inline-start: var(--space-3);
+  color: var(--text-muted);
+  text-decoration: none;
+  border-inline-start: 2px solid var(--sep);
+
+  @include hover {
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &--on {
+    color: var(--text);
+    border-color: var(--text);
+  }
+}

@@ -327,6 +327,11 @@ export class SidebarComponent {
     this.injector.get(ExportDialogService).open();
   }
 
+  /** Help center: its own tab, so the shelf stays where it was (Shelf 17-help). */
+  protected openHelp(): void {
+    window.open(`/${APP_PATH.Help}`, '_blank', 'noopener');
+  }
+
   protected openWhatsNew(): void {
     void this.whatsNew.open();
   }
