@@ -93,13 +93,11 @@ test.describe('link preview (mock API)', () => {
     await handle.press('ArrowRight');
     await expect(handle).toHaveAttribute('aria-valuenow', String(before + 16));
 
-    // Shelf: "Wider preview" and "Show the list" are items of the toolbar's ⋯ menu.
+    // "Wider preview" is its own toolbar button (not in the ⋯ menu); pressed, it reads "Narrower preview".
     const panel = page.getByRole('region', { name: `Preview: ${FIRST}` });
-    await panel.getByRole('button', { name: 'More actions' }).click();
-    await page.getByRole('menuitem', { name: 'Wider preview' }).click();
+    await panel.getByRole('button', { name: 'Wider preview' }).click();
     await expect(handle).toHaveCount(0);
-    await panel.getByRole('button', { name: 'More actions' }).click();
-    await page.getByRole('menuitem', { name: 'Show the list' }).click();
+    await panel.getByRole('button', { name: 'Narrower preview' }).click();
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
   });
 
