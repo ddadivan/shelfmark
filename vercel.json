@@ -23,11 +23,25 @@
   "crons": [
     { "path": "/api/cron/demo-cleanup", "schedule": "17 3 * * *" },
     { "path": "/api/cron/trash-cleanup", "schedule": "47 3 * * *" },
-    { "path": "/api/cron/ai-sweep", "schedule": "17 4 * * *" },
-    { "path": "/api/cron/notifications", "schedule": "7 8 * * *" },
-    { "path": "/api/cron/account-purge", "schedule": "37 2 * * *" },
-    { "path": "/api/cron/ask-history", "schedule": "27 4 * * *" }
+    { "path": "/api/cron/ai-sweep", "schedule": "17 4 * * *" }
   ],
+  "schedules": {
+    "notifications": {
+      "schedule": "*/15 * * * *",
+      "path": "/api/cron/notifications",
+      "requestMethod": "GET"
+    },
+    "account-purge": {
+      "schedule": "37 2 * * *",
+      "path": "/api/cron/account-purge",
+      "requestMethod": "GET"
+    },
+    "ask-history": {
+      "schedule": "27 4 * * *",
+      "path": "/api/cron/ask-history",
+      "requestMethod": "GET"
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*\\.[^/]*)", "destination": "/api" },

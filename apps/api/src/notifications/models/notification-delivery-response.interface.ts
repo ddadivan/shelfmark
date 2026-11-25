@@ -8,6 +8,8 @@ export interface NotificationDeliveryResponse {
   removed: number;
   /** Users skipped because every device of theirs was in quiet hours. */
   quiet: number;
+  /** Reminders older than the delivery window, marked handled without a push. */
+  skipped: number;
   /** True when the budget ran out with work left. */
   hasMore: boolean;
 }

@@ -63,21 +63,34 @@ describe('GET /api/cron/demo-cleanup', () => {
     rediscoverState: await t.db.prisma.rediscoverState.count(),
   });
 
-  it('has the vercel.json cron path of the route', () => {
+  it('has the vercel.json cron and schedule paths of the routes', () => {
     const config: unknown = JSON.parse(
       readFileSync(resolve(import.meta.dirname, '../../../../vercel.json'), 'utf8'),
     );
-    const crons = (config as { crons?: { path: string; schedule: string }[] }).crons ?? [];
+    const { crons = [], schedules = {} } = config as {
+      crons?: { path: string; schedule: string }[];
+      schedules?: Record<string, { path: string; schedule: string; requestMethod: string }>;
+    };
     expect(crons.map((cron) => cron.path)).toEqual([
       CRON_ROUTE.Path,
       CRON_ROUTE.TrashCleanupPath,
       CRON_ROUTE.AiSweepPath,
+    ]);
+    // Cron Jobs (Hobby): one run per day, a fixed minute and hour.
+    for (const cron of crons) expect(cron.schedule).toMatch(/^\d{1,2} \d{1,2} \* \* \*$/);
+    // Vercel Schedules (ADR 0063): path targets keep the routes and the CRON_SECRET check. No path
+    // is in both lists (a run would happen twice); names are stable keys.
+    expect(Object.keys(schedules)).toEqual(['notifications', 'account-purge', 'ask-history']);
+    expect(Object.values(schedules).map((entry) => entry.path)).toEqual([
       CRON_ROUTE.NotificationsPath,
       CRON_ROUTE.AccountPurgePath,
       CRON_ROUTE.AskHistoryPurgePath,
     ]);
-    // Hobby allows one run per day: a fixed minute and hour, nothing more frequent.
-    for (const cron of crons) expect(cron.schedule).toMatch(/^\d{1,2} \d{1,2} \* \* \*$/);
+    expect(schedules['notifications']?.schedule).toBe('*/15 * * * *');
+    for (const entry of Object.values(schedules)) expect(entry.requestMethod).toBe('GET');
+    for (const entry of Object.values(schedules)) {
+      expect(crons.map((cron) => cron.path)).not.toContain(entry.path);
+    }
   });
 
   describe('authentication', () => {
