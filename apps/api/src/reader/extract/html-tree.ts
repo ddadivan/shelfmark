@@ -71,7 +71,11 @@ function isChrome(element: HtmlElement): boolean {
   const role = attributeOf(element, 'role');
   if (role !== undefined && READER_CHROME_ROLE.has(role)) return true;
   const names = namesOf(element);
-  return READER_CHROME_PATTERN.Hidden.test(names) || READER_CHROME_PATTERN.Control.test(names);
+  return (
+    READER_CHROME_PATTERN.Hidden.test(names) ||
+    READER_CHROME_PATTERN.HiddenClass.test(attributeOf(element, 'class') ?? '') ||
+    READER_CHROME_PATTERN.Control.test(names)
+  );
 }
 
 /** Whether a pass drops this element with everything under it. */

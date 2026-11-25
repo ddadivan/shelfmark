@@ -7,6 +7,8 @@ export const READER_CHROME_PATTERN = {
   /** Class words of text only a screen reader gets. */
   Hidden:
     /(?:^|[\s_-])(?:sr-only|visually-hidden|visuallyhidden|screen-reader-text|screenreader|a11y-hidden|offscreen|skip-link|skip-to-content)(?:[\s_-]|$)/i,
+  /** Whole class names of elements the page's CSS hides (utility classes) or pins over the page (modals). */
+  HiddenClass: /(?:^|\s)(?:hidden|d-none|is-hidden|u-hidden|fixed)(?:\s|$)/i,
   /** A custom element (its tag has a hyphen) named like a nav, a TOC, a footer or a share bar. */
   CustomTag:
     /(?:^|-)(?:toc|table-of-contents|breadcrumbs?|navigation|nav|sidebar|footer|header|menu|search|cookie|banner|toolbar|share|pagination|feedback|related)(?:-|$)/i,
@@ -18,5 +20,5 @@ export const READER_CHROME_PATTERN = {
    * not a table of contents.
    */
   Control:
-    /(?:^|\s)(?:edit-page|edit-this-page|edit-link|docs-github-links|copy-button|copy-code|copy-to-clipboard|clipboard|toc|toc-container|toc-wrapper|docs-toc|page-toc|post-toc|table-of-contents|on-this-page|breadcrumbs?|page-actions|back-to-top|print-only|example-header|meta-container|post-meta|entry-meta|article-meta|byline|reading-time|article-labels|publication-hubs|publication-snippet-controls|tm-user-info|meta-box|c-garfield-aside--meta)(?:\s|$)/i,
+    /(?:^|\s)(?:edit-page|edit-this-page|edit-link|docs-github-links|copy-button|copy-code|copy-to-clipboard|clipboard|toc|toc-container|toc-wrapper|docs-toc|page-toc|post-toc|table-of-contents|on-this-page|breadcrumbs?|page-actions|back-to-top|print-only|example-header|meta-container|post-meta|entry-meta|article-meta|byline|reading-time|article-labels|publication-hubs|publication-snippet-controls|tm-user-info|meta-box|c-garfield-aside--meta|reference|mw-editsection|hatnote|catlinks|printfooter|navbox|reflist|mw-references-wrap)(?:\s|$)/i,
 } as const;

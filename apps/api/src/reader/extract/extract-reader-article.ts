@@ -61,7 +61,16 @@ function wordsOf(blocks: readonly ReaderBlock[]): number {
 
 /** Chars of a line before the first real paragraph that still counts as byline. */
 const BYLINE_CHARS_MAX = 80;
-const SENTENCE_END = /[.!?…:"”»)]$/;
+const SENTENCE_END = /[.!?…:"”»]$/;
+/** A repeated block shorter than this is kept ("Details", a price). */
+const REPEAT_CHARS_MIN = 40;
+const TEXT_KINDS: ReadonlySet<string> = new Set([
+  READER_BLOCK_KIND.Paragraph,
+  READER_BLOCK_KIND.List,
+  READER_BLOCK_KIND.Quote,
+  READER_BLOCK_KIND.Note,
+  READER_BLOCK_KIND.Table,
+]);
 const TITLE_SEPARATOR = /\s[|–—•·-]\s/;
 const TITLE_TAIL = /\s[|–—•·-]\s*$/;
 const NOT_ALPHANUMERIC = /[^a-z0-9]/g;
@@ -116,6 +125,41 @@ function isByline(block: ReaderBlock): boolean {
     block.text.length <= BYLINE_CHARS_MAX &&
     !SENTENCE_END.test(block.text)
   );
+}
+
+function blockKey(block: ReaderBlock): string {
+  const items = (list: ReaderBlock['items']): string =>
+    list
+      .map((item) => `${item.spans.map((span) => span.text).join('')}${items(item.items)}`)
+      .join('|');
+  return `${block.kind}:${block.text}:${items(block.items)}:${block.rows.flat().join('|')}`;
+}
+
+/**
+ * A text, list or table the page repeated word for word (a description printed once per
+ * colour or size, a responsive copy) stays once, at its first place; a heading left with nothing
+ * under it goes with it.
+ */
+function dropRepeats(blocks: ReaderBlock[]): ReaderBlock[] {
+  const seen = new Set<string>();
+  const kept = blocks.filter((block) => {
+    if (block.kind === READER_BLOCK_KIND.Heading || block.kind === READER_BLOCK_KIND.Image) {
+      return true;
+    }
+    const key = blockKey(block);
+    if (key.length < REPEAT_CHARS_MIN) return true;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return kept.filter((block, index) => {
+    if (block.kind !== READER_BLOCK_KIND.Heading) return true;
+    const next = kept[index + 1];
+    return (
+      next !== undefined &&
+      !(next.kind === READER_BLOCK_KIND.Heading && (next.level ?? 2) <= (block.level ?? 2))
+    );
+  });
 }
 
 /**
@@ -189,10 +233,10 @@ export function extractReaderArticle(
       const title = collector.title ?? findTitleH1(root) ?? pageTitle ?? fallbackTitle;
       const first = blocks[0];
       if (first?.kind === READER_BLOCK_KIND.Heading && sameText(first.text, title)) blocks.shift();
+      blocks.splice(0, blocks.length, ...dropRepeats(blocks));
       trimEdges(blocks);
-      const paragraphs = blocks.filter(
-        (block) => block.kind === READER_BLOCK_KIND.Paragraph,
-      ).length;
+      // Text blocks: a recipe is a paragraph, an ingredient list and steps.
+      const paragraphs = blocks.filter((block) => TEXT_KINDS.has(block.kind)).length;
       const words = wordsOf(blocks);
       if (
         words >= READER_EXTRACT_LIMIT.WordsMin &&

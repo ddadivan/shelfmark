@@ -28,7 +28,10 @@ const sentence =
   'This is an ordinary sentence of an article, long enough to count as real prose for the test.';
 
 function paragraphs(count: number, words = sentence): string {
-  return Array.from({ length: count }, () => `<p>${words} ${words}</p>`).join('');
+  return Array.from(
+    { length: count },
+    (_, index) => `<p>${words} ${words} Part ${index}.</p>`,
+  ).join('');
 }
 
 describe('extractReaderArticle', () => {
@@ -170,7 +173,7 @@ describe('extractReaderArticle', () => {
   });
 
   it('prefers the parent of an article split into sibling boxes', () => {
-    const html = `<html><body><div id="story"><div>${paragraphs(3)}</div><div>${paragraphs(3)}</div></div><div class="x"><p>${sentence}</p></div></body></html>`;
+    const html = `<html><body><div id="story"><div>${paragraphs(3)}</div><div>${paragraphs(3, `Another box of text. ${sentence}`)}</div></div><div class="x"><p>${sentence}</p></div></body></html>`;
     const article = extractReaderArticle(html, 'Split', null, NOW);
     expect(article?.blocks).toHaveLength(6);
   });

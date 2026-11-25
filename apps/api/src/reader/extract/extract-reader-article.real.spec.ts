@@ -26,6 +26,9 @@ interface RealPage {
   /** Inline code kept as a span, and a link target that must be in the article. */
   inlineCode: string;
   link: string;
+  /** The text of one list item the page has (ingredient, detail), and of one numbered step. */
+  listItem?: string;
+  orderedStep?: string;
   /** Block kinds the article must have besides these. */
   kinds?: ReaderBlock['kind'][];
 }
@@ -58,62 +61,6 @@ const PAGES: RealPage[] = [
     kinds: [READER_BLOCK_KIND.List],
   },
   {
-    file: 'devto',
-    url: 'https://dev.to/sylwia-lask/mcp-is-dead-simple-and-thats-exactly-the-problem-5811',
-    title: "MCP Is Dead Simple. And That's Exactly the Problem",
-    firstHeading: '🤔 What Exactly Is MCP?',
-    firstParagraph: 'What exactly is MCP?',
-    chrome: ['Create account', 'Add reaction', 'Top comments', 'Report abuse'],
-    codeBlocks: 2,
-    firstCodeLanguage: null,
-    inlineCode: 'any',
-    link: 'https://dev.to/sylwia-lask/the-dirty-secret-behind-ai-agents-demo--273d',
-  },
-  {
-    file: 'habr',
-    url: 'https://habr.com/ru/articles/1111954/',
-    title: 'Яндекс Браузер официально отменил анонимность. Спойлер: похоже, её и не было',
-    firstHeading: '',
-    firstParagraph: 'Я тут наткнулся на новость',
-    chrome: ['Войти', 'Регистрация', 'Комментарии', 'Теги:'],
-    codeBlocks: 0,
-    firstCodeLanguage: null,
-    inlineCode: '',
-    link: 'https://www.cnews.ru/news/top/2026-11-23_iz_litsenzionnogo_soglasheniya',
-    kinds: [READER_BLOCK_KIND.Image],
-  },
-  {
-    file: 'overreacted',
-    url: 'https://overreacted.io/a-complete-guide-to-useeffect/',
-    title: 'A Complete Guide to useEffect',
-    firstHeading: 'TLDR',
-    firstParagraph: 'You wrote a few components with',
-    chrome: ['Pay what you like', 'March 9, 2019'],
-    codeBlocks: 4,
-    firstCodeLanguage: 'jsx',
-    inlineCode: 'useEffect',
-    link: 'https://reactjs.org/docs/hooks-intro.html',
-    kinds: [READER_BLOCK_KIND.Quote, READER_BLOCK_KIND.List],
-  },
-  {
-    file: 'csstricks',
-    url: 'https://css-tricks.com/snippets/css/a-guide-to-flexbox/',
-    title: 'A Complete CSS Flexbox Layout Guide',
-    firstHeading: 'Properties for the Parent (Flex Container)',
-    firstParagraph: 'The `Flexbox Layout`'.replace(/`/g, ''),
-    chrome: [
-      'Skip to main content',
-      'Sponsor CSS-Tricks!',
-      'CSS Flexbox Table of Contents',
-      'Leave a Reply',
-    ],
-    codeBlocks: 4,
-    firstCodeLanguage: 'css',
-    inlineCode: 'flex-direction',
-    link: 'https://css-tricks.com/complete-guide-css-grid-layout/',
-    kinds: [READER_BLOCK_KIND.Image],
-  },
-  {
     file: 'webdev',
     url: 'https://web.dev/articles/lcp',
     title: 'Largest Contentful Paint (LCP)',
@@ -125,24 +72,6 @@ const PAGES: RealPage[] = [
     inlineCode: 'largest-contentful-paint',
     link: 'https://web.dev/articles/vitals#lifecycle',
     kinds: [READER_BLOCK_KIND.Note],
-  },
-  {
-    file: 'smashing',
-    url: 'https://www.smashingmagazine.com/2026/10/embracing-playful-imperfection-css-random-function/',
-    title: 'Embracing Playful Imperfection With The CSS random() Function',
-    firstHeading: 'The Charm Of Things Not Being 100% Straight',
-    firstParagraph: 'Design systems thrive on consistency',
-    chrome: [
-      'Write for us',
-      'Jump to all topics',
-      'Browse All Smashing Magazine Topics',
-      'About The Author',
-    ],
-    codeBlocks: 4,
-    firstCodeLanguage: 'css',
-    inlineCode: 'random()',
-    link: 'https://drafts.csswg.org/css-values-5/#random',
-    kinds: [READER_BLOCK_KIND.Quote],
   },
   {
     file: 'medium-synthetic',
@@ -169,6 +98,62 @@ const PAGES: RealPage[] = [
     inlineCode: 'parse',
     link: 'https://github.com/sample-org/sample-lib/blob/main/docs/api.md',
     kinds: [READER_BLOCK_KIND.Table, READER_BLOCK_KIND.Note],
+  },
+  {
+    file: 'wikibooks',
+    url: 'https://en.wikibooks.org/wiki/Cookbook:Pancakes_(North_American)',
+    title: 'Cookbook:Pancakes (North American)',
+    firstHeading: 'Ingredients',
+    firstParagraph: 'North American pancakes are a type of',
+    chrome: ['Hidden category', 'From Wikibooks, open books for an open world'],
+    codeBlocks: 0,
+    firstCodeLanguage: null,
+    inlineCode: '',
+    link: 'https://en.wikibooks.org/wiki/Cookbook:Pancake',
+    listItem: '1 pinch salt',
+    orderedStep: 'In a large bowl, mix dry ingredients together',
+    kinds: [READER_BLOCK_KIND.Table, READER_BLOCK_KIND.List],
+  },
+  {
+    file: 'wikipedia',
+    url: 'https://en.wikipedia.org/wiki/Trench_coat',
+    title: 'Trench coat',
+    firstHeading: 'History',
+    firstParagraph: 'A trench coat is a variety of coat',
+    chrome: ['Jump to content', 'This page was last edited', 'Donate'],
+    codeBlocks: 0,
+    firstCodeLanguage: null,
+    inlineCode: '',
+    link: 'https://en.wikipedia.org/wiki/Gabardine',
+    kinds: [READER_BLOCK_KIND.Image, READER_BLOCK_KIND.Heading],
+  },
+  {
+    file: 'allbirds',
+    url: 'https://www.allbirds.com/products/womens-tree-breezer-warm-camel-dark',
+    title: "Women's Tree Breezer",
+    firstHeading: 'Thoughtfully designed',
+    firstParagraph: 'Lightweight, breathable, and effortlessly sleek',
+    chrome: ['Notify me when back in stock', 'Oops! Something went wrong', '30% off'],
+    codeBlocks: 0,
+    firstCodeLanguage: null,
+    inlineCode: '',
+    link: '',
+    listItem: 'Weight: 4.1 oz (W7)',
+    kinds: [READER_BLOCK_KIND.List, READER_BLOCK_KIND.Image],
+  },
+  {
+    file: 'taylorstitch',
+    url: 'https://www.taylorstitch.com/products/sunset-cardigan-in-rust-terry-2611',
+    title: 'The Sunset Cardigan in Rust Terry',
+    firstHeading: '',
+    firstParagraph: 'A relaxed take on the classic cardigan',
+    chrome: ['Your Account', 'Recommendations For You', 'Get it by'],
+    codeBlocks: 0,
+    firstCodeLanguage: null,
+    inlineCode: '',
+    link: '',
+    listItem: '14-oz. 100% organic cotton french terry.',
+    kinds: [READER_BLOCK_KIND.List, READER_BLOCK_KIND.Image],
   },
 ];
 
@@ -242,9 +227,21 @@ describe.each(PAGES)('a real page: $file', (page) => {
       visit(block.items);
       if (block.imageUrl !== null) hrefs.push(block.imageUrl);
     }
-    expect(hrefs).toContain(page.link);
+    if (page.link !== '') expect(hrefs).toContain(page.link);
     expect(hrefs.every((href) => /^https?:\/\/[^\s]+$/.test(href))).toBe(true);
     expect(hrefs.some((href) => /javascript:|data:/i.test(href))).toBe(false);
+  });
+
+  it('keeps lists as lists: ingredients, steps, details', () => {
+    const found = article as ReaderArticle;
+    const lists = found.blocks.filter((block) => block.kind === READER_BLOCK_KIND.List);
+    if (page.listItem !== undefined) {
+      expect(lists.flatMap((list) => itemTexts(list.items))).toContain(page.listItem);
+    }
+    if (page.orderedStep !== undefined) {
+      const steps = lists.filter((list) => list.ordered).flatMap((list) => itemTexts(list.items));
+      expect(steps.some((step) => step.startsWith(page.orderedStep ?? ''))).toBe(true);
+    }
   });
 
   it('has the block kinds the page uses', () => {

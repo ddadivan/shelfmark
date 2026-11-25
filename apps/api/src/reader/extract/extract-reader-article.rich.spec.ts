@@ -8,7 +8,10 @@ const filler =
   'This is an ordinary sentence of an article, long enough to count as real prose for the test of the reader.';
 
 function prose(count = 4): string {
-  return Array.from({ length: count }, () => `<p>${filler} ${filler}</p>`).join('');
+  return Array.from(
+    { length: count },
+    (_, index) => `<p>${filler} ${filler} Part ${index}.</p>`,
+  ).join('');
 }
 
 function read(body: string, url: string | null = PAGE): ReaderArticle {
@@ -62,7 +65,7 @@ describe('extractReaderArticle with rich markup', () => {
 
   it('reads h2 to h4 as heading levels and the first h1 as the title', () => {
     const article = read(
-      '<h1>Real title</h1><h2>Two</h2><h3>Three</h3><h4>Four</h4><h5>Five</h5><h6>Six</h6>',
+      '<h1>Real title</h1><h2>Two</h2><p>Text under two.</p><h3>Three</h3><p>Text under three.</p><h4>Four</h4><p>Text under four.</p><h5>Five</h5><p>Text under five.</p><h6>Six</h6><p>Text under six.</p>',
     );
     expect(article.title).toBe('Real title');
     const headings = article.blocks.filter((block) => block.kind === READER_BLOCK_KIND.Heading);
