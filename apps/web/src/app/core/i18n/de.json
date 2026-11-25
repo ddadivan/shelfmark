@@ -4640,7 +4640,11 @@
       "noText": "Diese Seite hat keinen Artikeltext. Die Leseansicht zeigt das Bild, die Beschreibung der Seite und deine Notiz.",
       "noTextVideo": "Ein Video hat keinen Text zum Lesen. Die Leseansicht zeigt Bild, Beschreibung und deine Notiz; abspielen kannst du es auf der Website.",
       "blockedNotice": "Leseansicht: {{domain}} erlaubt nicht, die Seite hier zu zeigen.",
-      "openSite": "{{domain}} öffnen"
+      "openSite": "{{domain}} öffnen",
+      "openOriginal": "Original öffnen",
+      "newTab": "(öffnet in einem neuen Tab)",
+      "table": "Tabelle",
+      "sampleNote": "Beispieltext: Starte die API für echte Artikel"
     },
     "details": {
       "toggle": "Details",

@@ -2,7 +2,7 @@ import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Injector } from '@angular/core';
-import { LINK_KIND, READER_BLOCK_KIND } from '@shelfmark/contracts';
+import { LINK_KIND, READER_ARTICLE_VERSION, READER_BLOCK_KIND } from '@shelfmark/contracts';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { HttpReaderApi } from '../http/http-reader.api';
@@ -32,11 +32,18 @@ describe('MockReaderApi', () => {
     const article = library.links.find((link) => link.kind === LINK_KIND.Article);
     const video = library.links.find((link) => link.kind === LINK_KIND.Video);
     const text = await run(api.article(article?.id ?? ''));
-    expect(text.article?.title).toBe(article?.title);
+    // A real page, parsed by the API's extractor: typed blocks with spans, code, notes or tables.
+    expect(text.article?.version).toBe(READER_ARTICLE_VERSION);
     expect(text.article?.minutes).toBeGreaterThan(0);
-    expect(new Set(text.article?.blocks.map((block) => block.kind))).toEqual(
-      new Set(Object.values(READER_BLOCK_KIND).filter((kind) => kind !== READER_BLOCK_KIND.Image)),
-    );
+    const kinds = new Set(text.article?.blocks.map((block) => block.kind));
+    expect(kinds.has(READER_BLOCK_KIND.Paragraph)).toBe(true);
+    expect(kinds.has(READER_BLOCK_KIND.Code)).toBe(true);
+    expect(text.article?.blocks.some((block) => block.spans.some((span) => span.code))).toBe(true);
+    expect(
+      text.article?.blocks.every((block) =>
+        block.spans.every((span) => span.href === null || /^https:\/\//.test(span.href)),
+      ),
+    ).toBe(true);
     expect((await run(api.article(video?.id ?? ''))).article).toBeNull();
   });
 

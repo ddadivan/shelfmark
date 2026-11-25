@@ -4755,7 +4755,11 @@
       "noText": "Questa pagina non ha testo da leggere. Lettura mostra l'immagine, ciò che la pagina dice di sé e la tua nota.",
       "noTextVideo": "Un video non ha testo da leggere. Lettura mostra immagine, descrizione e la tua nota; guardalo sul sito.",
       "blockedNotice": "Modalità lettura: {{domain}} non permette di mostrare la pagina qui.",
-      "openSite": "Apri {{domain}}"
+      "openSite": "Apri {{domain}}",
+      "openOriginal": "Apri l'originale",
+      "newTab": "(si apre in una nuova scheda)",
+      "table": "Tabella",
+      "sampleNote": "Testo di esempio: avvia l'API per articoli veri"
     },
     "details": {
       "toggle": "Dettagli",

@@ -1,3 +1,4 @@
+import { readerBlock } from '../../../../../testing/reader-block';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
 import { READER_BLOCK_KIND } from '@shelfmark/contracts';
@@ -59,11 +60,12 @@ describe('PreviewReaderComponent', () => {
   it('shows the article with the AI summary on top and no picture', async () => {
     const { element, reader, fixture } = await setup();
     reader.article.set({
+      version: 2,
       title: 'The article',
       author: null,
       publishedAt: null,
       minutes: 3,
-      blocks: [{ kind: READER_BLOCK_KIND.Heading, text: 'Part one', items: [], imageUrl: null }],
+      blocks: [readerBlock(READER_BLOCK_KIND.Heading, 'Part one')],
     });
     reader.meta.set('3 min read');
     await fixture.whenStable();

@@ -1,23 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 import { LINK_KIND, READER_BLOCK_KIND, type ReaderArticle } from '@shelfmark/contracts';
 import { of, throwError } from 'rxjs';
+import { readerBlock } from '../../../../testing/reader-block';
 import { createLinkPreviewStub, PREVIEW_STUB_LINK } from '../../../../testing/link-preview-stub';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { READER_API } from '../../reader/models/reader-api.const';
+import { READER_SAMPLE } from '../../reader/models/reader-sample.const';
 import { PREVIEW_BODY_KIND } from '../models/preview-body-kind.const';
 import { PREVIEW_MODE } from '../models/preview-mode.const';
 import { LinkPreviewService } from './link-preview.service';
 import { PreviewReaderService } from './preview-reader.service';
 
 const ARTICLE: ReaderArticle = {
+  version: 2,
   title: 'Angular overview',
   author: 'Angular team',
   publishedAt: '2026-10-02T10:00:00.000Z',
   minutes: 10,
-  blocks: [{ kind: READER_BLOCK_KIND.Paragraph, text: 'Text', items: [], imageUrl: null }],
+  blocks: [readerBlock(READER_BLOCK_KIND.Paragraph, 'Text')],
 };
 
-async function setup(article: ReaderArticle | null | 'fail' = ARTICLE) {
+async function setup(article: ReaderArticle | null | 'fail' = ARTICLE, sample = false) {
   const preview = createLinkPreviewStub();
   const api = {
     article: vi.fn(() =>
@@ -32,6 +35,7 @@ async function setup(article: ReaderArticle | null | 'fail' = ARTICLE) {
       PreviewReaderService,
       { provide: LinkPreviewService, useValue: preview },
       { provide: READER_API, useValue: api },
+      { provide: READER_SAMPLE, useValue: sample },
     ],
   });
   await loadEnglish();
@@ -60,6 +64,13 @@ describe('PreviewReaderService', () => {
     expect(service.meta()).toContain('Angular team');
     expect(service.meta()).toContain('10 min read');
     expect(service.notice()).toBe('');
+  });
+
+  it('says the text is a sample while the mock API serves canned articles', async () => {
+    const { service } = await setup(ARTICLE, true);
+    service.setMode(PREVIEW_MODE.Reader);
+    await vi.waitFor(() => expect(service.article()).toEqual(ARTICLE));
+    expect(service.notice()).toBe('Sample text: run the API for real articles');
   });
 
   it('remembers the mode per site', async () => {

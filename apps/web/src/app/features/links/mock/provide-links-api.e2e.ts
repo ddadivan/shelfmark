@@ -53,6 +53,7 @@ import type { RediscoverApi } from '../../rediscover/models/rediscover-api.inter
 import { HttpReaderApi } from '../../reader/http/http-reader.api';
 import { MockReaderApi } from '../../reader/mock/mock-reader.api';
 import { READER_API } from '../../reader/models/reader-api.const';
+import { READER_SAMPLE } from '../../reader/models/reader-sample.const';
 import { HttpNotificationsApi } from '../../notifications/http/http-notifications.api';
 import { MockNotificationsApi } from '../../notifications/mock/mock-notifications.api';
 import { NOTIFICATIONS_API } from '../../notifications/models/notifications-api.const';
@@ -212,6 +213,7 @@ export function provideLinksApi(): Provider[] {
       provide: READER_API,
       useFactory: (): ReaderApi => (useRealApi() ? inject(HttpReaderApi) : inject(MockReaderApi)),
     },
+    { provide: READER_SAMPLE, useFactory: (): boolean => !useRealApi() },
     { provide: EXPORT_API, useExisting: MockExportApi },
     {
       provide: NOTIFICATIONS_API,
