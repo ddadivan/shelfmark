@@ -68,12 +68,18 @@
 }
 
 .split-right__panel {
+  // The picker takes the rest of the half's height and scrolls only when the folders outgrow it
+  // (author, Nov 25: it scrolled with plenty of room left below).
+  --ui-picker-list-max-height: none;
+
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: var(--space-4);
   inline-size: 100%;
+  min-block-size: 0;
   max-inline-size: rem(420px);
-  margin: var(--space-6) auto 0;
+  margin: var(--space-6) auto;
 
   // Shelf: the half is the card already (panels never nest), so the picker sits on it plainly.
   padding: 0;
@@ -203,4 +209,9 @@
   @media (hover: none) {
     opacity: 1;
   }
+}
+
+.split-right__panel > ui-picker-list {
+  flex: 1 1 auto;
+  min-block-size: 0;
 }
