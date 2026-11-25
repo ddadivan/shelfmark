@@ -27,6 +27,8 @@ const APP_ICONS = [
   'filter',
   // The Masonry view of the library feed (Shelf, ADR 0061).
   'masonry',
+  // The Headlines view of the library feed (Shelf LinkRow, four lines).
+  'lines',
   // Shelf Link page: Reading settings and the Reader notice (two letters T, large and small).
   'text-size',
   // Shelf Reading settings: the smaller / larger text buttons around the size slider (a letter A).

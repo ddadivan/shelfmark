@@ -119,3 +119,20 @@
 .library__live {
   @include visually-hidden;
 }
+
+// Headlines (Shelf LinkRow): the rows are one L1 panel with hairline dividers, no gaps.
+.library__rows--headlines {
+  gap: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+
+  > .library__item + .library__item {
+    border-block-start: 1px solid var(--line);
+  }
+
+  > .library__item {
+    --ui-list-item-radius: 0;
+  }
+}

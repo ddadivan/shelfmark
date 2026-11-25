@@ -1180,7 +1180,8 @@
       "label": "Ansicht",
       "masonry": "Mosaik",
       "cards": "Karten",
-      "list": "Liste"
+      "list": "Liste",
+      "headlines": "Schlagzeilen"
     },
     "list": {
       "label": "Gespeicherte Links"
@@ -1340,7 +1341,8 @@
     "folderMenu": {
       "label": "Ordneraktionen",
       "addHere": "Link hier hinzufügen",
-      "view": "Ansicht und Sortierung"
+      "view": "Ansicht und Sortierung",
+      "for": "Aktionen für {{name}}"
     }
   },
   "export": {
@@ -1393,8 +1395,11 @@
       "downloadAs": "Als {{format}} exportieren",
       "what": "Was",
       "whole": "Ganze Bibliothek · {{count}}",
-      "folder": "{{name}} · {{count}}"
-    }
+      "folder": "{{name}} · {{count}}",
+      "view": "Diese Ansicht · {{count}}",
+      "thisView": "Diese Ansicht"
+    },
+    "viewItem": "Diese Ansicht exportieren…"
   },
   "import": {
     "title": "Links importieren",

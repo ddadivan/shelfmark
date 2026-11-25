@@ -1180,7 +1180,8 @@
       "label": "View",
       "masonry": "Masonry",
       "cards": "Cards",
-      "list": "List"
+      "list": "List",
+      "headlines": "Headlines"
     },
     "list": {
       "label": "Saved links"
@@ -1340,7 +1341,8 @@
     "folderMenu": {
       "label": "Folder actions",
       "addHere": "Add link here",
-      "view": "View and sort"
+      "view": "View and sort",
+      "for": "Actions for {{name}}"
     }
   },
   "export": {
@@ -1393,8 +1395,11 @@
       "downloadAs": "Export {{format}}",
       "what": "What",
       "whole": "Whole library · {{count}}",
-      "folder": "{{name}} · {{count}}"
-    }
+      "folder": "{{name}} · {{count}}",
+      "view": "This view · {{count}}",
+      "thisView": "This view"
+    },
+    "viewItem": "Export this view…"
   },
   "import": {
     "title": "Import links",

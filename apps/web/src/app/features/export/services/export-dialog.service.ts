@@ -5,7 +5,9 @@ import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { APP_PATH } from '../../../models/app-path.const';
 import { FoldersStore } from '../../../stores/folders.store';
 import { ExportDialogComponent } from '../components/export-dialog/export-dialog.component';
+import type { ExportDialogData } from '../models/export-dialog-data.interface';
 import type { ExportFolderChoice } from '../models/export-folder-choice.interface';
+import type { ExportViewChoice } from '../models/export-view-choice.interface';
 
 /**
  * Opens "Export links" from the data menu, the You tab and Settings; nothing happens while another
@@ -19,15 +21,18 @@ export class ExportDialogService {
   private readonly router = inject(Router);
   private readonly folders = inject(FoldersStore);
 
-  /** Opens the dialog (a bottom sheet on a phone). */
-  open(): void {
+  /**
+   * Opens the dialog (a bottom sheet on a phone). With `view` (the library's "Export this view…")
+   * it offers that view next to the whole library; else the folder page it sits on.
+   */
+  open(view?: ExportViewChoice): void {
     if (this.cdk.openDialogs.length > 0) {
       return;
     }
-    this.dialogs.open<ExportDialogComponent, void, ExportFolderChoice | null>(
-      ExportDialogComponent,
-      { size: DIALOG_SIZE.Sm, data: this.currentFolder() },
-    );
+    this.dialogs.open<ExportDialogComponent, undefined, ExportDialogData>(ExportDialogComponent, {
+      size: DIALOG_SIZE.Sm,
+      data: view ? { folder: null, view } : { folder: this.currentFolder(), view: null },
+    });
   }
 
   /** The folder of the page on screen (`/folders/:id`), when it is a known folder. */

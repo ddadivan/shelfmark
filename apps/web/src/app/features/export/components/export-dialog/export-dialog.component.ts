@@ -31,12 +31,14 @@ import { EXPORT_FORMAT_OPTIONS } from '../../models/export-format-options.const'
 import { EXPORT_RESULT } from '../../models/export-result.const';
 import type { LastExport } from '../../models/last-export.interface';
 import { FoldersStore } from '../../../../stores/folders.store';
-import type { ExportFolderChoice } from '../../models/export-folder-choice.interface';
+import type { ExportDialogData } from '../../models/export-dialog-data.interface';
 import { ExportActionsService } from '../../services/export-actions.service';
 import { readLastExport, writeLastExport } from '../../utils/last-export';
 
 /** The segmented value of "Whole library". */
 const ALL_LINKS = 'all';
+/** The segmented value of "This view" (the library's "Export this view…"). */
+const THIS_VIEW = 'view';
 
 function isFormat(value: string): value is ExportFormat {
   return (Object.values(EXPORT_FORMAT) as string[]).includes(value);
@@ -82,13 +84,37 @@ export class ExportDialogComponent {
   private readonly abort = new AbortController();
   private readonly folders = inject(FoldersStore);
 
+  private readonly data = injectDialogData<ExportDialogData | null>() ?? null;
   /** The folder page the dialog was opened on, offered next to the whole library. */
-  protected readonly folder = injectDialogData<ExportFolderChoice | null>() ?? null;
-  /** `ALL_LINKS` or the folder's id. */
-  protected readonly scope = signal<string>(ALL_LINKS);
+  private readonly folder = this.data?.folder ?? null;
+  /** The view "Export this view…" was opened for, offered next to the whole library. */
+  private readonly view = this.data?.view ?? null;
+  /** `ALL_LINKS`, `THIS_VIEW` or the folder's id. */
+  protected readonly scope = signal<string>(this.data?.view ? THIS_VIEW : ALL_LINKS);
+  protected readonly hasScope = this.view !== null || this.folder !== null;
   protected readonly scopeOptions = computed<SegmentedOption[]>(() => {
     activeLang();
     const folder = this.folder;
+    const view = this.view;
+    if (view !== null) {
+      return [
+        {
+          value: ALL_LINKS,
+          label: this.transloco.translate('export.dialog.whole', {
+            count: this.locale.formatNumber(this.folders.counts().all),
+          }),
+        },
+        {
+          value: THIS_VIEW,
+          label:
+            view.count === null
+              ? this.transloco.translate('export.dialog.thisView')
+              : this.transloco.translate('export.dialog.view', {
+                  count: this.locale.formatNumber(view.count),
+                }),
+        },
+      ];
+    }
     if (folder === null) return [];
     return [
       {
@@ -149,8 +175,13 @@ export class ExportDialogComponent {
     }
     const format = this.format();
     this.preparing.set(true);
-    const scope = this.scope() === ALL_LINKS ? {} : { folderId: this.scope() };
-    const result = await this.exporter.download(format, scope, { signal: this.abort.signal });
+    const chosen = this.scope();
+    const view = chosen === THIS_VIEW ? this.view : null;
+    const scope = view ? view.scope : chosen === ALL_LINKS ? {} : { folderId: chosen };
+    const result = await this.exporter.download(format, scope, {
+      signal: this.abort.signal,
+      ...(view && { viewEmpty: view.empty }),
+    });
     if (this.abort.signal.aborted) {
       return;
     }

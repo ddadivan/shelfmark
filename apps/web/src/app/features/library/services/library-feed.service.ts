@@ -116,7 +116,8 @@ export class LibraryFeedService {
       this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.Masonry]),
       this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.Cards]),
       this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.List]),
-    ]).pipe(map(([masonry, cards, list]) => ({ masonry, cards, list }))),
+      this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.Headlines]),
+    ]).pipe(map(([masonry, cards, list, headlines]) => ({ masonry, cards, list, headlines }))),
   );
   /** Icon-only switch; `null` until the translations are loaded. */
   readonly viewOptions = computed<SegmentedOption[] | null>(() => {
@@ -126,6 +127,7 @@ export class LibraryFeedService {
           { value: UI_VIEW.Masonry, label: labels.masonry, icon: 'masonry' },
           { value: UI_VIEW.Cards, label: labels.cards, icon: 'cards' },
           { value: UI_VIEW.List, label: labels.list, icon: 'list' },
+          { value: UI_VIEW.Headlines, label: labels.headlines, icon: 'lines' },
         ]
       : null;
   });

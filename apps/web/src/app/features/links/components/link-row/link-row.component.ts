@@ -17,6 +17,7 @@ import {
   MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
+import { LocaleService } from '../../../../core/i18n/locale.service';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
@@ -66,6 +67,7 @@ export class LinkRowComponent {
     () => !!this.link().summary || this.link().aiStatus === AI_JOB_STATUS.Pending,
   );
   private readonly reminders = inject(ReminderFormatService);
+  private readonly locale = inject(LocaleService);
   private readonly now = Date.now();
   protected readonly BADGE_TONE = BADGE_TONE;
 
@@ -95,6 +97,11 @@ export class LinkRowComponent {
    * preview ask `previewRequested`.
    */
   readonly previewable = input(false);
+  /**
+   * Headlines view (Shelf LinkRow): one 40px line with the favicon, title, domain, folder and
+   * date; the tags, summary and badges stay out. Phones keep the title and the date.
+   */
+  readonly headline = input(false);
   /** The compact list beside the desktop preview (#553): no tags, the title gets the room. */
   readonly dense = input(false);
   readonly previewRequested = output<void>();
@@ -166,6 +173,11 @@ export class LinkRowComponent {
   protected readonly host = computed(() => linkHost(this.link().url));
   protected readonly letter = computed(() => siteLetter(this.link().url));
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
+  /** "2 days ago", "Oct 28": when the link was saved (Headlines date column). */
+  protected readonly saved = computed(() => {
+    const created = this.link().createdAt;
+    return created ? this.locale.formatSaved(created, this.now) : '';
+  });
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
   /** The reminder chip (#275): its time, or "Due …" once it came. */
   protected readonly reminder = computed(() => {

@@ -3,7 +3,7 @@
   [closeLabel]="'export.dialog.close' | transloco"
 >
   <div class="export-dialog">
-    @if (folder; as choice) {
+    @if (hasScope) {
       <!-- Shelf 09-data "What": the whole library or the folder the dialog was opened on. -->
       <div class="export-dialog__what">
         <span id="export-dialog-what" class="export-dialog__label">{{

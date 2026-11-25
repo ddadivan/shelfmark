@@ -2,6 +2,7 @@
   [href]="href()"
   [newTab]="newTab()"
   [reveal]="reveal()"
+  [headline]="headline()"
   [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
   [checked]="selected()"
   [selecting]="selecting()"
@@ -23,12 +24,21 @@
   <span slot="title">{{ link().title }}</span>
   <!-- The summary replaces the domain line (one line); the domain moves to the tooltip (#391). -->
   <span slot="meta" class="link-row__meta" [attr.title]="summarised() ? host() : null">
-    @if (summarised()) {
+    @if (headline()) {
+      <!-- Headlines (Shelf LinkRow): domain, folder and date as columns after the title. -->
+      <span class="link-row__col link-row__col--domain">{{ host() }}</span>
+      <span class="link-row__col link-row__col--folder">
+        @if (folder(); as chip) {
+          <ui-folder-chip [label]="chip.name" [icon]="chip.icon" [colour]="chip.colour" />
+        }
+      </span>
+      <span class="link-row__col link-row__col--date">{{ saved() }}</span>
+    } @else if (summarised()) {
       <app-link-summary class="link-row__summary" row [link]="link()" />
     } @else {
       {{ host() }}
     }
-    @if (folder(); as chip) {
+    @if (!headline() && folder(); as chip) {
       <ui-folder-chip
         class="link-row__folder"
         [label]="chip.name"
@@ -37,16 +47,16 @@
         [hint]="'links.card.inFolder' | transloco"
       />
     }
-    @if (reminder(); as chip) {
+    @if (!headline() && reminder(); as chip) {
       <ui-badge icon="bell" [tone]="chip.due ? BADGE_TONE.Warning : BADGE_TONE.Accent">{{
         chip.text
       }}</ui-badge>
-    } @else if (pinnedToTop()) {
+    } @else if (!headline() && pinnedToTop()) {
       <ui-badge icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
     }
   </span>
   <div slot="trailing" class="link-row__trailing">
-    @if (tags().length > 0 && !phone() && !dense()) {
+    @if (tags().length > 0 && !phone() && !dense() && !headline()) {
       <ul class="link-row__tags">
         @for (tag of tags(); track tag) {
           <li>
@@ -56,6 +66,7 @@
       </ul>
     }
     <ui-button
+      [class.link-row__secondary]="headline()"
       variant="ghost"
       size="sm"
       iconOnly
@@ -70,6 +81,7 @@
     />
     @if (previewable() && href()) {
       <ui-button
+        [class.link-row__secondary]="headline()"
         variant="ghost"
         size="sm"
         iconOnly

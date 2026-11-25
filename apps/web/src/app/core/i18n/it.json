@@ -1203,7 +1203,8 @@
       "label": "Vista",
       "masonry": "Mosaico",
       "cards": "Schede",
-      "list": "Elenco"
+      "list": "Elenco",
+      "headlines": "Titoli"
     },
     "list": {
       "label": "Link salvati"
@@ -1363,7 +1364,8 @@
     "folderMenu": {
       "label": "Azioni cartella",
       "addHere": "Aggiungi link qui",
-      "view": "Vista e ordine"
+      "view": "Vista e ordine",
+      "for": "Azioni per {{name}}"
     }
   },
   "export": {
@@ -1416,8 +1418,11 @@
       "downloadAs": "Esporta {{format}}",
       "what": "Cosa",
       "whole": "Tutta la libreria · {{count}}",
-      "folder": "{{name}} · {{count}}"
-    }
+      "folder": "{{name}} · {{count}}",
+      "view": "Questa vista · {{count}}",
+      "thisView": "Questa vista"
+    },
+    "viewItem": "Esporta questa vista…"
   },
   "import": {
     "title": "Importa link",

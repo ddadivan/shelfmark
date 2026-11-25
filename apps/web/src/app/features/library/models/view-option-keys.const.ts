@@ -5,4 +5,5 @@ export const VIEW_OPTION_KEYS = {
   [UI_VIEW.Masonry]: 'library.view.masonry',
   [UI_VIEW.Cards]: 'library.view.cards',
   [UI_VIEW.List]: 'library.view.list',
+  [UI_VIEW.Headlines]: 'library.view.headlines',
 } as const;
