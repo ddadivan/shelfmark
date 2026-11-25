@@ -125,4 +125,5 @@ export const ICON_NAMES = [
   'utensils',
   'wallet',
   'warning',
+  'widen',
 ] as const;

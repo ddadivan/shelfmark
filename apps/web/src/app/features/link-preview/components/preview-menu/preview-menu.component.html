@@ -49,14 +49,6 @@
         {{ 'links.item.createRule' | transloco: { domain: host } }}
       </ui-menu-item>
     }
-    @if (wide() && !preview.fullScreen()) {
-      <ui-menu-item
-        [icon]="preview.listHidden() ? 'collapse' : 'expand'"
-        (activated)="preview.toggleList()"
-      >
-        {{ (preview.listHidden() ? 'preview.showList' : 'preview.wider') | transloco }}
-      </ui-menu-item>
-    }
     <ui-menu-separator />
     <ui-menu-item icon="trash" danger (activated)="actions.delete(link)">
       {{ 'links.item.delete' | transloco }}
