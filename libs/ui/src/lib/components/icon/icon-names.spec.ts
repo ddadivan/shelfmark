@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { ICON_NAMES_16 } from './models/icon-names-16.const';
 import { ICON_NAMES } from './models/icon-names.const';
 
 // The unit-test builder bundles specs, so `import.meta.url` / `__dirname` no longer point at
@@ -8,6 +9,7 @@ import { ICON_NAMES } from './models/icon-names.const';
 const ROOT = process.cwd();
 const SPRITE_PATH = resolve(ROOT, 'libs/ui/src/assets/icons/sprite.svg');
 const SOURCES_DIR = resolve(ROOT, 'libs/ui/src/icons');
+const SOURCES_16_DIR = resolve(SOURCES_DIR, '16');
 const DESIGN_DIR = resolve(ROOT, 'docs/design/assets/icons');
 
 /** Brand marks: the only symbols that may carry `fill`, and not part of the design set. */
@@ -125,7 +127,9 @@ function symbol(name: string): string {
 
 describe('ICON_NAMES', () => {
   it('matches the symbol ids of the sprite exactly, sorted', () => {
-    const ids = [...sprite.matchAll(/<symbol id="sm-([a-z0-9-]+)"/g)].map((m) => m[1]);
+    const ids = [...sprite.matchAll(/<symbol id="sm-([a-z0-9-]+)"/g)]
+      .map((m) => m[1])
+      .filter((id) => !id.endsWith('-16'));
 
     expect([...ICON_NAMES]).toEqual(ids);
     expect([...ICON_NAMES]).toEqual([...ICON_NAMES].sort());
@@ -155,10 +159,13 @@ describe('ICON_NAMES', () => {
     expect(sprite).not.toContain('href=');
   });
 
-  it('draws every symbol on the 24px grid', () => {
-    expect(sprite.match(/<symbol /g)).toHaveLength(ICON_NAMES.length);
+  it('draws every symbol on the 24px grid, and the -16 symbols on the 16px grid', () => {
+    expect(sprite.match(/<symbol /g)).toHaveLength(ICON_NAMES.length + ICON_NAMES_16.length);
     expect(sprite.match(/<symbol id="sm-[a-z0-9-]+" viewBox="0 0 24 24">/g)).toHaveLength(
       ICON_NAMES.length,
+    );
+    expect(sprite.match(/<symbol id="sm-[a-z0-9-]+-16" viewBox="0 0 16 16">/g)).toHaveLength(
+      ICON_NAMES_16.length,
     );
   });
 
@@ -168,6 +175,33 @@ describe('ICON_NAMES', () => {
         stdio: 'pipe',
       }),
     ).not.toThrow();
+  });
+});
+
+describe('16px variants', () => {
+  it('has one 16px source per ICON_NAMES_16 entry, each paired with a 24px source', () => {
+    const files = readdirSync(SOURCES_16_DIR)
+      .filter((file) => file.endsWith('.svg'))
+      .map((file) => file.slice(0, -4))
+      .sort();
+
+    expect(files).toEqual([...ICON_NAMES_16]);
+    for (const name of ICON_NAMES_16) {
+      expect(ICON_NAMES as readonly string[], name).toContain(name);
+    }
+  });
+
+  it('keeps the brand marks on the 24px grid only', () => {
+    for (const name of PROVIDER_ICONS) {
+      expect(ICON_NAMES_16 as readonly string[]).not.toContain(name);
+    }
+  });
+
+  it.each([...ICON_NAMES_16])('%s-16 is a filled shape without colour', (name) => {
+    const drawing = symbol(`${name}-16`);
+
+    expect(drawing).toMatch(/^<path /);
+    expect(drawing).not.toContain('fill="');
   });
 });
 

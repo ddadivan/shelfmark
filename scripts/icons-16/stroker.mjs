@@ -9,7 +9,7 @@ const EPSILON = 1e-6;
 /** Joins that turn less than this (radians) are drawn as a plain corner, not a round arc. */
 const SMOOTH_TURN = (6 * Math.PI) / 180;
 /** Flattening step for cubic and quadratic curves, in px. */
-const FLATTEN_STEP = 0.35;
+const FLATTEN_STEP = 0.9;
 
 const round = (value) => {
   const text = (Math.round(value * 100) / 100).toFixed(2).replace(/\.?0+$/, '');
