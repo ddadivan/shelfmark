@@ -59,7 +59,7 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
 
-  @include scroll-fade(var(--sidebar));
+  @include scroll-fade(var(--sidebar), $inset-end: calc(var(--space-6) * -1));
 }
 
 .side__heading {

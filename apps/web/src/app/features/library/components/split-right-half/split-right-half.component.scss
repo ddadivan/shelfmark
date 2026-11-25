@@ -125,7 +125,7 @@
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
 
-  @include scroll-fade(var(--bg), $bottom: false);
+  @include scroll-fade(var(--bg), $bottom: false, $inset-start: calc(var(--space-1) * -1));
 
   &:focus {
     outline: none;

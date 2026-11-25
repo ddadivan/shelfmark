@@ -727,6 +727,14 @@ describe('scroll-fade (#352)', () => {
     expect(output).toMatch(/\.area::after\s*\{[^}]*margin-block-start: calc\(1\.5rem \* -1\)/);
   });
 
+  it('sits flush with a padded area through $inset-start / $inset-end', () => {
+    const padded = css(
+      '.feed { padding: 4px; overflow-y: auto; @include scroll-fade(var(--bg), $inset-start: -0.25rem, $inset-end: -1rem); }',
+    );
+    expect(padded).toMatch(/\.feed::before\s*\{[^}]*inset-block-start: -0\.25rem/);
+    expect(padded).toMatch(/\.feed::after\s*\{[^}]*inset-block-end: -1rem/);
+  });
+
   it('draws only the top fade with $bottom: false', () => {
     const top = css('.feed { overflow-y: auto; @include scroll-fade(var(--bg), $bottom: false); }');
     expect(top).toContain('.feed::before');

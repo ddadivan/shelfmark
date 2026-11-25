@@ -14,7 +14,17 @@
 // and scrollbar stay clear) and sit at `$layer`: keep sticky bars that must stay on top above it.
 // `$bottom: false` draws only the top fade (the library feed: the bulk bar and the last row sit
 // at its bottom edge, where a fade only got in the way).
-@mixin scroll-fade($bg: var(--bg), $size: rem(24px), $layer: 2, $bottom: true) {
+// A sticky edge is measured from the scrollport's content edge, so an area with padding needs
+// `$inset-start` / `$inset-end` (the negative padding, `calc(var(--space-1) * -1)`) to make the
+// fade flush with the area's visible edge instead of leaving a gap.
+@mixin scroll-fade(
+  $bg: var(--bg),
+  $size: rem(24px),
+  $layer: 2,
+  $bottom: true,
+  $inset-start: 0,
+  $inset-end: 0
+) {
   $edges: if($bottom, '&::before, &::after', '&::before');
 
   #{$edges} {
@@ -35,7 +45,7 @@
 
   // Hidden at the ends, so they lie over the content instead of taking room.
   &::before {
-    inset-block-start: 0;
+    inset-block-start: $inset-start;
     margin-block-end: calc(#{$size} * -1);
     background: linear-gradient(to bottom, #{$bg}, transparent);
   }
@@ -46,7 +56,7 @@
 
   @if $bottom {
     &::after {
-      inset-block-end: 0;
+      inset-block-end: $inset-end;
       margin-block-start: calc(#{$size} * -1);
       background: linear-gradient(to top, #{$bg}, transparent);
     }
