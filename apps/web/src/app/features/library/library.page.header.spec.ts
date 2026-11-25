@@ -1,8 +1,10 @@
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import type { FolderResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
+import { UiMenuHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { of } from 'rxjs';
 import { FOLDERS_API } from '../links/models/folders-api.const';
@@ -112,7 +114,39 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
 
     const buttons = [...element.querySelectorAll('ui-button')].map((b) => b.textContent?.trim());
     expect(buttons).toContain('Add link here');
-    expect(element.querySelector('[aria-label="Folder actions"]')).not.toBeNull();
+    expect(
+      element.querySelector('.library__toolbar button[aria-label^="Actions for "]'),
+    ).not.toBeNull();
+    expect(element.querySelector('button[aria-label="More view options"]')).not.toBeNull();
+  });
+
+  it('splits the menus: folder actions by the title, sort, filter and export in the toolbar ⋯', async () => {
+    const { fixture, element } = await setup(LINKS_SCOPE.Folder, 'f2');
+    const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+    const texts = async (label: RegExp) => {
+      const menu = await loader.getHarness(UiMenuHarness.with({ label }));
+      await menu.open();
+      return Promise.all((await menu.getItems()).map((item) => item.getText()));
+    };
+
+    expect(await texts(/^Actions for Plain$/)).toEqual([
+      'New subfolder',
+      'Add link here',
+      'Rename',
+      'Folder settings…',
+      'Move to…',
+      'Pin to sidebar',
+      'Share…',
+      'Delete folder…',
+    ]);
+    TestBed.tick();
+    const more = await texts(/^More view options$/);
+    expect(more).toEqual(['Newest first', 'Oldest first', 'Title A–Z', 'Export this view…']);
+    // Filter, Select, Side by side and Save view are toolbar buttons now.
+    const toolbar = [...element.querySelectorAll('.library__actions ui-button')].map((button) =>
+      button.querySelector('button')?.getAttribute('aria-label'),
+    );
+    expect(toolbar).toEqual(expect.arrayContaining(['Filter', 'Select links']));
   });
 
   it('keeps a plain header outside a folder', async () => {
@@ -122,7 +156,9 @@ describe('LibraryPage folder header (Shelf 04-organise)', () => {
     expect(element.querySelector('.library__heading--folder')).toBeNull();
     expect(element.querySelector('app-folder-cover')).toBeNull();
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('All links');
-    expect(element.querySelector('[aria-label="Folder actions"]')).toBeNull();
+    expect(
+      element.querySelector('.library__toolbar button[aria-label^="Actions for "]'),
+    ).toBeNull();
   });
 });
 

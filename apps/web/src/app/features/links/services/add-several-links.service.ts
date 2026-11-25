@@ -69,6 +69,11 @@ export class AddSeveralLinksService {
 
   /** Switches to the several-links text area and puts focus in it. */
   showSeveral(): void {
+    // An address already typed comes along, so switching modes loses nothing.
+    const typed = this.formState.form.url().value().trim();
+    if (typed !== '' && this.severalModel().text.trim() === '') {
+      this.severalModel.set({ text: typed });
+    }
     this.several.set(true);
     afterNextRender(
       { read: () => this.severalForm.text().focusBoundControl() },

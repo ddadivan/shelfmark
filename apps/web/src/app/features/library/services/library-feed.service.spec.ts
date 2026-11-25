@@ -79,9 +79,14 @@ describe('LibraryFeedService', () => {
     expect(feed.landDelay('unknown')).toBeNull();
   });
 
-  it('offers the cards / list switch once the translations are there', async () => {
+  it('offers the masonry / cards / list / headlines switch once the translations are there', async () => {
     const { feed } = await setup([link(1)]);
-    expect(feed.viewOptions()?.map((option) => option.value)).toEqual(['masonry', 'cards', 'list']);
+    expect(feed.viewOptions()?.map((option) => option.value)).toEqual([
+      'masonry',
+      'cards',
+      'list',
+      'headlines',
+    ]);
   });
 
   it('keeps the old list on screen while the next filter loads, then swaps to the new one', async () => {

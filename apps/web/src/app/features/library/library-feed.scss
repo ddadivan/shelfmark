@@ -100,6 +100,12 @@
   align-items: center;
 }
 
+.library__actions {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
 .library__crumbs {
   // Over the top padding of the main column (24px on a phone) and the room above the title: 8px
   // from the top edge, a 24px line, then the 12px gap above the title. The same space in every
@@ -118,4 +124,21 @@
 // Screen reader text only: "Selection mode on / off".
 .library__live {
   @include visually-hidden;
+}
+
+// Headlines (Shelf LinkRow): the rows are one L1 panel with hairline dividers, no gaps.
+.library__rows--headlines {
+  gap: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+
+  > .library__item + .library__item {
+    border-block-start: 1px solid var(--line);
+  }
+
+  > .library__item {
+    --ui-list-item-radius: 0;
+  }
 }

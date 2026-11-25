@@ -36,7 +36,7 @@ describe('ExportDialogService', () => {
 
     expect(open).toHaveBeenCalledWith(ExportDialogComponent, {
       size: DIALOG_SIZE.Sm,
-      data: null,
+      data: { folder: null, view: null },
     });
   });
 
@@ -48,7 +48,20 @@ describe('ExportDialogService', () => {
 
     expect(open).toHaveBeenCalledWith(ExportDialogComponent, {
       size: DIALOG_SIZE.Sm,
-      data: { id: 'a', name: 'a', count: 7 },
+      data: { folder: { id: 'a', name: 'a', count: 7 }, view: null },
+    });
+  });
+
+  it('opens with the view of the library when "Export this view…" asks for it', async () => {
+    const { open, service } = setup(0);
+    await TestBed.inject(Router).navigateByUrl('/folders/a');
+    const view = { scope: { folderId: 'a', q: 'x' }, count: 2, empty: false };
+
+    service.open(view);
+
+    expect(open).toHaveBeenCalledWith(ExportDialogComponent, {
+      size: DIALOG_SIZE.Sm,
+      data: { folder: null, view },
     });
   });
 

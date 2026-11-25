@@ -160,6 +160,7 @@ describe('LibrarySettingsPage', () => {
       'Masonry',
       'Cards',
       'List',
+      'Headlines',
       'New tab',
       'Same tab',
       'Opens the previewOn wide screens only. Smaller screens open the link.',

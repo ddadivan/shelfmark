@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { type ViewMenuField, type ViewMenuFieldChange, ViewMenuComponent } from '@shelfmark/ui';
-import { UI_VIEW } from '../../../../stores/models/ui-view.const';
+import { isRowsView } from '../../utils/is-rows-view';
 import { CARD_FIELD } from '../../models/card-field.const';
 import { CARD_FIELD_KEYS } from '../../models/card-field-keys.const';
 import type { CardField } from '../../models/card-field.type';
@@ -18,7 +18,7 @@ function isCardField(id: string): id is CardField {
 /**
  * The library's View button (Shelf ViewMenu): Grid size in six steps and the Note, Hashtags,
  * Folder and Date switches, remembered per feed (`LibraryFilterService`, `FeedMemoryService`).
- * The grid size is off in the List view.
+ * The grid size is off in the List and Headlines views.
  */
 @Component({
   selector: 'app-library-view-menu',
@@ -33,7 +33,7 @@ export class LibraryViewMenuComponent {
     initialValue: this.transloco.getActiveLang(),
   });
   protected readonly steps = GRID_COLUMNS.length;
-  protected readonly listView = computed(() => this.filters.view() === UI_VIEW.List);
+  protected readonly listView = computed(() => isRowsView(this.filters.view()));
 
   /** The four switches with their translated names and this feed's state. */
   protected readonly fields = computed<ViewMenuField[]>(() => {

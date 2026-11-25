@@ -11,6 +11,7 @@ import { FoldersStore } from '../../../../stores/folders.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { EXPORT_API } from '../../models/export-api.const';
 import type { ExportApi } from '../../models/export-api.interface';
+import type { ExportViewChoice } from '../../models/export-view-choice.interface';
 import { ExportDialogComponent } from './export-dialog.component';
 
 /** An empty root view: the harness environment needs a fixture; the dialog itself is an overlay. */
@@ -21,6 +22,7 @@ async function setup(
   download: ExportApi['download'] = () => of(undefined),
   links = 3,
   folder: { id: string; name: string; count: number } | null = null,
+  view: ExportViewChoice | null = null,
 ) {
   const api: ExportApi = { download: vi.fn(download) };
   const show = vi.fn();
@@ -42,7 +44,7 @@ async function setup(
   await loadEnglish();
   const ref = TestBed.inject(DialogService).open(ExportDialogComponent, {
     size: DIALOG_SIZE.Sm,
-    data: folder,
+    data: { folder, view },
   });
   const closed = vi.fn();
   void ref.result.then(closed);
@@ -90,6 +92,30 @@ describe('ExportDialogComponent', () => {
     await until(() =>
       expect(api.download).toHaveBeenCalledWith(EXPORT_FORMAT.Json, { folderId: 'f-1' }),
     );
+  });
+
+  it('offers "This view" next to the whole library when opened from Export this view…', async () => {
+    const { api, body, button, until } = await setup(() => of(undefined), 58, null, {
+      scope: { tags: ['docs'] },
+      count: 7,
+      empty: false,
+    });
+    expect(body()).toContain('Whole library · 58');
+    expect(body()).toContain('This view · 7');
+    await (await button(/^Export JSON/)).click();
+    await until(() =>
+      expect(api.download).toHaveBeenCalledWith(EXPORT_FORMAT.Json, { tags: ['docs'] }),
+    );
+  });
+
+  it('names the view without a count while the feed has more pages than it loaded', async () => {
+    const { body } = await setup(() => of(undefined), 58, null, {
+      scope: { q: 'pasta' },
+      count: null,
+      empty: false,
+    });
+    expect(body()).toContain('This view');
+    expect(body()).not.toContain('This view ·');
   });
 
   it('shows no What choice outside a folder', async () => {

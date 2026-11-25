@@ -108,7 +108,7 @@
 
 // Shelf (`08-select-move` `.bulkbar`): the danger actions sit at the end of the bar.
 .ui-bulk-bar__divider {
-  flex: 1 0 var(--space-1);
+  flex: 1 0 var(--space-3);
 }
 
 // The leading × (32px round, `text-muted`) and the count (14px 600).
@@ -147,6 +147,11 @@
   padding-inline: var(--space-1) var(--space-2);
   font-weight: 600;
   white-space: nowrap;
+}
+
+// Stacked (phone, tablet): the buttons share the width, the divider stays the small gap it was.
+:host(.ui-bulk-bar--stacked) .ui-bulk-bar__divider {
+  flex: 1 0 var(--space-1);
 }
 
 // Phone: 68px tall, 26px corners like the tab bar; the buttons share the width, icon above label.

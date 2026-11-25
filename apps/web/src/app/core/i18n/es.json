@@ -1204,7 +1204,8 @@
       "label": "Vista",
       "masonry": "Mosaico",
       "cards": "Tarjetas",
-      "list": "Lista"
+      "list": "Lista",
+      "headlines": "Titulares"
     },
     "list": {
       "label": "Enlaces guardados"
@@ -1364,7 +1365,14 @@
     "folderMenu": {
       "label": "Acciones de la carpeta",
       "addHere": "Añadir enlace aquí",
-      "view": "Vista y orden"
+      "view": "Vista y orden",
+      "for": "Acciones de {{name}}"
+    },
+    "toolbar": {
+      "filter": "Filtrar",
+      "filterCount": "Filtrar · {{count}}",
+      "select": "Seleccionar",
+      "saveView": "Guardar vista"
     }
   },
   "export": {
@@ -1417,8 +1425,11 @@
       "downloadAs": "Exportar {{format}}",
       "what": "Qué",
       "whole": "Toda la biblioteca · {{count}}",
-      "folder": "{{name}} · {{count}}"
-    }
+      "folder": "{{name}} · {{count}}",
+      "view": "Esta vista · {{count}}",
+      "thisView": "Esta vista"
+    },
+    "viewItem": "Exportar esta vista…"
   },
   "import": {
     "title": "Importar enlaces",

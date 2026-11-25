@@ -1204,7 +1204,8 @@
       "label": "Affichage",
       "masonry": "Mosaïque",
       "cards": "Cartes",
-      "list": "Liste"
+      "list": "Liste",
+      "headlines": "Titres"
     },
     "list": {
       "label": "Liens enregistrés"
@@ -1364,7 +1365,14 @@
     "folderMenu": {
       "label": "Actions du dossier",
       "addHere": "Ajouter un lien ici",
-      "view": "Affichage et tri"
+      "view": "Affichage et tri",
+      "for": "Actions pour {{name}}"
+    },
+    "toolbar": {
+      "filter": "Filtrer",
+      "filterCount": "Filtrer · {{count}}",
+      "select": "Sélectionner",
+      "saveView": "Enregistrer la vue"
     }
   },
   "export": {
@@ -1417,8 +1425,11 @@
       "downloadAs": "Exporter en {{format}}",
       "what": "Quoi",
       "whole": "Toute la bibliothèque · {{count}}",
-      "folder": "{{name}} · {{count}}"
-    }
+      "folder": "{{name}} · {{count}}",
+      "view": "Cette vue · {{count}}",
+      "thisView": "Cette vue"
+    },
+    "viewItem": "Exporter cette vue…"
   },
   "import": {
     "title": "Importer des liens",

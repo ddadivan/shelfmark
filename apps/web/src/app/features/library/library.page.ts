@@ -1,6 +1,5 @@
 import { LINK_SELECT_SHORTCUT } from '../links/models/link-select-shortcut.const';
 import { LibraryFilterPanelComponent } from './components/library-filter-panel/library-filter-panel.component';
-import { SavedViewActionsService } from '../views/services/saved-view-actions.service';
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
 import { NgTemplateOutlet } from '@angular/common';
 import {
@@ -12,7 +11,9 @@ import {
   input,
   viewChild,
 } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { SavedViewActionsService } from '../views/services/saved-view-actions.service';
 import {
   BadgeComponent,
   BreadcrumbsComponent,
@@ -35,18 +36,18 @@ import {
   ProgressBarComponent,
   ResizeHandleComponent,
   SegmentedControlComponent,
+  TooltipDirective,
   TooltipGroupDirective,
   SKELETON_SHAPE,
   SkeletonComponent,
   type BreadcrumbClick,
   DragWobbleDirective,
 } from '@shelfmark/ui';
-import { PIN_KIND, type ExportFormat } from '@shelfmark/contracts';
-import { EXPORT_FORMAT_OPTIONS } from '../export/models/export-format-options.const';
+import { PIN_KIND } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
-import { ExportActionsService } from '../export/services/export-actions.service';
+import { ExportDialogService } from '../export/services/export-dialog.service';
 import { SavedViewChipsComponent } from '../views/components/saved-view-chips/saved-view-chips.component';
 import { InViewDirective } from '../links/directives/in-view.directive';
 import { LinkActionsService } from '../links/services/link-actions.service';
@@ -64,6 +65,7 @@ import { APP_PATH } from '../../models/app-path.const';
 import { LinksStore } from '../../stores/links.store';
 import { PinsStore } from '../../stores/pins.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
+import { isRowsView } from './utils/is-rows-view';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryHeadService } from './services/library-head.service';
@@ -149,6 +151,7 @@ const SKELETON_COUNT = 8;
     ResizeHandleComponent,
     SavedViewChipsComponent,
     SegmentedControlComponent,
+    TooltipDirective,
     TooltipGroupDirective,
     SkeletonComponent,
     SplitRightHalfComponent,
@@ -217,8 +220,12 @@ export default class LibraryPage {
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);
   protected readonly dnd = inject(LibraryDragService);
-  private readonly exporter = inject(ExportActionsService);
+  private readonly exportDialog = inject(ExportDialogService);
   private readonly savedViews = inject(SavedViewActionsService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly lang = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
   private readonly router = inject(Router);
 
   /** From the route data. */
@@ -256,7 +263,8 @@ export default class LibraryPage {
       this.libraryFolders.counts().all === 0,
   );
   protected readonly UI_VIEW = UI_VIEW;
-  protected readonly EXPORT_FORMAT_OPTIONS = EXPORT_FORMAT_OPTIONS;
+  /** The List or Headlines view: rows in a column instead of cards. */
+  protected readonly rowsView = computed(() => isRowsView(this.filters.view()));
   protected readonly LINKS_SCOPE = LINKS_SCOPE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly pluralKey = pluralKey;
@@ -298,30 +306,51 @@ export default class LibraryPage {
     await this.router.navigateByUrl(`/${APP_PATH.Unsorted}`);
   }
 
-  protected async exportView(format: ExportFormat): Promise<void> {
-    await this.exporter.download(format, this.filters.viewScope(), {
-      viewEmpty: this.feed.empty(),
-    });
+  /**
+   * "Export this view…" in the toolbar's ⋯: the Export dialog with the format choice and, when the
+   * view has an export equivalent (a folder, tags, a search or a type), "This view" next to the
+   * whole library.
+   */
+  protected exportThisView(): void {
+    const scope = this.filters.viewScope();
+    this.exportDialog.open(
+      scope === undefined
+        ? undefined
+        : {
+            scope,
+            count: this.feed.shownHasMore() ? null : this.feed.shownCount(),
+            empty: this.feed.empty(),
+          },
+    );
   }
 
   /** The key cap next to "Select links" (X). */
   protected readonly SELECT_SHORTCUT_CAP = LINK_SELECT_SHORTCUT.SelectKey.toUpperCase();
 
   /** Opens the Filter popover under the menu's button (the menu has closed and handed focus back). */
+  /** Filter button text: "Filter", with the number of active filters. */
+  protected readonly filterLabel = computed(() => {
+    this.lang();
+    const count = this.filters.filterCount();
+    return count === 0
+      ? this.transloco.translate('library.toolbar.filter')
+      : this.transloco.translate('library.toolbar.filterCount', { count });
+  });
+  /** "Save view" shows only with something to save: a filter or a search. */
+  protected readonly saveViewShown = computed(
+    () => !this.feed.emptyLibrary() && (this.filters.filterCount() > 0 || this.filters.searching()),
+  );
+
+  /** "Save view" of the toolbar: the New view dialog, filled with the current filter. */
+  protected async saveView(): Promise<void> {
+    await this.savedViews.saveCurrent(this.filters.filter());
+  }
+
   protected openFilter(panel: LibraryFilterPanelComponent, button: ButtonComponent): void {
     const anchor = button.element();
     if (anchor) {
       panel.open(anchor);
     }
-  }
-
-  /** "Save this view" in the ⋯ menu (Shelf: the tabs row has no "+" on desktop). */
-  protected async saveView(): Promise<void> {
-    await this.savedViews.saveCurrent(this.filters.filter());
-  }
-
-  protected async exportAll(format: ExportFormat): Promise<void> {
-    await this.exporter.download(format);
   }
 
   protected async showAll(): Promise<void> {

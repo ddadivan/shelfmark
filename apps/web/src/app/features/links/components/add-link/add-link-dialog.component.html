@@ -82,6 +82,17 @@
               >{{ 'links.add.several.open' | transloco }}</ui-button
             >
           </div>
+        } @else if (!editing) {
+          <!-- With an address in the field the way to several links stays one click away. -->
+          <div class="add-link__several-row">
+            <ui-button
+              class="add-link__several-open"
+              [variant]="BUTTON_VARIANT.Ghost"
+              size="sm"
+              (click)="severalLinks.showSeveral()"
+              >{{ 'links.add.several.open' | transloco }}</ui-button
+            >
+          </div>
         }
 
         <!-- Always present, so changes are announced reliably (notices inserted later may not be). -->

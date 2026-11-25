@@ -97,6 +97,7 @@
             <!-- prettier-ignore -->
             <h1 class="library__title">{{ filters.folder()?.name }}</h1>
             <ng-container *ngTemplateOutlet="countLine" />
+            <ng-container *ngTemplateOutlet="folderActions" />
             @if (head.description; as description) {
             <p class="library__description">{{ description }}</p>
             }
@@ -109,7 +110,9 @@
           >
             <!-- prettier-ignore -->
             <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.searching() ? ('search.title' | transloco) : (filters.folder()?.name ?? (filters.titleKey() | transloco)) }}</h1>
-            @if (filters.searching() && !splitView.open()) {
+            @if (folderMenu.folder() && !splitView.open() && !filters.searching()) {
+            <ng-container *ngTemplateOutlet="folderActions" />
+            } @if (filters.searching() && !splitView.open()) {
             <p class="library__search-count">
               @if (feed.empty()) { {{ 'search.feed.nothing' | transloco: { query: filters.query() }
               }} } @else if (feed.showLinks()) { {{ (scope() === LINKS_SCOPE.All ?
@@ -136,6 +139,54 @@
             <ng-container *ngTemplateOutlet="countLine" />
           </div>
           }
+          <ng-template #folderActions>
+            <!-- Shelf folder menu (04-organise): only the folder's own actions, the same ones as the
+                 sidebar row's menu. Sort, filter and export are in the toolbar's ⋯. -->
+            @if (folderMenu.folder(); as folder) {
+            <ui-button
+              class="library__folder-menu"
+              [uiMenuTrigger]="folderActionsMenu"
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="more"
+              [ariaLabel]="'library.folderMenu.for' | transloco: { name: folder.name }"
+            />
+            <ui-menu
+              #folderActionsMenu
+              [ariaLabel]="'library.folderMenu.for' | transloco: { name: folder.name }"
+            >
+              <ui-menu-item icon="folder-plus" (activated)="folderMenu.createSubfolder()">
+                {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="add" (activated)="folderMenu.addLinkHere()">
+                {{ 'shell.sidebar.menu.addLink' | transloco }}
+              </ui-menu-item>
+              <ui-menu-separator />
+              <ui-menu-item icon="edit" shortcut="F2" (activated)="folderMenu.rename()">
+                {{ 'shell.sidebar.menu.rename' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="palette" (activated)="folderMenu.settings()">
+                {{ 'shell.sidebar.menu.style' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="folder-move" (activated)="folderMenu.move()">
+                {{ 'shell.sidebar.menu.move' | transloco }}
+              </ui-menu-item>
+              <ui-menu-separator />
+              <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
+                {{ (folderMenu.pinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin') |
+                transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="share" (activated)="folderMenu.share()">
+                {{ 'shell.sidebar.menu.share' | transloco }}
+              </ui-menu-item>
+              <ui-menu-separator />
+              <ui-menu-item icon="trash" danger (activated)="folderMenu.remove()">
+                {{ 'shell.sidebar.menu.delete' | transloco }}
+              </ui-menu-item>
+            </ui-menu>
+            }
+          </ng-template>
           <ng-template #countLine>
             <!-- Always there (empty while the list loads) so the title block keeps its height. -->
             <p class="library__count">
@@ -183,6 +234,58 @@
             </ui-button>
             } @if (feed.showControls() && feed.viewOptions(); as options) {
             <div class="library__controls">
+              <!-- Shelf toolbar controls of their own (author, Nov 25): Filter, Select, Side by side
+                   and Save view; icon-only with a tooltip below 80em and on a phone. -->
+              <div class="library__actions">
+                <ui-button
+                  #filterButton
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="filter"
+                  [iconOnly]="!wide()"
+                  [ariaLabel]="filterLabel()"
+                  [uiTooltip]="filterLabel()"
+                  [ariaPressed]="filters.filterCount() > 0"
+                  (click)="openFilter(filterPanel, filterButton)"
+                >
+                  @if (wide()) { {{ filterLabel() }} }
+                </ui-button>
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="check"
+                  [iconOnly]="!wide()"
+                  [ariaLabel]="'library.viewMenu.select' | transloco"
+                  [uiTooltip]="'library.viewMenu.select' | transloco"
+                  [uiTooltipShortcut]="SELECT_SHORTCUT_CAP"
+                  (click)="selection.startSelection()"
+                >
+                  @if (wide()) { {{ 'library.toolbar.select' | transloco }} }
+                </ui-button>
+                @if (wide() && !preview.split()) {
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="columns"
+                  [ariaPressed]="splitView.open()"
+                  (click)="splitView.toggle()"
+                >
+                  {{ 'library.split.open' | transloco }}
+                </ui-button>
+                } @if (!phone() && saveViewShown()) {
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconLeft="add"
+                  [iconOnly]="!wide()"
+                  [ariaLabel]="'library.toolbar.saveView' | transloco"
+                  [uiTooltip]="'library.toolbar.saveView' | transloco"
+                  (click)="saveView()"
+                >
+                  @if (wide()) { {{ 'library.toolbar.saveView' | transloco }} }
+                </ui-button>
+                }
+              </div>
               @if (!phone()) {
               <app-library-view-menu />
               }
@@ -202,40 +305,13 @@
               size="sm"
               iconOnly
               iconLeft="more"
-              [ariaLabel]="(folderMenu.folder() ? 'library.folderMenu.label' : 'library.viewMenu.more') | transloco"
+              [ariaLabel]="'library.viewMenu.more' | transloco"
             />
-            <ui-menu
-              #moreMenu
-              align="end"
-              [ariaLabel]="(folderMenu.folder() ? 'library.folderMenu.label' : 'library.viewMenu.more') | transloco"
-            >
-              @if (folderMenu.folder()) {
-              <!-- Shelf folder menu (04-organise), the same items as the sidebar row's menu. -->
-              <ui-menu-item icon="folder-plus" (activated)="folderMenu.createSubfolder()">
-                {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="add" (activated)="folderMenu.addLinkHere()">
-                {{ 'shell.sidebar.menu.addLink' | transloco }}
-              </ui-menu-item>
-              <ui-menu-separator />
-              <ui-menu-item icon="edit" (activated)="folderMenu.rename()">
-                {{ 'shell.sidebar.menu.rename' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="palette" (activated)="folderMenu.settings()">
-                {{ 'shell.sidebar.menu.style' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="folder-move" (activated)="folderMenu.move()">
-                {{ 'shell.sidebar.menu.move' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
-                {{ (folderMenu.pinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin') |
-                transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="share" (activated)="folderMenu.share()">
-                {{ 'shell.sidebar.menu.share' | transloco }}
-              </ui-menu-item>
-              <ui-menu-separator />
-              } @if (feed.showControls()) {
+            <!-- Shelf View "More" (01-library): Sort by and one Export entry, for every scope. Filter,
+                 Select, Side by side and Save view are toolbar buttons; the folder's own actions are
+                 in the menu by its title. -->
+            <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
+              @if (feed.showControls()) {
               <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
               @for (option of SORT_OPTIONS; track option) {
               <ui-menu-item
@@ -247,50 +323,10 @@
               </ui-menu-item>
               }
               <ui-menu-separator />
-              <ui-menu-item icon="filter" (activated)="openFilter(filterPanel, splitOpener)">
-                {{ filters.filterCount() === 0 ? ('library.filterPanel.menuItem' | transloco) :
-                ('library.filterPanel.menuItemCount' | transloco: { count: filters.filterCount() })
-                }}
-              </ui-menu-item>
-              <ui-menu-item
-                icon="check"
-                [shortcut]="SELECT_SHORTCUT_CAP"
-                (activated)="selection.startSelection()"
-              >
-                {{ 'library.viewMenu.select' | transloco }}
-              </ui-menu-item>
-              } @if (!feed.emptyLibrary()) {
-              <ui-menu-item icon="add" (activated)="saveView()">
-                {{ 'views.add' | transloco }}
-              </ui-menu-item>
-              <ui-menu-separator />
-              } @if (wide() && !preview.split()) {
-              <ui-menu-item
-                icon="columns"
-                type="checkbox"
-                [selected]="splitView.open()"
-                (activated)="splitView.toggle()"
-              >
-                {{ 'library.split.open' | transloco }}
-              </ui-menu-item>
-              <ui-menu-separator />
               }
-              <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
-              @if (filters.viewScope()) { @for (format of EXPORT_FORMAT_OPTIONS; track format.value)
-              {
-              <ui-menu-item [icon]="format.icon" (activated)="exportView(format.value)">
-                {{ format.viewKey | transloco }}
+              <ui-menu-item icon="upload" (activated)="exportThisView()">
+                {{ 'export.viewItem' | transloco }}
               </ui-menu-item>
-              } } @for (format of EXPORT_FORMAT_OPTIONS; track format.value) {
-              <ui-menu-item [icon]="format.icon" (activated)="exportAll(format.value)">
-                {{ format.allKey | transloco }}
-              </ui-menu-item>
-              } @if (folderMenu.folder()) {
-              <ui-menu-separator />
-              <ui-menu-item icon="trash" danger (activated)="folderMenu.remove()">
-                {{ 'shell.sidebar.menu.delete' | transloco }}
-              </ui-menu-item>
-              }
             </ui-menu>
             }
           </div>
@@ -367,7 +403,7 @@
         } @if (feed.subfolders().length > 0) {
         <ul
           class="library__folders"
-          [class.library__folders--rows]="filters.view() === UI_VIEW.List"
+          [class.library__folders--rows]="rowsView()"
           [class.library__folders--stale]="feed.stale()"
           [attr.inert]="feed.stale() ? '' : null"
           [attr.aria-label]="'library.subfolders.label' | transloco"
@@ -377,7 +413,7 @@
             <app-folder-tile
               [folder]="item.folder"
               [childCount]="item.childCount"
-              [row]="filters.view() === UI_VIEW.List"
+              [row]="rowsView()"
               [dropTarget]="drag.folderTargetId() === item.folder.id"
             />
           </li>
@@ -405,7 +441,7 @@
             {{ 'library.error.retry' | transloco }}
           </ui-button>
         </ui-empty-state>
-        } @else if (feed.skeletonVisible()) { @if (filters.view() === UI_VIEW.List) {
+        } @else if (feed.skeletonVisible()) { @if (rowsView()) {
         <div class="library__rows">
           <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
         </div>
@@ -458,9 +494,10 @@
           }
         </ui-empty-state>
         } @else if (feed.showLinks()) { @for (batch of feed.batches(); track batch) { @if
-        (filters.view() === UI_VIEW.List) {
+        (rowsView()) {
         <ul
           class="library__rows library__list"
+          [class.library__rows--headlines]="filters.view() === UI_VIEW.Headlines"
           cdkDropList
           cdkDropListSortingDisabled
           [cdkDropListDisabled]="compact()"
@@ -522,6 +559,7 @@
             </ng-template>
             <app-link-row
               [link]="link"
+              [headline]="filters.view() === UI_VIEW.Headlines"
               [dense]="preview.split()"
               [folder]="showFolderChips() && !preview.split() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"

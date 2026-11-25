@@ -134,6 +134,25 @@ test.describe('paste several links (mock API)', () => {
     },
   );
 
+  test(
+    '"Add several links" stays reachable once an address is typed, and keeps it',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
+      await page.getByRole('button', { name: 'Add link' }).first().click();
+      const dialog = page.getByRole('dialog', { name: 'Add link' });
+      await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/post');
+      // The tip is gone with the address, the button is not.
+      await expect(dialog.getByText(/Several links at once work too/)).toHaveCount(0);
+
+      await dialog.getByRole('button', { name: 'Add several links' }).click();
+      const several = page.getByRole('dialog', { name: 'Add several links' });
+      await expect(
+        several.getByRole('textbox', { name: 'Paste links, one per line or inside any text' }),
+      ).toHaveValue('https://example.org/post');
+    },
+  );
+
   test('reduced motion: the saved links fade in instead of dropping', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openFeed(page);

@@ -109,9 +109,7 @@ test.describe('side by side (mock API)', () => {
     await page.goBack();
     await expect(page).not.toHaveURL(/split=/);
     await expect(page.getByRole('region', { name: /^Right:/ })).toHaveCount(0);
-    await openMoreMenu(page);
-    await expect(sideBySideItem(page)).toHaveAttribute('aria-checked', 'false');
-    await page.keyboard.press('Escape');
+    await expect(sideBySideItem(page)).toHaveAttribute('aria-pressed', 'false');
   });
 
   test('each half scrolls on its own, the page does not, and the left one loads more', async ({
@@ -170,14 +168,12 @@ test.describe('side by side (mock API)', () => {
     await openWithReading(page);
     const more = page.getByRole('button', { name: 'More view options' });
     const rightRegion = page.getByRole('region', { name: /^Right:/ });
-    await openMoreMenu(page);
-    await expect(sideBySideItem(page)).toHaveAttribute('aria-checked', 'true');
+    await expect(sideBySideItem(page)).toHaveAttribute('aria-pressed', 'true');
 
     await sideBySideItem(page).click();
     await expect(rightRegion).toHaveCount(0);
     await expect(page).not.toHaveURL(/split=/);
-    await openMoreMenu(page);
-    await expect(sideBySideItem(page)).toHaveAttribute('aria-checked', 'false');
+    await expect(sideBySideItem(page)).toHaveAttribute('aria-pressed', 'false');
 
     await sideBySideItem(page).click();
     await expect(rightRegion).toBeVisible();

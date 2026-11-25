@@ -241,3 +241,96 @@
 :host(.ui-list-item--tile) .ui-list-item__link {
   gap: 0;
 }
+
+// Headline row (Shelf LinkRow, Headlines view): 40px, favicon, title in `label`, then the meta
+// columns; 48px on a phone. The trailing controls show on hover and focus, like the checkbox.
+:host(.ui-list-item--headline) {
+  gap: rem(12px);
+  min-height: rem(40px);
+  padding: 0 rem(16px);
+  border-radius: 0;
+
+  @include phone {
+    min-height: rem(48px);
+  }
+}
+
+:host(.ui-list-item--headline) .ui-list-item__link {
+  flex-direction: row;
+  gap: rem(12px);
+  align-items: center;
+}
+
+:host(.ui-list-item--headline) .ui-list-item__title {
+  @include type(label);
+
+  flex: 1;
+  min-width: 0;
+}
+
+:host(.ui-list-item--headline) .ui-list-item__meta {
+  display: flex;
+  flex: none;
+  gap: rem(12px);
+  align-items: center;
+}
+
+:host(.ui-list-item--headline) .ui-list-item__trailing {
+  // Pointer devices: the controls cover the end of the row on hover and focus (no room is kept
+  // for them, so the date stays at the edge). Touch: in the row, always there.
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: rem(8px);
+  padding-inline-start: rem(8px);
+  background: var(--ui-row-hover, var(--fill));
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+:host(.ui-list-item--headline.ui-list-item--selected) .ui-list-item__trailing,
+:host(.ui-list-item--headline.ui-list-item--checked) .ui-list-item__trailing {
+  background: var(--pick);
+}
+
+:host(.ui-list-item--headline) {
+  @include hover {
+    .ui-list-item__trailing {
+      opacity: 1;
+    }
+  }
+}
+
+:host(.ui-list-item--headline:has(:focus-visible)) .ui-list-item__trailing {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  :host(.ui-list-item--headline) .ui-list-item__trailing {
+    position: relative;
+    inset: auto;
+    padding-inline-start: 0;
+    background: none;
+    opacity: 1;
+  }
+}
+
+// Headlines: the select checkbox replaces the favicon (same place) while it shows, so the row
+// keeps its 16px start edge and a phone has no empty column.
+:host(.ui-list-item--headline) .ui-list-item__select {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: rem(12px);
+  padding-inline: rem(4px);
+  background: var(--ui-row-hover, var(--fill));
+}
+
+:host(.ui-list-item--headline.ui-list-item--checked) .ui-list-item__select {
+  background: var(--pick);
+}
+
+@media (hover: none) {
+  :host(.ui-list-item--headline:not(.ui-list-item--selecting, .ui-list-item--checked))
+    .ui-list-item__select {
+    opacity: 0;
+  }
+}

@@ -3,7 +3,7 @@ import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
 import { openDataDialog } from './support/data-menu';
 import { seedSession } from './support/mock-session';
-import { openExportMenu } from './support/library-toolbar';
+import { exportAs, openExportView } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 
@@ -31,54 +31,59 @@ test.describe('export (mock API)', () => {
     await seedSession(page);
   });
 
-  test('the library menu exports everything as JSON, Bookmarks HTML and CSV', async ({ page }) => {
+  test('the library menu opens the dialog that exports everything as JSON, Bookmarks HTML and CSV', async ({
+    page,
+  }) => {
     await page.goto('/links');
-    await openExportMenu(page);
-    // No folder or tag narrows "All links": only the two "everything" items.
-    await expect(page.getByRole('menuitem', { name: /^This view/ })).toHaveCount(0);
+    const dialog = await openExportView(page);
+    // No folder or tag narrows "All links": no "What" choice, only the formats.
+    await expect(dialog.getByText(/^This view/)).toHaveCount(0);
 
     const json = page.waitForEvent('download');
-    await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
+    await dialog.getByRole('button', { name: 'Export JSON' }).click();
     const jsonFile = await json;
     // Named like the API's Content-Disposition: shelfmark-<day>.<format>.
     expect(jsonFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.json$/);
     expect(await requestedUrl(jsonFile)).toBe('/api/export?format=json');
 
-    // The first menu is still leaving: opening now would toggle it shut.
-    await expect(page.getByRole('menu')).toBeHidden();
-    await openExportMenu(page);
-    await expect(page.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
+    // The dialog closes with the saved file.
+    await expect(dialog).toHaveCount(0);
+    const again = await openExportView(page);
     const html = page.waitForEvent('download');
-    await page.getByRole('menuitem', { name: 'Everything as Bookmarks HTML' }).click();
+    await exportAs(again, 'Bookmarks HTML');
     const htmlFile = await html;
     expect(htmlFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.html$/);
     expect(await requestedUrl(htmlFile)).toBe('/api/export?format=html');
 
-    await expect(page.getByRole('menu')).toBeHidden();
-    await openExportMenu(page);
+    await expect(again).toHaveCount(0);
+    const last = await openExportView(page);
     const csv = page.waitForEvent('download');
-    await page.getByRole('menuitem', { name: 'Everything as CSV' }).click();
+    await exportAs(last, 'CSV');
     const csvFile = await csv;
     expect(csvFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.csv$/);
     expect(await csvHeader(csvFile)).toBe('url,title,folder,tags,note,favorite,kind,created_at');
   });
 
-  test('a tag filter adds "This view" items that carry the tag', async ({ page }) => {
+  test('a tag filter adds "This view" to the dialog, chosen first, carrying the tag', async ({
+    page,
+  }) => {
     // A view with links (an empty one only explains, below). The encoding of tags such as `c++`
     // is covered by export-url.spec.ts.
     await page.goto('/links?tag=docs');
     await expect(page.locator('ui-card').first()).toBeVisible();
-    await openExportMenu(page);
+    const dialog = await openExportView(page);
+    await expect(dialog.getByText(/^Whole library/)).toBeVisible();
+    await expect(dialog.getByText(/^This view/)).toBeVisible();
 
     const download = page.waitForEvent('download');
-    await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
+    await dialog.getByRole('button', { name: 'Export JSON' }).click();
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=json&tag=docs');
 
-    await expect(page.getByRole('menu')).toBeHidden();
-    await openExportMenu(page);
+    await expect(dialog).toHaveCount(0);
+    const again = await openExportView(page);
     const csv = page.waitForEvent('download');
-    await page.getByRole('menuitem', { name: 'This view as CSV' }).click();
+    await exportAs(again, 'CSV');
     const viewCsv = await csv;
     expect(viewCsv.suggestedFilename()).toMatch(/\.csv$/u);
     expect(await csvHeader(viewCsv)).toBe('url,title,folder,tags,note,favorite,kind,created_at');
@@ -91,8 +96,8 @@ test.describe('export (mock API)', () => {
     // No mock link has both tags: the view is empty, the library is not.
     await page.goto('/links?tag=docs&tag=c%2B%2B');
     await expect(page.locator('ui-empty-state')).toBeVisible();
-    await openExportMenu(page);
-    await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
+    const dialog = await openExportView(page);
+    await dialog.getByRole('button', { name: 'Export JSON' }).click();
 
     await expect(page.getByText('Nothing to export in this view')).toBeVisible();
     expect(downloads).toBe(0);
@@ -157,8 +162,8 @@ test.describe('export with nothing to export (mock API)', () => {
       await page.goto('/links');
       // The first run of an empty library (Shelf block 6a).
       await expect(page.getByRole('heading', { name: 'Your shelf is empty' })).toBeVisible();
-      await openExportMenu(page);
-      await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
+      const viewDialog = await openExportView(page);
+      await viewDialog.getByRole('button', { name: 'Export JSON' }).click();
       await expect(notice).toBeVisible();
       await expect(
         page.getByText('Save a link first, then you can export your library'),

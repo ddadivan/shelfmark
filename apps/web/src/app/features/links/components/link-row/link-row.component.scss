@@ -35,3 +35,44 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+// Headlines columns (Shelf LinkRow): domain 184px, folder 128px, date 64px after the title. A
+// phone keeps the title and the date (56px).
+.link-row__col {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-row__col--domain {
+  inline-size: #{rem(184px)};
+}
+
+.link-row__col--folder {
+  display: flex;
+  inline-size: #{rem(128px)};
+}
+
+.link-row__col--date {
+  inline-size: #{rem(64px)};
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+@include phone {
+  .link-row__col--domain,
+  .link-row__col--folder {
+    display: none;
+  }
+
+  .link-row__col--date {
+    inline-size: #{rem(56px)};
+  }
+}
+
+// Headlines on touch: only the "…" menu stays next to the date (the rest is in it).
+@media (hover: none) {
+  .link-row__secondary {
+    display: none;
+  }
+}
