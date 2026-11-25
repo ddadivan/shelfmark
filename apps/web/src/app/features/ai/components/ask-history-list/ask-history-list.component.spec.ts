@@ -80,6 +80,9 @@ describe('AskHistoryListComponent', () => {
     expect(links[0]?.getAttribute('aria-current')).toBe('page');
     expect(host.textContent).toContain('Kept on your account for 30 days.');
     expect(host.textContent).toContain('Show more');
+    // A divider sets the foot apart as its own group.
+    const sep = host.querySelector('hr.ask-history__sep');
+    expect(sep?.nextElementSibling?.classList.contains('ask-history__foot')).toBe(true);
     expect(await axeViolations(host)).toEqual([]);
   });
 
