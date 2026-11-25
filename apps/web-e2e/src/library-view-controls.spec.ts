@@ -109,6 +109,25 @@ test.describe('library view controls (mock API)', () => {
     },
   );
 
+  test('the Headlines panel keeps its full height, so its last row scrolls into view', async ({
+    page,
+  }) => {
+    // The panel clips its rounded corners; that once let the feed's flex column shrink it to the
+    // scroll area, which cut the rows below and left nothing to scroll (also beside the preview).
+    test.skip(isCompact(page), 'the mobile shell scrolls the page, not the feed');
+    await openFeed(page);
+    await switchView(page, 'Headlines');
+    const panel = page.locator('.library__rows--headlines').first();
+    await expect(panel.locator('ui-list-item').first()).toBeVisible();
+
+    const clipped = await panel.evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(clipped).toBeLessThanOrEqual(1);
+
+    const last = page.locator('.library__rows--headlines ui-list-item').last();
+    await last.scrollIntoViewIfNeeded();
+    await expect(last).toBeInViewport({ ratio: 1 });
+  });
+
   test('the View menu has a Description switch that is on by default and remembered', async ({
     page,
   }) => {
