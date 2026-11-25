@@ -9,10 +9,10 @@
 
   display: inline-flex;
 
-  // The 14px chevron sits 4px after the label: the 28px box centres it 7px in, so the box starts
-  // that much (less the 4px) before the label's end.
+  // The 14px chevron sits 8px after the label (author, Nov 25: 4px read as touching): the 28px box
+  // centres it 7px in, so the box starts that much (less the 8px) before the label's end.
   margin-inline-start: calc(
-    var(--space-1) - (var(--ui-button-sm-size) - var(--ui-button-icon-size)) / 2
+    var(--space-2) - (var(--ui-button-sm-size) - var(--ui-button-icon-size)) / 2
   );
   transition: transform var(--duration-fast) var(--ease-in-out);
 
