@@ -170,31 +170,31 @@ test.describe('About and "How it works" (mock API)', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('the sidebar card keeps a section gap under Tags and sits right above the footer (#315, #335)', async ({
+  test('the sidebar card is the first block of the fixed footer, under the scrolling middle (#315, #335)', async ({
     page,
   }) => {
     test.skip(isCompact(page), 'the card lives in the desktop sidebar');
-    // The middle of the sidebar scrolls when it does not fit (#335); with the views, the mock
-    // folders, Tags and Reminders it no longer fits 720px. The layout is checked where it fits.
-    await page.setViewportSize({ width: 1280, height: 1000 });
+    // The card moved out of the scrolling middle into the footer (Shelf `.foot > .intro`): it stays
+    // put however long Folders and Tags are, so it is checked with Tags open at a short height too.
+    await page.setViewportSize({ width: 1280, height: 720 });
     await seedSession(page);
     await page.goto('/links');
     const card = page.getByRole('region', { name: 'How it works' });
     await expect(card).toBeVisible();
-    // Tags start folded (Shelf): open them, the card keeps its gap under the rows.
     await openTags(page);
     await expect(page.locator('app-sidebar-tags ui-chip').first()).toBeVisible();
 
-    const tags = await page.locator('app-sidebar-tags').boundingBox();
+    await expect(page.locator('.sidebar__footer app-how-it-works-card')).toHaveCount(1);
+    await expect(page.locator('.sidebar__scroll app-how-it-works-card')).toHaveCount(0);
+    const scroll = await page.locator('.sidebar__scroll').boundingBox();
     const box = await card.boundingBox();
     const footer = await page.locator('.sidebar__footer').boundingBox();
-    expect(tags && box && footer).toBeTruthy();
-    const tagsBottom = (tags?.y ?? 0) + (tags?.height ?? 0);
-    // 24px (space-6) under the last row of tags; the card is the last block of the scrolling
-    // middle, 8px above the footer rows (Shelf reference `.intro` margin-bottom).
-    expect(Math.round((box?.y ?? 0) - tagsBottom)).toBeGreaterThanOrEqual(24);
-    const gap = (footer?.y ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0));
-    expect(gap).toBeGreaterThanOrEqual(8);
-    expect(gap).toBeLessThanOrEqual(12);
+    expect(scroll && box && footer).toBeTruthy();
+    // The card never overlaps the scrolling part and starts the footer (8px padding above it).
+    expect((box?.y ?? 0) + 1).toBeGreaterThanOrEqual((scroll?.y ?? 0) + (scroll?.height ?? 0));
+    expect((box?.y ?? 0) - (footer?.y ?? 0)).toBeLessThanOrEqual(16);
+    expect((box?.y ?? 0) + (box?.height ?? 0)).toBeLessThanOrEqual(
+      (footer?.y ?? 0) + (footer?.height ?? 0),
+    );
   });
 });

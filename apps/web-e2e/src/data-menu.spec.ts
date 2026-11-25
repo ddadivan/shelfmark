@@ -24,14 +24,20 @@ test.describe('data menu and its entries (mock API)', () => {
       test.skip(isCompact(page), 'the sidebar footer exists from 64em');
     });
 
-    test('the menu opens upwards from the row and lists the four entries', async ({ page }) => {
+    test('the menu opens upwards from the row and lists the five entries', async ({ page }) => {
       await page.goto('/links');
       const row = dataRow(page);
       await expect(row).toBeVisible();
       const menu = await openDataMenu(page);
 
       const items = menu.getByRole('menuitem');
-      await expect(items).toHaveText(['Import links', 'Export', /What's new/, 'Send feedback']);
+      await expect(items).toHaveText([
+        'Import links',
+        'Export',
+        'Help center',
+        /What's new/,
+        'Send feedback',
+      ]);
       const rowBox = await row.boundingBox();
       const menuBox = await menu.boundingBox();
       expect(rowBox && menuBox && menuBox.y + menuBox.height <= rowBox.y + 1).toBe(true);
