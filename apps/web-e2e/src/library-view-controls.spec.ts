@@ -137,7 +137,7 @@ test.describe('library view controls (mock API)', () => {
       const more = card.getByRole('button', { name: /^Actions for / });
       const star = card.getByRole('button', { name: /^Favorite: / });
       await expect(star).toBeVisible();
-      const touch = await page.evaluate(() => matchMedia('(hover: none)').matches);
+      const touch = await page.evaluate(() => window.matchMedia('(hover: none)').matches);
       if (!touch) {
         await page.mouse.move(2, 2);
         await expect(card.locator('.ui-card__more')).toHaveCSS('opacity', '0');
