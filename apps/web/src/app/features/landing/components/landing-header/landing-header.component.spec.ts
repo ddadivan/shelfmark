@@ -15,15 +15,16 @@ const texts = (root: HTMLElement, selector: string) =>
 describe('LandingHeaderComponent', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
 
-  it('links to How it works, AI, What’s new and Privacy, then Sign in and Start your shelf', async () => {
+  it('links to How it works, AI, What’s new, Help and Privacy, then Sign in and Start your shelf', async () => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelector('nav')?.getAttribute('aria-label')).toBe('Page');
-    expect(texts(root, 'nav a')).toEqual(['How it works', 'AI', 'What’s new', 'Privacy']);
+    expect(texts(root, 'nav a')).toEqual(['How it works', 'AI', 'What’s new', 'Help', 'Privacy']);
     expect(root.querySelector('nav a[href="#works"]')).not.toBeNull();
     expect(root.querySelector('nav a[href="#ai"]')).not.toBeNull();
     expect(root.querySelector('nav a[href="/changelog"]')).not.toBeNull();
+    expect(root.querySelector('nav a[href="/help"]')).not.toBeNull();
     expect(root.querySelector('nav a[href="/privacy"]')).not.toBeNull();
     expect(texts(root, 'a[href="/sign-in"]')).toEqual(['Sign in', 'Start your shelf']);
     expect(root.querySelector('button[aria-label="Switch theme"]')).not.toBeNull();

@@ -1,0 +1,19 @@
+<section class="topic" [attr.aria-labelledby]="'help-topic-' + category().id">
+  <span class="topic__icon"><ui-icon [name]="category().icon" /></span>
+  <h2 class="topic__title" [id]="'help-topic-' + category().id">
+    {{ 'help.categories.' + category().id + '.title' | transloco }}
+  </h2>
+  <p class="topic__text">{{ 'help.categories.' + category().id + '.text' | transloco }}</p>
+  <ul class="topic__list">
+    @for (id of shown(); track id) {
+      <li>
+        <a class="topic__link" [routerLink]="[helpPath, id]">{{
+          'help.articles.' + id + '.title' | transloco
+        }}</a>
+      </li>
+    }
+  </ul>
+  <span class="topic__count">{{
+    countKey() | transloco: { count: category().articles.length }
+  }}</span>
+</section>

@@ -4735,5 +4735,509 @@
     "text": "Vielleicht ist die Adresse vertippt, oder die Seite ist umgezogen.",
     "links": "Zu deinen Links",
     "home": "Zu Shelfmark"
+  },
+  "help": {
+    "title": "Hilfecenter",
+    "brand": "Hilfe",
+    "searchTrigger": "Hilfe durchsuchen",
+    "searchShortcut": "Strg K",
+    "menu": "Hilfecenter",
+    "learnMore": "Mehr erfahren",
+    "hero": {
+      "title": "Wie können wir helfen?",
+      "lead": "Anleitungen zu allem, was Shelfmark kann: vom ersten gespeicherten Link bis zur Frage an dein Regal.",
+      "placeholder": "Suchen: Regeln, Erinnerungen, Export …",
+      "searchLabel": "Hilfeartikel durchsuchen",
+      "clear": "Suche löschen"
+    },
+    "popular": "Beliebt:",
+    "popularLabel": "Beliebte Artikel",
+    "articleCount": {
+      "one": "{{count}} Artikel",
+      "other": "{{count}} Artikel"
+    },
+    "bar": {
+      "how": {
+        "title": "So funktioniert’s",
+        "text": "Eine Video-Tour in 3 Minuten."
+      },
+      "shortcuts": {
+        "title": "Tastenkürzel",
+        "text": "Alle Tasten in einer Liste."
+      },
+      "feedback": {
+        "title": "Immer noch ratlos?",
+        "text": "Schick uns Feedback; der Autor antwortet."
+      }
+    },
+    "nav": "Hilfethemen",
+    "toc": "Auf dieser Seite",
+    "crumbs": "Brotkrumen-Navigation",
+    "topics": "Themen",
+    "minutes": {
+      "one": "{{count}} Min. Lesezeit",
+      "other": "{{count}} Min. Lesezeit"
+    },
+    "updated": "Aktualisiert am {{date}}",
+    "related": "Verwandt",
+    "wasHelpful": "War das hilfreich?",
+    "yes": "Ja",
+    "no": "Nein",
+    "thanksYes": "Danke für deine Rückmeldung.",
+    "thanksNo": "Schade. Sag uns, was gefehlt hat.",
+    "sendFeedback": "Feedback senden",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "articleNav": "Weitere Artikel",
+    "search": {
+      "count": {
+        "one": "{{count}} Artikel",
+        "other": "{{count}} Artikel"
+      },
+      "resultsLabel": "Suchergebnisse",
+      "emptyTitle": "Nicht gefunden?",
+      "emptyText": "Versuche andere Wörter oder sag dem Autor, was fehlt.",
+      "noneTitle": "Nichts gefunden für „{{query}}“"
+    },
+    "notFound": {
+      "title": "Artikel nicht gefunden",
+      "text": "Diesen Hilfeartikel gibt es nicht oder er wurde verschoben.",
+      "action": "Zurück zum Hilfecenter"
+    },
+    "categories": {
+      "getting-started": {
+        "title": "Erste Schritte",
+        "text": "Speichere deine ersten Links und hole herein, was du schon hast."
+      },
+      "organise": {
+        "title": "Ordnen",
+        "text": "Ordner, Tags und Regeln halten das Regal aufgeräumt."
+      },
+      "find": {
+        "title": "Finden",
+        "text": "Jeden Link mit ein paar Tasten wiederfinden."
+      },
+      "come-back": {
+        "title": "Wiederkommen",
+        "text": "Erinnerungen und Heute bringen Links zur richtigen Zeit zurück."
+      },
+      "read": {
+        "title": "Lesen",
+        "text": "Links direkt öffnen oder im Reader ungestört lesen."
+      },
+      "ai": {
+        "title": "KI",
+        "text": "Optionale Hilfe beim Sortieren, Finden und Fragen."
+      },
+      "account": {
+        "title": "Konto und Daten",
+        "text": "Export, Designs, Tastenkürzel und dein Konto."
+      }
+    },
+    "mock": {
+      "title": "Neue Regel",
+      "path": "Einstellungen › Bibliothek › Regeln",
+      "when": "Wenn ein Link stammt von",
+      "site": "taylorstitch.com",
+      "put": "Ablegen in",
+      "folder": "Shopping",
+      "tags": "Tags hinzufügen",
+      "tag": "#kleidung",
+      "cancel": "Abbrechen",
+      "save": "Regel speichern"
+    },
+    "articles": {
+      "save-first-link": {
+        "title": "Den ersten Link speichern",
+        "lead": "Füge eine Webadresse ein, und Shelfmark ergänzt Bild, Titel und Website für dich.",
+        "sections": {
+          "s1": {
+            "title": "Link einfügen",
+            "b0": "Wähle Link hinzufügen, füge die Adresse ein und drücke Speichern. Die Vorschau erscheint nach einem Moment, und du kannst den Titel vor dem Speichern ändern."
+          },
+          "s2": {
+            "title": "Notiz hinzufügen",
+            "b0": "Eine kurze Notiz, warum du den Link gespeichert hast, hilft dir, ihn später wiederzufinden. Notizen sind durchsuchbar."
+          }
+        }
+      },
+      "install-extension": {
+        "title": "Die Erweiterung installieren",
+        "lead": "Speichere die aktuelle Seite mit einem Klick, ohne sie zu verlassen.",
+        "sections": {
+          "s1": {
+            "title": "Zum Browser hinzufügen",
+            "b0": "Installiere die Shelfmark-Erweiterung aus dem Chrome Web Store. Sie funktioniert in Chrome, Edge, Brave und Arc."
+          },
+          "s2": {
+            "title": "Eine Seite speichern",
+            "b0": "Klicke auf die Schaltfläche in der Symbolleiste oder drücke Alt+Umschalt+S. Titel und Ordner sind ausgefüllt, die meisten Seiten brauchen also nur noch einen Klick."
+          }
+        }
+      },
+      "import-bookmarks": {
+        "title": "Lesezeichen importieren",
+        "lead": "Hole die Lesezeichen, die du schon hast, aus Chrome, Safari, Firefox oder Edge herein.",
+        "sections": {
+          "s1": {
+            "title": "Aus dem Browser exportieren",
+            "b0": "Jeder Browser kann seine Lesezeichen als HTML-Datei exportieren. Suche im Lesezeichen-Manager nach Lesezeichen exportieren."
+          },
+          "s2": {
+            "title": "Die Datei importieren",
+            "b0": "Öffne Daten und Hilfe, wähle Links importieren und die Datei aus. Ordner bleiben erhalten, bereits gespeicherte Links werden übersprungen."
+          }
+        }
+      },
+      "use-on-phone": {
+        "title": "Shelfmark auf dem Smartphone nutzen",
+        "lead": "Speichere über das Teilen-Menü und finde alles im selben Regal.",
+        "sections": {
+          "s1": {
+            "title": "Zum Startbildschirm hinzufügen",
+            "b0": "Öffne Shelfmark im Browser deines Smartphones und wähle Zum Startbildschirm hinzufügen. Danach öffnet es sich wie jede andere App."
+          },
+          "s2": {
+            "title": "Aus jeder App speichern",
+            "b0": "Wähle unter Android im Teilen-Menü einer Seite oder App Shelfmark, und der Link landet in Unsortiert."
+          }
+        }
+      },
+      "folders": {
+        "title": "Ordner und Unterordner",
+        "lead": "Lege Links dort ab, wo sie hingehören, beliebig tief.",
+        "sections": {
+          "s1": {
+            "title": "Einen Ordner erstellen",
+            "b0": "Nutze das Plus neben Ordner in der Seitenleiste. Ziehe einen Ordner auf einen anderen, um ihn zum Unterordner zu machen."
+          },
+          "s2": {
+            "title": "Links verschieben",
+            "b0": "Ziehe einen Link auf einen Ordner oder öffne sein ⋯-Menü und wähle In Ordner verschieben. Wähle mehrere Links aus, um sie gemeinsam zu verschieben."
+          }
+        }
+      },
+      "tags": {
+        "title": "Tags",
+        "lead": "Kurze Etiketten, die quer über Ordner gehen.",
+        "sections": {
+          "s1": {
+            "title": "Tags hinzufügen",
+            "b0": "Gib beim Speichern oder Bearbeiten eines Links einen Tag ein. Ein Link kann bis zu 20 Tags tragen."
+          },
+          "s2": {
+            "title": "Nach Tag filtern",
+            "b0": "Wähle einen Tag in der Seitenleiste oder auf der Tags-Seite, um alle Links mit diesem Tag zu sehen."
+          }
+        }
+      },
+      "favorites-pins": {
+        "title": "Favoriten und angeheftete Links",
+        "lead": "Halte die Links, die du am meisten brauchst, einen Klick entfernt.",
+        "sections": {
+          "s1": {
+            "title": "Favoriten",
+            "b0": "Tippe auf den Stern eines Links, um ihn zu den Favoriten hinzuzufügen, einer eigenen Liste in der Seitenleiste."
+          },
+          "s2": {
+            "title": "Ordner oder Tag anheften",
+            "b0": "Angeheftete Ordner und Tags bleiben oben in der Seitenleiste, über allem anderen."
+          }
+        }
+      },
+      "trash": {
+        "title": "Papierkorb",
+        "lead": "Gelöschte Links warten hier, bevor sie endgültig verschwinden.",
+        "sections": {
+          "s1": {
+            "title": "Wiederherstellen",
+            "b0": "Öffne den Papierkorb, wähle einen Link oder Ordner und dann Wiederherstellen. Er kehrt an seinen alten Platz zurück."
+          },
+          "s2": {
+            "title": "Endgültig weg",
+            "b0": "Einträge werden endgültig entfernt, wenn ihre Zeit im Papierkorb abgelaufen ist. Du kannst ihn auch früher leeren."
+          }
+        }
+      },
+      "search": {
+        "title": "Suche",
+        "lead": "Finde einen Link über jedes Wort aus Titel, Notiz, Tags oder Adresse.",
+        "sections": {
+          "s1": {
+            "title": "Die Suche öffnen",
+            "b0": "Drücke überall Strg K (Cmd K am Mac) oder nutze das Suchfeld oben."
+          },
+          "s2": {
+            "title": "Eingrenzen",
+            "b0": "Füge der Suche einen Ordner oder Tag hinzu, um die Ergebnisse einzugrenzen. Treffer werden hervorgehoben."
+          }
+        }
+      },
+      "search-by-meaning": {
+        "title": "Suche nach Bedeutung",
+        "lead": "Findet Links, die zu deinen Worten passen, auch ohne genau diese Wörter.",
+        "sections": {
+          "s1": {
+            "title": "Einschalten",
+            "b0": "Die Suche nach Bedeutung gehört zur KI. Schalte die KI in den Einstellungen ein, dann funktioniert sie im Suchfeld."
+          },
+          "s2": {
+            "title": "Verwandt nach Bedeutung",
+            "b0": "Ergebnisse, die zur Idee passen, stehen nach den exakten Treffern unter Verwandt nach Bedeutung."
+          }
+        }
+      },
+      "saved-views": {
+        "title": "Gespeicherte Ansichten",
+        "lead": "Behalte eine Suche oder einen Filter als Tab, zu dem du zurückkehren kannst.",
+        "sections": {
+          "s1": {
+            "title": "Eine Ansicht speichern",
+            "b0": "Stelle die gewünschten Filter ein und wähle Ansicht speichern. Sie erscheint als Tab über der Liste."
+          },
+          "s2": {
+            "title": "Bearbeiten oder entfernen",
+            "b0": "Öffne das Menü des Tabs, um eine Ansicht umzubenennen oder zu löschen. Das Löschen einer Ansicht löscht nie Links."
+          }
+        }
+      },
+      "side-by-side": {
+        "title": "Nebeneinander",
+        "lead": "Lies einen Link neben deiner Liste, ohne den Faden zu verlieren.",
+        "sections": {
+          "s1": {
+            "title": "Einen Link öffnen",
+            "b0": "Auf einem breiten Bildschirm öffnet sich ein Link in einem Bereich neben der Liste, statt sie zu verdecken."
+          },
+          "s2": {
+            "title": "Durch die Liste gehen",
+            "b0": "Mit den Pfeiltasten gelangst du zum nächsten Link, und der Bereich folgt."
+          }
+        }
+      },
+      "today": {
+        "title": "Heute",
+        "lead": "Eine Seite für alles, was jetzt deine Zeit wert ist.",
+        "sections": {
+          "s1": {
+            "title": "Was du siehst",
+            "b0": "Fällige Erinnerungen, halb gelesene Artikel und ein vergessener Link an einem Ort."
+          },
+          "s2": {
+            "title": "Abarbeiten",
+            "b0": "Öffne einen Link, verschiebe ihn oder markiere ihn als erledigt, und er verschwindet von der Seite."
+          }
+        }
+      },
+      "reminders": {
+        "title": "Erinnerungen",
+        "lead": "Setze eine Erinnerung für jeden Link: später heute, morgen, am Wochenende oder zu einem Datum deiner Wahl.",
+        "sections": {
+          "s1": {
+            "title": "Eine Erinnerung setzen",
+            "b0": "Öffne das ⋯-Menü eines Links, wähle Erinnere mich und such eine Zeit aus. Als Kürzel drückst du R beim ausgewählten Link."
+          },
+          "s2": {
+            "title": "Wenn sie fällig ist",
+            "b0": "Eine fällige Erinnerung erscheint unter Heute und in Erinnerungen. Du kannst auch einen Hinweis im Browser oder per E-Mail bekommen."
+          }
+        }
+      },
+      "recently-opened": {
+        "title": "Zuletzt geöffnet",
+        "lead": "Die zuletzt geöffneten Links, die neuesten zuerst.",
+        "sections": {
+          "s1": {
+            "title": "Wiederfinden",
+            "b0": "Öffne Zuletzt geöffnet in der Seitenleiste, um deine Links nach Tagen gruppiert zu sehen."
+          },
+          "s2": {
+            "title": "Einen Eintrag entfernen",
+            "b0": "Entferne einen einzelnen Eintrag über sein Menü. Der Link selbst wird dabei nie gelöscht."
+          }
+        }
+      },
+      "link-preview": {
+        "title": "Linkvorschau",
+        "lead": "Sieh einen Link direkt an, bevor du das Regal verlässt.",
+        "sections": {
+          "s1": {
+            "title": "Die Vorschau öffnen",
+            "b0": "Wähle einen Link, um seine Vorschau mit Bild, Zusammenfassung, Tags und Notiz zu öffnen."
+          },
+          "s2": {
+            "title": "Wenn eine Seite nicht angezeigt werden kann",
+            "b0": "Manche Websites erscheinen nicht innerhalb einer anderen Seite. Dann bietet die Vorschau In neuem Tab öffnen an."
+          }
+        }
+      },
+      "reader": {
+        "title": "Reader",
+        "lead": "Eine aufgeräumte, ablenkungsfreie Ansicht eines Artikels.",
+        "sections": {
+          "s1": {
+            "title": "Den Reader öffnen",
+            "b0": "Wähle Reader bei einem Link, der ein Artikel ist. Der Text öffnet sich ohne Werbung und Menüs."
+          },
+          "s2": {
+            "title": "Angenehm einstellen",
+            "b0": "Ändere Textgröße, Schrift, Zeilenabstand und Design in den Leseeinstellungen. Deine Auswahl wird gemerkt."
+          }
+        }
+      },
+      "turn-on-ai": {
+        "title": "KI einschalten",
+        "lead": "Die KI ist optional und bleibt aus, bis du sie einschaltest.",
+        "sections": {
+          "s1": {
+            "title": "Einschalten",
+            "b0": "Öffne Einstellungen, dann KI, und schalte sie ein. Für Ordner und Tags entscheidest du getrennt."
+          },
+          "s2": {
+            "title": "Wieder ausschalten",
+            "b0": "Das Ausschalten der KI beendet sofort alle Vorschläge. Deine KI-Daten kannst du auch unter Datenschutz und Daten löschen."
+          }
+        }
+      },
+      "ai-suggestions": {
+        "title": "Vorschläge für Ordner und Tags",
+        "lead": "Die KI schlägt für jeden neuen Link einen Ordner und Tags vor.",
+        "sections": {
+          "s1": {
+            "title": "Mit einem Tipp übernehmen",
+            "b0": "Die Vorschläge stammen aus den Ordnern und Tags, die du schon hast. Nichts wird verschoben, bevor du tippst."
+          },
+          "s2": {
+            "title": "Unsortiert aufräumen",
+            "b0": "Öffne Aufräumen bei Unsortiert, um Vorschläge für viele Links auf einmal zu prüfen."
+          }
+        }
+      },
+      "ask-your-shelf": {
+        "title": "Dein Regal fragen",
+        "lead": "Stelle eine Frage in deinen eigenen Worten und bekomme eine Antwort aus deinen Links.",
+        "sections": {
+          "s1": {
+            "title": "Eine Frage stellen",
+            "b0": "Öffne Fragen, tippe eine Frage und sende sie ab. Die Antwort wird aus deinen eigenen Links geschrieben."
+          },
+          "s2": {
+            "title": "Quellen prüfen",
+            "b0": "Jede Antwort nennt die verwendeten Links, damit du sie öffnen und prüfen kannst."
+          }
+        }
+      },
+      "ai-privacy": {
+        "title": "Was die KI sieht und speichert",
+        "lead": "Was dein Regal verlässt, solange die KI an ist.",
+        "sections": {
+          "s1": {
+            "title": "Was gesendet wird",
+            "b0": "Nur Adresse, Titel und der für die Aufgabe nötige Text werden gesendet, und nur solange die KI an ist."
+          },
+          "s2": {
+            "title": "Was gespeichert wird",
+            "b0": "Vorschläge und Zusammenfassungen werden bei deinem Link gespeichert. Deine Links werden nie zum Training von KI-Modellen verwendet."
+          }
+        }
+      },
+      "export": {
+        "title": "Deine Links exportieren",
+        "lead": "Nimm alles mit, wann immer du willst.",
+        "sections": {
+          "s1": {
+            "title": "Ein Format wählen",
+            "b0": "Öffne Daten und Hilfe, wähle Exportieren und dann JSON, Lesezeichen-HTML oder CSV."
+          },
+          "s2": {
+            "title": "Was enthalten ist",
+            "b0": "Links, Ordner, Tags und Notizen. Die Datei wird für dich erstellt und nicht aufbewahrt."
+          }
+        }
+      },
+      "themes": {
+        "title": "Designs und Darstellung",
+        "lead": "Hell, dunkel oder wie dein Gerät es vorgibt.",
+        "sections": {
+          "s1": {
+            "title": "Design wechseln",
+            "b0": "Nutze die Zeile Design in der Seitenleiste oder wähle in den Einstellungen Hell, Dunkel oder System."
+          },
+          "s2": {
+            "title": "Nach deinem Geschmack",
+            "b0": "In den Einstellungen kannst du außerdem eine Akzentfarbe und die Rundung der Ecken wählen."
+          }
+        }
+      },
+      "keyboard-shortcuts": {
+        "title": "Tastenkürzel",
+        "lead": "Alle Tasten in einer Liste.",
+        "sections": {
+          "s1": {
+            "title": "Die Liste ansehen",
+            "b0": "Drücke in der App überall ?, um die Liste der Kürzel zu öffnen."
+          },
+          "s2": {
+            "title": "Ein paar zum Anfangen",
+            "b0": "Strg K sucht, R setzt eine Erinnerung für den ausgewählten Link, und Umschalt ? öffnet die Hilfe."
+          }
+        }
+      },
+      "notifications": {
+        "title": "Benachrichtigungen",
+        "lead": "Ein Hinweis im Browser oder per E-Mail, wenn eine Erinnerung fällig ist.",
+        "sections": {
+          "s1": {
+            "title": "Den Ort wählen",
+            "b0": "Öffne Einstellungen, dann Benachrichtigungen, und schalte Browser-Hinweise, E-Mail oder beides ein."
+          },
+          "s2": {
+            "title": "Standardmäßig still",
+            "b0": "Nichts wird gesendet, bevor du es einschaltest, und du kannst es jederzeit wieder ausschalten."
+          }
+        }
+      },
+      "delete-account": {
+        "title": "Dein Konto löschen",
+        "lead": "Entferne dein Konto und alles, was darin gespeichert ist.",
+        "sections": {
+          "s1": {
+            "title": "Bevor du gehst",
+            "b0": "Exportiere zuerst deine Links, wenn du sie behalten willst. Das Löschen ist endgültig."
+          },
+          "s2": {
+            "title": "Löschen",
+            "b0": "Öffne Einstellungen, dann Konto, und wähle Konto löschen. Du bestätigst einmal, dann werden deine Daten entfernt."
+          }
+        }
+      },
+      "rules": {
+        "title": "Regeln: Links automatisch einsortieren",
+        "lead": "Eine Regel legt jeden Link einer Website im Ordner deiner Wahl ab, auf Wunsch mit Tags. Speichere einen Link von taylorstitch.com, und er landet von allein in Shopping.",
+        "sections": {
+          "create": {
+            "title": "Eine Regel erstellen",
+            "steps": {
+              "0": "Öffne **Einstellungen › Bibliothek › Regeln** und wähle **Regel hinzufügen**.",
+              "1": "Gib die Website ein, zum Beispiel `taylorstitch.com`. Seiten dieser Website und ihrer Subdomains passen.",
+              "2": "Wähle den Ordner und, wenn du magst, Tags. Dann **Regel speichern**."
+            },
+            "tip": "**Schneller:** Öffne das ⋯-Menü eines Links und wähle **Regel für taylorstitch.com …**. Website und aktueller Ordner sind schon eingetragen."
+          },
+          "existing": {
+            "title": "Eine Regel auf vorhandene Links anwenden",
+            "b0": "Nach dem Speichern einer Regel bietet Shelfmark an, die Links dieser Website zu verschieben, die noch in Unsortiert liegen. Links, die du schon in einen Ordner gelegt hast, bleiben, wo sie sind."
+          },
+          "offer": {
+            "title": "Wenn Shelfmark eine Regel vorschlägt",
+            "b0": "Wenn du drei Links derselben Website in denselben Ordner verschiebst, fragt Shelfmark einmal, ob das ab jetzt automatisch geschehen soll. **Jetzt nicht** blendet den Vorschlag für diese Website 30 Tage lang aus."
+          },
+          "limits": {
+            "title": "Gut zu wissen",
+            "warn": "Wandert der Ordner einer Regel in den Papierkorb, pausiert die Regel, und neue Links dieser Website landen in Unsortiert, bis du einen anderen Ordner wählst."
+          }
+        }
+      }
+    }
   }
 }

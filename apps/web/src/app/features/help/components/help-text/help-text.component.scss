@@ -1,0 +1,21 @@
+@use 'ui' as *;
+
+:host {
+  display: inline;
+}
+
+.help-text__ui {
+  font-weight: 600;
+}
+
+// Shelf `.k`: a key cap or a value to type.
+.help-text__key {
+  display: inline-block;
+  padding: 0 rem(7px);
+  font-size: var(--font-size-meta);
+  font-weight: 500;
+  line-height: rem(22px);
+  vertical-align: rem(1px);
+  background: var(--fill);
+  border-radius: var(--radius-tile);
+}

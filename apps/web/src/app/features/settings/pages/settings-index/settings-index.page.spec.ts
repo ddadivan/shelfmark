@@ -75,6 +75,7 @@ describe('the You list (/settings)', () => {
       '/settings/language',
       '/settings/privacy',
       '/settings/feedback',
+      '/help',
       '/settings/feedback',
       '/changelog',
       '/about',

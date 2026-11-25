@@ -1,0 +1,13 @@
+<nav class="help-toc" [attr.aria-label]="'help.toc' | transloco">
+  <p class="help-toc__heading">{{ 'help.toc' | transloco }}</p>
+  @for (section of sections(); track section.id) {
+    <a
+      class="help-toc__link"
+      [class.help-toc__link--on]="section.id === activeId()"
+      [href]="'/help/' + articleId() + '#' + section.id"
+      (click)="jump($event, section.id)"
+      [attr.aria-current]="section.id === activeId() ? 'location' : null"
+      >{{ 'help.articles.' + articleId() + '.sections.' + section.id + '.title' | transloco }}</a
+    >
+  }
+</nav>

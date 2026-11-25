@@ -54,6 +54,7 @@ export default class SettingsIndexPage {
   protected readonly adminStatsPath = ['/', APP_PATH.Admin, ADMIN_PATH.Stats];
   protected readonly privacyHref = `/${APP_PATH.Privacy}`;
   protected readonly feedbackHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Feedback}`;
+  protected readonly helpHref = `/${APP_PATH.Help}`;
   protected readonly aboutHref = `/${APP_PATH.About}`;
   protected readonly changelogHref = `/${APP_PATH.Changelog}`;
   /** "What's new" opens the dialog (the link to `/changelog` is the fallback), with a dot while unseen. */

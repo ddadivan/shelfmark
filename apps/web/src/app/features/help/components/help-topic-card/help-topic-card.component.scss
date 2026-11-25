@@ -1,0 +1,72 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.topic {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.topic__icon {
+  display: grid;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  background: var(--fill);
+  border-radius: var(--radius-md);
+}
+
+.topic__title {
+  margin: var(--space-1) 0 0;
+
+  @include type(heading);
+}
+
+.topic__text {
+  margin: 0;
+  color: var(--text-muted);
+
+  @include type(secondary);
+}
+
+.topic__list {
+  padding: 0;
+  margin: 0 calc(-1 * var(--space-2));
+  list-style: none;
+}
+
+.topic__link {
+  display: flex;
+  align-items: center;
+  height: var(--row-nav);
+  padding-inline: var(--space-2);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+
+  @include type(secondary);
+
+  @include hover {
+    background: var(--fill);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.topic__count {
+  padding-top: var(--space-1);
+  margin-top: auto;
+  color: var(--text-muted);
+
+  @include type(caption);
+}

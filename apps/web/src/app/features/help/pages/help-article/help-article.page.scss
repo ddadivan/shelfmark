@@ -1,0 +1,191 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  color: var(--text);
+  background: var(--bg);
+}
+
+// Shelf 17-help `.doc`: topics 260 | article | on this page 220, 1280px wide.
+.doc {
+  display: grid;
+  grid-template-columns: rem(260px) minmax(0, 1fr) rem(220px);
+  gap: rem(48px);
+  width: 100%;
+  max-width: rem(1280px);
+  padding-inline: max(var(--space-4), env(safe-area-inset-left, 0rem))
+    max(var(--space-4), env(safe-area-inset-right, 0rem));
+  padding-bottom: rem(80px);
+  margin-inline: auto;
+}
+
+.doc__nav,
+.doc__toc {
+  position: sticky;
+  top: rem(80px);
+  align-self: start;
+  max-height: calc(100dvh - #{rem(96px)});
+  padding-block: var(--space-6);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.doc__toc {
+  padding-block: rem(30px);
+}
+
+.doc__article {
+  min-width: 0;
+  max-width: rem(720px);
+  padding-block: rem(28px);
+  overflow-wrap: anywhere;
+}
+
+.doc__mobile {
+  display: none;
+  margin-bottom: var(--space-4);
+}
+
+.doc__topics {
+  padding: var(--space-2);
+  margin-top: var(--space-2);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+
+.doc__title {
+  margin: rem(14px) 0 0;
+  font-size: var(--font-size-display);
+  font-weight: 600;
+  line-height: var(--line-height-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.doc__lead {
+  margin: rem(10px) 0 0;
+  font-size: var(--font-size-section);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.doc__meta {
+  display: flex;
+  gap: rem(14px);
+  margin: rem(14px) 0 0;
+  color: var(--text-muted);
+
+  @include type(caption);
+}
+
+.doc__related-heading {
+  margin: rem(40px) 0 0;
+  font-size: var(--font-size-section);
+  font-weight: 600;
+  line-height: var(--line-height-title-s);
+}
+
+.doc__related {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  padding: 0;
+  margin: var(--space-4) 0 0;
+  list-style: none;
+}
+
+.doc__pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+// Shelf `.rel a` / `.pn a`: a flat card, `shadow-hover` on hover (none in dark).
+.doc__card {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  height: 100%;
+  padding: var(--space-3) var(--space-4);
+  color: inherit;
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  transition: box-shadow 200ms ease;
+
+  @include hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  b {
+    font-weight: 600;
+  }
+
+  span {
+    color: var(--text-muted);
+
+    @include type(caption);
+  }
+
+  &--next {
+    text-align: end;
+  }
+}
+
+.missing {
+  padding-block: var(--space-8);
+}
+
+@include reduced-motion {
+  .doc__card {
+    transition: none;
+  }
+}
+
+@media (width < 68.75em) {
+  .doc {
+    grid-template-columns: rem(240px) minmax(0, 1fr);
+  }
+
+  .doc__toc {
+    display: none;
+  }
+}
+
+@media (width < 53.75em) {
+  .doc {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .doc__nav {
+    display: none;
+  }
+
+  .doc__mobile {
+    display: block;
+    margin-top: var(--space-4);
+  }
+
+  .doc__crumbs {
+    display: none;
+  }
+
+  .doc__title {
+    font-size: var(--font-size-title-m);
+    line-height: var(--line-height-title-m);
+  }
+
+  .doc__related,
+  .doc__pager {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

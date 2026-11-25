@@ -1,0 +1,37 @@
+@for (section of article().sections; track section.id) {
+  <section class="body__section">
+    <h2 class="body__heading" [id]="section.id">
+      {{ key('sections.' + section.id + '.title') | transloco }}
+    </h2>
+    @for (block of section.blocks; track $index) {
+      @switch (block.kind) {
+        @case (HELP_BLOCK.Steps) {
+          <ol class="body__steps">
+            @for (step of block.keys; track step) {
+              <li class="body__step">
+                <span><app-help-text [text]="key(step) | transloco" /></span>
+              </li>
+            }
+          </ol>
+        }
+        @case (HELP_BLOCK.RuleMock) {
+          <app-help-rule-mock />
+        }
+        @case (HELP_BLOCK.Tip) {
+          <p class="body__tip">
+            <ui-icon class="body__tip-icon" name="bulb" />
+            <span><app-help-text [text]="key(block.keys[0]) | transloco" /></span>
+          </p>
+        }
+        @case (HELP_BLOCK.Warn) {
+          <ui-notice class="body__warn" [kind]="NOTICE_KIND.Quiet" icon="folder">
+            <app-help-text [text]="key(block.keys[0]) | transloco" />
+          </ui-notice>
+        }
+        @default {
+          <p class="body__text"><app-help-text [text]="key(block.keys[0]) | transloco" /></p>
+        }
+      }
+    }
+  </section>
+}

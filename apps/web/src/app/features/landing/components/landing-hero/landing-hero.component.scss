@@ -9,14 +9,18 @@
   @include landing.wrap;
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: rem(48px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: clamp(#{rem(32px)}, 5vw, #{rem(96px)});
   align-items: center;
-  padding-block: rem(56px) rem(72px);
+
+  // The first screen: the sticky header takes its height, the content is centred in the rest.
+  min-height: calc(100svh - var(--landing-header-height, #{rem(64px)}));
+  padding-block: rem(40px) rem(56px);
 
   @include landing.stacked {
     grid-template-columns: minmax(0, 1fr);
     gap: rem(36px);
+    align-content: center;
     padding-block: rem(32px) rem(48px);
   }
 }
@@ -24,9 +28,9 @@
 .landing-hero__title {
   margin: 0;
 
-  // The one display size above the DS scale (the landing brief): the hero headline is 40 to 64px.
+  // The one display size above the DS scale (the landing brief): the hero headline is 40 to 84px.
   /* stylelint-disable-next-line shelf/font-size-token -- the landing hero headline is the one type size above the DS scale (16-landing, ADR 0062) */
-  font-size: clamp(#{rem(40px)}, 5.4vw, #{rem(64px)});
+  font-size: clamp(#{rem(40px)}, 4.6vw, #{rem(84px)});
   font-weight: 600;
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -42,7 +46,7 @@
 }
 
 .landing-hero__lead {
-  max-width: 30em;
+  max-width: min(36em, 68ch);
   margin: rem(20px) 0 0;
   font-size: var(--font-size-section);
   line-height: 1.55;

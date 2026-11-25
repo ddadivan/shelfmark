@@ -79,6 +79,14 @@ describe('LandingFooterComponent', () => {
     expect(link?.getAttribute('target')).toBeNull();
   });
 
+  it('links to the Help center inside the app', async () => {
+    const fixture = await createTranslated(LandingFooterComponent);
+    const link = (fixture.nativeElement as HTMLElement).querySelector('a[href="/help"]');
+
+    expect(link?.textContent?.trim()).toBe('Help');
+    expect(link?.getAttribute('target')).toBeNull();
+  });
+
   it('has no axe violations', async () => {
     const fixture = await createTranslated(LandingFooterComponent);
 

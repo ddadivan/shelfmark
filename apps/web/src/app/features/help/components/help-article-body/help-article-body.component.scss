@@ -1,0 +1,75 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.body__heading {
+  // The sticky header (64px) plus a little air, so an anchor jump does not hide the heading.
+  scroll-margin-top: rem(84px);
+  margin: rem(40px) 0 0;
+  font-size: var(--font-size-title-m);
+  font-weight: 600;
+  line-height: var(--line-height-title-m);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.body__text {
+  margin: var(--space-3) 0 0;
+
+  @include type(body);
+}
+
+.body__steps {
+  display: flex;
+  flex-direction: column;
+  gap: rem(14px);
+  padding: 0;
+  margin: var(--space-4) 0 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.body__step {
+  display: grid;
+  grid-template-columns: rem(28px) minmax(0, 1fr);
+  gap: var(--space-3);
+  counter-increment: step;
+
+  @include type(body);
+
+  &::before {
+    display: grid;
+    place-items: center;
+    width: rem(28px);
+    height: rem(28px);
+    font-size: var(--font-size-meta);
+    font-weight: 600;
+    content: counter(step);
+    background: var(--fill);
+    border-radius: var(--radius-full);
+  }
+}
+
+// Shelf `.tip`: a sage note.
+.body__tip {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin: rem(18px) 0 0;
+  color: var(--note-text);
+  background: var(--ai-bg);
+  border-radius: var(--radius-md);
+
+  @include type(secondary);
+}
+
+.body__tip-icon {
+  flex: none;
+  margin-top: rem(3px);
+}
+
+.body__warn {
+  margin-top: rem(18px);
+}

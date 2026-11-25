@@ -1,0 +1,16 @@
+<div class="feedback">
+  @if (vote() === null) {
+    <span class="feedback__question">{{ 'help.wasHelpful' | transloco }}</span>
+    <ui-button (click)="vote.set(HELP_VOTE.Yes)">{{ 'help.yes' | transloco }}</ui-button>
+    <ui-button (click)="vote.set(HELP_VOTE.No)">{{ 'help.no' | transloco }}</ui-button>
+  } @else {
+    <span class="feedback__question" role="status">{{
+      (vote() === HELP_VOTE.Yes ? 'help.thanksYes' : 'help.thanksNo') | transloco
+    }}</span>
+    @if (vote() === HELP_VOTE.No) {
+      <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="feedbackRequested.emit()">{{
+        'help.sendFeedback' | transloco
+      }}</ui-button>
+    }
+  }
+</div>

@@ -4851,5 +4851,512 @@
     "text": "L’adresse est peut-être mal saisie, ou la page a été déplacée.",
     "links": "Aller à vos liens",
     "home": "Aller sur Shelfmark"
+  },
+  "help": {
+    "title": "Centre d’aide",
+    "brand": "Aide",
+    "searchTrigger": "Rechercher dans l’aide",
+    "searchShortcut": "Ctrl K",
+    "menu": "Centre d’aide",
+    "learnMore": "En savoir plus",
+    "hero": {
+      "title": "Comment pouvons-nous vous aider ?",
+      "lead": "Des guides sur tout ce que fait Shelfmark, de l’enregistrement de votre premier lien à une question posée à votre étagère.",
+      "placeholder": "Rechercher : règles, rappels, export…",
+      "searchLabel": "Rechercher dans les articles d’aide",
+      "clear": "Effacer la recherche"
+    },
+    "popular": "Populaires :",
+    "popularLabel": "Articles populaires",
+    "articleCount": {
+      "one": "{{count}} article",
+      "many": "{{count}} articles",
+      "other": "{{count}} articles"
+    },
+    "bar": {
+      "how": {
+        "title": "Comment ça marche",
+        "text": "Une visite en vidéo de 3 minutes."
+      },
+      "shortcuts": {
+        "title": "Raccourcis clavier",
+        "text": "Toutes les touches, dans une seule liste."
+      },
+      "feedback": {
+        "title": "Toujours bloqué ?",
+        "text": "Envoyez un avis ; l’auteur répond."
+      }
+    },
+    "nav": "Rubriques d’aide",
+    "toc": "Sur cette page",
+    "crumbs": "Fil d’Ariane",
+    "topics": "Rubriques",
+    "minutes": {
+      "one": "{{count}} min de lecture",
+      "many": "{{count}} min de lecture",
+      "other": "{{count}} min de lecture"
+    },
+    "updated": "Mis à jour le {{date}}",
+    "related": "À lire aussi",
+    "wasHelpful": "Cet article vous a-t-il aidé ?",
+    "yes": "Oui",
+    "no": "Non",
+    "thanksYes": "Merci de nous l’avoir dit.",
+    "thanksNo": "Désolé. Dites-nous ce qui manquait.",
+    "sendFeedback": "Envoyer un avis",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "articleNav": "Autres articles",
+    "search": {
+      "count": {
+        "one": "{{count}} article",
+        "many": "{{count}} articles",
+        "other": "{{count}} articles"
+      },
+      "resultsLabel": "Résultats de recherche",
+      "emptyTitle": "Vous n’avez pas trouvé ?",
+      "emptyText": "Essayez d’autres mots, ou dites à l’auteur ce qui manque.",
+      "noneTitle": "Aucun résultat pour « {{query}} »"
+    },
+    "notFound": {
+      "title": "Article introuvable",
+      "text": "Cet article d’aide n’existe pas ou a été déplacé.",
+      "action": "Retour au centre d’aide"
+    },
+    "categories": {
+      "getting-started": {
+        "title": "Premiers pas",
+        "text": "Enregistrez vos premiers liens et importez ce que vous avez déjà."
+      },
+      "organise": {
+        "title": "Organiser",
+        "text": "Dossiers, tags et règles pour garder l’étagère en ordre."
+      },
+      "find": {
+        "title": "Retrouver",
+        "text": "Retrouvez n’importe quel lien en quelques touches."
+      },
+      "come-back": {
+        "title": "Y revenir",
+        "text": "Les rappels et Aujourd’hui ramènent les liens au bon moment."
+      },
+      "read": {
+        "title": "Lire",
+        "text": "Ouvrez les liens sur place, ou lisez-les sans distraction dans le Lecteur."
+      },
+      "ai": {
+        "title": "IA",
+        "text": "Une aide facultative pour trier, retrouver et poser des questions."
+      },
+      "account": {
+        "title": "Compte et données",
+        "text": "Export, thèmes, raccourcis et votre compte."
+      }
+    },
+    "mock": {
+      "title": "Nouvelle règle",
+      "path": "Paramètres › Bibliothèque › Règles",
+      "when": "Quand un lien vient de",
+      "site": "taylorstitch.com",
+      "put": "Le ranger dans",
+      "folder": "Shopping",
+      "tags": "Ajouter des tags",
+      "tag": "#vêtements",
+      "cancel": "Annuler",
+      "save": "Enregistrer la règle"
+    },
+    "articles": {
+      "save-first-link": {
+        "title": "Enregistrer votre premier lien",
+        "lead": "Collez une adresse web et Shelfmark remplit pour vous l’image, le titre et le site.",
+        "sections": {
+          "s1": {
+            "title": "Coller un lien",
+            "b0": "Choisissez Ajouter un lien, collez l’adresse et appuyez sur Enregistrer. L’aperçu apparaît en un instant et vous pouvez modifier le titre avant d’enregistrer."
+          },
+          "s2": {
+            "title": "Ajouter une note",
+            "b0": "Une courte note sur la raison de l’enregistrement vous aide à retrouver le lien plus tard. Les notes sont consultables par la recherche."
+          }
+        }
+      },
+      "install-extension": {
+        "title": "Installer l’extension",
+        "lead": "Enregistrez la page que vous consultez en un clic, sans la quitter.",
+        "sections": {
+          "s1": {
+            "title": "L’ajouter à votre navigateur",
+            "b0": "Installez l’extension Shelfmark depuis le Chrome Web Store. Elle fonctionne dans Chrome, Edge, Brave et Arc."
+          },
+          "s2": {
+            "title": "Enregistrer une page",
+            "b0": "Cliquez sur le bouton de la barre d’outils ou appuyez sur Alt+Maj+S. Le titre et le dossier sont remplis : la plupart des pages demandent un clic de plus."
+          }
+        }
+      },
+      "import-bookmarks": {
+        "title": "Importer des favoris",
+        "lead": "Importez les favoris que vous avez déjà dans Chrome, Safari, Firefox ou Edge.",
+        "sections": {
+          "s1": {
+            "title": "Exporter depuis votre navigateur",
+            "b0": "Chaque navigateur peut exporter ses favoris dans un fichier HTML. Cherchez Exporter les favoris dans son gestionnaire de favoris."
+          },
+          "s2": {
+            "title": "Importer le fichier",
+            "b0": "Ouvrez Données et aide, choisissez Importer des liens et sélectionnez le fichier. Les dossiers sont conservés et les liens déjà enregistrés sont ignorés."
+          }
+        }
+      },
+      "use-on-phone": {
+        "title": "Utiliser Shelfmark sur votre téléphone",
+        "lead": "Enregistrez depuis le menu Partager et retrouvez tout sur la même étagère.",
+        "sections": {
+          "s1": {
+            "title": "L’ajouter à l’écran d’accueil",
+            "b0": "Ouvrez Shelfmark dans le navigateur de votre téléphone et choisissez Ajouter à l’écran d’accueil. Elle s’ouvre ensuite comme n’importe quelle appli."
+          },
+          "s2": {
+            "title": "Enregistrer depuis n’importe quelle appli",
+            "b0": "Sur Android, choisissez Shelfmark dans le menu Partager d’une page ou d’une appli, et le lien arrive dans Non classés."
+          }
+        }
+      },
+      "folders": {
+        "title": "Dossiers et sous-dossiers",
+        "lead": "Rangez les liens où ils doivent être, aussi profond que vous voulez.",
+        "sections": {
+          "s1": {
+            "title": "Créer un dossier",
+            "b0": "Utilisez le plus à côté de Dossiers dans la barre latérale. Faites glisser un dossier sur un autre pour en faire un sous-dossier."
+          },
+          "s2": {
+            "title": "Déplacer des liens",
+            "b0": "Faites glisser un lien sur un dossier, ou ouvrez son menu ⋯ et choisissez Déplacer vers un dossier. Sélectionnez plusieurs liens pour les déplacer ensemble."
+          }
+        }
+      },
+      "tags": {
+        "title": "Tags",
+        "lead": "De courtes étiquettes qui traversent les dossiers.",
+        "sections": {
+          "s1": {
+            "title": "Ajouter des tags",
+            "b0": "Saisissez un tag en enregistrant ou en modifiant un lien. Un lien peut porter jusqu’à 20 tags."
+          },
+          "s2": {
+            "title": "Filtrer par tag",
+            "b0": "Choisissez un tag dans la barre latérale ou sur la page Tags pour voir tous les liens qui le portent."
+          }
+        }
+      },
+      "favorites-pins": {
+        "title": "Favoris et liens épinglés",
+        "lead": "Gardez les liens que vous utilisez le plus à un clic.",
+        "sections": {
+          "s1": {
+            "title": "Favoris",
+            "b0": "Touchez l’étoile d’un lien pour l’ajouter aux Favoris, une liste à part dans la barre latérale."
+          },
+          "s2": {
+            "title": "Épingler un dossier ou un tag",
+            "b0": "Les dossiers et tags épinglés restent en haut de la barre latérale, au-dessus du reste."
+          }
+        }
+      },
+      "trash": {
+        "title": "Corbeille",
+        "lead": "Les liens supprimés attendent ici avant de disparaître pour de bon.",
+        "sections": {
+          "s1": {
+            "title": "Restaurer",
+            "b0": "Ouvrez la corbeille, sélectionnez un lien ou un dossier et choisissez Restaurer. Il retrouve sa place d’origine."
+          },
+          "s2": {
+            "title": "Supprimé pour de bon",
+            "b0": "Les éléments sont supprimés définitivement quand leur durée dans la corbeille est écoulée. Vous pouvez aussi la vider plus tôt."
+          }
+        }
+      },
+      "search": {
+        "title": "Recherche",
+        "lead": "Retrouvez un lien par n’importe quel mot de son titre, de sa note, de ses tags ou de son adresse.",
+        "sections": {
+          "s1": {
+            "title": "Ouvrir la recherche",
+            "b0": "Appuyez sur Ctrl K (Cmd K sur Mac) n’importe où, ou utilisez le champ de recherche en haut."
+          },
+          "s2": {
+            "title": "Affiner",
+            "b0": "Ajoutez un dossier ou un tag à la recherche pour affiner les résultats. Les mots trouvés sont surlignés."
+          }
+        }
+      },
+      "search-by-meaning": {
+        "title": "Recherche par sens",
+        "lead": "Trouve les liens proches de vos mots, même sans ces mots exacts.",
+        "sections": {
+          "s1": {
+            "title": "L’activer",
+            "b0": "La recherche par sens fait partie de l’IA. Activez l’IA dans les paramètres et elle fonctionne dans le champ de recherche."
+          },
+          "s2": {
+            "title": "Associés par le sens",
+            "b0": "Les résultats qui correspondent à l’idée sont listés sous Associés par le sens, après les correspondances exactes."
+          }
+        }
+      },
+      "saved-views": {
+        "title": "Vues enregistrées",
+        "lead": "Gardez une recherche ou un filtre comme un onglet auquel revenir.",
+        "sections": {
+          "s1": {
+            "title": "Enregistrer une vue",
+            "b0": "Réglez les filtres voulus, puis choisissez Enregistrer la vue. Elle apparaît comme un onglet au-dessus de la liste."
+          },
+          "s2": {
+            "title": "La modifier ou la supprimer",
+            "b0": "Ouvrez le menu de l’onglet pour renommer ou supprimer une vue. Supprimer une vue ne supprime jamais de liens."
+          }
+        }
+      },
+      "side-by-side": {
+        "title": "Côte à côte",
+        "lead": "Lisez un lien à côté de votre liste sans perdre votre place.",
+        "sections": {
+          "s1": {
+            "title": "Ouvrir un lien",
+            "b0": "Sur un grand écran, un lien s’ouvre dans un panneau à côté de la liste au lieu de la recouvrir."
+          },
+          "s2": {
+            "title": "Parcourir la liste",
+            "b0": "Utilisez les flèches du clavier pour passer au lien suivant ; le panneau suit."
+          }
+        }
+      },
+      "today": {
+        "title": "Aujourd’hui",
+        "lead": "Une page pour ce qui mérite votre temps maintenant.",
+        "sections": {
+          "s1": {
+            "title": "Ce que vous voyez",
+            "b0": "Les rappels dus, les articles à moitié lus et un lien oublié, au même endroit."
+          },
+          "s2": {
+            "title": "Le vider",
+            "b0": "Ouvrez un lien, repoussez-le ou marquez-le comme fait, et il quitte la page."
+          }
+        }
+      },
+      "reminders": {
+        "title": "Rappels",
+        "lead": "Programmez un rappel sur n’importe quel lien : plus tard aujourd’hui, demain, ce week-end ou à une date de votre choix.",
+        "sections": {
+          "s1": {
+            "title": "Programmer un rappel",
+            "b0": "Ouvrez le menu ⋯ d’un lien, choisissez Me le rappeler et sélectionnez une heure. Appuyez sur R sur le lien sélectionné comme raccourci."
+          },
+          "s2": {
+            "title": "Quand il arrive",
+            "b0": "Un rappel dû apparaît dans Aujourd’hui et dans Rappels. Vous pouvez aussi recevoir une notification dans le navigateur ou par e-mail."
+          }
+        }
+      },
+      "recently-opened": {
+        "title": "Ouverts récemment",
+        "lead": "Les liens ouverts récemment, du plus récent au plus ancien.",
+        "sections": {
+          "s1": {
+            "title": "Le retrouver",
+            "b0": "Ouvrez Ouverts récemment depuis la barre latérale pour voir vos liens regroupés par jour."
+          },
+          "s2": {
+            "title": "Retirer une entrée",
+            "b0": "Retirez une entrée depuis son menu. Cela ne supprime jamais le lien."
+          }
+        }
+      },
+      "link-preview": {
+        "title": "Aperçu du lien",
+        "lead": "Voyez un lien sur place avant de quitter l’étagère.",
+        "sections": {
+          "s1": {
+            "title": "Ouvrir l’aperçu",
+            "b0": "Choisissez un lien pour ouvrir son aperçu avec l’image, le résumé, les tags et la note."
+          },
+          "s2": {
+            "title": "Quand une page ne peut pas s’afficher",
+            "b0": "Certains sites refusent de s’afficher dans une autre page. L’aperçu propose alors Ouvrir dans un nouvel onglet."
+          }
+        }
+      },
+      "reader": {
+        "title": "Lecteur",
+        "lead": "Une vue d’article épurée, sans distraction.",
+        "sections": {
+          "s1": {
+            "title": "Ouvrir le Lecteur",
+            "b0": "Choisissez Lecteur sur un lien qui est un article. Le texte s’ouvre sans publicité ni menus."
+          },
+          "s2": {
+            "title": "Lire confortablement",
+            "b0": "Changez la taille du texte, la police, l’interligne et le thème dans les réglages de lecture. Vos choix sont mémorisés."
+          }
+        }
+      },
+      "turn-on-ai": {
+        "title": "Activer l’IA",
+        "lead": "L’IA est facultative et reste désactivée tant que vous ne l’activez pas.",
+        "sections": {
+          "s1": {
+            "title": "L’activer",
+            "b0": "Ouvrez Paramètres, puis IA, et activez-la. Vous choisissez séparément pour les dossiers et pour les tags."
+          },
+          "s2": {
+            "title": "La désactiver à nouveau",
+            "b0": "Désactiver l’IA arrête toutes les suggestions d’un coup. Vous pouvez aussi supprimer vos données d’IA dans Confidentialité et données."
+          }
+        }
+      },
+      "ai-suggestions": {
+        "title": "Suggestions de dossiers et de tags",
+        "lead": "L’IA propose un dossier et des tags pour chaque nouveau lien.",
+        "sections": {
+          "s1": {
+            "title": "Accepter d’une touche",
+            "b0": "Les suggestions viennent des dossiers et tags que vous avez déjà. Rien ne bouge tant que vous ne touchez pas."
+          },
+          "s2": {
+            "title": "Ranger les Non classés",
+            "b0": "Ouvrez Ranger sur Non classés pour examiner les suggestions de nombreux liens à la fois."
+          }
+        }
+      },
+      "ask-your-shelf": {
+        "title": "Interroger votre étagère",
+        "lead": "Posez une question avec vos mots et obtenez une réponse tirée de vos liens.",
+        "sections": {
+          "s1": {
+            "title": "Poser une question",
+            "b0": "Ouvrez Demander, saisissez une question et envoyez-la. La réponse est rédigée à partir de vos propres liens."
+          },
+          "s2": {
+            "title": "Vérifier les sources",
+            "b0": "Chaque réponse liste les liens utilisés, pour que vous puissiez les ouvrir et vérifier."
+          }
+        }
+      },
+      "ai-privacy": {
+        "title": "Ce que l’IA voit et conserve",
+        "lead": "Ce qui quitte votre étagère quand l’IA est activée.",
+        "sections": {
+          "s1": {
+            "title": "Ce qui est envoyé",
+            "b0": "Seuls l’adresse, le titre et le texte nécessaires à la tâche sont envoyés, et seulement quand l’IA est activée."
+          },
+          "s2": {
+            "title": "Ce qui est conservé",
+            "b0": "Les suggestions et résumés sont conservés avec votre lien. Vos liens ne servent jamais à entraîner des modèles d’IA."
+          }
+        }
+      },
+      "export": {
+        "title": "Exporter vos liens",
+        "lead": "Emportez tout avec vous quand vous le voulez.",
+        "sections": {
+          "s1": {
+            "title": "Choisir un format",
+            "b0": "Ouvrez Données et aide, choisissez Exporter et sélectionnez JSON, HTML de favoris ou CSV."
+          },
+          "s2": {
+            "title": "Ce qui est inclus",
+            "b0": "Liens, dossiers, tags et notes. Le fichier est créé pour vous et n’est pas conservé."
+          }
+        }
+      },
+      "themes": {
+        "title": "Thèmes et apparence",
+        "lead": "Clair, sombre, ou celui de votre appareil.",
+        "sections": {
+          "s1": {
+            "title": "Changer de thème",
+            "b0": "Utilisez la ligne Thème de la barre latérale, ou choisissez Clair, Sombre ou Système dans les paramètres."
+          },
+          "s2": {
+            "title": "Personnaliser",
+            "b0": "Les paramètres permettent aussi de choisir une couleur d’accent et l’arrondi des coins."
+          }
+        }
+      },
+      "keyboard-shortcuts": {
+        "title": "Raccourcis clavier",
+        "lead": "Toutes les touches, dans une seule liste.",
+        "sections": {
+          "s1": {
+            "title": "Voir la liste",
+            "b0": "Appuyez sur ? n’importe où dans l’appli pour ouvrir la liste des raccourcis."
+          },
+          "s2": {
+            "title": "Quelques-uns pour commencer",
+            "b0": "Ctrl K lance la recherche, R programme un rappel sur le lien sélectionné et Maj ? ouvre l’aide."
+          }
+        }
+      },
+      "notifications": {
+        "title": "Notifications",
+        "lead": "Un petit rappel dans le navigateur ou par e-mail quand un rappel arrive.",
+        "sections": {
+          "s1": {
+            "title": "Choisir où",
+            "b0": "Ouvrez Paramètres, puis Notifications, et activez les notifications du navigateur, l’e-mail, ou les deux."
+          },
+          "s2": {
+            "title": "Silencieux par défaut",
+            "b0": "Rien n’est envoyé tant que vous ne l’activez pas, et vous pouvez le désactiver à tout moment."
+          }
+        }
+      },
+      "delete-account": {
+        "title": "Supprimer votre compte",
+        "lead": "Supprimez votre compte et tout ce qu’il contient.",
+        "sections": {
+          "s1": {
+            "title": "Avant de partir",
+            "b0": "Exportez d’abord vos liens si vous voulez les garder. La suppression est définitive."
+          },
+          "s2": {
+            "title": "Supprimer",
+            "b0": "Ouvrez Paramètres, puis Compte, et choisissez Supprimer le compte. Vous confirmez une fois, et vos données sont supprimées."
+          }
+        }
+      },
+      "rules": {
+        "title": "Règles : classer les liens automatiquement",
+        "lead": "Une règle range chaque lien d’un site dans le dossier de votre choix, avec des tags si vous voulez. Enregistrez un lien de taylorstitch.com et il atterrit tout seul dans Shopping.",
+        "sections": {
+          "create": {
+            "title": "Créer une règle",
+            "steps": {
+              "0": "Ouvrez **Paramètres › Bibliothèque › Règles** et choisissez **Ajouter une règle**.",
+              "1": "Saisissez le site, par exemple `taylorstitch.com`. Les pages de ce site et de ses sous-domaines correspondent.",
+              "2": "Choisissez le dossier, et des tags si vous le souhaitez. Puis **Enregistrer la règle**."
+            },
+            "tip": "**Plus rapide :** ouvrez le menu ⋯ d’un lien et choisissez **Règle pour taylorstitch.com…**. Le site et son dossier actuel sont déjà remplis."
+          },
+          "existing": {
+            "title": "Appliquer une règle aux liens existants",
+            "b0": "Après l’enregistrement d’une règle, Shelfmark propose de déplacer les liens de ce site qui sont encore dans Non classés. Les liens déjà rangés dans un dossier restent où ils sont."
+          },
+          "offer": {
+            "title": "Quand Shelfmark suggère une règle",
+            "b0": "Si vous déplacez trois liens d’un même site dans le même dossier, Shelfmark demande une fois s’il doit le faire automatiquement à partir de maintenant. **Pas maintenant** masque la proposition pour ce site pendant 30 jours."
+          },
+          "limits": {
+            "title": "Bon à savoir",
+            "warn": "Si le dossier d’une règle va dans la corbeille, la règle se met en pause et les nouveaux liens de ce site vont dans Non classés jusqu’à ce que vous choisissiez un autre dossier."
+          }
+        }
+      }
+    }
   }
 }

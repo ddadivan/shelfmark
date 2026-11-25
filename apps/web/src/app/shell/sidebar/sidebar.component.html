@@ -154,6 +154,9 @@
       {{ 'shell.data.export' | transloco }}
     </ui-menu-item>
     <ui-menu-separator />
+    <ui-menu-item icon="book" (activated)="openHelp()">
+      {{ 'help.menu' | transloco }}
+    </ui-menu-item>
     <ui-menu-item icon="gift" (activated)="openWhatsNew()">
       <span class="sidebar__menu-line">
         {{ 'whatsNew.entry' | transloco }}

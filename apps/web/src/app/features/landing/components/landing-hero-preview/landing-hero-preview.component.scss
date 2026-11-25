@@ -5,13 +5,14 @@
 :host {
   display: block;
   min-width: 0;
+  container-type: inline-size;
 }
 
 .preview {
   position: relative;
   display: grid;
   grid-template-columns: rem(148px) minmax(0, 1fr);
-  height: rem(460px);
+  height: clamp(#{rem(460px)}, 38vw, #{rem(760px)});
   overflow: hidden;
   contain: paint;
   background: var(--bg);
@@ -209,6 +210,11 @@
 
   @include landing.narrow {
     columns: 2;
+  }
+
+  // A wider window shows a fourth column of cards.
+  @container (width > 46em) {
+    columns: 4;
   }
 }
 

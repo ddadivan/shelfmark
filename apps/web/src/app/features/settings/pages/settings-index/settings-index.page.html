@@ -41,6 +41,13 @@
 </nav>
 
 <nav class="settings-index__list" [attr.aria-label]="'settings.help' | transloco">
+  <!-- Help center (Shelf 17-help): the public help in a new tab. -->
+  <a class="settings-index__row" [href]="helpHref" target="_blank" rel="noopener noreferrer">
+    <span class="settings-index__label settings-index__label--fit"
+      >{{ 'help.menu' | transloco }}</span
+    >
+    <ui-icon class="settings-index__chevron" name="external" [size]="ICON_SIZE.Md" />
+  </a>
   <!-- Shelf "Help and feedback": opens the dialog; the link to Your feedback is the fallback. -->
   <a
     class="settings-index__row"

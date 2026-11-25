@@ -37,6 +37,8 @@ export const APP_PATH = {
   Privacy: 'privacy',
   /** Public list of releases (#424): no guard, for guests and signed-in users. */
   Changelog: 'changelog',
+  /** The public Help center (Shelf 17-help): `/help`, `/help/:articleId`; no guard. */
+  Help: 'help',
   /** A public collection (`/c/:token`, #276): no guard, outside the app shell. */
   Collection: 'c',
 } as const;

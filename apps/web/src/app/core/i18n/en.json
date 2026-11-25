@@ -4735,5 +4735,509 @@
     "text": "The address may be mistyped, or the page has moved.",
     "links": "Go to your links",
     "home": "Go to Shelfmark"
+  },
+  "help": {
+    "title": "Help center",
+    "brand": "Help",
+    "searchTrigger": "Search help",
+    "searchShortcut": "Ctrl K",
+    "menu": "Help center",
+    "learnMore": "Learn more",
+    "hero": {
+      "title": "How can we help?",
+      "lead": "Guides to everything Shelfmark does, from saving your first link to asking your shelf a question.",
+      "placeholder": "Search: rules, reminders, export…",
+      "searchLabel": "Search help articles",
+      "clear": "Clear search"
+    },
+    "popular": "Popular:",
+    "popularLabel": "Popular articles",
+    "articleCount": {
+      "one": "{{count}} article",
+      "other": "{{count}} articles"
+    },
+    "bar": {
+      "how": {
+        "title": "How it works",
+        "text": "A 3-minute video tour."
+      },
+      "shortcuts": {
+        "title": "Keyboard shortcuts",
+        "text": "Every key, in one list."
+      },
+      "feedback": {
+        "title": "Still stuck?",
+        "text": "Send feedback; the author answers."
+      }
+    },
+    "nav": "Help topics",
+    "toc": "On this page",
+    "crumbs": "Breadcrumb",
+    "topics": "Topics",
+    "minutes": {
+      "one": "{{count}} min read",
+      "other": "{{count}} min read"
+    },
+    "updated": "Updated {{date}}",
+    "related": "Related",
+    "wasHelpful": "Was this helpful?",
+    "yes": "Yes",
+    "no": "No",
+    "thanksYes": "Thanks for telling us.",
+    "thanksNo": "Sorry about that. Tell us what was missing.",
+    "sendFeedback": "Send feedback",
+    "previous": "Previous",
+    "next": "Next",
+    "articleNav": "More articles",
+    "search": {
+      "count": {
+        "one": "{{count}} article",
+        "other": "{{count}} articles"
+      },
+      "resultsLabel": "Search results",
+      "emptyTitle": "Didn’t find it?",
+      "emptyText": "Try different words, or tell the author what is missing.",
+      "noneTitle": "Nothing found for “{{query}}”"
+    },
+    "notFound": {
+      "title": "Article not found",
+      "text": "This help article does not exist or has moved.",
+      "action": "Back to the Help center"
+    },
+    "categories": {
+      "getting-started": {
+        "title": "Getting started",
+        "text": "Save your first links and bring in what you already have."
+      },
+      "organise": {
+        "title": "Organise",
+        "text": "Folders, tags and rules that keep the shelf tidy."
+      },
+      "find": {
+        "title": "Find",
+        "text": "Get any link back in a few keystrokes."
+      },
+      "come-back": {
+        "title": "Come back",
+        "text": "Reminders and Today bring links back at the right time."
+      },
+      "read": {
+        "title": "Read",
+        "text": "Open links in place, or read them clean in Reader."
+      },
+      "ai": {
+        "title": "AI",
+        "text": "Optional help with sorting, finding and questions."
+      },
+      "account": {
+        "title": "Account and data",
+        "text": "Export, themes, shortcuts and your account."
+      }
+    },
+    "mock": {
+      "title": "New rule",
+      "path": "Settings › Library › Rules",
+      "when": "When a link is from",
+      "site": "taylorstitch.com",
+      "put": "Put it in",
+      "folder": "Shopping",
+      "tags": "Add tags",
+      "tag": "#clothes",
+      "cancel": "Cancel",
+      "save": "Save rule"
+    },
+    "articles": {
+      "save-first-link": {
+        "title": "Save your first link",
+        "lead": "Paste a web address and Shelfmark fills in the picture, title and site for you.",
+        "sections": {
+          "s1": {
+            "title": "Paste a link",
+            "b0": "Choose Add link, paste the address and press Save. The preview appears within a moment, and you can change the title before saving."
+          },
+          "s2": {
+            "title": "Add a note",
+            "b0": "A short note about why you saved it helps you find the link later. Notes are searchable."
+          }
+        }
+      },
+      "install-extension": {
+        "title": "Install the extension",
+        "lead": "Save the page you are on with one click, without leaving it.",
+        "sections": {
+          "s1": {
+            "title": "Add it to your browser",
+            "b0": "Install the Shelfmark extension from the Chrome Web Store. It works in Chrome, Edge, Brave and Arc."
+          },
+          "s2": {
+            "title": "Save a page",
+            "b0": "Click the toolbar button or press Alt+Shift+S. The title and folder are filled in, so most pages take one more click."
+          }
+        }
+      },
+      "import-bookmarks": {
+        "title": "Import bookmarks",
+        "lead": "Bring in the bookmarks you already have from Chrome, Safari, Firefox or Edge.",
+        "sections": {
+          "s1": {
+            "title": "Export from your browser",
+            "b0": "Every browser can export its bookmarks as an HTML file. Look for Export bookmarks in its bookmarks manager."
+          },
+          "s2": {
+            "title": "Import the file",
+            "b0": "Open Data and help, choose Import links and pick the file. Folders are kept, and links you already saved are skipped."
+          }
+        }
+      },
+      "use-on-phone": {
+        "title": "Use Shelfmark on your phone",
+        "lead": "Save from the Share menu and find everything on the same shelf.",
+        "sections": {
+          "s1": {
+            "title": "Add it to your home screen",
+            "b0": "Open Shelfmark in your phone’s browser and choose Add to Home Screen. It then opens like any other app."
+          },
+          "s2": {
+            "title": "Save from any app",
+            "b0": "On Android, choose Shelfmark in the Share menu of a page or app, and the link lands in Unsorted."
+          }
+        }
+      },
+      "folders": {
+        "title": "Folders and subfolders",
+        "lead": "Put links where they belong, as deep as you like.",
+        "sections": {
+          "s1": {
+            "title": "Create a folder",
+            "b0": "Use the plus next to Folders in the sidebar. Drag a folder onto another one to make it a subfolder."
+          },
+          "s2": {
+            "title": "Move links",
+            "b0": "Drag a link onto a folder, or open its ⋯ menu and choose Move to folder. Select several links to move them together."
+          }
+        }
+      },
+      "tags": {
+        "title": "Tags",
+        "lead": "Short labels that cut across folders.",
+        "sections": {
+          "s1": {
+            "title": "Add tags",
+            "b0": "Type a tag when you save or edit a link. A link can carry up to 20 tags."
+          },
+          "s2": {
+            "title": "Filter by tag",
+            "b0": "Choose a tag in the sidebar or on the Tags page to see every link that carries it."
+          }
+        }
+      },
+      "favorites-pins": {
+        "title": "Favorites and pinned links",
+        "lead": "Keep the links you use most one click away.",
+        "sections": {
+          "s1": {
+            "title": "Favorites",
+            "b0": "Tap the star on a link to add it to Favorites, a list of its own in the sidebar."
+          },
+          "s2": {
+            "title": "Pin a folder or tag",
+            "b0": "Pinned folders and tags stay at the top of the sidebar, above the rest."
+          }
+        }
+      },
+      "trash": {
+        "title": "Trash",
+        "lead": "Deleted links wait here before they are gone for good.",
+        "sections": {
+          "s1": {
+            "title": "Restore",
+            "b0": "Open Trash, select a link or folder and choose Restore. It returns to where it was."
+          },
+          "s2": {
+            "title": "Gone for good",
+            "b0": "Items are removed for good once their time in Trash has passed. Empty Trash early if you prefer."
+          }
+        }
+      },
+      "search": {
+        "title": "Search",
+        "lead": "Find a link by any word of its title, note, tags or address.",
+        "sections": {
+          "s1": {
+            "title": "Open search",
+            "b0": "Press Ctrl K (Cmd K on a Mac) anywhere, or use the search field at the top."
+          },
+          "s2": {
+            "title": "Narrow it down",
+            "b0": "Add a folder or tag to the search to narrow the results. Matching words are highlighted."
+          }
+        }
+      },
+      "search-by-meaning": {
+        "title": "Search by meaning",
+        "lead": "Finds links close to your words, even without those exact words.",
+        "sections": {
+          "s1": {
+            "title": "Turn it on",
+            "b0": "Search by meaning is part of AI. Turn on AI in Settings and it works in the search field."
+          },
+          "s2": {
+            "title": "Related by meaning",
+            "b0": "Results that match the idea are listed under Related by meaning, after the exact matches."
+          }
+        }
+      },
+      "saved-views": {
+        "title": "Saved views",
+        "lead": "Keep a search or filter as a tab you can come back to.",
+        "sections": {
+          "s1": {
+            "title": "Save a view",
+            "b0": "Set up the filters you want, then choose Save view. It appears as a tab above the list."
+          },
+          "s2": {
+            "title": "Edit or remove it",
+            "b0": "Open the tab’s menu to rename or delete a view. Deleting a view never deletes links."
+          }
+        }
+      },
+      "side-by-side": {
+        "title": "Side by side",
+        "lead": "Read a link next to your list without losing your place.",
+        "sections": {
+          "s1": {
+            "title": "Open a link",
+            "b0": "On a wide screen a link opens in a panel next to the list instead of covering it."
+          },
+          "s2": {
+            "title": "Move through the list",
+            "b0": "Use the arrow keys to go to the next link, and the panel follows."
+          }
+        }
+      },
+      "today": {
+        "title": "Today",
+        "lead": "One page for what is worth your time right now.",
+        "sections": {
+          "s1": {
+            "title": "What you see",
+            "b0": "Due reminders, half-read articles and a forgotten link, all in one place."
+          },
+          "s2": {
+            "title": "Clear it",
+            "b0": "Open a link, snooze it or mark it done, and it leaves the page."
+          }
+        }
+      },
+      "reminders": {
+        "title": "Reminders",
+        "lead": "Set a reminder on any link: later today, tomorrow, this weekend or a date you pick.",
+        "sections": {
+          "s1": {
+            "title": "Set a reminder",
+            "b0": "Open a link’s ⋯ menu, choose Remind me and pick a time. Press R on the selected link as a shortcut."
+          },
+          "s2": {
+            "title": "When it is due",
+            "b0": "A due reminder appears on Today and in Reminders. You can also get a nudge in your browser or by email."
+          }
+        }
+      },
+      "recently-opened": {
+        "title": "Recently opened",
+        "lead": "The links you opened lately, newest first.",
+        "sections": {
+          "s1": {
+            "title": "Find it again",
+            "b0": "Open Recently opened from the sidebar to see your links grouped by day."
+          },
+          "s2": {
+            "title": "Clear an entry",
+            "b0": "Remove a single entry from its menu. This never deletes the link."
+          }
+        }
+      },
+      "link-preview": {
+        "title": "Link preview",
+        "lead": "See a link in place before you leave the shelf.",
+        "sections": {
+          "s1": {
+            "title": "Open the preview",
+            "b0": "Choose a link to open its preview with the picture, summary, tags and note."
+          },
+          "s2": {
+            "title": "When a page cannot be shown",
+            "b0": "Some sites refuse to appear inside another page. Then the preview offers Open in a new tab."
+          }
+        }
+      },
+      "reader": {
+        "title": "Reader",
+        "lead": "A clean, distraction-free view of an article.",
+        "sections": {
+          "s1": {
+            "title": "Open Reader",
+            "b0": "Choose Reader on a link that is an article. The text opens without ads and menus."
+          },
+          "s2": {
+            "title": "Make it comfortable",
+            "b0": "Change the text size, font, line spacing and theme in Reading settings. Your choices are remembered."
+          }
+        }
+      },
+      "turn-on-ai": {
+        "title": "Turn on AI",
+        "lead": "AI is optional and stays off until you turn it on.",
+        "sections": {
+          "s1": {
+            "title": "Switch it on",
+            "b0": "Open Settings, then AI, and turn it on. You choose separately for folders and for tags."
+          },
+          "s2": {
+            "title": "Switch it off again",
+            "b0": "Turning AI off stops all suggestions at once. You can also delete your AI data under Privacy and data."
+          }
+        }
+      },
+      "ai-suggestions": {
+        "title": "Suggestions for folders and tags",
+        "lead": "AI proposes a folder and tags for each new link.",
+        "sections": {
+          "s1": {
+            "title": "Accept with one tap",
+            "b0": "Suggestions come from the folders and tags you already have. Nothing moves until you tap it."
+          },
+          "s2": {
+            "title": "Tidy Unsorted",
+            "b0": "Open Tidy on Unsorted to review suggestions for many links at once."
+          }
+        }
+      },
+      "ask-your-shelf": {
+        "title": "Ask your shelf",
+        "lead": "Ask a question in your own words and get an answer from your links.",
+        "sections": {
+          "s1": {
+            "title": "Ask a question",
+            "b0": "Open Ask, type a question and send it. The answer is written from your own links."
+          },
+          "s2": {
+            "title": "Check the sources",
+            "b0": "Every answer lists the links it used, so you can open them and check."
+          }
+        }
+      },
+      "ai-privacy": {
+        "title": "What AI sees and stores",
+        "lead": "What leaves your shelf while AI is on.",
+        "sections": {
+          "s1": {
+            "title": "What is sent",
+            "b0": "Only the address, title and text needed for the task are sent, and only while AI is on."
+          },
+          "s2": {
+            "title": "What is stored",
+            "b0": "Suggestions and summaries are stored with your link. Your links are never used to train AI models."
+          }
+        }
+      },
+      "export": {
+        "title": "Export your links",
+        "lead": "Take everything with you whenever you like.",
+        "sections": {
+          "s1": {
+            "title": "Choose a format",
+            "b0": "Open Data and help, choose Export and pick JSON, Bookmarks HTML or CSV."
+          },
+          "s2": {
+            "title": "What is included",
+            "b0": "Links, folders, tags and notes. The file is made for you and is not kept."
+          }
+        }
+      },
+      "themes": {
+        "title": "Themes and appearance",
+        "lead": "Light, dark, or whatever your device uses.",
+        "sections": {
+          "s1": {
+            "title": "Switch theme",
+            "b0": "Use the Theme row in the sidebar, or choose Light, Dark or System in Settings."
+          },
+          "s2": {
+            "title": "Make it yours",
+            "b0": "Settings also lets you pick an accent colour and how rounded the corners look."
+          }
+        }
+      },
+      "keyboard-shortcuts": {
+        "title": "Keyboard shortcuts",
+        "lead": "Every key, in one list.",
+        "sections": {
+          "s1": {
+            "title": "See the list",
+            "b0": "Press ? anywhere in the app to open the list of shortcuts."
+          },
+          "s2": {
+            "title": "A few to start with",
+            "b0": "Ctrl K searches, R sets a reminder on the selected link, and Shift ? opens help."
+          }
+        }
+      },
+      "notifications": {
+        "title": "Notifications",
+        "lead": "A nudge in your browser or by email when a reminder is due.",
+        "sections": {
+          "s1": {
+            "title": "Choose where",
+            "b0": "Open Settings, then Notifications, and turn on browser notifications, email, or both."
+          },
+          "s2": {
+            "title": "Quiet by default",
+            "b0": "Nothing is sent until you turn it on, and you can turn it off at any time."
+          }
+        }
+      },
+      "delete-account": {
+        "title": "Delete your account",
+        "lead": "Remove your account and everything saved in it.",
+        "sections": {
+          "s1": {
+            "title": "Before you go",
+            "b0": "Export your links first if you want to keep them. Deleting is permanent."
+          },
+          "s2": {
+            "title": "Delete",
+            "b0": "Open Settings, then Account, and choose Delete account. You confirm once, and your data is removed."
+          }
+        }
+      },
+      "rules": {
+        "title": "Rules: file links automatically",
+        "lead": "A rule puts every link from a site into the folder you choose, with tags if you like. Save a link from taylorstitch.com and it lands in Shopping on its own.",
+        "sections": {
+          "create": {
+            "title": "Create a rule",
+            "steps": {
+              "0": "Open **Settings › Library › Rules** and choose **Add rule**.",
+              "1": "Type the site, for example `taylorstitch.com`. Pages on that site and its subdomains match.",
+              "2": "Pick the folder, and tags if you want them. Then **Save rule**."
+            },
+            "tip": "**Faster:** open a link’s ⋯ menu and choose **Rule for taylorstitch.com…**. The site and its current folder are filled in."
+          },
+          "existing": {
+            "title": "Apply a rule to links you already have",
+            "b0": "After you save a rule, Shelfmark offers to move the links from that site that are still in Unsorted. Links you already put in a folder stay where they are."
+          },
+          "offer": {
+            "title": "When Shelfmark suggests a rule",
+            "b0": "If you move three links from the same site into the same folder, Shelfmark asks once whether to do it automatically from now on. **Not now** hides the offer for that site for 30 days."
+          },
+          "limits": {
+            "title": "Good to know",
+            "warn": "If a rule’s folder goes to Trash, the rule pauses and new links from that site go to Unsorted until you pick another folder."
+          }
+        }
+      }
+    }
   }
 }

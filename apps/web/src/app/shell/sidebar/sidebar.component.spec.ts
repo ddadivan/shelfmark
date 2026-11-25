@@ -164,14 +164,20 @@ describe('SidebarComponent', () => {
       expect(names).not.toContain("What's new");
     });
 
-    it("opens a menu with Import links, Export, What's new and Send feedback", async () => {
+    it("opens a menu with Import links, Export, Help center, What's new and Send feedback", async () => {
       stubWhatsNew(false);
       const { fixture } = await setup();
       const menu = await openMenu(fixture);
 
       expect(await menu.isOpen()).toBe(true);
       const items = await Promise.all((await menu.getItems()).map((item) => item.getText()));
-      expect(items).toEqual(['Import links', 'Export', "What's new", 'Send feedback']);
+      expect(items).toEqual([
+        'Import links',
+        'Export',
+        'Help center',
+        "What's new",
+        'Send feedback',
+      ]);
     });
 
     it("opens the import dialog, the export dialog, What's new and the feedback dialog", async () => {
