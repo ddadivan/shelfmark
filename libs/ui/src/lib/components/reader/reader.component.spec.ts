@@ -10,15 +10,37 @@ import { READER_THEME } from './models/reader-theme.const';
 import type { ReaderTheme } from './models/reader-theme.type';
 import { READER_VIEW_BLOCK } from './models/reader-block-kind.const';
 import type { ReaderViewBlock } from './models/reader-view-block.interface';
+import type { ReaderViewSpan } from './models/reader-view-span.interface';
 import { ReaderComponent } from './reader.component';
 
+const span = (text: string, extra: Partial<ReaderViewSpan> = {}): ReaderViewSpan => ({
+  text,
+  href: null,
+  code: false,
+  emphasis: false,
+  strong: false,
+  ...extra,
+});
+
 const BLOCKS: ReaderViewBlock[] = [
-  { kind: READER_VIEW_BLOCK.Paragraph, text: 'First <b>paragraph</b>', items: [], imageUrl: null },
-  { kind: READER_VIEW_BLOCK.Heading, text: 'A heading', items: [], imageUrl: null },
-  { kind: READER_VIEW_BLOCK.List, text: '', items: ['one', 'two'], imageUrl: null },
-  { kind: READER_VIEW_BLOCK.Quote, text: 'A quote', items: [], imageUrl: null },
-  { kind: READER_VIEW_BLOCK.Code, text: 'npm test', items: [], imageUrl: null },
-  { kind: READER_VIEW_BLOCK.Image, text: 'A caption', items: [], imageUrl: '/img.png' },
+  { kind: READER_VIEW_BLOCK.Paragraph, text: 'First <b>paragraph</b>', imageUrl: null },
+  { kind: READER_VIEW_BLOCK.Heading, text: 'A heading', imageUrl: null },
+  {
+    kind: READER_VIEW_BLOCK.List,
+    text: '',
+    items: [
+      { spans: [span('one')], items: [{ spans: [span('inner')], items: [] }] },
+      { spans: [span('two')], items: [] },
+    ],
+  },
+  { kind: READER_VIEW_BLOCK.Quote, text: 'A quote', imageUrl: null },
+  { kind: READER_VIEW_BLOCK.Code, text: 'npm test', language: 'bash' },
+  {
+    kind: READER_VIEW_BLOCK.Image,
+    text: 'A caption',
+    alt: 'A chart',
+    imageUrl: 'https://x.test/i.png',
+  },
 ];
 
 @Component({
@@ -31,6 +53,9 @@ const BLOCKS: ReaderViewBlock[] = [
     [notice]="notice()"
     [image]="image()"
     [blocks]="blocks()"
+    openOriginalLabel="Open original"
+    newTabLabel="(opens in a new tab)"
+    tableLabel="Table"
     [font]="font()"
     [theme]="theme()"
     [textSize]="textSize()"
@@ -76,11 +101,101 @@ describe('ReaderComponent', () => {
     expect(paragraph?.textContent).toBe('First <b>paragraph</b>');
     expect(paragraph?.querySelector('b')).toBeNull();
     expect(reader.querySelector('h3')?.textContent).toBe('A heading');
-    expect(reader.querySelectorAll('li').length).toBe(2);
+    expect(reader.querySelectorAll('li').length).toBe(3);
+    expect(reader.querySelectorAll('li li').length).toBe(1);
     expect(reader.querySelector('blockquote')?.textContent).toBe('A quote');
     expect(reader.querySelector('pre code')?.textContent).toBe('npm test');
     expect(reader.querySelector('figcaption')?.textContent).toBe('A caption');
-    expect(reader.querySelector('.ui-reader__figure img')?.getAttribute('alt')).toBe('');
+    expect(reader.querySelector('.ui-reader__code-language')?.textContent).toBe('bash');
+    // The page's picture is never loaded (CSP): a placeholder links to the original.
+    expect(reader.querySelector('.ui-reader__figure img')).toBeNull();
+    const original = reader.querySelector('.ui-reader__placeholder-link') as HTMLAnchorElement;
+    expect(original.textContent).toBe('Open original');
+    expect(original.getAttribute('href')).toBe('https://x.test/i.png');
+    expect(original.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(reader.querySelector('.ui-reader__placeholder-text')?.textContent).toBe('A chart');
+  });
+
+  it('renders spans as typed inline elements and links that open in a new tab', () => {
+    const { reader, update } = setup();
+    update((c) =>
+      c.blocks.set([
+        {
+          kind: READER_VIEW_BLOCK.Paragraph,
+          text: 'Use fetch and read the docs now',
+          spans: [
+            span('Use '),
+            span('fetch', { code: true }),
+            span(' and '),
+            span('read the docs', { href: 'https://docs.test/a', strong: true, emphasis: true }),
+            span(' now', { emphasis: true }),
+            span(' bad', { href: 'javascript:alert(1)' }),
+          ],
+        },
+      ]),
+    );
+    const paragraph = reader.querySelector('.ui-reader__paragraph') as HTMLElement;
+    expect(paragraph.querySelector('code')?.textContent).toBe('fetch');
+    const link = paragraph.querySelector('a') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('https://docs.test/a');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(link.querySelector('strong em')?.textContent).toBe('read the docs');
+    expect(link.querySelector('.ui-reader-spans__hint')?.textContent).toContain(
+      'opens in a new tab',
+    );
+    expect(paragraph.querySelectorAll('a')).toHaveLength(1);
+    expect(paragraph.querySelector('em')?.textContent).toBe('read the docs');
+    expect(paragraph.textContent?.startsWith('Use fetch and read the docs')).toBe(true);
+    expect(paragraph.innerHTML).not.toContain('javascript:');
+  });
+
+  it('renders heading levels, ordered lists, notes and tables', () => {
+    const { reader, update } = setup();
+    update((c) =>
+      c.blocks.set([
+        { kind: READER_VIEW_BLOCK.Heading, text: 'Two', level: 2 },
+        { kind: READER_VIEW_BLOCK.Heading, text: 'Three', level: 3 },
+        { kind: READER_VIEW_BLOCK.Heading, text: 'Four', level: 4 },
+        {
+          kind: READER_VIEW_BLOCK.List,
+          text: '',
+          ordered: true,
+          items: [{ spans: [span('first')], items: [] }],
+        },
+        { kind: READER_VIEW_BLOCK.Note, text: 'Mind the gap', label: 'Warning' },
+        {
+          kind: READER_VIEW_BLOCK.Table,
+          text: '',
+          header: true,
+          rows: [
+            ['Name', 'Type'],
+            ['id', 'number'],
+          ],
+        },
+      ]),
+    );
+    expect(reader.querySelector('h3')?.textContent?.trim()).toBe('Two');
+    expect(reader.querySelector('h4')?.textContent?.trim()).toBe('Three');
+    expect(reader.querySelector('h5')?.textContent?.trim()).toBe('Four');
+    expect(reader.querySelector('ol li')?.textContent).toContain('first');
+    const note = reader.querySelector('aside[role=note]');
+    expect(note?.querySelector('.ui-reader__note-label')?.textContent).toBe('Warning');
+    expect(note?.textContent).toContain('Mind the gap');
+    expect(reader.querySelectorAll('th')).toHaveLength(2);
+    expect(reader.querySelectorAll('td')).toHaveLength(2);
+    expect(reader.querySelector('.ui-reader__table-scroll')?.getAttribute('aria-label')).toBe(
+      'Table',
+    );
+  });
+
+  it('shows an image block without a source as its caption only', () => {
+    const { reader, update } = setup();
+    update((c) =>
+      c.blocks.set([{ kind: READER_VIEW_BLOCK.Image, text: 'Only a caption', imageUrl: null }]),
+    );
+    expect(reader.querySelector('.ui-reader__placeholder-link')).toBeNull();
+    expect(reader.querySelector('figcaption')?.textContent).toBe('Only a caption');
   });
 
   it('shows the notice and the lead picture only when given, and drops a broken picture', () => {

@@ -6,4 +6,6 @@ export const READER_VIEW_BLOCK = {
   Quote: 'quote',
   Code: 'code',
   Image: 'image',
+  Note: 'note',
+  Table: 'table',
 } as const;

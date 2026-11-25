@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,6 +25,8 @@ import { READER_THEME } from './models/reader-theme.const';
 import type { ReaderTheme } from './models/reader-theme.type';
 import { READER_VIEW_BLOCK } from './models/reader-block-kind.const';
 import type { ReaderViewBlock } from './models/reader-view-block.interface';
+import type { ReaderViewSpan } from './models/reader-view-span.interface';
+import { ReaderSpansComponent } from './reader-spans/reader-spans.component';
 
 let nextId = 0;
 
@@ -47,7 +50,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'ui-reader',
-  imports: [FaviconComponent, IconComponent],
+  imports: [FaviconComponent, IconComponent, NgTemplateOutlet, ReaderSpansComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-reader',
@@ -85,6 +88,12 @@ export class ReaderComponent {
   /** Aspect ratio of `image`, `16 / 9` by default. */
   readonly imageRatio = input('16 / 9');
   readonly blocks = input<readonly ReaderViewBlock[]>([]);
+  /** Link text of an image placeholder ("Open original"): pictures of the page cannot load (CSP). */
+  readonly openOriginalLabel = input('');
+  /** Visually hidden hint after every link in the text ("opens in a new tab"). */
+  readonly newTabLabel = input('');
+  /** Accessible name of a scrollable table ("Table"). */
+  readonly tableLabel = input('');
   /** Body text size in px, clamped to 14 to 24 (18 by default). */
   readonly textSize = input<number>(READER_TEXT_SIZE.Default);
   readonly font = input<ReaderFont>(READER_FONT.Sans);
@@ -145,6 +154,15 @@ export class ReaderComponent {
       this.progress.set(share);
       this.progressed.emit(share);
     });
+  }
+
+  /** The spans of a block; a block without them reads as its plain text. */
+  protected spansOf(block: ReaderViewBlock): readonly ReaderViewSpan[] {
+    return block.spans && block.spans.length > 0
+      ? block.spans
+      : block.text === ''
+        ? []
+        : [{ text: block.text, href: null, code: false, emphasis: false, strong: false }];
   }
 
   protected onImageError(src: string): void {

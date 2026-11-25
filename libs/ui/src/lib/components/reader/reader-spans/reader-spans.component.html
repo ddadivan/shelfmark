@@ -1,0 +1,17 @@
+<!-- prettier-ignore -->
+@for (span of spans(); track $index) {
+  @if (link(span); as href) {
+    <a class="ui-reader-spans__link" [href]="href" target="_blank" rel="noopener noreferrer"><ng-container *ngTemplateOutlet="styled; context: { $implicit: span }" />@if (newTabLabel()) {<span class="ui-reader-spans__hint"> {{ newTabLabel() }}</span>}</a>
+  } @else {<ng-container *ngTemplateOutlet="styled; context: { $implicit: span }" />}
+}
+
+<!-- prettier-ignore -->
+<ng-template #styled let-span>
+  @if (span.strong && span.emphasis) {<strong><em><ng-container *ngTemplateOutlet="plain; context: { $implicit: span }" /></em></strong>}
+  @else if (span.strong) {<strong><ng-container *ngTemplateOutlet="plain; context: { $implicit: span }" /></strong>}
+  @else if (span.emphasis) {<em><ng-container *ngTemplateOutlet="plain; context: { $implicit: span }" /></em>}
+  @else {<ng-container *ngTemplateOutlet="plain; context: { $implicit: span }" />}
+</ng-template>
+
+<!-- prettier-ignore -->
+<ng-template #plain let-span>@if (span.code) {<code class="ui-reader-spans__code">{{ span.text }}</code>} @else {<ng-container>{{ span.text }}</ng-container>}</ng-template>
