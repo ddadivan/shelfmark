@@ -42,9 +42,9 @@ test.describe('landing', () => {
 
     const box = await hero.boundingBox();
     const preview = await page.locator('app-landing-hero-preview').boundingBox();
-    // 100svh minus the 64px sticky header, and the live preview is larger than the old 460px.
+    // 100svh minus the 64px sticky header, and the live preview (the app window scaled down) is at least 520px high.
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(1080 - 64 - 1);
-    expect(preview?.height ?? 0).toBeGreaterThan(560);
+    expect(preview?.height ?? 0).toBeGreaterThan(520);
     expect(box?.width ?? 0).toBeGreaterThan(1300);
   });
 
@@ -181,7 +181,7 @@ test.describe('landing', () => {
       await gotoLandingLoaded(page);
       // The preview's cards land and its toast slides in after the headline: wait for the last
       // part to finish, then for the page to settle.
-      await expect(page.locator('app-landing-hero-preview .preview__toast')).toHaveCSS(
+      await expect(page.locator('app-landing-hero-preview .stage__toast')).toHaveCSS(
         'opacity',
         '1',
       );
@@ -313,20 +313,20 @@ test.describe('landing scenes and reveals', () => {
 
 test.describe('landing app preview motion', () => {
   const preview = (page: Page): Locator => page.locator('app-landing-hero-preview');
-  const toast = (page: Page): Locator => preview(page).locator('.preview__toast');
+  const toast = (page: Page): Locator => preview(page).locator('.stage__toast');
 
   test('the cards land, the toast slides in, then the preview cycles through its frames', async ({
     page,
   }) => {
     await page.goto('/');
-    await expect(preview(page).locator('.preview__card').first()).toBeVisible();
+    await expect(preview(page).locator('.stage__item').first()).toBeVisible();
 
     // The first frame: All links with the toast (16-landing).
-    await expect(toast(page)).toHaveClass(/preview__toast--shown/, { timeout: 5000 });
+    await expect(toast(page)).toHaveClass(/stage__toast--shown/, { timeout: 5000 });
     await expect(toast(page)).toHaveCSS('opacity', '1');
     await expect(toast(page)).toContainText('Saved to Watch later');
     await expect(toast(page)).toContainText('Undo');
-    const title = preview(page).locator('.preview__title');
+    const title = preview(page).locator('.stage__title');
     const first = (await title.textContent())?.trim();
     // Every 3.6 s the next frame; the order and the hold after a click:
     // landing-preview-cycle.service.spec.ts.

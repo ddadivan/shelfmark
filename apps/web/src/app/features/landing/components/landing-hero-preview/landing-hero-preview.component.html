@@ -10,7 +10,6 @@
   [attr.aria-label]="'landing.preview.label' | transloco"
   [class.preview--phone]="phone()"
   [class.preview--intro]="cycle.intro()"
-  [style.height.px]="height()"
   (appElementWidth)="measured($event)"
 >
   <div
@@ -110,16 +109,40 @@
           <p class="stage__title">{{ titleKey() | transloco }}</p>
           <div class="stage__tools">
             @if (phone()) {
-              <ui-button variant="ghost" size="sm" iconOnly iconLeft="filter" />
-              <ui-button variant="ghost" size="sm" iconOnly iconLeft="check" />
-              <ui-button variant="ghost" size="sm" iconOnly iconLeft="sort" />
+              <ui-button
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="filter"
+                [ariaLabel]="'library.toolbar.filter' | transloco"
+              />
+              <ui-button
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="check"
+                [ariaLabel]="'library.viewMenu.select' | transloco"
+              />
+              <ui-button
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="sort"
+                [ariaLabel]="'library.toolbar.sort' | transloco"
+              />
               <ui-segmented-control
                 iconOnly
                 [options]="viewOptions()"
                 value="masonry"
                 [ariaLabel]="'library.view.label' | transloco"
               />
-              <ui-button variant="ghost" size="sm" iconOnly iconLeft="upload" />
+              <ui-button
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="upload"
+                [ariaLabel]="'export.menu' | transloco"
+              />
             } @else {
               <div class="stage__actions">
                 <ui-button variant="ghost" size="sm" iconLeft="filter">{{
@@ -160,7 +183,7 @@
             [activeId]="viewActive()"
             [ariaLabel]="'views.label' | transloco"
             [addLabel]="phone() ? ('views.add' | transloco) : ''"
-            [layout]="phone() ? SAVED_VIEWS_LAYOUT.Scroll : SAVED_VIEWS_LAYOUT.Wrap"
+            [layout]="SAVED_VIEWS_LAYOUT.Wrap"
           />
         </div>
         <ul class="stage__grid" [class.stage__grid--fade]="cycle.fading()">

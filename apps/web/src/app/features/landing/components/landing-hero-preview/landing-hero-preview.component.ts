@@ -50,10 +50,8 @@ import { previewShows } from '../../utils/landing-preview';
 
 /** The window the picture shows: the app at 1400px, laid out at that size and scaled down. */
 const STAGE_WIDTH = 1400;
-const STAGE_HEIGHT = 860;
 /** Below this width the picture is the phone shell at its own size (no scaling, no sidebar). */
 const PHONE_BELOW = 560;
-const PHONE_HEIGHT = 600;
 /** The width before the first measurement. */
 const INITIAL_WIDTH = 720;
 
@@ -104,9 +102,6 @@ export class LandingHeroPreviewComponent {
   protected readonly TOAST_KIND = TOAST_KIND;
   protected readonly SAVED_VIEWS_LAYOUT = SAVED_VIEWS_LAYOUT;
   protected readonly IMAGES = LANDING_IMAGES;
-  protected readonly stageHeight = STAGE_HEIGHT;
-  protected readonly stageWidth = STAGE_WIDTH;
-  protected readonly phoneHeight = PHONE_HEIGHT;
   protected readonly user = 'Sam Lee';
   protected readonly shortcut = 'Ctrl K';
 
@@ -114,9 +109,6 @@ export class LandingHeroPreviewComponent {
   protected readonly phone = computed(() => this.width() < PHONE_BELOW);
   /** Wide: the stage's scale; phone: 1. */
   protected readonly scale = computed(() => (this.phone() ? 1 : this.width() / STAGE_WIDTH));
-  protected readonly height = computed(() =>
-    this.phone() ? PHONE_HEIGHT : Math.round(STAGE_HEIGHT * this.scale()),
-  );
 
   protected measured(width: number): void {
     if (width > 0) {
