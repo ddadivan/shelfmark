@@ -212,11 +212,21 @@
               <app-help-text [text]="'bulk.header.desktopHint' | transloco" />
             </p>
             @if (selection.allSelected()) {
-            <ui-button variant="ghost" size="sm" (click)="selection.toggleAll(false)">
+            <ui-button
+              class="library__select-all"
+              variant="ghost"
+              size="sm"
+              (click)="selection.toggleAll(false)"
+            >
               {{ 'bulk.header.selectNone' | transloco }}
             </ui-button>
             } @else {
-            <ui-button variant="ghost" size="sm" (click)="selection.selectAll()">
+            <ui-button
+              class="library__select-all"
+              variant="ghost"
+              size="sm"
+              (click)="selection.selectAll()"
+            >
               {{ 'bulk.header.selectAll' | transloco: { count: feed.shownCount() } }}
             </ui-button>
             } } @else { @if (tidyEntry()) {
