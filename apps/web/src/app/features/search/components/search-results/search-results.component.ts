@@ -36,6 +36,7 @@ import {
   type Observable,
 } from 'rxjs';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { linkChangeOverlay } from '../../../../stores/link-change-overlay';
 import { TagsStore } from '../../../../stores/tags.store';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
@@ -131,8 +132,8 @@ export class SearchResultsComponent {
   /** The search text the results are for: normalized, cut like the API does. */
   protected readonly parsed = computed(() => parseSearchQuery(this.query()));
 
-  /** The last settled answer of the API; the previous one stays while a new one loads. */
-  protected readonly state = toSignal(
+  /** The answer of the API as it came; the previous one stays while a new one loads. */
+  private readonly answer = toSignal(
     toObservable(this.parsed).pipe(
       debounce((query) => timer(query === '' ? 0 : SEARCH_DEBOUNCE_MS)),
       distinctUntilChanged(),
@@ -140,6 +141,13 @@ export class SearchResultsComponent {
     ),
     { initialValue: IDLE },
   );
+  /** What the links store wrote since the answer came: a star, an edit, a delete and its Undo. */
+  private readonly overlay = linkChangeOverlay();
+  /** The last settled answer, its links following the links store. */
+  protected readonly state = computed<SearchState>(() => {
+    const answer = this.answer();
+    return { ...answer, links: this.overlay.apply(answer.links) };
+  });
   /** The shown results lag behind the text (debounce or request in flight). */
   protected readonly busy = computed(() => this.parsed() !== this.state().query);
 

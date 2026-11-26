@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { REDISCOVER_MODE, type LinkResponse, type RediscoverResponse } from '@shelfmark/contracts';
+import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { of, Subject, throwError } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { REDISCOVER_API } from '../models/rediscover-api.const';
 import type { RediscoverApi } from '../models/rediscover-api.interface';
+import { LinksStore } from '../../../stores/links.store';
 import { RediscoverStore } from './rediscover.store';
 
 const links = ['a', 'b', 'c'].map((id) => ({ id }) as LinkResponse);
@@ -100,5 +102,18 @@ describe('RediscoverStore', () => {
     await store.hide('a');
     await store.dismiss();
     expect(store.items()).toEqual([]);
+  });
+
+  it('follows the links store: an edit, a delete and its Undo', async () => {
+    const { store } = setup();
+    await store.load();
+    const linksStore = TestBed.inject(LinksStore);
+    linksStore.applyEdit({ ...(MOCK_LINKS[0] as LinkResponse), id: 'b', title: 'Renamed' });
+    expect(store.items().map((l) => l.id)).toEqual(['a', 'b', 'c']);
+    expect(store.items()[1]?.title).toBe('Renamed');
+    linksStore.remove('b', store.items()[1]);
+    expect(store.items().map((l) => l.id)).toEqual(['a', 'c']);
+    linksStore.undoRemove('b');
+    expect(store.items().map((l) => l.id)).toEqual(['a', 'b', 'c']);
   });
 });

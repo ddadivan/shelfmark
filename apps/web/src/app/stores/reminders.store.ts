@@ -1,10 +1,19 @@
 import { computed, inject, Injector } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { REMINDERS_API } from '../features/reminders/models/reminders-api.const';
+import { followLinkChanges } from './follow-link-changes';
 import { LinksStore } from './links.store';
+import type { LinkChange } from './models/link-change.interface';
 import type { RemindersState } from './models/reminders-state.interface';
 
 const initialState: RemindersState = {
@@ -120,6 +129,55 @@ export const RemindersStore = signalStore(
       });
     }
 
+    // Links a delete took out of the lists, so their Undo puts them back.
+    const gone = new Map<string, LinkResponse>();
+
+    /**
+     * Follows what `LinksStore` wrote (an edit, a star, a delete and its Undo): a listed link takes
+     * its new state (it leaves when its reminder is gone and changes list when it came due or was
+     * snoozed), a removed one leaves, and a restored one with a reminder comes back. Links with a
+     * new reminder are added by `apply`, which also keeps the badge when the lists are not loaded.
+     */
+    function follow(change: LinkChange): void {
+      if (!store.loaded()) {
+        return;
+      }
+      const written = new Map((change.upserted ?? []).map((link) => [link.id, link]));
+      const removed = new Set(change.removed ?? []);
+      if (written.size === 0 && removed.size === 0) {
+        return;
+      }
+      const listed = store.byId();
+      const relevant =
+        [...written.keys()].some((id) => listed.has(id) || gone.has(id)) ||
+        [...removed].some((id) => listed.has(id));
+      if (!relevant) {
+        return;
+      }
+      for (const id of removed) {
+        const link = listed.get(id);
+        if (link) {
+          gone.set(id, link);
+        }
+      }
+      const now = new Date().toISOString();
+      const rest = (list: readonly LinkResponse[]) =>
+        list.filter((link) => !written.has(link.id) && !removed.has(link.id));
+      const back = [...written.values()].filter(
+        (link) => link.remindAt !== null && (listed.has(link.id) || gone.has(link.id)),
+      );
+      for (const link of back) {
+        gone.delete(link.id);
+      }
+      const due = [...rest(store.due()), ...back.filter((link) => isDue(link, now))];
+      const upcoming = [...rest(store.upcoming()), ...back.filter((link) => !isDue(link, now))];
+      patchState(store, {
+        due: due.sort(bySoonest),
+        upcoming: upcoming.sort(bySoonest),
+        dueCount: due.length,
+      });
+    }
+
     function load(): Promise<void> {
       if (store.loaded()) {
         return Promise.resolve();
@@ -129,6 +187,8 @@ export const RemindersStore = signalStore(
     }
 
     return {
+      _follow: follow,
+
       /** Loads the lists once; later calls reuse the first request. A failure can be retried. */
       load,
 
@@ -173,5 +233,10 @@ export const RemindersStore = signalStore(
         }
       },
     };
+  }),
+  withHooks({
+    onInit(store) {
+      followLinkChanges((change) => store._follow(change));
+    },
   }),
 );

@@ -150,4 +150,50 @@ describe('RemindersStore', () => {
     expect(store.due()).toEqual([]);
     expect(store.loaded()).toBe(false);
   });
+
+  describe('following LinksStore', () => {
+    it('shows an edit of a listed link, and drops it when its reminder is gone', async () => {
+      const { store } = setup({ due: [link('a', inHours(-2))], upcoming: [link('b', inHours(5))] });
+      await store.load();
+      const links = TestBed.inject(LinksStore);
+      links.applyEdit({ ...link('a', inHours(-2)), title: 'Renamed' });
+      expect(store.due()[0]?.title).toBe('Renamed');
+      links.applyEdit({ ...link('b', inHours(5)), isFavorite: true });
+      expect(store.upcoming()[0]?.isFavorite).toBe(true);
+      links.applyEdit(link('b', null));
+      expect(store.upcoming()).toEqual([]);
+      expect(store.dueCount()).toBe(1);
+    });
+
+    it('moves a listed link to the other list when its reminder changed', async () => {
+      const { store } = setup({ due: [link('a', inHours(-2))], upcoming: [] });
+      await store.load();
+      TestBed.inject(LinksStore).applyEdit(link('a', inHours(24)));
+      expect(store.due()).toEqual([]);
+      expect(store.upcoming().map((item) => item.id)).toEqual(['a']);
+      expect(store.dueCount()).toBe(0);
+    });
+
+    it('removes a deleted link and brings it back on Undo', async () => {
+      const due = link('a', inHours(-2));
+      const { store } = setup({ due: [due, link('b', inHours(-1))], upcoming: [] });
+      await store.load();
+      const links = TestBed.inject(LinksStore);
+      expect(links.remove('a', due)).toBe(true);
+      expect(store.due().map((item) => item.id)).toEqual(['b']);
+      expect(store.dueCount()).toBe(1);
+      links.undoRemove('a');
+      expect(store.due().map((item) => item.id)).toEqual(['a', 'b']);
+      expect(store.dueCount()).toBe(2);
+    });
+
+    it('does not loop or duplicate when its own write goes through the links store', async () => {
+      const { store, patchLinks } = setup({ due: [link('a', inHours(-2))], upcoming: [] });
+      await store.load();
+      expect(await store.set([link('a', inHours(-2))], inHours(24))).toBe(true);
+      expect(patchLinks).toHaveBeenCalledOnce();
+      expect(store.due()).toEqual([]);
+      expect(store.upcoming().map((item) => item.id)).toEqual(['a']);
+    });
+  });
 });

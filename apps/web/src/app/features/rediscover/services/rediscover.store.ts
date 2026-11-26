@@ -1,7 +1,18 @@
 import { computed, inject, Injector } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
+import { applyLinkChange } from '../../../stores/apply-link-change';
+import { followLinkChanges } from '../../../stores/follow-link-changes';
+import type { LinkChange } from '../../../stores/models/link-change.interface';
+import type { LinkSlot } from '../../../stores/models/link-slot.interface';
 import { REDISCOVER_API } from '../models/rediscover-api.const';
 import type { RediscoverState } from '../models/rediscover-state.interface';
 
@@ -32,7 +43,11 @@ export const RediscoverStore = signalStore(
     /** The block was dismissed (pending or done): a failed hide never brings a link back into it. */
     let dismissed = false;
 
+    // Links a delete took out of the block, so their Undo puts them back.
+    const slots = new Map<string, LinkSlot>();
+
     inject(SessionScope).onEnd(() => {
+      slots.clear();
       epoch++;
       loading = null;
       hidden = new Set<string>();
@@ -41,6 +56,18 @@ export const RediscoverStore = signalStore(
     });
 
     return {
+      /** Follows `LinksStore` (the one writer): an edit, star or snooze, a delete and its Undo. */
+      _follow(change: LinkChange): void {
+        const block = store.block();
+        if (!block) {
+          return;
+        }
+        const items = applyLinkChange(block.items, change, slots);
+        if (items !== block.items) {
+          patchState(store, { block: { ...block, items: [...items] } });
+        }
+      },
+
       /** Loads the block once per session; a failure shows no block. */
       load(): Promise<void> {
         if (store.loaded()) {
@@ -123,5 +150,10 @@ export const RediscoverStore = signalStore(
         }
       },
     };
+  }),
+  withHooks({
+    onInit(store) {
+      followLinkChanges((change) => store._follow(change));
+    },
   }),
 );

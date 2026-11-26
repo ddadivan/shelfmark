@@ -11,6 +11,7 @@ import type { LinksApi } from '../../../links/models/links-api.interface';
 import { TAGS_API } from '../../../links/models/tags-api.const';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { SEARCH_DEBOUNCE_MS } from '../../models/search-debounce-ms.const';
+import { LinksStore } from '../../../../stores/links.store';
 import { LinkOpener } from '../../services/link-opener.service';
 import { RecentSearchesService } from '../../services/recent-searches.service';
 import { signal } from '@angular/core';
@@ -228,6 +229,25 @@ describe('SearchResultsComponent (the search dialog list)', { timeout: 30_000 },
 
     expect(options(element).some((option) => option.textContent?.includes('Signal 1'))).toBe(true);
     answer.complete();
+  });
+
+  it('follows the links store: a rename, a delete and its Undo', async () => {
+    const { element, fixture } = await setup();
+    await type(fixture, 'signal');
+    const links = TestBed.inject(LinksStore);
+    const rows = () => options(element).map((option) => option.textContent ?? '');
+
+    links.applyEdit({ ...link(1), title: 'Signal renamed' });
+    await fixture.whenStable();
+    expect(rows().some((text) => text.includes('Signal renamed'))).toBe(true);
+
+    links.remove('id-2', link(2));
+    await fixture.whenStable();
+    expect(rows().some((text) => text.includes('Signal 2'))).toBe(false);
+
+    links.undoRemove('id-2');
+    await fixture.whenStable();
+    expect(rows().some((text) => text.includes('Signal 2'))).toBe(true);
   });
 
   it('has no axe violations with results', async () => {

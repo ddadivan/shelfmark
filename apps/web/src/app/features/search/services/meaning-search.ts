@@ -1,11 +1,6 @@
 import { computed, effect, inject, Injector, Service, signal, untracked } from '@angular/core';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import {
-  AI_SEARCH_LIMIT,
-  AI_SEARCH_STATE,
-  type LinkResponse,
-  type MeaningSearchResponse,
-} from '@shelfmark/contracts';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { AI_SEARCH_LIMIT, AI_SEARCH_STATE, type MeaningSearchResponse } from '@shelfmark/contracts';
 import {
   catchError,
   debounceTime,
@@ -18,7 +13,7 @@ import {
   type Observable,
 } from 'rxjs';
 import { LocaleService } from '../../../core/i18n/locale.service';
-import { LinksStore } from '../../../stores/links.store';
+import { linkChangeOverlay } from '../../../stores/link-change-overlay';
 import { AI_API } from '../../ai/models/ai-api.const';
 import { AiSettingsStore } from '../../ai/services/ai-settings.store';
 import { MEANING_DEBOUNCE_MS } from '../models/meaning-debounce-ms.const';
@@ -45,9 +40,8 @@ export class MeaningSearch {
   private readonly injector = inject(Injector);
   private readonly hints = inject(MeaningHintService);
   private readonly locale = inject(LocaleService);
-  private readonly links = inject(LinksStore);
-  /** What the links store changed since the answer came: a new state, or `null` for a hidden link. */
-  private readonly changed = signal<ReadonlyMap<string, LinkResponse | null>>(new Map());
+  /** What the links store changed since the answer came (a new state, or a hidden link). */
+  private readonly overlay = linkChangeOverlay();
   private readonly source = signal<MeaningSource | null>(null);
 
   private readonly trigger = computed(() => {
@@ -94,13 +88,12 @@ export class MeaningSearch {
         ?.words()
         .links.map((link) => link.id),
     );
-    const changed = this.changed();
-    return state.items
-      .filter((match) => !wordIds.has(match.link.id) && changed.get(match.link.id) !== null)
-      .map((match) => ({
-        link: changed.get(match.link.id) ?? match.link,
-        why: meaningWhy(match.why),
-      }));
+    return state.items.flatMap((match) => {
+      const link = this.overlay.resolve(match.link);
+      return link === null || wordIds.has(match.link.id)
+        ? []
+        : [{ link, why: meaningWhy(match.why) }];
+    });
   });
 
   /** The query whose answer claimed the once-per-session "getting ready" line. */
@@ -132,21 +125,6 @@ export class MeaningSearch {
   });
 
   constructor() {
-    // The cards are not part of the feed: a star, an edit, a delete (and its Undo) of one of them
-    // goes through the links store, and the card follows it.
-    this.links.linkChanges.pipe(takeUntilDestroyed()).subscribe((change) => {
-      if (!change.upserted?.length && !change.removed?.length) {
-        return;
-      }
-      const next = new Map(this.changed());
-      for (const link of change.upserted ?? []) {
-        next.set(link.id, link);
-      }
-      for (const id of change.removed ?? []) {
-        next.set(id, null);
-      }
-      this.changed.set(next);
-    });
     // The line is claimed only when an answer that may show it is the one on screen (`current`),
     // so an answer dropped by a newer query or a closed dialog does not use up the session's line.
     effect(() => {

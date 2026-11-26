@@ -1,8 +1,19 @@
 import { computed, inject } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { SAVED_WITHIN } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
+import { applyLinkChange } from '../../../stores/apply-link-change';
+import { followLinkChanges } from '../../../stores/follow-link-changes';
 import { FoldersStore } from '../../../stores/folders.store';
+import type { LinkChange } from '../../../stores/models/link-change.interface';
+import type { LinkSlot } from '../../../stores/models/link-slot.interface';
 import { RemindersStore } from '../../../stores/reminders.store';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { RediscoverStore } from '../../rediscover/services/rediscover.store';
@@ -74,7 +85,20 @@ export const TodayStore = signalStore(
       }
     }
 
+    // Links a delete took out of a list, so their Undo puts them back.
+    const weekSlots = new Map<string, LinkSlot>();
+    const latestSlots = new Map<string, LinkSlot>();
+
     return {
+      /** Follows `LinksStore` (the one writer): an edit, star or snooze, a delete and its Undo. */
+      _follow(change: LinkChange): void {
+        const week = applyLinkChange(store.week(), change, weekSlots);
+        const latest = applyLinkChange(store.latest(), change, latestSlots);
+        if (week !== store.week() || latest !== store.latest()) {
+          patchState(store, { week: [...week], latest: [...latest] });
+        }
+      },
+
       /** Opening the page: every part, plus the folders its rows and cards name. */
       load(): Promise<unknown> {
         return Promise.all([
@@ -89,5 +113,10 @@ export const TodayStore = signalStore(
       retryWeek: loadWeek,
       retryLatest: loadLatest,
     };
+  }),
+  withHooks({
+    onInit(store) {
+      followLinkChanges((change) => store._follow(change));
+    },
   }),
 );
