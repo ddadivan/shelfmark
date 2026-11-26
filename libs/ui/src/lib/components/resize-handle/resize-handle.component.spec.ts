@@ -113,6 +113,17 @@ describe('ui-resize-handle', () => {
     expect(handle.getAttribute('aria-description')).toBe('Drag or use the arrow keys');
   });
 
+  it('takes no focus from a pointer drag, so the page keeps its keys', async () => {
+    const { handle } = await setup();
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    outside.focus();
+    handle.dispatchEvent(pointer('pointerdown', { clientX: 100 }));
+    handle.dispatchEvent(pointer('pointerup', { clientX: 140 }));
+    expect(document.activeElement).toBe(outside);
+    outside.remove();
+  });
+
   it('ignores other buttons and other pointers, and restores the body on destroy', async () => {
     const { handle, host, fixture } = await setup();
     handle.dispatchEvent(pointer('pointerdown', { clientX: 100, button: 2 }));

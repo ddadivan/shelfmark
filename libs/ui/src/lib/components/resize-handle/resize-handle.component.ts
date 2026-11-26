@@ -25,7 +25,7 @@ import { clampResizeValue, dragResizeValue, keyResizeValue } from './resize-hand
  * `role="separator"` with `aria-valuenow|min|max`, named by `label`. Pointer drag uses pointer
  * capture and emits clamped values while moving; ArrowLeft / ArrowRight move 16px (Shift 64px),
  * Home / End jump to `min` / `max`, Enter or a double click emits `resetRequested` (the owner restores
- * its default width). While dragging, the page shows `col-resize` and no text is selected. The
+ * its default width). While dragging, the page shows `col-resize` and no text is selected; a pointer drag takes no focus (round 13). The
  * grip pill is always visible so the control is discoverable; `hint` adds a tooltip.
  */
 @Component({
@@ -75,9 +75,10 @@ export class ResizeHandleComponent {
     if (event.button !== 0) {
       return;
     }
+    // No focus for a pointer drag (author, round 13): focus stays where it was, so the page's
+    // arrow keys (the link preview's ↑ ↓) keep working after a resize. Tab still reaches it.
     event.preventDefault();
     if (event.currentTarget instanceof HTMLElement) {
-      event.currentTarget.focus({ preventScroll: true });
       event.currentTarget.setPointerCapture?.(event.pointerId);
     }
     this.drag = { pointerId: event.pointerId, startX: event.clientX, startValue: this.now() };
