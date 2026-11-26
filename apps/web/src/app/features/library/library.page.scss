@@ -165,6 +165,11 @@
   // weight (author, Nov 26); the "Add link here" button keeps the label weight.
   --ui-button-weight: 400;
 
+  // Text and icons rest in `text-muted` and turn `text` on hover (Shelf IconButton; author,
+  // round 9); an open menu's button is `text` on `surface-pressed` (ui-button).
+  --ui-button-color: var(--text-muted);
+  --ui-button-hover-color: var(--text);
+
   // Pressed to the right edge, also when the group drops under the title.
   justify-content: flex-end;
   max-width: 100%;

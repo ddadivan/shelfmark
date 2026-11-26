@@ -127,8 +127,11 @@ a.ui-button {
 }
 
 .ui-button--ghost {
+  // `--ui-button-hover-color`: a feature that rests its ghost buttons in `text-muted` (the
+  // library toolbar, Shelf IconButton) brings them up to `text` on hover.
   &:not([aria-disabled='true']) {
     @include hover {
+      color: var(--ui-button-hover-color, var(--ui-button-color, var(--text)));
       background: var(--fill);
     }
   }
