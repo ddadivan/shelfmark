@@ -30,8 +30,9 @@ export class AddLinkDialogService {
     return this.dialogs
       .open<AddLinkDialogComponent, AddLinkResult, AddLinkDialogData>(AddLinkDialogComponent, {
         size: DIALOG_SIZE.Md,
-        // Shelf: adding is a panel under the top end corner; editing stays a centred dialog.
-        variant: data.link === undefined ? DIALOG_VARIANT.Panel : DIALOG_VARIANT.Default,
+        // A centred dialog for adding and editing alike (author, Nov 26: the panel under the top end
+        // corner sat far from the sidebar's Add link, and adding is modal anyway).
+        variant: DIALOG_VARIANT.Default,
         autoFocus: DIALOG_FIRST_FIELD,
         data: { ...data, session },
       })

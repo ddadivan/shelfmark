@@ -20,9 +20,15 @@
     outline: none;
   }
 
+  // A light blur behind every dialog (author, Nov 26). It fades with the scrim's opacity; the
+  // clear panel scrim below keeps the page sharp.
   .ui-dialog-scrim {
     background: var(--overlay);
     transition: opacity var(--duration-fast) var(--ease-out);
+
+    @supports (backdrop-filter: blur(1px)) {
+      backdrop-filter: blur(#{rem(4px)});
+    }
 
     &.cdk-overlay-backdrop-showing {
       transition-duration: var(--duration-base);
@@ -32,6 +38,7 @@
     &.ui-dialog-scrim--clear {
       @include tablet-up {
         background: transparent;
+        backdrop-filter: none;
       }
     }
   }
