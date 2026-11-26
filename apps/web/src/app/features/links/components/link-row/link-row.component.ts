@@ -109,6 +109,11 @@ export class LinkRowComponent {
   readonly showDescription = input(true);
   /** The compact list beside the desktop preview (#553): no tags, the title gets the room. */
   readonly dense = input(false);
+  /**
+   * The 72 x 48 picture before the title (the List beside the link preview, author round 11): the
+   * link's own image, else its favicon drawn large; without it the row leads with the favicon.
+   */
+  readonly thumbs = input(false);
   readonly previewRequested = output<void>();
   private readonly previewRoute = inject(LinkPreviewRoute);
   /** "Open" from the actions menu: the link opens in a new tab. */
@@ -180,6 +185,7 @@ export class LinkRowComponent {
   protected readonly host = computed(() => linkHost(this.link().url));
   protected readonly letter = computed(() => siteLetter(this.link().url));
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
+  protected readonly image = computed(() => ownImageUrl(this.link().imageUrl) ?? '');
   /** "2 days ago", "Oct 28": when the link was saved (Headlines date column). */
   protected readonly saved = computed(() => {
     const created = this.link().createdAt;

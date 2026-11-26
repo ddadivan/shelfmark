@@ -633,6 +633,7 @@
               [headline]="view() === UI_VIEW.Headlines"
               [showDescription]="filters.fieldShown(CARD_FIELD.Description)"
               [dense]="preview.split()"
+              [thumbs]="preview.split()"
               [folder]="showFolderChips() && !preview.split() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"

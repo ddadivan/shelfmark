@@ -3,6 +3,7 @@
   [newTab]="newTab()"
   [reveal]="reveal()"
   [headline]="headline()"
+  [thumb]="thumbs() ? image() : undefined"
   [actionsPinned]="menu.isOpen()"
   [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
   [checked]="selected()"
@@ -23,7 +24,11 @@
       (click)="onCheckboxClick($event)"
     />
   }
-  <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
+  @if (thumbs()) {
+    <ui-favicon slot="thumb-fallback" [src]="favicon()" [letter]="letter()" />
+  } @else {
+    <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
+  }
   <span slot="title">{{ link().title }}</span>
   <!-- The summary replaces the domain line (one line); the domain moves to the tooltip (#391). -->
   <span slot="meta" class="link-row__meta" [attr.title]="summarised() ? host() : null">

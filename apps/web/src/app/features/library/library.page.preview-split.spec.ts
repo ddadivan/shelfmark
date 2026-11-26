@@ -104,7 +104,7 @@ describe('LibraryPage beside the link preview', () => {
   beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
-  it('shows the feed as Headlines while the preview is open, without changing the saved view', async () => {
+  it('shows the feed as List rows with pictures while the preview is open, without changing the saved view', async () => {
     const { fixture, element, route } = await setup();
     const filters = fixture.debugElement.injector.get(LibraryFilterService);
     filters.rememberView(UI_VIEW.Cards, filters.feedKey());
@@ -114,7 +114,9 @@ describe('LibraryPage beside the link preview', () => {
 
     route.split.set(true);
     await fixture.whenStable();
-    expect(element.querySelector('.library__rows--headlines')).not.toBeNull();
+    expect(element.querySelector('.library__rows')).not.toBeNull();
+    expect(element.querySelector('.library__rows--headlines')).toBeNull();
+    expect().not.toBeNull();
     expect(element.querySelector('.library__grid')).toBeNull();
     expect(filters.view()).toBe(UI_VIEW.Cards);
 

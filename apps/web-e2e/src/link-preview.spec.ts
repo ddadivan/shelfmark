@@ -56,9 +56,11 @@ test.describe('link preview (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Show sidebar' })).toHaveCount(0);
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
     await expect(page.locator('[aria-current="true"]', { hasText: FIRST })).toBeVisible();
-    // Beside the preview the feed is Headlines, whatever view the user keeps; the toolbar is slim
-    // (title, Filter) and there is no selecting: no Select button, no checkboxes, X does nothing.
-    await expect(page.locator('.library__rows--headlines')).toBeVisible();
+    // Beside the preview the feed is List rows with the picture (round 11), whatever view the user
+    // keeps; the toolbar is slim (title, Filter) and there is no selecting: no Select button, no
+    // checkboxes, X does nothing.
+    await expect(page.locator('.library__rows--headlines')).toHaveCount(0);
+    await expect(page.locator('.library__item ui-list-item').first()).toBeVisible();
     await expect(page.locator('.library__grid')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Filter', exact: true })).toBeVisible();
     for (const name of ['Select links', 'Save view', 'Side by side']) {
