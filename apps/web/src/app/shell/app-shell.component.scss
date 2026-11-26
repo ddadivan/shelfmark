@@ -22,8 +22,8 @@
   padding: var(--space-4) var(--space-8) 0;
 }
 
-// Top bar of the mobile shell (Shelf `01-library.html` below 64em): the 48px search field (44px on
-// a phone) and the 40px round avatar, 8px apart, over the page with the page gutter.
+// Top bar of the mobile shell (Shelf `01-library.html` below 64em): the logo at the start and the
+// 40px round avatar at the end, over the page with the page gutter (search is the tab bar's Search).
 .shell__top {
   display: flex;
   flex: none;
@@ -39,14 +39,10 @@
   }
 }
 
-.shell__top-search {
-  --ui-search-trigger-max-inline-size: none;
-
-  flex: 1 1 0;
-
-  @include phone {
-    --ui-search-trigger-height: #{rem(44px)};
-  }
+.shell__top-logo {
+  flex: none;
+  height: rem(40px);
+  margin-inline-end: auto;
 }
 
 // Sidebar head (Shelf reference `.brandrow`): a 32px row with the logo (22px mark, 16/24 600

@@ -26,16 +26,10 @@
     </div>
   }
   <div class="shell__content">
-    <!-- Mobile shell (Shelf): the search field and the avatar; the tab bar is the navigation. -->
+    <!-- Mobile shell (Shelf): the logo and the avatar; search is the Search tab of the tab bar. -->
     @if (topBar()) {
       <header class="shell__top">
-        <ui-search-trigger
-          class="shell__top-search"
-          ariaHaspopup="dialog"
-          [label]="'search.placeholder' | transloco"
-          [value]="feedSearch.text()"
-          (click)="search.open()"
-        />
+        <a class="shell__logo shell__top-logo" routerLink="/links"><ui-logo /></a>
         <ng-container [ngTemplateOutlet]="account" />
       </header>
     }

@@ -411,9 +411,8 @@ describe('AppShellComponent', () => {
 
       expect(bar(root)?.querySelector('nav[aria-label="Main"]')).not.toBeNull();
       expect(root.querySelector('.shell__header')).toBeNull();
-      expect(root.querySelector('.shell__top ui-search-trigger')?.textContent).toContain(
-        'Search links, folders and tags',
-      );
+      expect(root.querySelector('.shell__top ui-search-trigger')).toBeNull();
+      expect(root.querySelector('.shell__top .shell__logo')).not.toBeNull();
       expect(byLabel(root, 'Account menu')).not.toBeNull();
       expect(root.querySelector('.shell__sidebar')).toBeNull();
       expect(byLabel(root, 'Open menu')).toBeNull();
@@ -440,12 +439,12 @@ describe('AppShellComponent', () => {
       expect(root.querySelector('.shell__top')).not.toBeNull();
     });
 
-    it('opens the search from the top bar field', async () => {
+    it('opens the search from the Search tab', async () => {
       const { harness, root } = await setup(true);
       const open = vi
         .spyOn(TestBed.inject(SearchDialogService), 'open')
         .mockImplementation(() => undefined);
-      root.querySelector<HTMLButtonElement>('.shell__top ui-search-trigger button')?.click();
+      tab(root, 'Search')?.click();
       await harness.fixture.whenStable();
       expect(open).toHaveBeenCalled();
     });

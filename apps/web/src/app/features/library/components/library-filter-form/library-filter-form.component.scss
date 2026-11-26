@@ -1,0 +1,52 @@
+@use 'ui' as *;
+
+// Shelf Filter groups (popover and bottom sheet): groups 8px apart inside (8px padding each), the 12px 500
+// muted label, option chips 4px apart, the favorites switch on its own row.
+.filter-panel__groups {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-panel__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.filter-panel__label {
+  @include type(caption);
+
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.filter-panel__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.filter-panel__saved {
+  align-self: flex-start;
+}
+
+.filter-panel__note {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.filter-panel__row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2);
+}
+
+.filter-panel__row-label {
+  @include type(secondary);
+}

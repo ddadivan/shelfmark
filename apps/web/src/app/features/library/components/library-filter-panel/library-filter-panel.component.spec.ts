@@ -9,6 +9,7 @@ import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transl
 import { TAGS_API } from '../../../links/models/tags-api.const';
 import { LINKS_SCOPE } from '../../../links/models/links-scope.const';
 import type { LinksScope } from '../../../links/models/links-scope.type';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 import { LibraryFilterService } from '../../services/library-filter.service';
 import { provideLibraryPage } from '../../services/provide-library-page';
 import { LibraryFilterPanelComponent } from './library-filter-panel.component';
@@ -26,7 +27,7 @@ const TAGS = [
   { id: 't2', name: 'video', linkCount: 2, createdAt: '2026-01-01T00:00:00.000Z' },
 ];
 
-async function setup(scopeValue: LinksScope = LINKS_SCOPE.All) {
+async function setup(scopeValue: LinksScope = LINKS_SCOPE.All, compact = false) {
   const router = {
     navigate: vi.fn((_commands: readonly unknown[], _extras?: NavigationExtras) =>
       Promise.resolve(true),
@@ -38,6 +39,7 @@ async function setup(scopeValue: LinksScope = LINKS_SCOPE.All) {
       ...provideLibraryPage(),
       provideTranslocoForTest(),
       { provide: Router, useValue: router },
+      { provide: ViewportService, useValue: { compact: signal(compact) } },
       { provide: TAGS_API, useValue: { list: () => of(TAGS) } },
     ],
   });
@@ -118,5 +120,15 @@ describe('LibraryFilterPanelComponent', () => {
   it('has no Only favorites switch on the Favorites feed', async () => {
     const { dialog } = await setup(LINKS_SCOPE.Favorites);
     expect(dialog().querySelector('[role="switch"]')).toBeNull();
+  });
+
+  it('opens as a bottom sheet below 64em, with Saved as chips', async () => {
+    await setup(LINKS_SCOPE.All, true);
+    expect(document.querySelector('ui-popover.filter-panel .ui-popover__surface')).toBeNull();
+    const sheet = document.querySelector('app-library-filter-sheet');
+    expect(sheet?.textContent).toContain('Filter');
+    expect(sheet?.querySelector('[role="radiogroup"]')).toBeNull();
+    expect(sheet?.textContent).toContain('Past month');
+    expect(sheet?.querySelector('[role="switch"]')).not.toBeNull();
   });
 });
