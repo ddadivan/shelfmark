@@ -6,10 +6,12 @@
 
 // The bare native `input` / `textarea`: no border or outline of its own (the box and its
 // `field-focus` halo are the indicator), body type, placeholder in the muted colour.
+// A feature with denser fields (the New view rows) sets `--ui-field-text-size|line` and
+// `--ui-field-native-padding`; touch screens keep 16px, since a phone zooms into smaller fields.
 @mixin field-native {
   flex: 1;
   min-width: 0;
-  padding: rem(10px) 0;
+  padding: var(--ui-field-native-padding, #{rem(10px)} 0);
   margin: 0;
   color: var(--text);
   background: transparent;
@@ -17,11 +19,21 @@
 
   @include type(body);
 
+  font-size: var(--ui-field-text-size, var(--font-size-body));
+  line-height: var(--ui-field-text-line, var(--line-height-body));
+
+  @include coarse {
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+  }
+
   &:focus-visible {
     outline: none;
   }
 
   &::placeholder {
+    // The hint keeps the feature's size on touch too, so it matches the selects beside it.
+    font-size: var(--ui-field-text-size, inherit);
     color: var(--text-muted);
     opacity: 1;
   }

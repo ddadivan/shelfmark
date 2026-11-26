@@ -10,6 +10,10 @@ ui-dialog {
 }
 
 .nv__body {
+  // Every field of the dialog writes at 14px (`secondary`), as the Shelf New view.
+  --ui-field-text-size: var(--font-size-secondary);
+  --ui-field-text-line: var(--line-height-secondary);
+
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -121,18 +125,32 @@ ui-dialog {
 }
 
 .nv__box {
+  // Shelf 13-views `.vrow`: 32px controls (14px text from `.nv__body`), the row names at 12px.
+  --ui-field-height: var(--control-sm);
+  --ui-field-trigger-height: #{rem(30px)};
+  --ui-field-native-padding: #{rem(4px)} 0;
+  --ui-tag-input-box-padding: #{rem(3px)} 0;
+  --ui-checkbox-text-size: var(--font-size-secondary);
+  --ui-checkbox-text-line: var(--line-height-secondary);
+
   display: flex;
   flex-direction: column;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-md);
 
-  // Shelf: the row name in a 112px column (`label` style, muted), the control beside it.
+  // Shelf: the row name in a 96px column (12px 500, muted), the control beside it.
   > .nv__row {
     display: grid;
-    grid-template-columns: rem(112px) minmax(0, 1fr);
+    grid-template-columns: rem(96px) minmax(0, 1fr);
     gap: var(--space-3);
     align-items: center;
-    padding: var(--space-2) var(--space-3);
+    padding: rem(10px) var(--space-3);
+
+    > .nv__row-label {
+      @include type(caption);
+
+      font-weight: 500;
+    }
 
     @include phone {
       grid-template-columns: minmax(0, 1fr);

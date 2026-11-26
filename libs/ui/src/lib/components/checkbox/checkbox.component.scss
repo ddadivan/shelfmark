@@ -104,6 +104,8 @@
 .ui-checkbox__text {
   @include type(body);
 
+  font-size: var(--ui-checkbox-text-size, var(--font-size-body));
+  line-height: var(--ui-checkbox-text-line, var(--line-height-body));
   color: var(--text);
 }
 
