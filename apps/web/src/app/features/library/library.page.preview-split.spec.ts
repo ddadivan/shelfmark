@@ -116,7 +116,6 @@ describe('LibraryPage beside the link preview', () => {
     await fixture.whenStable();
     expect(element.querySelector('.library__rows')).not.toBeNull();
     expect(element.querySelector('.library__rows--headlines')).toBeNull();
-    expect().not.toBeNull();
     expect(element.querySelector('.library__grid')).toBeNull();
     expect(filters.view()).toBe(UI_VIEW.Cards);
 
