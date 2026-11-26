@@ -503,6 +503,26 @@ describe('FoldersStore', () => {
       expect(seen).toEqual(['a', 'b', 'c', 'a', 'b', 'c', 'd']);
     });
 
+    it('still removes the folders from the list when the beforeApply hook fails', async () => {
+      const list = vi
+        .fn<FoldersApi['list']>()
+        .mockReturnValueOnce(of(LIST))
+        .mockReturnValue(of({ items: [folder('d', null, 4)], counts: MOCK_LIBRARY_COUNTS }));
+      const { store } = setup({ list });
+      await store.load();
+      const links = TestBed.inject(LinksStore);
+      links.setFilter({ scope: LINKS_SCOPE.All });
+
+      expect(
+        await store.remove('a', FOLDER_DELETE_MODE.DeleteLinks, () =>
+          Promise.reject(new Error('navigation failed')),
+        ),
+      ).toBe(true);
+
+      expect(names(store)).toEqual(['d']);
+      expect(links.entities().map((link) => link.id)).toEqual(['l2', 'l3']);
+    });
+
     it('does not apply a removal that finishes after the reset', async () => {
       const removal = new Subject<void>();
       const { store } = setup({ remove: () => removal });

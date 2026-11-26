@@ -378,16 +378,22 @@ export const FoldersStore = signalStore(
         for (const below of descendantIds(store.entities(), id)) {
           doomed.add(below);
         }
-        await beforeApply?.([...doomed]);
-        if (token === epoch) {
-          patchState(
-            store,
-            setAllEntities(store.entities().filter((folder) => !doomed.has(folder.id))),
-          );
-          injector.get(LinksStore).applyFolderRemoval([...doomed], mode);
-          injector.get(PinsStore).dropFolders([...doomed]);
-          finish(token);
-          void fetchAll();
+        try {
+          await beforeApply?.([...doomed]);
+        } catch {
+          // The server already deleted the folders: a failing hook (leaving the page) must not
+          // keep them in the sidebar.
+        } finally {
+          if (token === epoch) {
+            patchState(
+              store,
+              setAllEntities(store.entities().filter((folder) => !doomed.has(folder.id))),
+            );
+            injector.get(LinksStore).applyFolderRemoval([...doomed], mode);
+            injector.get(PinsStore).dropFolders([...doomed]);
+            finish(token);
+            void fetchAll();
+          }
         }
         return true;
       },
