@@ -18,14 +18,10 @@ async function pick(page: Page, group: string, name: string): Promise<void> {
   await expect(choice(page, group, name)).toBeChecked();
 }
 
-function toggle(page: Page, name: string): Locator {
-  return page.getByRole('switch', { name, exact: true });
-}
-
 async function openAppearance(page: Page): Promise<void> {
   await page.goto('/settings/appearance');
   await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
-  await expect(toggle(page, 'Show site')).toBeVisible();
+  await expect(page.getByRole('radiogroup', { name: 'Density' })).toBeVisible();
 }
 
 async function openFeed(page: Page): Promise<void> {
@@ -119,35 +115,49 @@ test.describe('appearance extras (mock API)', () => {
     expect(await gap()).toBe('8px');
   });
 
-  test('Cards: preview image, site, notes and tags follow the switches and the preview shows it', async ({
+  test('the View menu sets the preview image size and Show site, kept on the account', async ({
     page,
   }) => {
     await openAppearance(page);
-    const preview = page.locator('ui-theme-preview');
-    await expect(preview.locator('.ui-theme-preview__media').first()).toBeVisible();
+    await expect(page.getByText('Cards', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('Live preview')).toHaveCount(0);
 
-    await pick(page, 'Preview image', 'Off');
-    await expect(preview.locator('.ui-theme-preview__media').first()).toBeHidden();
-    await toggle(page, 'Show site').click();
-    await toggle(page, 'Show tags').click();
-    await toggle(page, 'Show notes').click();
-    await expect(toggle(page, 'Show notes')).toHaveAttribute('aria-checked', 'false');
-    await expect(preview.locator('.ui-theme-preview__site').first()).toBeHidden();
-    await expect(preview.locator('.ui-theme-preview__tag').first()).toBeHidden();
+    await openFeed(page);
+    const viewMenu = async (): Promise<void> => {
+      const button = page.getByRole('button', { name: 'View', exact: true });
+      if ((await button.getAttribute('aria-expanded')) !== 'true') {
+        await button.click();
+      }
+    };
+    await viewMenu();
+    const sizes = page.getByRole('radiogroup', { name: 'Preview image' });
+    await sizes.getByRole('radio', { name: 'Off', exact: true }).dispatchEvent('click');
+    await page.getByRole('switch', { name: 'Show site', exact: true }).click();
+    await expect(page.getByRole('switch', { name: 'Show site', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
+    await page.keyboard.press('Escape');
 
     await page.reload();
-    await expect(toggle(page, 'Show site')).toHaveAttribute('aria-checked', 'false');
-    await openFeed(page);
     const card = page.locator('ui-card').first();
+    await expect(card).toBeVisible();
     await expect(card.locator('.ui-card__media')).toBeHidden();
     await expect(card.locator('.link-card__site')).toBeHidden();
-    await expect(page.locator('.link-card__tags').first()).toBeHidden();
     // The title, the favorite and the menu stay.
     await expect(card.getByRole('heading')).toBeVisible();
 
-    await openAppearance(page);
-    await pick(page, 'Preview image', 'Small');
-    await openFeed(page);
+    await viewMenu();
+    await expect(
+      page
+        .getByRole('radiogroup', { name: 'Preview image' })
+        .getByRole('radio', { name: 'Off', exact: true }),
+    ).toBeChecked();
+    await page
+      .getByRole('radiogroup', { name: 'Preview image' })
+      .getByRole('radio', { name: 'Small', exact: true })
+      .dispatchEvent('click');
+    await page.keyboard.press('Escape');
     const ratio = await page
       .locator('ui-card .ui-card__media')
       .first()
@@ -164,7 +174,7 @@ test.describe('appearance extras (mock API)', () => {
       await pick(page, 'Text size', '125%');
       await pick(page, 'Density', 'Compact');
       await expectNoSideScroll(page);
-      for (const group of ['Text size', 'Font', 'Density', 'Preview image', 'Animations']) {
+      for (const group of ['Text size', 'Font', 'Density', 'Animations']) {
         const radiogroup = page.getByRole('radiogroup', { name: group });
         await radiogroup.scrollIntoViewIfNeeded();
         const box = await radiogroup.boundingBox();
