@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import { computed, inject, Injector } from '@angular/core';
 import {
   patchState,
@@ -19,6 +18,7 @@ import { TAG_OUTCOME } from './models/tag-outcome.const';
 import type { TagResult } from './models/tag-result.interface';
 import type { TagsState } from './models/tags-state.interface';
 import { SessionScope } from '../core/auth/session-scope.service';
+import { onPageHide } from '../core/browser/on-page-hide';
 
 const initialState: TagsState = { loaded: false, loading: false, error: false };
 
@@ -352,9 +352,7 @@ export const TagsStore = signalStore(
       scope.onEnd(() => injector.get(TagsStore).reset());
       scope.beforeEnd(() => injector.get(TagsStore).flushPending());
       // The page is going away: deletes still in their Undo window are sent (see `LinksStore`).
-      inject(DOCUMENT).defaultView?.addEventListener('pagehide', () => {
-        void store.flushPending();
-      });
+      onPageHide(() => void store.flushPending());
     },
   }),
 );

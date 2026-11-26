@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import { computed, inject, Injector } from '@angular/core';
 import {
   patchState,
@@ -35,6 +34,7 @@ import { createLinkImageCapture } from './link-image-capture';
 import { insertAt, placeLink, retagLink, staysAfterEdit, takesNewcomers } from './links-feed';
 import { PinsStore } from './pins.store';
 import { SessionScope } from '../core/auth/session-scope.service';
+import { onPageHide } from '../core/browser/on-page-hide';
 
 const initialState: LinksState = {
   filter: { scope: LINKS_SCOPE.All },
@@ -922,9 +922,7 @@ export const LinksStore = signalStore(
       scope.beforeEnd(() => injector.get(LinksStore).flushPending());
       // The page is going away: the real `HttpClient` implementation (issue #72) must send these
       // deletes with `fetch(..., { keepalive: true })` or `navigator.sendBeacon`, or they are lost.
-      inject(DOCUMENT).defaultView?.addEventListener('pagehide', () => {
-        void store.flushPending();
-      });
+      onPageHide(() => void store.flushPending());
     },
   }),
 );

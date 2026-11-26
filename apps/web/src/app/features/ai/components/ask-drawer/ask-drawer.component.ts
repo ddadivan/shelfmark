@@ -13,7 +13,7 @@ import { ASK_CONVERSATION_PARAM } from '../../models/ask-conversation-param.cons
 import { AskLeaveGuard } from '../../services/ask-leave-guard.service';
 import { AskPanelWidth } from '../../services/ask-panel-width.service';
 import { AskStore } from '../../services/ask.store';
-import { listenBeforeUnload } from '../../utils/listen-before-unload';
+import { listenBeforeUnload } from '../../../../core/browser/listen-before-unload';
 import { AskComposerComponent } from '../ask-composer/ask-composer.component';
 import { AskConversationComponent } from '../ask-conversation/ask-conversation.component';
 

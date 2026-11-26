@@ -23,7 +23,7 @@ import { AskConversationOpener } from '../../services/ask-conversation-opener.se
 import { AskHistorySheet } from '../../services/ask-history-sheet.service';
 import { AskLeaveGuard } from '../../services/ask-leave-guard.service';
 import { AskStore } from '../../services/ask.store';
-import { listenBeforeUnload } from '../../utils/listen-before-unload';
+import { listenBeforeUnload } from '../../../../core/browser/listen-before-unload';
 
 /**
  * Ask your shelf as a page (Shelf 11-ask). From 64em (desktop shell): the conversation list
