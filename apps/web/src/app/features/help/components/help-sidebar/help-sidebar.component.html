@@ -1,8 +1,11 @@
 <nav class="side" [attr.aria-label]="'help.nav' | transloco">
-  <a class="side__head" [routerLink]="helpPath">
-    <ui-logo class="side__logo" [wordmark]="'landing.header.brand' | transloco" />
-    <span class="side__tag">{{ 'help.brand' | transloco }}</span>
-  </a>
+  <!-- The logo and name lead home (author, Nov 26); "Help" leads to the help home. -->
+  <div class="side__head">
+    <a class="side__link" routerLink="/">
+      <ui-logo class="side__logo" [wordmark]="'landing.header.brand' | transloco" />
+    </a>
+    <a class="side__link side__tag" [routerLink]="helpPath">{{ 'help.brand' | transloco }}</a>
+  </div>
   <div class="side__scroll" uiScrollFade>
     @for (group of groups(); track group.id) {
       <section class="side__group" [attr.aria-labelledby]="'help-side-' + group.id">

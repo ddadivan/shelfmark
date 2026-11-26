@@ -22,6 +22,12 @@
   height: var(--control-sm);
   padding-inline: var(--space-2);
   margin-bottom: var(--space-4);
+}
+
+.side__link {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
   color: var(--text);
   text-decoration: none;
   border-radius: var(--radius-sm);
@@ -39,7 +45,7 @@
 }
 
 .side__tag {
-  padding-inline-start: var(--space-2);
+  padding-inline: var(--space-2) var(--space-1);
   color: var(--text-muted);
   border-inline-start: 1px solid var(--sep);
 
