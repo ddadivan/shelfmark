@@ -223,8 +223,13 @@
 // The tools take their own line under the title and wrap on the narrowest phones.
 .stage--phone .stage__tools {
   flex: 1 1 100%;
-  gap: var(--space-2);
-  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: var(--space-1);
+}
+
+// Pushes Filter, Sort, View and ⋯ to the end, the picker stays at the start.
+.stage__spacer {
+  flex: 1;
 }
 
 .stage__actions {

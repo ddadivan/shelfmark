@@ -268,10 +268,13 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="columns"
+                  [iconOnly]="!labelled()"
+                  [ariaLabel]="'library.split.open' | transloco"
+                  [uiTooltip]="'library.split.open' | transloco"
                   [ariaPressed]="splitView.open()"
                   (click)="splitView.toggle()"
                 >
-                  {{ 'library.split.open' | transloco }}
+                  @if (labelled()) { {{ 'library.split.open' | transloco }} }
                 </ui-button>
                 } @if (!phone() && !narrow() && saveViewShown()) {
                 <ui-button

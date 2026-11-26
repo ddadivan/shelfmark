@@ -184,6 +184,10 @@ export class LandingHeroPreviewComponent {
   });
 
   protected readonly viewActive = computed<LandingPreviewTab>(() => this.cycle.state().tab);
+  /** The phone row's views picker shows the open view's name, as in the app. */
+  protected readonly viewActiveLabel = computed(
+    () => this.views().find((view) => view.id === this.viewActive())?.label ?? '',
+  );
   protected readonly onAll = computed(() => this.cycle.state().scope === LANDING_PREVIEW_SCOPE.All);
 
   /** Every card with whether the current frame shows it (hidden ones stay in the DOM). */

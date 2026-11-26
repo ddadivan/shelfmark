@@ -109,6 +109,12 @@
           <p class="stage__title">{{ titleKey() | transloco }}</p>
           <div class="stage__tools">
             @if (phone()) {
+              <!-- The app's phone row (toolbar round 6): the views picker, then Filter, Sort,
+                   View and the ⋯ menu; the view switch lives in the View menu there. -->
+              <ui-button variant="ghost" size="sm" iconRight="chevron-down">{{
+                viewActiveLabel()
+              }}</ui-button>
+              <span class="stage__spacer"></span>
               <ui-button
                 variant="ghost"
                 size="sm"
@@ -120,15 +126,62 @@
                 variant="ghost"
                 size="sm"
                 iconOnly
-                iconLeft="check"
-                [ariaLabel]="'library.viewMenu.select' | transloco"
+                iconLeft="sort"
+                [ariaLabel]="'library.toolbar.sort' | transloco"
+              />
+              <ui-view-menu
+                [label]="'library.viewMenu.view' | transloco"
+                [heading]="'library.viewMenu.gridSize' | transloco"
               />
               <ui-button
                 variant="ghost"
                 size="sm"
                 iconOnly
-                iconLeft="sort"
-                [ariaLabel]="'library.toolbar.sort' | transloco"
+                iconLeft="more"
+                [ariaLabel]="'library.viewMenu.more' | transloco"
+              />
+            } @else {
+              <!-- The app shows the toolbar as icons below 100em: a 1400px window does too. -->
+              <div class="stage__actions">
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconOnly
+                  iconLeft="filter"
+                  [ariaLabel]="'library.toolbar.filter' | transloco"
+                />
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconOnly
+                  iconLeft="check"
+                  [ariaLabel]="'library.toolbar.select' | transloco"
+                />
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconOnly
+                  iconLeft="columns"
+                  [ariaLabel]="'library.split.open' | transloco"
+                />
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconOnly
+                  iconLeft="add"
+                  [ariaLabel]="'library.toolbar.saveView' | transloco"
+                />
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  iconOnly
+                  iconLeft="sort"
+                  [ariaLabel]="'library.toolbar.sort' | transloco"
+                />
+              </div>
+              <ui-view-menu
+                [label]="'library.viewMenu.view' | transloco"
+                [heading]="'library.viewMenu.gridSize' | transloco"
               />
               <ui-segmented-control
                 iconOnly
@@ -143,49 +196,20 @@
                 iconLeft="upload"
                 [ariaLabel]="'export.menu' | transloco"
               />
-            } @else {
-              <div class="stage__actions">
-                <ui-button variant="ghost" size="sm" iconLeft="filter">{{
-                  'library.toolbar.filter' | transloco
-                }}</ui-button>
-                <ui-button variant="ghost" size="sm" iconLeft="check">{{
-                  'library.toolbar.select' | transloco
-                }}</ui-button>
-                <ui-button variant="ghost" size="sm" iconLeft="columns">{{
-                  'library.split.open' | transloco
-                }}</ui-button>
-                <ui-button variant="ghost" size="sm" iconLeft="add">{{
-                  'library.toolbar.saveView' | transloco
-                }}</ui-button>
-                <ui-button variant="ghost" size="sm" iconLeft="sort">{{
-                  'library.toolbar.sort' | transloco
-                }}</ui-button>
-              </div>
-              <ui-view-menu
-                [label]="'library.viewMenu.view' | transloco"
-                [heading]="'library.viewMenu.gridSize' | transloco"
-              />
-              <ui-segmented-control
-                iconOnly
-                [options]="viewOptions()"
-                value="masonry"
-                [ariaLabel]="'library.view.label' | transloco"
-              />
-              <ui-button variant="ghost" size="sm" iconLeft="upload">{{
-                'export.menu' | transloco
-              }}</ui-button>
             }
           </div>
         </header>
-        <div class="stage__views" [class.stage__views--off]="!onAll()">
-          <ui-saved-views
-            [items]="views()"
-            [activeId]="viewActive()"
-            [ariaLabel]="'views.label' | transloco"
-            [addLabel]="phone() ? ('views.add' | transloco) : ''"
-            [layout]="SAVED_VIEWS_LAYOUT.Wrap"
-          />
-        </div>
+        @if (!phone()) {
+          <div class="stage__views" [class.stage__views--off]="!onAll()">
+            <ui-saved-views
+              [items]="views()"
+              [activeId]="viewActive()"
+              [ariaLabel]="'views.label' | transloco"
+              [addLabel]="phone() ? ('views.add' | transloco) : ''"
+              [layout]="SAVED_VIEWS_LAYOUT.Wrap"
+            />
+          </div>
+        }
         <ul class="stage__grid" [class.stage__grid--fade]="cycle.fading()">
           @for (item of cards(); track item.card.id) {
             <li
