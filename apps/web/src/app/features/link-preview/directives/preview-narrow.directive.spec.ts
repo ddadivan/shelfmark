@@ -26,8 +26,9 @@ describe('PreviewNarrowDirective', () => {
         constructor(cb: ResizeObserverCallback) {
           callback = cb;
         }
-        observe(): void {}
-        disconnect(): void {}
+        // The stub only hands the callback to the spec; it observes nothing itself.
+        observe = vi.fn();
+        disconnect = vi.fn();
       },
     );
   }
