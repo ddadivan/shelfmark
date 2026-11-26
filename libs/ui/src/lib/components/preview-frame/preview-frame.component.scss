@@ -9,6 +9,12 @@
 
 .ui-preview-frame {
   position: relative;
+
+  // It only takes focus back from a page that grabbed it (no control of its own): no ring.
+  &:focus {
+    outline: none;
+  }
+
   width: 100%;
   height: 100%;
   overflow: hidden;

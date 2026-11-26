@@ -1,4 +1,5 @@
-<div class="ui-preview-frame" [attr.aria-busy]="loading()">
+<!-- tabindex -1: where focus goes back when the framed page takes it by itself. -->
+<div #box class="ui-preview-frame" tabindex="-1" [attr.aria-busy]="loading()">
   <ui-progress-bar
     class="ui-preview-frame__progress"
     [active]="loading()"

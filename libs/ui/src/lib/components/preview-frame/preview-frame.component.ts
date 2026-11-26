@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   Renderer2,
+  afterNextRender,
   afterRenderEffect,
   computed,
   inject,
@@ -16,6 +18,7 @@ import { DOCUMENT } from '@angular/common';
 import { PROGRESS_BAR_VARIANT } from '../progress-bar/models/progress-bar-variant.const';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 import { framableUrl } from './framable-url';
+import { guardFrameFocus } from './frame-focus-guard';
 import { PREVIEW_FRAME_DEFAULT_TIMEOUT_MS } from './models/preview-frame-default-timeout.const';
 import { PREVIEW_FRAME_PHASE } from './models/preview-frame-phase.const';
 import type { PreviewFramePhase } from './models/preview-frame-phase.type';
@@ -69,7 +72,9 @@ export class PreviewFrameComponent {
   readonly rejected = output<void>();
 
   private readonly frame = viewChild.required<ElementRef<HTMLIFrameElement>>('frame');
+  private readonly box = viewChild.required<ElementRef<HTMLElement>>('box');
   private readonly renderer = inject(Renderer2);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly ownOrigin = inject(DOCUMENT).location?.origin;
 
   /** The `load` of an empty iframe (`about:blank`) is not the page's. */
@@ -83,6 +88,12 @@ export class PreviewFrameComponent {
   protected readonly loading = computed(() => this.phase() === PREVIEW_FRAME_PHASE.Loading);
 
   constructor() {
+    // A page that takes focus by itself gives it back (`guardFrameFocus`).
+    afterNextRender(() => {
+      const stop = guardFrameFocus(() => [this.frame().nativeElement], this.box().nativeElement);
+      this.destroyRef.onDestroy(stop);
+    });
+
     // After render, so a re-created iframe is the one that gets the page.
     afterRenderEffect((onCleanup) => {
       const url = this.accepted();
