@@ -31,7 +31,9 @@
     </ui-button>
     }
   </div>
-  } @if (!filters.folderMissing()) { @if (head.crumbs(); as trail) {
+  } @if (!filters.folderMissing()) { @if (head.crumbs(); as trail) { @if (!(selection.selecting() &&
+  compact())) {
+  <!-- The mobile selection line takes the crumbs' row: no overlap while selecting. -->
   <ui-breadcrumbs
     class="library__crumbs"
     [items]="trail"
@@ -39,7 +41,7 @@
     [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
     (linkClick)="openCrumb($event)"
   />
-  } } @if (splitView.open() && !preview.split()) {
+  } } } @if (splitView.open() && !preview.split()) {
   <!-- Shelf side by side (08-select-move): the page's own line over both feeds. -->
   <div class="library__split-head">
     <p class="library__split-title" aria-hidden="true">{{ 'library.split.open' | transloco }}</p>
@@ -240,7 +242,7 @@
                 >
                   @if (labelled()) { {{ filterLabel() }} }
                 </ui-button>
-                @if (feed.showControls() && selection.available()) {
+                @if (feed.showControls() && selection.available() && !compact()) {
                 <ui-button
                   variant="ghost"
                   size="sm"
@@ -306,9 +308,20 @@
                 </ui-menu>
                 }
               </div>
-              @if (!narrow()) { @if (!phone()) {
+              @if (!narrow()) { @if (compact()) {
+              <!-- Mobile toolbar: one slim row (Filter, Sort, View, ⋯). The view switch lives in the
+                   View menu, which on a phone has no grid size (two columns). -->
+              <app-library-view-menu [gridHidden]="phone()">
+                <ui-segmented-control
+                  iconOnly
+                  [options]="options"
+                  [value]="filters.view()"
+                  [ariaLabel]="'library.view.label' | transloco"
+                  (valueChange)="feed.setView($event)"
+                />
+              </app-library-view-menu>
+              } @else {
               <app-library-view-menu />
-              }
               <ui-segmented-control
                 iconOnly
                 [options]="options"
@@ -316,9 +329,9 @@
                 [ariaLabel]="'library.view.label' | transloco"
                 (valueChange)="feed.setView($event)"
               />
-              }
+              } }
             </div>
-            } @if (!narrow()) {
+            } @if (!narrow() && !compact()) {
             <ui-button
               variant="ghost"
               size="sm"
@@ -331,7 +344,8 @@
               @if (labelled()) { {{ 'export.menu' | transloco }} }
             </ui-button>
             } @else {
-            <!-- Beside the preview or in side by side the toolbar is slim: Sort and Export are here. -->
+            <!-- Beside the preview or in side by side the toolbar is slim: Sort and Export are here;
+                 in the mobile shell the menu holds Select and Export (Sort is its own icon). -->
             <ui-button
               [uiMenuTrigger]="moreMenu"
               variant="ghost"
@@ -341,7 +355,11 @@
               [ariaLabel]="'library.viewMenu.more' | transloco"
             />
             <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
-              @if (feed.showTools()) {
+              @if (compact() && feed.showControls() && selection.available()) {
+              <ui-menu-item icon="check" (activated)="selection.startSelection()">
+                {{ 'library.viewMenu.select' | transloco }}
+              </ui-menu-item>
+              } @if (feed.showTools() && !compact()) {
               <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
               @for (group of SORT_GROUPS; track $index) { @if (group.labelKey) {
               <ui-menu-label>{{ group.labelKey | transloco }}</ui-menu-label>

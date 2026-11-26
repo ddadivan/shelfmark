@@ -78,6 +78,8 @@ export class ViewMenuComponent {
   readonly largeLabel = input('');
   /** Turns the slider off (the List view has no grid). */
   readonly gridDisabled = input(false, { transform: booleanAttribute });
+  /** Hides the slider block (a phone feed has two columns, so there is no grid size to set). */
+  readonly gridHidden = input(false, { transform: booleanAttribute });
   /** The switches of what cards show. */
   readonly fields = input<readonly ViewMenuField[]>([]);
   /** Render the panel in place, always open (docs and Storybook). */

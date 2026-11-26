@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { type ViewMenuField, type ViewMenuFieldChange, ViewMenuComponent } from '@shelfmark/ui';
@@ -32,6 +32,8 @@ export class LibraryViewMenuComponent {
   private readonly lang = toSignal(this.transloco.langChanges$, {
     initialValue: this.transloco.getActiveLang(),
   });
+  /** A phone feed has two columns: no grid size. */
+  readonly gridHidden = input(false);
   protected readonly steps = GRID_COLUMNS.length;
   protected readonly listView = computed(() => isRowsView(this.filters.view()));
 

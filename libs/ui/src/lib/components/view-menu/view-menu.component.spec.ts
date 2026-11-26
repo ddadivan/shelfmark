@@ -63,6 +63,14 @@ class HostComponent {
 })
 class InlineHostComponent {}
 
+@Component({
+  imports: [ViewMenuComponent],
+  template: `<ui-view-menu inline gridHidden label="View" heading="Grid size" [fields]="[]"
+    ><span class="projected">Switch</span></ui-view-menu
+  >`,
+})
+class GridHiddenHostComponent {}
+
 async function setup() {
   const fixture = TestBed.createComponent(HostComponent);
   const settle = async (): Promise<void> => {
@@ -279,6 +287,16 @@ describe('ViewMenuComponent', () => {
     host.querySelector<HTMLElement>('.ui-view-menu__trigger')?.click();
     fixture.detectChanges();
     expect(host.querySelector('.ui-view-menu__surface')).not.toBeNull();
+  });
+
+  it('projects the page control above the rows and hides the slider with gridHidden', () => {
+    const fixture = TestBed.createComponent(GridHiddenHostComponent);
+    fixture.detectChanges();
+    TestBed.tick();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.ui-view-menu__slot .projected')?.textContent).toBe('Switch');
+    expect(host.querySelector('.ui-view-menu__grid')).toBeNull();
+    expect(host.querySelector('ui-range')).toBeNull();
   });
 
   it('has no axe violations, closed or open', async () => {

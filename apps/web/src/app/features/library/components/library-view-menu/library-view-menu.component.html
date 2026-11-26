@@ -7,7 +7,10 @@
   [smallLabel]="'library.viewMenu.small' | transloco"
   [largeLabel]="'library.viewMenu.large' | transloco"
   [gridDisabled]="listView()"
+  [gridHidden]="gridHidden()"
   [fields]="fields()"
   (stepChange)="setStep($event)"
   (fieldChange)="setField($event)"
-/>
+>
+  <ng-content />
+</ui-view-menu>
