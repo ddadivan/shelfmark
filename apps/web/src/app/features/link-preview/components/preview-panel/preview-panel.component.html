@@ -1,4 +1,6 @@
 <section
+  #width="previewNarrow"
+  appPreviewNarrow
   class="preview-panel"
   [class.preview-panel--full]="preview.fullScreen()"
   [attr.aria-label]="'preview.region' | transloco: { title: preview.link()?.title ?? '' }"
@@ -74,7 +76,7 @@
             uiTooltipShortcut="↵"
             (click)="preview.openInNewTab()"
           >
-            {{ 'preview.open' | transloco }}
+            <span class="preview-panel__open-label">{{ 'preview.open' | transloco }}</span>
           </ui-button>
         }
         <ui-button
@@ -93,6 +95,7 @@
         />
         @if (!preview.fullScreen()) {
           <ui-button
+            class="preview-panel__wider"
             variant="ghost"
             size="sm"
             iconOnly
@@ -104,6 +107,7 @@
           />
         }
         <ui-button
+          class="preview-panel__details-toggle"
           variant="ghost"
           size="sm"
           iconOnly
@@ -127,6 +131,7 @@
     <span class="preview-panel__sep" aria-hidden="true"></span>
     @if (preview.fullScreenAvailable()) {
       <ui-button
+        class="preview-panel__end"
         variant="window"
         size="sm"
         iconOnly
@@ -143,6 +148,7 @@
       />
     }
     <ui-button
+      class="preview-panel__end"
       variant="ghost"
       size="sm"
       iconOnly
@@ -164,5 +170,5 @@
     }
   </div>
 </section>
-<app-preview-menu #more />
+<app-preview-menu #more [details]="width.narrow()" [wider]="width.narrow()" />
 <app-reading-settings #readingSettings />

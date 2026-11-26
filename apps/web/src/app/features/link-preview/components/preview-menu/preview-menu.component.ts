@@ -27,6 +27,8 @@ import { PreviewReaderService } from '../../services/preview-reader.service';
 export class PreviewMenuComponent {
   /** The phone head: offers the Details toggle (its button moved into this menu). */
   readonly details = input(false, { transform: booleanAttribute });
+  /** A narrow preview panel: offers Wider preview (its button steps aside there). */
+  readonly wider = input(false, { transform: booleanAttribute });
 
   protected readonly preview = inject(LinkPreviewService);
   protected readonly actions = inject(LinkActionsService);

@@ -7,6 +7,8 @@
 }
 
 .preview-panel {
+  // The toolbar answers the panel's own width (the window and the resize handle both change it).
+  container: preview-panel / inline-size;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -27,12 +29,12 @@
   border-block-end: 1px solid var(--border);
 }
 
-// Shelf `lp-tools`: Site | Reader, Aa, Open, star, Details and ⋯, 4px apart. In a narrow panel
-// they wrap onto a second line inside their own box, so × close stays at the top right.
+// Shelf `lp-tools`: Related, Site | Reader, Aa, Open, star, Wider, Details and ⋯, 4px apart, on
+// the title's line while everything fits.
 .preview-panel__tools {
   display: flex;
   flex: 0 1 auto;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   min-inline-size: 0;
   align-items: center;
@@ -117,4 +119,47 @@
 
 .preview-panel__details {
   border-inline-start: 1px solid var(--border);
+}
+
+// The narrow layouts come last, so they win over the base rules above.
+// Narrower (author, round 11): previous / next and the title keep the first line; the tools, full
+// screen and × move to a second line, the tools from the start edge, full screen and × at the end.
+// The title takes all of the first line but the two 32px arrows and their gaps (5rem).
+@container preview-panel (width < 56rem) {
+  .preview-panel__bar {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+  }
+
+  .preview-panel__title {
+    flex: 1 0 calc(100% - 5rem);
+  }
+
+  .preview-panel__tools {
+    flex: 1 1 auto;
+    order: 1;
+    justify-content: flex-start;
+  }
+
+  .preview-panel__sep,
+  .preview-panel__end {
+    order: 2;
+  }
+}
+
+// Narrower still: Open shows only its icon (the label stays its accessible name); Related shows
+// its spark and count (related-links answers the same container).
+@container preview-panel (width < 40rem) {
+  .preview-panel__open-label {
+    @include visually-hidden;
+  }
+}
+
+// Narrowest (the smallest panel the resize handle allows): Wider and Details move into the ⋯ menu
+// (PreviewNarrowDirective, the same 30rem), so × stays on the second line.
+@container preview-panel (width < 30rem) {
+  .preview-panel__wider,
+  .preview-panel__details-toggle {
+    display: none;
+  }
 }

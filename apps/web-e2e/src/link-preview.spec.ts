@@ -32,11 +32,10 @@ async function openLibrary(page: Page): Promise<void> {
 
 /** "Preview here" from the first card's menu (works with touch and with a mouse). */
 async function previewFromMenu(page: Page, title: string): Promise<void> {
-  await page
-    .locator('app-link-card', { hasText: title })
-    .first()
-    .getByRole('button', { name: `Actions for ${title}` })
-    .click();
+  // The ⋯ opens out of the star's glass pill on hover (it has no width while shut).
+  const card = page.locator('app-link-card', { hasText: title }).first();
+  await card.hover();
+  await card.getByRole('button', { name: `Actions for ${title}` }).click();
   await page.getByRole('menuitem', { name: /Preview here/ }).click();
 }
 

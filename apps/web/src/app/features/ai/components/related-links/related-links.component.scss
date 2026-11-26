@@ -7,6 +7,27 @@
   display: contents;
 }
 
+// The short form (spark and count) shows only in a narrow link preview panel (round 11); the full
+// "Related · N" stays the accessible name there.
+.related-links__count {
+  display: none;
+}
+
+@container preview-panel (width < 40rem) {
+  .related-links__label {
+    @include visually-hidden;
+  }
+
+  // Drawn from the attribute, so the button's text stays the full label.
+  .related-links__count {
+    display: inline;
+
+    &::before {
+      content: attr(data-count);
+    }
+  }
+}
+
 // Tall enough for the five rows (about 54px each) under the heading; more would scroll.
 .related-links__popover {
   --ui-popover-max-block-size: #{rem(416px)};

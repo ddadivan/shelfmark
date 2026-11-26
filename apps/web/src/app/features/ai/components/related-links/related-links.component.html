@@ -6,7 +6,10 @@
     [uiPopoverTrigger]="popover"
     uiPopoverTriggerHover="false"
   >
-    {{ 'ai.related.button' | transloco: { count: rows().length } }}
+    <span class="related-links__label">{{
+      'ai.related.button' | transloco: { count: rows().length }
+    }}</span>
+    <span class="related-links__count" aria-hidden="true" [attr.data-count]="rows().length"></span>
   </ui-button>
   <ui-popover #popover class="related-links__popover" [heading]="'ai.related.title' | transloco">
     <ul class="related-links__list">

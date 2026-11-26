@@ -23,6 +23,7 @@ import { PreviewDetailsComponent } from '../preview-details/preview-details.comp
 import { PreviewMenuComponent } from '../preview-menu/preview-menu.component';
 import { PreviewReaderComponent } from '../preview-reader/preview-reader.component';
 import { ReadingSettingsComponent } from '../reading-settings/reading-settings.component';
+import { PreviewNarrowDirective } from '../../directives/preview-narrow.directive';
 
 /**
  * The Link page beside the list (Shelf `01-library.html`, #553): previous / next, the title with
@@ -47,6 +48,7 @@ import { ReadingSettingsComponent } from '../reading-settings/reading-settings.c
     PreviewMenuComponent,
     PreviewReaderComponent,
     ReadingSettingsComponent,
+    PreviewNarrowDirective,
   ],
   templateUrl: './preview-panel.component.html',
   styleUrl: './preview-panel.component.scss',
