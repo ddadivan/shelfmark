@@ -157,8 +157,8 @@
 // Phone: 68px tall, 26px corners like the tab bar; the buttons share the width, icon above label.
 :host(.ui-bulk-bar--stacked) {
   .ui-bulk-bar__bar {
-    block-size: rem(68px);
-    padding-block: 0;
+    min-block-size: rem(68px);
+    padding-block: var(--space-2);
     padding-inline: var(--space-2);
     border-radius: var(--radius-md);
   }
@@ -169,16 +169,26 @@
     flex: 1 1 0;
     flex-direction: column;
     gap: rem(2px);
-    min-inline-size: rem(52px);
-    block-size: rem(52px);
-    padding: 0 var(--space-1);
+    min-inline-size: max(rem(52px), min-content);
+    min-block-size: rem(52px);
+    padding: var(--space-1);
     font-weight: 500;
     border-radius: var(--radius-lg);
   }
 
+  // Buttons never cut their text: a long label wraps to a second line (a word stays whole).
   .ui-bulk-bar__label {
     max-inline-size: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  // Desktop: the bar is as wide as its content (the page centres it); the buttons keep their own
+  // width and a long label wraps instead of widening one button.
+  @include desktop {
+    .ui-bulk-bar__bar .ui-bulk-bar__action {
+      flex: 0 1 auto;
+      max-inline-size: rem(112px);
+    }
   }
 }

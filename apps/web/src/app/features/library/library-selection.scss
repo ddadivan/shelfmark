@@ -101,16 +101,10 @@
   }
 }
 
-// A desktop window too narrow for the inline bar (`BulkBarFitDirective`): the stacked bar spans
-// the feed, so its equal-width buttons have room for their labels.
-.library__bulk.ui-bulk-bar--stacked {
-  @include desktop {
-    align-self: stretch;
-  }
-}
-
+// A desktop window too narrow for the inline bar (`BulkBarFitDirective`): the stacked bar (icon
+// above label, a long label on two lines) stays as wide as its content and centred in the feed.
 .library__bulk-split > .library__bulk.ui-bulk-bar--stacked {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
 }
 
 // The cards that stay behind while a selection travels fade to 60% (SideBySide.dc.html). Only

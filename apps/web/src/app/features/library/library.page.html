@@ -200,7 +200,7 @@
             <!-- Shelf selection (08-select-move): the hint and "Select all N" take the tools' place;
                  the bulk bar's × ends it. -->
             <p class="library__hint library__hint--select">
-              {{ 'bulk.header.desktopHint' | transloco }}
+              <app-help-text [text]="'bulk.header.desktopHint' | transloco" />
             </p>
             @if (selection.allSelected()) {
             <ui-button variant="ghost" size="sm" (click)="selection.toggleAll(false)">
@@ -232,26 +232,26 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="filter"
-                  [iconOnly]="!wide() || narrow()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="filterLabel()"
                   [uiTooltip]="filterLabel()"
                   [ariaPressed]="filters.filterCount() > 0"
                   (click)="openFilter(filterPanel, filterButton)"
                 >
-                  @if (wide() && !narrow()) { {{ filterLabel() }} }
+                  @if (labelled()) { {{ filterLabel() }} }
                 </ui-button>
                 @if (feed.showControls() && selection.available()) {
                 <ui-button
                   variant="ghost"
                   size="sm"
                   iconLeft="check"
-                  [iconOnly]="!wide() || narrow()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="'library.viewMenu.select' | transloco"
                   [uiTooltip]="'library.viewMenu.select' | transloco"
                   [uiTooltipShortcut]="SELECT_SHORTCUT_CAP"
                   (click)="selection.startSelection()"
                 >
-                  @if (wide() && !narrow()) { {{ 'library.toolbar.select' | transloco }} }
+                  @if (labelled()) { {{ 'library.toolbar.select' | transloco }} }
                 </ui-button>
                 } @if (wide() && feed.showControls() && !narrow()) {
                 <ui-button
@@ -269,12 +269,12 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="add"
-                  [iconOnly]="!wide()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="'library.toolbar.saveView' | transloco"
                   [uiTooltip]="'library.toolbar.saveView' | transloco"
                   (click)="saveView()"
                 >
-                  @if (wide()) { {{ 'library.toolbar.saveView' | transloco }} }
+                  @if (labelled()) { {{ 'library.toolbar.saveView' | transloco }} }
                 </ui-button>
                 } @if (!narrow()) {
                 <!-- Sort: the current order is in the label; the options are radio items. -->
@@ -283,11 +283,11 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="sort"
-                  [iconOnly]="!wide()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="sortLabel()"
                   [uiTooltip]="sortLabel()"
                 >
-                  @if (wide()) { {{ 'library.toolbar.sort' | transloco }} }
+                  @if (labelled()) { {{ 'library.toolbar.sort' | transloco }} }
                 </ui-button>
                 <ui-menu #sortMenu align="end" [ariaLabel]="'library.viewMenu.sortBy' | transloco">
                   @for (group of SORT_GROUPS; track $index) { @if ($index > 0) {
@@ -323,12 +323,12 @@
               variant="ghost"
               size="sm"
               iconLeft="upload"
-              [iconOnly]="!wide()"
+              [iconOnly]="!labelled()"
               [ariaLabel]="'export.viewItem' | transloco"
               [uiTooltip]="'export.viewItem' | transloco"
               (click)="exportThisView()"
             >
-              @if (wide()) { {{ 'export.menu' | transloco }} }
+              @if (labelled()) { {{ 'export.menu' | transloco }} }
             </ui-button>
             } @else {
             <!-- Beside the preview or in side by side the toolbar is slim: Sort and Export are here. -->

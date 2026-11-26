@@ -148,7 +148,11 @@
   flex-shrink: 0;
   gap: var(--space-4);
   align-items: center;
+
+  // Pressed to the right edge, also when the group drops under the title.
+  justify-content: flex-end;
   max-width: 100%;
+  margin-inline-start: auto;
 
   @include compact {
     gap: var(--space-2);

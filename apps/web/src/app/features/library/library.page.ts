@@ -43,6 +43,7 @@ import {
   type BreadcrumbClick,
   DragWobbleDirective,
   ScrollFadeDirective,
+  mediaMatch,
 } from '@shelfmark/ui';
 import { PIN_KIND } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
@@ -94,6 +95,7 @@ import { LinkPreviewService } from '../link-preview/services/link-preview.servic
 import { PreviewPanelComponent } from '../link-preview/components/preview-panel/preview-panel.component';
 import { PreviewPageComponent } from '../link-preview/components/preview-page/preview-page.component';
 import { LibraryViewMenuComponent } from './components/library-view-menu/library-view-menu.component';
+import { HelpTextComponent } from '../help/components/help-text/help-text.component';
 import { CARD_FIELD } from './models/card-field.const';
 import { SearchGoToComponent } from '../search/components/search-go-to/search-go-to.component';
 import { SearchMeaningComponent } from '../search/components/search-meaning/search-meaning.component';
@@ -107,11 +109,15 @@ const SKELETON_COUNT = 8;
  * with the count and the cards / list switch, then the links, with a skeleton on first load,
  * a progress bar on refetch and error and empty states.
  */
+/** The Sass `wide` mixin is 80em; the toolbar's words need more room (feed column, UK / DE). */
+const LABELLED_TOOLS_BELOW_QUERY = '(width < 100em)';
+
 @Component({
   selector: 'app-library-page',
   imports: [
     ScrollFadeDirective,
     LibraryViewMenuComponent,
+    HelpTextComponent,
     LibraryFilterPanelComponent,
     CdkDrag,
     CdkDragPlaceholder,
@@ -194,6 +200,13 @@ export default class LibraryPage {
   protected readonly compact = inject(ViewportService).compact;
   /** From 80em: the "Side by side" button and the right half (#386). */
   protected readonly wide = inject(ViewportService).wide;
+  private readonly belowLabelled = mediaMatch(LABELLED_TOOLS_BELOW_QUERY);
+  /**
+   * The toolbar buttons (Filter, Select, Save view, Sort, Export) carry their words from 100em, when
+   * the feed column (window minus the sidebar) holds them in one line in every language; below
+   * that they are icons with a tooltip, so the toolbar never breaks into lines with a tool alone.
+   */
+  protected readonly labelled = computed(() => !this.belowLabelled() && !this.narrow());
   protected readonly splitView = inject(SplitViewService);
   /** The link preview (#553): the desktop split from 80em, the pushed page below. */
   protected readonly preview = inject(LinkPreviewService);

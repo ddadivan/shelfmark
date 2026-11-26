@@ -3211,7 +3211,7 @@
       "longPressHint": "Toque e segure um link para começar a selecionar, depois toque nos outros.",
       "modeOn": "Modo de seleção ativado. Ativar um link agora o seleciona.",
       "modeOff": "Modo de seleção desativado.",
-      "desktopHint": "Selecione com X, Shift+clique para um intervalo, Ctrl A para tudo",
+      "desktopHint": "Selecione com **X**, **Shift + clique** para um intervalo, **Ctrl + A** para tudo",
       "selectNone": "Desmarcar tudo"
     },
     "item": {
