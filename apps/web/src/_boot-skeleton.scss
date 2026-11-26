@@ -296,8 +296,7 @@
     }
   }
 
-  // Phone: the tools drop under the title (library.page.scss), so the title row is only as tall
-  // as the title: 20px above it.
+  // Phone: the title stands alone on its row (the control row is under it), 20px under the top.
   @include phone {
     margin-block-start: rem(20px);
   }
@@ -329,9 +328,9 @@
     }
   }
 
-  // Phone: the tools wrap onto their own row (44px and the 12px gap) under the title.
+  // Phone: the 8px gap, the 44px control row (picker and tools) and 12px above the feed.
   @include phone {
-    margin-block-end: rem(118px);
+    margin-block-end: rem(44px);
   }
 
   @include desktop {

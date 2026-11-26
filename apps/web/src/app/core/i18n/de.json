@@ -2563,6 +2563,10 @@
     "label": "Gespeicherte Ansichten",
     "all": "Alle",
     "add": "Diese Ansicht speichern",
+    "picker": {
+      "label": "Gespeicherte Ansicht: {{name}}",
+      "manage": "„{{name}}“ verwalten …"
+    },
     "menu": {
       "for": "Aktionen für {{name}}",
       "rename": "Umbenennen",
@@ -3083,7 +3087,7 @@
       "longPressHint": "Halte einen Link gedrückt, um die Auswahl zu starten, und tippe dann weitere an.",
       "modeOn": "Auswahlmodus an. Ein Link wird jetzt ausgewählt, statt geöffnet.",
       "modeOff": "Auswahlmodus aus.",
-      "desktopHint": "Mit X auswählen, Umschalt+Klick für einen Bereich, Strg A für alle",
+      "desktopHint": "Mit **X** auswählen, **Umschalt + Klick** für einen Bereich, **Strg + A** für alle",
       "selectNone": "Auswahl aufheben"
     },
     "item": {

@@ -164,37 +164,39 @@ test.describe('mobile polish (mock API)', () => {
   test.describe('library toolbar on a phone', { tag: E2E_TAG.Phone }, () => {
     test.skip(({ viewport }) => (viewport?.width ?? 0) >= 640, 'phone only');
 
-    test('the view switch and the ⋯ menu (sort, select, export); the saved views scroll in one row', async ({
+    test('one control row: saved views picker, Filter, Sort, the View menu (view switch) and ⋯ (Select, Export)', async ({
       page,
     }) => {
       await page.goto('/links');
       await expect(page.locator('ui-card').first()).toBeVisible();
-      // Shelf: the Masonry / Cards / List / Headlines switch, then Sort and Export as icon buttons
-      // (Sort opens a sheet of the orders); there is no ⋯ any more.
-      await expect(page.getByRole('radiogroup', { name: 'View' }).getByRole('radio')).toHaveCount(
-        4,
-      );
-      await expect(page.getByRole('button', { name: 'More view options' })).toHaveCount(0);
-      await expect(page.getByRole('button', { name: 'Export this view…' })).toBeVisible();
+      // Shelf phone toolbar: no segmented switch in the row; it is in the View menu.
+      await expect(page.getByRole('radiogroup', { name: 'View', exact: true })).toHaveCount(0);
+      await page.getByRole('button', { name: 'View', exact: true }).click();
+      await expect(
+        page.getByRole('radiogroup', { name: 'View', exact: true }).getByRole('radio'),
+      ).toHaveCount(4);
+      await expect(page.getByRole('slider', { name: 'Grid size' })).toHaveCount(0);
+      await page.keyboard.press('Escape');
 
       await page.getByRole('button', { name: /^Sort: / }).click();
       const menu = page.getByRole('menu', { name: 'Sort by' });
       await expect(menu.getByRole('menuitemradio', { name: 'Newest first' })).toBeVisible();
       await expect(menu.getByRole('menuitemradio', { name: 'Title Z–A' })).toBeVisible();
-      await expect(menu.getByRole('menuitem', { name: 'Select links' })).toHaveCount(0);
-      await expect(menu.getByRole('menuitem', { name: /JSON|CSV|Export/ })).toHaveCount(0);
       await page.keyboard.press('Escape');
-      // Filter and Select are icon buttons in the toolbar.
       await expect(page.getByRole('button', { name: 'Filter', exact: true })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Select links', exact: true })).toBeVisible();
 
-      // The saved views are one row that scrolls sideways, the first chip flush left.
-      const bar = page.getByRole('toolbar', { name: 'Saved views' });
-      const scrolls = await bar.evaluate((el) => el.scrollWidth > el.clientWidth);
-      expect(scrolls).toBe(true);
-      const first = await bar.getByRole('button').first().boundingBox();
-      const main = await page.getByRole('main').boundingBox();
-      expect(Math.abs((first?.x ?? 0) - (main?.x ?? 0))).toBeLessThan(24);
+      // Select and Export are in the ⋯ menu.
+      await page.getByRole('button', { name: 'More view options' }).click();
+      const more = page.getByRole('menu', { name: 'More view options' });
+      await expect(more.getByRole('menuitem', { name: 'Select links' })).toBeVisible();
+      await expect(more.getByRole('menuitem', { name: 'Export this view…' })).toBeVisible();
+      await page.keyboard.press('Escape');
+
+      // The saved views are a picker in the same row, not a bar of chips of their own.
+      await expect(page.getByRole('toolbar', { name: 'Saved views' })).toHaveCount(0);
+      await page.getByRole('button', { name: /^Saved view: / }).click();
+      await expect(page.getByRole('menuitemradio', { name: /^Videos \d+$/u })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: 'Save this view' })).toBeVisible();
     });
   });
 

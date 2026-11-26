@@ -91,6 +91,17 @@
   border-radius: var(--radius-md);
 }
 
+// The projected control (the phone's view switch) sits centred above the rows; empty, no space.
+.ui-view-menu__slot {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-1) rem(10px) var(--space-2);
+
+  &:empty {
+    display: none;
+  }
+}
+
 .ui-view-menu__grid {
   display: grid;
   gap: rem(6px);

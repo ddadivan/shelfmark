@@ -83,7 +83,10 @@ test.describe('Help center', { tag: E2E_TAG.Mobile }, () => {
       'src',
       /\/media\/help\/settings-appearance-(light|dark)\.webp$/,
     );
-    expect(await image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    // The e2e project has no DOM lib: read naturalWidth through a narrow structural type.
+    expect(
+      await image.evaluate((img) => (img as unknown as { naturalWidth: number }).naturalWidth),
+    ).toBeGreaterThan(0);
   });
 
   test('the topics are a full-height sidebar from 64em and a drawer below it', async ({ page }) => {

@@ -136,7 +136,7 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(bar(page)).toBeVisible();
       // The one hint of the Shelf selection replaces the tools.
       await expect(header(page)).toHaveText(
-        'Select with X, Shift-click for a range, Ctrl A for all',
+        'Select with X, Shift + click for a range, Ctrl + A for all',
       );
 
       await pick(page, 3, ['Shift']);

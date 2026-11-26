@@ -2563,6 +2563,10 @@
     "label": "Saved views",
     "all": "All",
     "add": "Save this view",
+    "picker": {
+      "label": "Saved view: {{name}}",
+      "manage": "Manage “{{name}}”…"
+    },
     "menu": {
       "for": "Actions for {{name}}",
       "rename": "Rename",
@@ -3083,7 +3087,7 @@
       "longPressHint": "Long-press a link to start selecting, then tap others.",
       "modeOn": "Selection mode on. Activating a link now selects it.",
       "modeOff": "Selection mode off.",
-      "desktopHint": "Select with X, Shift-click for a range, Ctrl A for all",
+      "desktopHint": "Select with **X**, **Shift + click** for a range, **Ctrl + A** for all",
       "selectNone": "Select none"
     },
     "item": {

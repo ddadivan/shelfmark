@@ -28,25 +28,31 @@
       animate.enter="ui-view-menu--enter"
       animate.leave="ui-view-menu--leave"
     >
-      <div class="ui-view-menu__grid">
-        <div class="ui-view-menu__head">
-          <span class="ui-view-menu__heading">{{ heading() }}</span>
-          <span class="ui-view-menu__step" aria-hidden="true">{{ stepLabel() }}</span>
-        </div>
-        <ui-range
-          [label]="heading()"
-          [min]="1"
-          [max]="steps()"
-          [step]="1"
-          [valueText]="stepLabel()"
-          [disabled]="gridDisabled()"
-          [(value)]="step"
-        />
-        <div class="ui-view-menu__ends" aria-hidden="true">
-          <span>{{ smallLabel() }}</span>
-          <span>{{ largeLabel() }}</span>
-        </div>
+      <!-- Slot above the slider: the page's own control (the phone's view switch). -->
+      <div class="ui-view-menu__slot">
+        <ng-content />
       </div>
+      @if (!gridHidden()) {
+        <div class="ui-view-menu__grid">
+          <div class="ui-view-menu__head">
+            <span class="ui-view-menu__heading">{{ heading() }}</span>
+            <span class="ui-view-menu__step" aria-hidden="true">{{ stepLabel() }}</span>
+          </div>
+          <ui-range
+            [label]="heading()"
+            [min]="1"
+            [max]="steps()"
+            [step]="1"
+            [valueText]="stepLabel()"
+            [disabled]="gridDisabled()"
+            [(value)]="step"
+          />
+          <div class="ui-view-menu__ends" aria-hidden="true">
+            <span>{{ smallLabel() }}</span>
+            <span>{{ largeLabel() }}</span>
+          </div>
+        </div>
+      }
       @if (choice(); as choice) {
         <div class="ui-view-menu__choice">
           <span class="ui-view-menu__heading" [id]="id + '-choice'">{{ choice.label }}</span>

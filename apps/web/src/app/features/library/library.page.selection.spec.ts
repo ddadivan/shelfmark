@@ -104,7 +104,11 @@ describe('LibraryPage selection', () => {
     );
     expect(
       [...element.querySelectorAll('.library__hint')].map((hint) => hint.textContent?.trim()),
-    ).toEqual(['Select with X, Shift-click for a range, Ctrl A for all']);
+    ).toEqual(['Select with X, Shift + click for a range, Ctrl + A for all']);
+    // The key combinations are bold runs, not markup from the translation.
+    expect(
+      [...element.querySelectorAll('.library__hint .help-text__ui')].map((run) => run.textContent),
+    ).toEqual(['X', 'Shift + click', 'Ctrl + A']);
     expect(
       [...element.querySelectorAll('.ui-bulk-bar__action')].map((b) => b.textContent?.trim()),
     ).toEqual(['Move', 'Tags', 'Favorite', 'Remind', 'Open all', 'Copy links', 'Delete']);

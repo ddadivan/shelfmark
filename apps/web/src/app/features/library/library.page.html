@@ -31,7 +31,9 @@
     </ui-button>
     }
   </div>
-  } @if (!filters.folderMissing()) { @if (head.crumbs(); as trail) {
+  } @if (!filters.folderMissing()) { @if (head.crumbs(); as trail) { @if (!(selection.selecting() &&
+  compact())) {
+  <!-- The mobile selection line takes the crumbs' row: no overlap while selecting. -->
   <ui-breadcrumbs
     class="library__crumbs"
     [items]="trail"
@@ -39,7 +41,7 @@
     [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
     (linkClick)="openCrumb($event)"
   />
-  } } @if (splitView.open() && !preview.split()) {
+  } } } @if (splitView.open() && !preview.split()) {
   <!-- Shelf side by side (08-select-move): the page's own line over both feeds. -->
   <div class="library__split-head">
     <p class="library__split-title" aria-hidden="true">{{ 'library.split.open' | transloco }}</p>
@@ -195,12 +197,19 @@
           </ng-template>
           <!-- Shelf toolbar: View (grid size and card fields; not on a phone, where the feed has two
                columns), the view switch, then ⋯ with the rest (a bottom sheet below 64em). -->
+          @if (phone() && !feed.emptyLibrary()) {
+          <!-- Phone: the saved views are a picker in the control row, under the title. -->
+          <app-saved-view-chips
+            class="library__views library__views--picker"
+            [filter]="filters.filter()"
+          />
+          }
           <div class="library__tools" uiTooltipGroup>
             @if (selection.selecting() && !compact()) {
             <!-- Shelf selection (08-select-move): the hint and "Select all N" take the tools' place;
                  the bulk bar's × ends it. -->
             <p class="library__hint library__hint--select">
-              {{ 'bulk.header.desktopHint' | transloco }}
+              <app-help-text [text]="'bulk.header.desktopHint' | transloco" />
             </p>
             @if (selection.allSelected()) {
             <ui-button variant="ghost" size="sm" (click)="selection.toggleAll(false)">
@@ -232,26 +241,26 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="filter"
-                  [iconOnly]="!wide() || narrow()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="filterLabel()"
                   [uiTooltip]="filterLabel()"
                   [ariaPressed]="filters.filterCount() > 0"
                   (click)="openFilter(filterPanel, filterButton)"
                 >
-                  @if (wide() && !narrow()) { {{ filterLabel() }} }
+                  @if (labelled()) { {{ filterLabel() }} }
                 </ui-button>
-                @if (feed.showControls() && selection.available()) {
+                @if (feed.showControls() && selection.available() && !compact()) {
                 <ui-button
                   variant="ghost"
                   size="sm"
                   iconLeft="check"
-                  [iconOnly]="!wide() || narrow()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="'library.viewMenu.select' | transloco"
                   [uiTooltip]="'library.viewMenu.select' | transloco"
                   [uiTooltipShortcut]="SELECT_SHORTCUT_CAP"
                   (click)="selection.startSelection()"
                 >
-                  @if (wide() && !narrow()) { {{ 'library.toolbar.select' | transloco }} }
+                  @if (labelled()) { {{ 'library.toolbar.select' | transloco }} }
                 </ui-button>
                 } @if (wide() && feed.showControls() && !narrow()) {
                 <ui-button
@@ -269,12 +278,12 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="add"
-                  [iconOnly]="!wide()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="'library.toolbar.saveView' | transloco"
                   [uiTooltip]="'library.toolbar.saveView' | transloco"
                   (click)="saveView()"
                 >
-                  @if (wide()) { {{ 'library.toolbar.saveView' | transloco }} }
+                  @if (labelled()) { {{ 'library.toolbar.saveView' | transloco }} }
                 </ui-button>
                 } @if (!narrow()) {
                 <!-- Sort: the current order is in the label; the options are radio items. -->
@@ -283,11 +292,11 @@
                   variant="ghost"
                   size="sm"
                   iconLeft="sort"
-                  [iconOnly]="!wide()"
+                  [iconOnly]="!labelled()"
                   [ariaLabel]="sortLabel()"
                   [uiTooltip]="sortLabel()"
                 >
-                  @if (wide()) { {{ 'library.toolbar.sort' | transloco }} }
+                  @if (labelled()) { {{ 'library.toolbar.sort' | transloco }} }
                 </ui-button>
                 <ui-menu #sortMenu align="end" [ariaLabel]="'library.viewMenu.sortBy' | transloco">
                   @for (group of SORT_GROUPS; track $index) { @if ($index > 0) {
@@ -306,9 +315,20 @@
                 </ui-menu>
                 }
               </div>
-              @if (!narrow()) { @if (!phone()) {
+              @if (!narrow()) { @if (compact()) {
+              <!-- Mobile toolbar: one slim row (Filter, Sort, View, ⋯). The view switch lives in the
+                   View menu, which on a phone has no grid size (two columns). -->
+              <app-library-view-menu [gridHidden]="phone()">
+                <ui-segmented-control
+                  iconOnly
+                  [options]="options"
+                  [value]="filters.view()"
+                  [ariaLabel]="'library.view.label' | transloco"
+                  (valueChange)="feed.setView($event)"
+                />
+              </app-library-view-menu>
+              } @else {
               <app-library-view-menu />
-              }
               <ui-segmented-control
                 iconOnly
                 [options]="options"
@@ -316,22 +336,23 @@
                 [ariaLabel]="'library.view.label' | transloco"
                 (valueChange)="feed.setView($event)"
               />
-              }
+              } }
             </div>
-            } @if (!narrow()) {
+            } @if (!narrow() && !compact()) {
             <ui-button
               variant="ghost"
               size="sm"
               iconLeft="upload"
-              [iconOnly]="!wide()"
+              [iconOnly]="!labelled()"
               [ariaLabel]="'export.viewItem' | transloco"
               [uiTooltip]="'export.viewItem' | transloco"
               (click)="exportThisView()"
             >
-              @if (wide()) { {{ 'export.menu' | transloco }} }
+              @if (labelled()) { {{ 'export.menu' | transloco }} }
             </ui-button>
             } @else {
-            <!-- Beside the preview or in side by side the toolbar is slim: Sort and Export are here. -->
+            <!-- Beside the preview or in side by side the toolbar is slim: Sort and Export are here;
+                 in the mobile shell the menu holds Select and Export (Sort is its own icon). -->
             <ui-button
               [uiMenuTrigger]="moreMenu"
               variant="ghost"
@@ -341,7 +362,11 @@
               [ariaLabel]="'library.viewMenu.more' | transloco"
             />
             <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
-              @if (feed.showTools()) {
+              @if (compact() && feed.showControls() && selection.available()) {
+              <ui-menu-item icon="check" (activated)="selection.startSelection()">
+                {{ 'library.viewMenu.select' | transloco }}
+              </ui-menu-item>
+              } @if (feed.showTools() && !compact()) {
               <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
               @for (group of SORT_GROUPS; track $index) { @if (group.labelKey) {
               <ui-menu-label>{{ group.labelKey | transloco }}</ui-menu-label>
@@ -369,7 +394,7 @@
       <app-extension-banner class="library__extension" />
       } @if (filters.searching()) {
       <app-search-question-hint [query]="filters.query()" />
-      } @if (!feed.emptyLibrary()) {
+      } @if (!feed.emptyLibrary() && !phone()) {
       <app-saved-view-chips class="library__views" [filter]="filters.filter()" />
       } @if (filters.searching()) {
       <app-search-go-to

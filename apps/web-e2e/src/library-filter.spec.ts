@@ -1,8 +1,13 @@
 import { type Page } from '@playwright/test';
+import { isCompact, isPhone } from './support/sidebar';
 import { openFeed } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
-import { isCompact } from './support/sidebar';
-import { filterButton, saveThisViewButton, selectButton } from './support/library-toolbar';
+import {
+  filterButton,
+  saveThisViewButton,
+  savedViewsPicker,
+  selectButton,
+} from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { expect, test } from './support/test';
 
@@ -101,13 +106,20 @@ test.describe('library Filter and Select links (mock API)', () => {
       // The tools stay: Filter (to change the filters), View and the view switch; Save view too
       // (the phone has the chip). Select cannot act on nothing.
       await expect(filterButton(page)).toBeVisible();
-      await expect(saveThisViewButton(page)).toBeVisible();
-      await expect(page.getByRole('radio', { name: 'Headlines', exact: true })).toBeVisible();
-      await expect(selectButton(page)).toHaveCount(0);
+      await expect(isPhone(page) ? savedViewsPicker(page) : saveThisViewButton(page)).toBeVisible();
+      if (!isCompact(page)) {
+        await expect(page.getByRole('radio', { name: 'Headlines', exact: true })).toBeVisible();
+      }
+      // The mobile shell has Select in the ⋯ menu, which this empty state keeps.
+      if (!isCompact(page)) {
+        await expect(selectButton(page)).toHaveCount(0);
+      }
 
       await clear.click();
       await expect(page).not.toHaveURL(/kind=|saved=|tag=/);
-      await expect(selectButton(page)).toBeVisible();
+      if (!isCompact(page)) {
+        await expect(selectButton(page)).toBeVisible();
+      }
     },
   );
 });

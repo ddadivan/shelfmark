@@ -72,7 +72,7 @@ afterEach(() => {
 
 describe('SavedViewChipsComponent', () => {
   it('shows All with the total, then the views with their counts and the add button', async () => {
-    const { element, chips, text, store } = await setup({ compact: true, phone: true });
+    const { element, chips, text, store } = await setup({ compact: true });
     expect(chips().map((chip) => text(chip))).toEqual([
       `All ${store.total()}`,
       `Videos ${store.items()[0]?.count}`,
@@ -81,11 +81,8 @@ describe('SavedViewChipsComponent', () => {
     expect(element.querySelector('[role="toolbar"]')?.getAttribute('aria-label')).toBe(
       'Saved views',
     );
-    expect(element.querySelector('.ui-saved-views__add')?.textContent).toContain('Save this view');
-    TestBed.resetTestingModule();
-    // Wider screens save from the toolbar's Save view button (author), so the chip is phone only.
-    const desktop = await setup();
-    expect(desktop.element.querySelector('.ui-saved-views__add')).toBeNull();
+    // "Save this view" is the toolbar's Save view button; on a phone it is in the picker's menu.
+    expect(element.querySelector('.ui-saved-views__add')).toBeNull();
     expect(
       [...element.querySelectorAll('.ui-saved-views__menu')].map((menu) =>
         menu.getAttribute('aria-label'),
@@ -112,8 +109,8 @@ describe('SavedViewChipsComponent', () => {
     expect(pressed()).toEqual(['false', 'false', 'false']);
   });
 
-  it('applies All or a view, and saves the current filter', async () => {
-    const { fixture, chips, actions, store, element } = await setup({ compact: true, phone: true });
+  it('applies All or a view', async () => {
+    const { chips, actions, store } = await setup({ compact: true });
     chips()[0]?.click();
     expect(actions.applyAll).toHaveBeenCalledWith({ scope: LINKS_SCOPE.All }, store.items());
     chips()[1]?.click();
@@ -122,9 +119,33 @@ describe('SavedViewChipsComponent', () => {
       { scope: LINKS_SCOPE.All },
       store.items(),
     );
+  });
+
+  it('on a phone the views are one picker: the active one in its label, a menu to choose, save and manage', async () => {
+    const { fixture, element, chips, actions, store } = await setup({ compact: true, phone: true });
+    expect(chips()).toHaveLength(0);
+    const picker = (): HTMLElement | null => element.querySelector('.saved-view-chips__picker');
+    expect(picker()?.textContent?.replace(/\s+/g, ' ').trim()).toBe('All');
+    picker()?.querySelector('button')?.click();
+    await fixture.whenStable();
+    const item = (label: string) =>
+      [...document.querySelectorAll<HTMLElement>('[role="menuitemradio"], [role="menuitem"]')].find(
+        (candidate) => candidate.textContent?.includes(label),
+      );
+    expect(item('Videos')).toBeDefined();
+    item('Videos')?.click();
+    await fixture.whenStable();
+    expect(actions.apply).toHaveBeenCalledWith(
+      store.items()[0],
+      { scope: LINKS_SCOPE.All },
+      store.items(),
+    );
     fixture.componentInstance.filter.set({ scope: LINKS_SCOPE.Favorites });
     await fixture.whenStable();
-    element.querySelector<HTMLButtonElement>('.ui-saved-views__add')?.click();
+    picker()?.querySelector('button')?.click();
+    await fixture.whenStable();
+    item('Save this view')?.click();
+    await fixture.whenStable();
     expect(actions.saveCurrent).toHaveBeenCalledWith({ scope: LINKS_SCOPE.Favorites });
   });
 

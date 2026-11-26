@@ -88,9 +88,16 @@ test.describe('library view controls (mock API)', () => {
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await openFeed(page);
-      await expect(page.getByRole('radiogroup', { name: 'View' }).getByRole('radio')).toHaveCount(
-        4,
-      );
+      if (isCompact(page)) {
+        // The mobile shell has the view switch inside the View menu.
+        await page.getByRole('button', { name: 'View', exact: true }).click();
+      }
+      await expect(
+        page.getByRole('radiogroup', { name: 'View', exact: true }).getByRole('radio'),
+      ).toHaveCount(4);
+      if (isCompact(page)) {
+        await page.keyboard.press('Escape');
+      }
 
       await switchView(page, 'Headlines');
       await expect(page.locator('ui-card')).toHaveCount(0);
@@ -112,6 +119,9 @@ test.describe('library view controls (mock API)', () => {
       await expect(page.locator('.library__rows--headlines ui-list-item').first()).toBeVisible({
         timeout: 20_000,
       });
+      if (isCompact(page)) {
+        await page.getByRole('button', { name: 'View', exact: true }).click();
+      }
       await expect(page.getByRole('radio', { name: 'Headlines' })).toBeChecked();
     },
   );

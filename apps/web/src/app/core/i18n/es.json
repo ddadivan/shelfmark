@@ -2625,6 +2625,10 @@
     "label": "Vistas guardadas",
     "all": "Todos",
     "add": "Guardar esta vista",
+    "picker": {
+      "label": "Vista guardada: {{name}}",
+      "manage": "Gestionar «{{name}}»…"
+    },
     "menu": {
       "for": "Acciones para {{name}}",
       "rename": "Cambiar nombre",
@@ -3150,7 +3154,7 @@
       "longPressHint": "Mantén pulsado un enlace para empezar a seleccionar y luego toca otros.",
       "modeOn": "Modo de selección activado. Activar un enlace ahora lo selecciona.",
       "modeOff": "Modo de selección desactivado.",
-      "desktopHint": "Selecciona con X, Mayús+clic para un rango, Ctrl A para todo",
+      "desktopHint": "Selecciona con **X**, **Mayús + clic** para un rango, **Ctrl + A** para todo",
       "selectNone": "No seleccionar nada"
     },
     "item": {
