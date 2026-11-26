@@ -20,6 +20,18 @@ describe('previewKey', () => {
     expect(previewKey(press('Escape', document.body))).toBe(PREVIEW_KEY.Close);
   });
 
+  it('lets ↑ / ↓ through on the vertical resize handle, not on a horizontal separator', () => {
+    const vertical = document.createElement('div');
+    vertical.setAttribute('role', 'separator');
+    vertical.setAttribute('aria-orientation', 'vertical');
+    const horizontal = document.createElement('div');
+    horizontal.setAttribute('role', 'separator');
+    document.body.append(vertical, horizontal);
+    expect(previewKey(press('ArrowDown', vertical))).toBe(PREVIEW_KEY.Next);
+    expect(previewKey(press('ArrowUp', vertical))).toBe(PREVIEW_KEY.Previous);
+    expect(previewKey(press('ArrowDown', horizontal))).toBeNull();
+  });
+
   it('maps F to full screen (the physical key on other layouts), not in an overlay', () => {
     expect(previewKey(press('f', document.body, { code: 'KeyF' }))).toBe(PREVIEW_KEY.FullScreen);
     expect(previewKey(press('F', document.body, { code: 'KeyF' }))).toBe(PREVIEW_KEY.FullScreen);

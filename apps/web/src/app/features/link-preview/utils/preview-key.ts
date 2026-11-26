@@ -5,9 +5,12 @@ import { PREVIEW_FULL_SCREEN_SHORTCUT } from '../models/preview-full-screen-shor
 import { PREVIEW_KEY } from '../models/preview-key.const';
 import type { PreviewKey } from '../models/preview-key.type';
 
-/** Widgets that own the arrows themselves. */
+/**
+ * Widgets that own ↑ / ↓ themselves. A vertical separator (the list's resize handle) moves with
+ * ← / → only, so ↑ / ↓ on it still move the preview (round 13).
+ */
 const ARROW_OWNERS =
-  '.cdk-overlay-container, [role="tree"], [role="radiogroup"], [role="tablist"], [role="slider"], [role="separator"], [role="grid"]';
+  '.cdk-overlay-container, [role="tree"], [role="radiogroup"], [role="tablist"], [role="slider"], [role="separator"]:not([aria-orientation="vertical"]), [role="grid"]';
 /** Where ↵ means "open the previewed link in a new tab": a feed link or nothing in particular. */
 const ENTER_TARGETS = '.ui-card__link, .ui-list-item__link';
 
