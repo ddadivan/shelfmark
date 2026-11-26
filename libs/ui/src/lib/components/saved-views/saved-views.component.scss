@@ -47,7 +47,7 @@
   display: inline-flex;
   flex: none;
   align-items: stretch;
-  height: rem(28px);
+  height: var(--control-xs);
   color: var(--text-muted);
   white-space: nowrap;
   background: transparent;
@@ -132,7 +132,7 @@
   }
 
   @include coarse {
-    padding: 0 rem(12px) 0 var(--space-1);
+    padding: 0 var(--space-3) 0 var(--space-1);
   }
 }
 
@@ -151,9 +151,9 @@
 
   display: inline-flex;
   flex: none;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   align-items: center;
-  height: rem(28px);
+  height: var(--control-xs);
   padding: 0 var(--space-3);
   color: var(--text-muted);
   white-space: nowrap;

@@ -56,7 +56,7 @@
 
   // Glass is a fixed 28px round button.
   &.ui-button--glass {
-    width: var(--ui-button-glass-size, #{rem(28px)});
+    width: var(--ui-button-glass-size, var(--control-xs));
     min-height: 0;
   }
 }

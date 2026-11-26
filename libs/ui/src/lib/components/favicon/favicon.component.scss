@@ -11,9 +11,9 @@
   overflow: hidden;
   font-family: var(--font-sans);
 
-  // Shelf reference: the site letter is 10px at weight 700.
+  // Shelf reference: the site letter is 10px at weight 600 (the Shelf reference draws 700; 600 keeps the three-weight scale).
   font-size: calc(var(--font-size-micro) * var(--ui-favicon-scale, 1));
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
   color: var(--text-muted);
   background: var(--surface-hover);

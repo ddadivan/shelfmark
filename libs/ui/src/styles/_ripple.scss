@@ -1,9 +1,9 @@
 @use 'functions' as *;
 @use 'media' as *;
 
-// Ripple timings are the Motion spec's own (not duration tokens): grows 450 ms, fades 350 ms.
-$grow: 450ms;
-$fade: 350ms;
+// Ripple timings are duration tokens: grows over `slow` (320 ms), fades over `base` (200 ms).
+$grow: var(--duration-slow);
+$fade: var(--duration-base);
 
 // Styles of the `uiRipple` directive. The directive appends its span at runtime, so the span
 // is outside every component's view encapsulation: the rules are global (`global.scss` includes

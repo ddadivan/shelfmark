@@ -158,7 +158,7 @@ describe('SegmentedControlComponent', () => {
     const css = compileScss('lib/components/segmented-control/segmented-control.component.scss');
     expect(css).toContain('padding: 0.125rem');
     expect(css).toContain('border-radius: var(--radius-sm)');
-    expect(css).toContain('height: 1.75rem');
+    expect(css).toContain('height: var(--control-xs)');
     expect(css).toContain('border-radius: var(--radius-tile)');
     expect(css).toContain('min-width: 2.25rem');
     expect(css).toContain('height: 2.75rem');

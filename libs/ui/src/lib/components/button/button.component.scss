@@ -183,8 +183,8 @@ a.ui-button {
 
   --ui-icon-size: var(--ui-button-icon-size, var(--icon-size-sm));
 
-  width: var(--ui-button-glass-size, #{rem(28px)});
-  height: var(--ui-button-glass-size, #{rem(28px)});
+  width: var(--ui-button-glass-size, var(--control-xs));
+  height: var(--ui-button-glass-size, var(--control-xs));
   padding: 0;
 
   &:not([aria-disabled='true']) {

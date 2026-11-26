@@ -6,7 +6,7 @@
 
   // `--ui-chip-scale` (unitless, default 1): a feature that shows chips bigger (the landing)
   // sets it on an ancestor; height, padding and text grow.
-  height: calc(#{rem(28px)} * var(--ui-chip-scale, 1));
+  height: calc(var(--control-xs) * var(--ui-chip-scale, 1));
   color: var(--text-muted);
   white-space: nowrap;
   background: var(--ui-chip-bg, var(--surface-hover));
@@ -83,7 +83,7 @@
   }
 
   @include coarse {
-    padding: 0 rem(12px);
+    padding: 0 var(--space-3);
   }
 
   &:focus-visible {
@@ -197,9 +197,9 @@ button.ui-chip__body {
     @include type(secondary);
 
     flex: 1;
-    gap: rem(12px);
+    gap: var(--space-3);
     min-inline-size: 0;
-    padding: 0 rem(14px) 0 rem(12px);
+    padding: 0 rem(14px) 0 var(--space-3);
     font-size: var(--font-size-secondary);
   }
 

@@ -17,7 +17,7 @@
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
-  transition: box-shadow 200ms ease;
+  transition: box-shadow var(--duration-base) var(--ease-out);
 
   @include hover {
     box-shadow: var(--shadow-hover);
@@ -32,7 +32,7 @@
   background: transparent;
   border-color: transparent;
   border-radius: var(--radius-md);
-  transition: background-color 150ms ease;
+  transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
     background: var(--fill);

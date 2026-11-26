@@ -41,7 +41,7 @@ describe('ButtonComponent --ui-button-scale', () => {
 
   it('chip and favicon read their own scale properties', () => {
     expect(compileScss('lib/components/chip/chip.component.scss')).toContain(
-      'height: calc(1.75rem * var(--ui-chip-scale, 1))',
+      'height: calc(var(--control-xs) * var(--ui-chip-scale, 1))',
     );
     expect(compileScss('lib/components/favicon/favicon.component.scss')).toContain(
       'width: calc(1rem * var(--ui-favicon-scale, 1))',

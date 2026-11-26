@@ -200,7 +200,7 @@ describe('SavedViewsComponent', () => {
 
   it('is the Shelf tab: 28px, radius 10, fill on hover, surface-pressed when selected, no dark chip', () => {
     const css = compileScss('lib/components/saved-views/saved-views.component.scss');
-    expect(css).toContain('height: 1.75rem');
+    expect(css).toContain('height: var(--control-xs)');
     expect(css).toContain('border-radius: var(--radius-sm)');
     expect(css).toContain('background: var(--fill)');
     expect(css).toContain('background: var(--surface-pressed)');

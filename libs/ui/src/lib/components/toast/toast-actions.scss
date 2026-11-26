@@ -9,10 +9,10 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  padding: rem(6px) rem(10px);
+  padding: var(--space-1-5) var(--space-2-5);
   font-size: var(--font-size-label);
   font-weight: 600;
-  line-height: rem(18px);
+  line-height: rem(20px);
   color: var(--ui-toast-ink);
   white-space: nowrap;
   cursor: pointer;
@@ -82,8 +82,8 @@
 // pauses with its timer. Under reduced motion it is not drawn (no animation).
 .ui-toast__timer {
   position: absolute;
-  inset-inline: rem(12px);
-  inset-block-end: rem(4px);
+  inset-inline: var(--space-3);
+  inset-block-end: var(--space-1);
   block-size: rem(3px);
   overflow: hidden;
   pointer-events: none;
@@ -118,7 +118,7 @@
 .ui-toast__keys {
   display: none;
   flex: none;
-  gap: rem(4px);
+  gap: var(--space-1);
   align-items: center;
 
   @include tablet-up {
@@ -132,7 +132,7 @@
   place-items: center;
   min-width: 1.5rem;
   height: 1.5rem;
-  padding: 0 rem(6px);
+  padding: 0 var(--space-1-5);
   font-family: var(--font-mono);
   font-size: var(--font-size-meta);
   line-height: 1;
