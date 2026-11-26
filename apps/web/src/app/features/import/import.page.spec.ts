@@ -12,6 +12,8 @@ import { TabSyncService } from '../../core/sync/tab-sync.service';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { PinsStore } from '../../stores/pins.store';
+import { RemindersStore } from '../../stores/reminders.store';
+import { SavedViewsStore } from '../../stores/saved-views.store';
 import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
@@ -96,8 +98,10 @@ async function setup() {
       },
       { provide: AiSettingsStore, useValue: ai },
       { provide: UserSettingsStore, useValue: { shownColour: (colour: string) => colour } },
-      { provide: TagsStore, useValue: refresh() },
+      { provide: TagsStore, useValue: { noteLinkSaved: vi.fn(async () => undefined) } },
       { provide: PinsStore, useValue: refresh() },
+      { provide: RemindersStore, useValue: refresh() },
+      { provide: SavedViewsStore, useValue: refresh() },
       { provide: TrashStore, useValue: refresh() },
       { provide: LinksStore, useValue: { refresh: vi.fn() } },
       { provide: TabSyncService, useValue: { post: vi.fn() } },

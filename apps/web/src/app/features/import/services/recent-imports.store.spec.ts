@@ -62,7 +62,7 @@ async function setup(confirmed = true) {
       { provide: IMPORT_API, useValue: api },
       { provide: DialogService, useValue: { confirm } },
       { provide: FoldersStore, useValue: { refresh: stores.folders } },
-      { provide: TagsStore, useValue: { refresh: stores.tags } },
+      { provide: TagsStore, useValue: { noteLinkSaved: stores.tags } },
       { provide: TrashStore, useValue: { refresh: stores.trash } },
       { provide: PinsStore, useValue: { refresh: stores.pins } },
       { provide: RemindersStore, useValue: { refresh: stores.reminders } },

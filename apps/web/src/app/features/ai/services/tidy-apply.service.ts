@@ -10,15 +10,13 @@ import {
 } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { pluralKey } from '../../../core/i18n/plural-key';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
-import { SavedViewsStore } from '../../../stores/saved-views.store';
-import { TagsStore } from '../../../stores/tags.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { toastFolder } from '../../links/utils/toast-folder';
 import { RuleOfferService } from '../../rules/services/rule-offer.service';
 import { AI_API } from '../models/ai-api.const';
-import { TidyCountStore } from './tidy-count.store';
 
 /**
  * One Tidy run (AI-2): sends the selected suggestions in one request, puts the changed links into
@@ -33,7 +31,7 @@ export class TidyApplyService {
   private readonly links = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
   private readonly settings = inject(UserSettingsStore);
-  private readonly count = inject(TidyCountStore);
+  private readonly refresh = inject(LibraryRefreshService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
 
@@ -57,7 +55,7 @@ export class TidyApplyService {
       return false;
     }
     this.links.patchLinks(response.links, response.folders > 0);
-    this.refreshCounts();
+    this.refreshLibrary(false);
     if (response.applied > 0) {
       this.announce(response, undone);
     } else {
@@ -98,8 +96,7 @@ export class TidyApplyService {
       const { links } = await firstValueFrom(this.api().undoTidy(request));
       this.links.patchLinks(links, true);
       // Links that had left the open view come back with the next page load.
-      this.links.refresh();
-      this.refreshCounts();
+      this.refreshLibrary(true);
       undone?.();
       this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('ai.tidy.undone') });
     } catch {
@@ -128,12 +125,16 @@ export class TidyApplyService {
     return folder ? toastFolder(folder, (colour) => this.settings.shownColour(colour)) : {};
   }
 
-  /** Folder, tag and saved-view counts and the Tidy count after the library changed. */
-  private refreshCounts(): void {
-    void this.folders.refresh();
-    void this.injector.get(TagsStore).noteLinkSaved();
-    void this.injector.get(SavedViewsStore).refresh();
-    void this.count.load();
+  /** Counts, the Tidy count and the other tabs after the library changed (`feed`: and the open view). */
+  private refreshLibrary(feed: boolean): void {
+    this.refresh.afterChange({
+      links: feed,
+      folders: true,
+      tags: true,
+      views: true,
+      tidy: true,
+      broadcast: true,
+    });
   }
 
   private api() {

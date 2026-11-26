@@ -15,6 +15,8 @@ import { TabSyncService } from '../../../core/sync/tab-sync.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
+import { RemindersStore } from '../../../stores/reminders.store';
+import { SavedViewsStore } from '../../../stores/saved-views.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { TrashStore } from '../../../stores/trash.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
@@ -80,6 +82,8 @@ async function setup() {
   const refreshed = {
     folders: vi.fn(async () => undefined),
     tags: vi.fn(async () => undefined),
+    reminders: vi.fn(async () => undefined),
+    views: vi.fn(async () => undefined),
     pins: vi.fn(async () => undefined),
     trash: vi.fn(async () => undefined),
     links: vi.fn(),
@@ -91,7 +95,9 @@ async function setup() {
       provideTranslocoForTest(),
       { provide: IMPORT_API, useValue: api },
       { provide: FoldersStore, useValue: { refresh: refreshed.folders } },
-      { provide: TagsStore, useValue: { refresh: refreshed.tags } },
+      { provide: TagsStore, useValue: { noteLinkSaved: refreshed.tags } },
+      { provide: RemindersStore, useValue: { refresh: refreshed.reminders } },
+      { provide: SavedViewsStore, useValue: { refresh: refreshed.views } },
       { provide: PinsStore, useValue: { refresh: refreshed.pins } },
       { provide: TrashStore, useValue: { refresh: refreshed.trash } },
       { provide: LinksStore, useValue: { refresh: refreshed.links } },
@@ -348,6 +354,8 @@ describe('ImportRunService', () => {
     expect(refreshed.folders).toHaveBeenCalled();
     expect(refreshed.tags).toHaveBeenCalled();
     expect(refreshed.pins).toHaveBeenCalled();
+    expect(refreshed.reminders).toHaveBeenCalled();
+    expect(refreshed.views).toHaveBeenCalled();
     expect(refreshed.trash).toHaveBeenCalled();
     expect(refreshed.links).toHaveBeenCalled();
     expect(refreshed.recent).toHaveBeenCalled();

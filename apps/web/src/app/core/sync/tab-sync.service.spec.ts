@@ -8,6 +8,8 @@ import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
 import { PinsStore } from '../../stores/pins.store';
+import { RemindersStore } from '../../stores/reminders.store';
+import { SavedViewsStore } from '../../stores/saved-views.store';
 import { AuthStore } from '../auth/auth.store';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
 import { SignedOutLockService } from './signed-out-lock.service';
@@ -48,9 +50,11 @@ function setup(user: AuthUser | null = USER) {
   const auth = { user: current, loaded: () => true, expireSession: vi.fn(() => current.set(null)) };
   const links = { addSaved: vi.fn(), applyEdit: vi.fn(), applyRemoval: vi.fn(), refresh: vi.fn() };
   const folders = { refresh: vi.fn(() => Promise.resolve()) };
-  const tags = { refresh: vi.fn(() => Promise.resolve()) };
+  const tags = { noteLinkSaved: vi.fn(() => Promise.resolve()) };
   const trash = { refresh: vi.fn(() => Promise.resolve()) };
   const pins = { refresh: vi.fn(() => Promise.resolve()) };
+  const reminders = { refresh: vi.fn(() => Promise.resolve()) };
+  const views = { refresh: vi.fn(() => Promise.resolve()) };
   const lock = { lock: vi.fn(() => Promise.resolve()) };
   const reload = vi.fn();
   TestBed.configureTestingModule({
@@ -61,6 +65,8 @@ function setup(user: AuthUser | null = USER) {
       { provide: TagsStore, useValue: tags },
       { provide: TrashStore, useValue: trash },
       { provide: PinsStore, useValue: pins },
+      { provide: RemindersStore, useValue: reminders },
+      { provide: SavedViewsStore, useValue: views },
       { provide: SignedOutLockService, useValue: lock },
     ],
   });
@@ -74,7 +80,7 @@ function setup(user: AuthUser | null = USER) {
   if (!channel) {
     throw new Error('no channel opened');
   }
-  return { sync, channel, auth, links, folders, tags, trash, lock, reload };
+  return { sync, channel, auth, links, folders, tags, trash, reminders, views, lock, reload };
 }
 
 describe('TabSyncService', () => {
@@ -106,7 +112,7 @@ describe('TabSyncService', () => {
 
     expect(links.addSaved).toHaveBeenCalledWith(link);
     expect(folders.refresh).toHaveBeenCalled();
-    expect(tags.refresh).toHaveBeenCalled();
+    expect(tags.noteLinkSaved).toHaveBeenCalled();
     expect(links.refresh).not.toHaveBeenCalled();
   });
 
@@ -122,12 +128,16 @@ describe('TabSyncService', () => {
   });
 
   it('reloads the feed and Trash when folders, tags or Trash changed', async () => {
-    const { channel, links, trash } = setup();
+    const { channel, links, trash, reminders, views } = setup();
 
     await channel.deliver({ kind: TAB_SYNC_KIND.LibraryChanged, userId: USER.id });
 
     expect(links.refresh).toHaveBeenCalled();
     expect(trash.refresh).toHaveBeenCalled();
+    expect(reminders.refresh).toHaveBeenCalled();
+    expect(views.refresh).toHaveBeenCalled();
+    // What another tab posted is applied, never echoed back.
+    expect(channel.posted).toEqual([]);
   });
 
   it('ignores messages about another account and malformed ones', async () => {

@@ -15,7 +15,7 @@ import { SessionScope } from '../../../core/auth/session-scope.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
-import { TagsStore } from '../../../stores/tags.store';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { toastFolder } from '../../links/utils/toast-folder';
@@ -190,8 +190,7 @@ export class AiFollowUpService {
       () => withSummary,
     );
     this.links.applyEdit(fresh);
-    void this.folders.refresh();
-    void this.injector.get(TagsStore).noteLinkSaved();
+    this.injector.get(LibraryRefreshService).afterChange({ folders: true, tags: true });
     this.announce(fresh, applied);
   }
 
@@ -229,8 +228,7 @@ export class AiFollowUpService {
         latest = await firstValueFrom(api.undoApply(link.id, { part }));
       }
       this.links.applyEdit(latest);
-      void this.folders.refresh();
-      void this.injector.get(TagsStore).noteLinkSaved();
+      this.injector.get(LibraryRefreshService).afterChange({ folders: true, tags: true });
     } catch {
       this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('ai.applied.undoFailed') });
     }

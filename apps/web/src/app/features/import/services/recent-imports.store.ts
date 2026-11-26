@@ -5,14 +5,7 @@ import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
-import { TAB_SYNC_KIND } from '../../../core/sync/models/tab-sync-kind.const';
-import { TabSyncService } from '../../../core/sync/tab-sync.service';
-import { FoldersStore } from '../../../stores/folders.store';
-import { LinksStore } from '../../../stores/links.store';
-import { PinsStore } from '../../../stores/pins.store';
-import { RemindersStore } from '../../../stores/reminders.store';
-import { TagsStore } from '../../../stores/tags.store';
-import { TrashStore } from '../../../stores/trash.store';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { IMPORT_API } from '../models/import-api.const';
 import { ImportAiFollowService } from './import-ai-follow.service';
 
@@ -85,7 +78,7 @@ export class RecentImportsStore {
     this.undoingState.set(null);
     this.itemsState.update((items) => items.filter((item) => item.id !== id));
     this.injector.get(ImportAiFollowService).unwatch(id);
-    this.refreshLibrary();
+    this.injector.get(LibraryRefreshService).afterLibraryRewrite();
     this.toasts.show({
       kind: TOAST_KIND.Success,
       title: this.t('import.undo.done'),
@@ -94,16 +87,6 @@ export class RecentImportsStore {
       }),
     });
     return true;
-  }
-
-  private refreshLibrary(): void {
-    void this.injector.get(FoldersStore).refresh();
-    void this.injector.get(TagsStore).refresh();
-    void this.injector.get(TrashStore).refresh();
-    void this.injector.get(PinsStore).refresh();
-    void this.injector.get(RemindersStore).refresh();
-    this.injector.get(LinksStore).refresh();
-    this.injector.get(TabSyncService).post({ kind: TAB_SYNC_KIND.LibraryChanged });
   }
 
   private t(key: string, params?: Record<string, string>): string {

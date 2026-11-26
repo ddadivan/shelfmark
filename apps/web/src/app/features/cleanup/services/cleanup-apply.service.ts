@@ -8,19 +8,14 @@ import type {
 import { TOAST_DURATION_MS, TOAST_KIND, ToastService, toastShortcutLabel } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { pluralKey } from '../../../core/i18n/plural-key';
-import { FoldersStore } from '../../../stores/folders.store';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { LinksStore } from '../../../stores/links.store';
-import { PinsStore } from '../../../stores/pins.store';
-import { RemindersStore } from '../../../stores/reminders.store';
-import { SavedViewsStore } from '../../../stores/saved-views.store';
-import { TagsStore } from '../../../stores/tags.store';
-import { TrashStore } from '../../../stores/trash.store';
 import { CLEANUP_API } from '../models/cleanup-api.const';
 
 /**
  * One clean-up run (AI-5): sends the selected rows in one request, takes the trashed copies out of
- * the feed, refreshes folder, tag, Trash, pin, reminder and saved-view counts like the bulk
- * actions, and confirms with one toast ("Cleaned up {n} things", copies in Trash and tags merged)
+ * the feed, refreshes folder, tag, Trash, pin, reminder and saved-view counts and tells the other tabs
+ * (`LibraryRefreshService`), and confirms with one toast ("Cleaned up {n} things", copies in Trash and tags merged)
  * whose Undo (8 s, Ctrl/⌘+Z) reverts the whole run by the server's run id (the server holds what to
  * revert, single-use). Root, so Undo still works after the page is left.
  */
@@ -28,6 +23,7 @@ import { CLEANUP_API } from '../models/cleanup-api.const';
 export class CleanupApplyService {
   private readonly injector = inject(Injector);
   private readonly links = inject(LinksStore);
+  private readonly refresh = inject(LibraryRefreshService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
 
@@ -91,8 +87,7 @@ export class CleanupApplyService {
       return;
     }
     // Restored copies and split tags come back with the next page load.
-    this.links.refresh();
-    this.refreshCounts();
+    this.refresh.afterLibraryRewrite();
     undone?.();
     this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('cleanup.undone') });
   }
@@ -100,11 +95,8 @@ export class CleanupApplyService {
   /** The feed and the counts after the run. */
   private patch(response: CleanupApplyResponse): void {
     this.links.removeLinks(response.trashedIds);
-    if (response.merged > 0) {
-      // Merged tags renamed many links: read the open view again.
-      this.links.refresh();
-    }
-    this.refreshCounts();
+    // Merged tags renamed many links: read the open view again. Other tabs hear about it too.
+    this.refresh.afterLibraryRewrite({ links: response.merged > 0 });
   }
 
   /** "2 copies in Trash, 1 tag merged" (either part alone when the other is 0). */
@@ -115,15 +107,6 @@ export class CleanupApplyService {
       return this.t('cleanup.toast.detail', { copies, tags });
     }
     return response.trashed > 0 ? copies : tags;
-  }
-
-  private refreshCounts(): void {
-    void this.injector.get(FoldersStore).refresh();
-    void this.injector.get(TagsStore).refresh();
-    void this.injector.get(SavedViewsStore).refresh();
-    void this.injector.get(TrashStore).refresh();
-    void this.injector.get(PinsStore).refresh();
-    void this.injector.get(RemindersStore).refresh();
   }
 
   private plural(base: string, count: number): string {

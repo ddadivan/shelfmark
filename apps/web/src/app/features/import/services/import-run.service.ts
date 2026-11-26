@@ -11,13 +11,7 @@ import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { hasApiMessage } from '../../../core/api/api-error';
 import { pluralKey } from '../../../core/i18n/plural-key';
-import { TAB_SYNC_KIND } from '../../../core/sync/models/tab-sync-kind.const';
-import { TabSyncService } from '../../../core/sync/tab-sync.service';
-import { FoldersStore } from '../../../stores/folders.store';
-import { LinksStore } from '../../../stores/links.store';
-import { PinsStore } from '../../../stores/pins.store';
-import { TagsStore } from '../../../stores/tags.store';
-import { TrashStore } from '../../../stores/trash.store';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { IMPORT_API } from '../models/import-api.const';
 import { IMPORT_REQUEST_BYTES } from '../models/import-request-bytes.const';
 import { IMPORT_RUN_IDLE } from '../models/import-run-idle.const';
@@ -210,13 +204,8 @@ export class ImportRunService {
 
   /** The new folders, tags and links show up everywhere, other tabs included. */
   private refreshLibrary(): void {
-    void this.injector.get(FoldersStore).refresh();
-    void this.injector.get(TagsStore).refresh();
-    void this.injector.get(PinsStore).refresh();
-    void this.injector.get(TrashStore).refresh();
-    this.injector.get(LinksStore).refresh();
+    this.injector.get(LibraryRefreshService).afterLibraryRewrite();
     void this.injector.get(RecentImportsStore).load();
-    this.injector.get(TabSyncService).post({ kind: TAB_SYNC_KIND.LibraryChanged });
   }
 
   private api() {

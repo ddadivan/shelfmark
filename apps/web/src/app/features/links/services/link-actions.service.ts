@@ -16,10 +16,9 @@ import {
 import { FoldersStore } from '../../../stores/folders.store';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import { toastFolder } from '../utils/toast-folder';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
-import { TagsStore } from '../../../stores/tags.store';
-import { TrashStore } from '../../../stores/trash.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { PinActionsService } from '../../pins/services/pin-actions.service';
 import { AddLinkDialogService } from './add-link-dialog.service';
@@ -34,7 +33,6 @@ import { UndoToastService } from '../../../core/undo/undo-toast.service';
 import type { MovePickerData } from '../models/move-picker-data.interface';
 import { MovePickerComponent } from '../components/move-picker/move-picker.component';
 import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
-import { RemindersStore } from '../../../stores/reminders.store';
 import { AiFollowUpService } from '../../ai/services/ai-follow-up.service';
 import { RuleOfferService } from '../../rules/services/rule-offer.service';
 
@@ -48,9 +46,8 @@ import { RuleOfferService } from '../../rules/services/rule-offer.service';
 export class LinkActionsService {
   private readonly store = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
+  private readonly refresh = inject(LibraryRefreshService);
   private readonly recent = inject(RecentFoldersStore);
-  private readonly tags = inject(TagsStore);
-  private readonly trash = inject(TrashStore);
   private readonly settings = inject(UserSettingsStore);
   private readonly pins = inject(PinsStore);
   private readonly pinActions = inject(PinActionsService);
@@ -88,7 +85,7 @@ export class LinkActionsService {
 
   async toggleFavorite(link: LinkResponse): Promise<void> {
     if (await this.store.toggleFavorite(link.id, link)) {
-      void this.folders.refresh();
+      this.refresh.afterChange({ folders: true });
       if (this.store.leftByUnstar(link.id)) {
         // Unstarred in Favorites (or an "only favorites" view): the card left, Undo stars it back.
         const undo = this.t('links.item.undo');
@@ -121,7 +118,7 @@ export class LinkActionsService {
   private async undoUnstar(link: LinkResponse): Promise<void> {
     const gone: LinkResponse = { ...link, isFavorite: false };
     if (await this.store.setFavorite(link.id, true, gone, { rejoin: true })) {
-      void this.folders.refresh();
+      this.refresh.afterChange({ folders: true });
       return;
     }
     this.toasts.show({
@@ -221,7 +218,7 @@ export class LinkActionsService {
       });
       return;
     }
-    void this.folders.refresh();
+    this.refresh.afterChange({ folders: true });
     this.recent.record(folderId);
     const undo = this.t('links.item.undo');
     const toast = this.toasts.show({
@@ -251,7 +248,7 @@ export class LinkActionsService {
 
   private async moveBack(link: LinkResponse, folderId: string | null): Promise<void> {
     if (await this.store.move(link, folderId)) {
-      void this.folders.refresh();
+      this.refresh.afterChange({ folders: true });
       return;
     }
     this.toasts.show({
@@ -282,8 +279,7 @@ export class LinkActionsService {
     this.store.addSaved(link);
     // The summary and what Automatic mode does arrive a few seconds later (#390 / #391).
     this.injector.get(AiFollowUpService).watch(link, true);
-    void this.folders.refresh();
-    void this.tags.noteLinkSaved();
+    this.refresh.afterChange({ folders: true, tags: true });
     this.toasts.show({
       kind: TOAST_KIND.Saved,
       title: this.t('links.item.savedTo', { folder: this.folderLabel(link.folderId) }),
@@ -315,8 +311,7 @@ export class LinkActionsService {
     this.store.addSavedMany(links);
     // Their summaries arrive a few seconds later, through one refresh loop for the batch.
     this.injector.get(AiFollowUpService).watchMany(links);
-    void this.folders.refresh();
-    void this.tags.noteLinkSaved();
+    this.refresh.afterChange({ folders: true, tags: true });
     const undo = this.t('links.item.undo');
     // Domain rules (#398) may file the links in different folders: then no folder is named.
     const landed = new Set(links.map((link) => link.folderId));
@@ -353,8 +348,7 @@ export class LinkActionsService {
     this.store.dropSaved(ids);
     try {
       await firstValueFrom(this.injector.get(LINKS_API).removeBatch(ids));
-      void this.folders.refresh();
-      void this.tags.noteLinkSaved();
+      this.refresh.afterChange({ folders: true, tags: true });
     } catch {
       this.store.addSavedMany(links);
       this.toasts.show({
@@ -375,7 +369,7 @@ export class LinkActionsService {
       }
       // A new address queues a new AI job (#391).
       this.injector.get(AiFollowUpService).watch(result.link);
-      void this.tags.noteLinkSaved();
+      this.refresh.afterChange({ tags: true });
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.t('links.item.edited'),
@@ -408,11 +402,8 @@ export class LinkActionsService {
 
   private async commitDelete(id: string): Promise<void> {
     if (await this.store.commitRemove(id)) {
-      void this.folders.refresh();
-      void this.tags.noteLinkSaved();
-      void this.trash.refresh();
-      // A deleted link's reminder leaves the badge and the Reminders list.
-      void this.injector.get(RemindersStore).refresh();
+      // Counts, Trash, and a deleted link's reminder leaves the badge and the Reminders list.
+      this.refresh.afterDelete();
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,

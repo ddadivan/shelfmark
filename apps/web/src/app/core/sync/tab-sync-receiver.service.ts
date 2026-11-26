@@ -1,11 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injector, Service } from '@angular/core';
-import { FoldersStore } from '../../stores/folders.store';
+import { LibraryRefreshService } from '../../stores/library-refresh.service';
 import { LinksStore } from '../../stores/links.store';
-import { TagsStore } from '../../stores/tags.store';
-import { TrashStore } from '../../stores/trash.store';
-import { PinsStore } from '../../stores/pins.store';
-import { RemindersStore } from '../../stores/reminders.store';
 import { AuthStore } from '../auth/auth.store';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
 import type { TabSyncMessage } from './models/tab-sync-message.type';
@@ -60,16 +56,7 @@ export class TabSyncReceiver {
 
   /** Reloads the sidebar counts and tags, and (for folder or tag changes) the open feed. */
   private refreshLibrary(feed: boolean): void {
-    void this.injector.get(FoldersStore).refresh();
-    void this.injector.get(TagsStore).refresh();
-    // A delete, restore or empty elsewhere changes what Trash lists (a no-op until it was opened).
-    void this.injector.get(TrashStore).refresh();
-    void this.injector.get(PinsStore).refresh();
-    // A reminder set, changed or cleared elsewhere (or its link deleted) moves the badge.
-    void this.injector.get(RemindersStore).refresh();
-    if (feed) {
-      this.links().refresh();
-    }
+    this.injector.get(LibraryRefreshService).afterOtherTab(feed);
   }
 
   private links() {

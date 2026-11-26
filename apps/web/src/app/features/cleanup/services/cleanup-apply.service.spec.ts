@@ -3,6 +3,8 @@ import type { CleanupApplyResponse } from '@shelfmark/contracts';
 import { TOAST_DURATION_MS, TOAST_KIND, ToastService, type ToastOptions } from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
 import { fakeCleanupApi } from '../../../../testing/cleanup-report';
+import { TAB_SYNC_KIND } from '../../../core/sync/models/tab-sync-kind.const';
+import { TabSyncService } from '../../../core/sync/tab-sync.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
@@ -32,10 +34,11 @@ async function setup() {
   api.undo.mockReturnValue(of({ restored: 2, unmerged: 1 }));
   const toasts: ToastOptions[] = [];
   const links = { removeLinks: vi.fn(), refresh: vi.fn() };
+  const post = vi.fn();
   const refresh = () => ({ refresh: vi.fn(async () => undefined) });
   const counts = {
     folders: refresh(),
-    tags: refresh(),
+    tags: { noteLinkSaved: vi.fn(async () => undefined) },
     views: refresh(),
     trash: refresh(),
     pins: refresh(),
@@ -52,6 +55,7 @@ async function setup() {
       { provide: TrashStore, useValue: counts.trash },
       { provide: PinsStore, useValue: counts.pins },
       { provide: RemindersStore, useValue: counts.reminders },
+      { provide: TabSyncService, useValue: { post } },
       {
         provide: ToastService,
         useValue: {
@@ -64,19 +68,28 @@ async function setup() {
     ],
   });
   await loadEnglish();
-  return { api, toasts, links, counts, service: TestBed.inject(CleanupApplyService) };
+  return { api, toasts, links, counts, post, service: TestBed.inject(CleanupApplyService) };
 }
 
 describe('CleanupApplyService', () => {
   it('applies the run, takes the copies out of the feed, refreshes the counts and offers one Undo', async () => {
-    const { api, toasts, links, counts, service } = await setup();
+    const { api, toasts, links, counts, post, service } = await setup();
     expect(await service.apply(REQUEST)).toBe(true);
     expect(api.apply).toHaveBeenCalledWith(REQUEST);
     expect(links.removeLinks).toHaveBeenCalledWith(['hn2', 'hn3']);
     expect(links.refresh).toHaveBeenCalled();
-    for (const store of Object.values(counts)) {
+    expect(counts.tags.noteLinkSaved).toHaveBeenCalled();
+    for (const store of [
+      counts.folders,
+      counts.views,
+      counts.trash,
+      counts.pins,
+      counts.reminders,
+    ]) {
       expect(store.refresh).toHaveBeenCalled();
     }
+    // The other tabs hear about it too.
+    expect(post).toHaveBeenCalledWith({ kind: TAB_SYNC_KIND.LibraryChanged });
     expect(toasts[0]).toEqual(
       expect.objectContaining({
         kind: TOAST_KIND.Success,

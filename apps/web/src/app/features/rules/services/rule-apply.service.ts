@@ -1,10 +1,8 @@
 import { inject, Injector, Service } from '@angular/core';
 import type { LinkResponse, RuleMatch, RuleResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
-import { FoldersStore } from '../../../stores/folders.store';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { LinksStore } from '../../../stores/links.store';
-import { SavedViewsStore } from '../../../stores/saved-views.store';
-import { TagsStore } from '../../../stores/tags.store';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { ruleUndoGroups } from '../utils/rule-undo-groups';
 
@@ -18,9 +16,7 @@ export class RuleApplyService {
   // Resolved on use: specs that never apply a rule provide no `LINKS_API`.
   private readonly injector = inject(Injector);
   private readonly links = inject(LinksStore);
-  private readonly folders = inject(FoldersStore);
-  private readonly tags = inject(TagsStore);
-  private readonly views = inject(SavedViewsStore);
+  private readonly refresh = inject(LibraryRefreshService);
 
   /** The live target folder of the rule, or `null` (none, or in Trash). */
   folderOf(rule: RuleResponse): string | null {
@@ -71,9 +67,7 @@ export class RuleApplyService {
 
   private after(changed: readonly LinkResponse[], moved: boolean): void {
     this.links.patchLinks(changed, moved);
-    void this.folders.refresh();
-    void this.tags.noteLinkSaved();
-    void this.views.refresh();
+    this.refresh.afterCounts();
   }
 
   private api() {

@@ -22,6 +22,7 @@ import { UndoToastService } from '../../../core/undo/undo-toast.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import { toastFolder } from '../utils/toast-folder';
+import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
@@ -36,7 +37,6 @@ import { MovePickerComponent } from '../components/move-picker/move-picker.compo
 import { BulkTagsDialogComponent } from '../components/bulk-tags-dialog/bulk-tags-dialog.component';
 import { groupedByFolder, tagCounts, withTagsChanged } from '../utils/bulk-link-changes';
 import { chunks } from '../utils/chunks';
-import { RemindersStore } from '../../../stores/reminders.store';
 import { RuleOfferService } from '../../rules/services/rule-offer.service';
 import { BULK_OPEN_CONFIRM_ABOVE } from '../models/bulk-open-confirm-above.const';
 import type { BulkUpdateOutcome } from '../models/bulk-update-outcome.interface';
@@ -58,6 +58,7 @@ interface ShareCapable {
 @Service()
 export class BulkLinkActionsService {
   private readonly store = inject(LinksStore);
+  private readonly refresh = inject(LibraryRefreshService);
   private readonly folders = inject(FoldersStore);
   private readonly recent = inject(RecentFoldersStore);
   private readonly tags = inject(TagsStore);
@@ -200,7 +201,6 @@ export class BulkLinkActionsService {
     );
     if (!outcome.ok) {
       if (outcome.done > 0) {
-        void this.tags.noteLinkSaved();
         this.partial(outcome.done, links.length);
         return false;
       }
@@ -215,7 +215,6 @@ export class BulkLinkActionsService {
       });
       return false;
     }
-    void this.tags.noteLinkSaved();
     this.toasts.show({
       kind: TOAST_KIND.Success,
       title: this.plural('bulk.tags.done', links.length),
@@ -354,7 +353,7 @@ export class BulkLinkActionsService {
       }
     } catch {
       this.store.restoreSnapshot(snapshot, links.slice(done));
-      this.refreshCounts();
+      this.refresh.afterCounts();
       if (done === 0) {
         this.toasts.show({
           kind: TOAST_KIND.Danger,
@@ -377,9 +376,13 @@ export class BulkLinkActionsService {
     for (const id of ids) {
       this.pins.dropLink(id);
     }
-    this.refreshCounts();
-    void this.trash.refresh();
-    void this.injector.get(RemindersStore).refresh();
+    this.refresh.afterChange({
+      folders: true,
+      tags: true,
+      views: true,
+      trash: true,
+      reminders: true,
+    });
     this.undoToast.show({
       title: this.plural('bulk.delete.done', deleted.length),
       detail: this.titles(deleted),
@@ -394,8 +397,8 @@ export class BulkLinkActionsService {
   private async restore(ids: readonly string[]): Promise<void> {
     const outcome = await this.trash.restore(ids.map((id) => ({ kind: TRASH_ITEM_KIND.Link, id })));
     if (outcome === TRASH_OUTCOME.Done) {
-      void this.views.refresh();
-      void this.pins.refresh();
+      // The restore refreshed the feed, counts and reminders; the pins come back too.
+      this.refresh.afterChange({ pins: true });
       return;
     }
     this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('bulk.delete.undoFailed') });
@@ -438,11 +441,11 @@ export class BulkLinkActionsService {
         this.store.patchLinks(response.links, moved);
         done += batch.length;
       }
-      this.refreshCounts();
+      this.refresh.afterCounts();
       return { ok: true, done };
     } catch (error) {
       this.store.restoreSnapshot(snapshot, links.slice(done));
-      this.refreshCounts();
+      this.refresh.afterCounts();
       onError?.(error);
       return { ok: false, done };
     }
@@ -455,13 +458,6 @@ export class BulkLinkActionsService {
       title: this.t('bulk.partial.title'),
       detail: this.t('bulk.partial.detail', { done: String(done), total: String(total) }),
     });
-  }
-
-  /** Folder, tag and saved view counts after the library changed. */
-  private refreshCounts(): void {
-    void this.folders.refresh();
-    void this.tags.noteLinkSaved();
-    void this.views.refresh();
   }
 
   private failed(titleKey: string, detailKey: string, retry: () => void): void {

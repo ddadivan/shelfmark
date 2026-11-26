@@ -15,10 +15,9 @@ import { TRASH_OUTCOME } from '../features/trash/models/trash-outcome.const';
 import type { TrashOutcome } from '../features/trash/models/trash-outcome.type';
 import { toRef, trashKey } from '../features/trash/utils/trash-key';
 import { FoldersStore } from './folders.store';
+import { LibraryRefreshService } from './library-refresh.service';
 import { LinksStore } from './links.store';
 import type { TrashState } from './models/trash-state.interface';
-import { RemindersStore } from './reminders.store';
-import { TagsStore } from './tags.store';
 import { UserSettingsStore } from './user-settings.store';
 
 const initialState: TrashState = {
@@ -123,13 +122,9 @@ export const TrashStore = signalStore(
       }
     }
 
-    /** The library after a restore: the feed, the folders and their counts, the tag counts. */
+    /** The library after a restore: the feed, the counts, the reminders the links carry. */
     function refreshLibrary(): void {
-      injector.get(LinksStore).refresh();
-      void injector.get(FoldersStore).refresh();
-      void injector.get(TagsStore).noteLinkSaved();
-      // A restored link brings its reminder back.
-      void injector.get(RemindersStore).refresh();
+      injector.get(LibraryRefreshService).afterRestore();
     }
 
     /**
