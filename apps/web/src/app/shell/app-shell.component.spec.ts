@@ -491,6 +491,30 @@ describe('AppShellComponent', () => {
       expect(TestBed.inject(Router).url).toBe('/tags');
     });
 
+    it('the Library tab returns to the feed it was opened from when pressed again', async () => {
+      const { harness, root } = await setup(true);
+      const router = TestBed.inject(Router);
+      await router.navigateByUrl('/recent');
+      await harness.fixture.whenStable();
+
+      tab(root, 'Library')?.click();
+      await harness.fixture.whenStable();
+      expect(router.url).toBe('/library');
+
+      tab(root, 'Library')?.click();
+      await harness.fixture.whenStable();
+      expect(router.url).toBe('/recent');
+
+      // Opened from another tab, pressing it again keeps the Library page.
+      await router.navigateByUrl('/today');
+      await harness.fixture.whenStable();
+      tab(root, 'Library')?.click();
+      await harness.fixture.whenStable();
+      tab(root, 'Library')?.click();
+      await harness.fixture.whenStable();
+      expect(router.url).toBe('/library');
+    });
+
     it('shows Ask with the spark in place of Tags while Ask is on (#499)', async () => {
       const ai = fakeAiApi(
         aiSettingsResponse({ settings: { ...AI_SETTINGS_DEFAULT, enabled: true, ask: true } }),

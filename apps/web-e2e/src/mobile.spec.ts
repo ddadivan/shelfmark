@@ -132,12 +132,15 @@ test.describe('mobile layout (mock API)', () => {
   );
 
   test(
-    'tapping the current tab keeps the page; the tiles open the views',
+    'the Library tab toggles back to the feed; the tiles open the views',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await page.goto('/links');
       await tab(page, 'Library').click();
       await expect(page).toHaveURL('/library');
+      // Pressed again on the Library page, it goes back to the feed it was opened from.
+      await tab(page, 'Library').click();
+      await expect(page).toHaveURL('/links');
       await tab(page, 'Library').click();
       await expect(page).toHaveURL('/library');
 

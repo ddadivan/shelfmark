@@ -121,6 +121,8 @@ export default class AppShellComponent {
     ),
     { initialValue: this.router.url },
   );
+  /** The feed or folder the Library tab was pressed on; pressing it again returns there. */
+  private libraryReturn: string | null = null;
   /** The tab of the current page (the tab bar marks it with `aria-current`). */
   protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
   private readonly pushedPage = inject(PushedPage);
@@ -241,6 +243,21 @@ export default class AppShellComponent {
       return;
     }
     event.preventDefault();
+    if (id === PHONE_TAB.Library) {
+      // Library toggles (author, round 11): from a feed or folder it opens the Library page and
+      // remembers where you were; pressed again on the Library page it takes you back there.
+      const here = this.router.url;
+      const tab = phoneTabForUrl(here);
+      if (tab === PHONE_TAB.Library) {
+        const back = this.libraryReturn;
+        this.libraryReturn = null;
+        if (back) {
+          await this.router.navigateByUrl(back);
+        }
+        return;
+      }
+      this.libraryReturn = tab === null ? here : null;
+    }
     const href = this.tabs().find((tab) => tab.id === id)?.href;
     if (href) {
       await this.router.navigateByUrl(href);
