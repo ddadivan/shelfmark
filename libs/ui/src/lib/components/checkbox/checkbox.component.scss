@@ -108,7 +108,8 @@
 }
 
 .ui-checkbox__input:focus-visible + .ui-checkbox__box {
-  @include focus-ring;
+  // `--ui-checkbox-focus-offset` (default 2px): over media the ring draws inside (card select).
+  @include focus-ring(var(--ui-checkbox-focus-offset, 2px));
 }
 
 .ui-checkbox__text {

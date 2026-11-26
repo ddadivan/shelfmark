@@ -165,6 +165,9 @@
   --ui-checkbox-fill: var(--accent);
   --ui-checkbox-bg: var(--surface);
 
+  // Over the preview image the ring draws inside the round (outside it would sit on the image).
+  --ui-checkbox-focus-offset: #{rem(-2px)};
+
   // The quiet `line-strong` edge, like the pill (author, round 13; an accepted a11y gap: about
   // 1.6:1 dark and 1.3:1 light against the surface, below 1.4.11's 3:1).
   --ui-checkbox-border: var(--line-strong);

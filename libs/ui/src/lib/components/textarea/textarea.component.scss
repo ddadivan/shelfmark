@@ -18,7 +18,7 @@
 
   // A feature that frames the text itself (the Ask composer, one line next to a round button)
   // moves the 10px padding into a margin, so the autosize measures only the lines.
-  padding-block: var(--ui-textarea-padding, #{rem(10px)});
+  padding-block: var(--ui-textarea-padding, #{rem(7px)});
   margin-block: var(--ui-textarea-margin, 0);
   resize: none;
 }

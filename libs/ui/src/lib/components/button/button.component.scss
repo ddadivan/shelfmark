@@ -187,6 +187,11 @@ a.ui-button {
   height: var(--ui-button-glass-size, var(--control-xs));
   padding: 0;
 
+  // Over media (card star, ⋯) the ring draws inside, never on the image or clipped by a pill.
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+
   &:not([aria-disabled='true']) {
     @include hover {
       color: var(--ui-button-glass-hover-color, var(--on-glass));

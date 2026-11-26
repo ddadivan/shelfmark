@@ -154,7 +154,7 @@
   flex: 1 0 rem(2px);
 }
 
-// Phone: 68px tall, 26px corners like the tab bar; the buttons share the width, icon above label.
+// Phone: 68px tall, `radius-md` corners; the buttons share the width, icon above label.
 :host(.ui-bulk-bar--stacked) {
   .ui-bulk-bar__bar {
     min-block-size: rem(68px);
@@ -176,7 +176,7 @@
     // Tight sides: seven labels of a long language fit a 360px phone whole.
     padding: var(--space-1) 0;
     font-weight: 500;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-sm);
   }
 
   // Buttons never cut their text: a long label wraps to a second line (a word stays whole).

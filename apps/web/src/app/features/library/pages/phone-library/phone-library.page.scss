@@ -9,11 +9,10 @@
 .phone-library__title {
   @include type(display);
 
-  // MobileMenu title: 34 / 38.
+  // MobileMenu title: 34 / 40 (the display style).
   padding-block-start: var(--space-2);
   margin: 0;
   font-size: var(--font-size-display);
-  line-height: rem(38px);
 
   // Held from the first frame, before the translation fills the heading in.
   min-height: rem(46px);
