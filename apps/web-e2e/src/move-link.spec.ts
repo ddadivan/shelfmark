@@ -5,6 +5,7 @@ import { switchView } from './support/library-toolbar';
 import { isCompact } from './support/sidebar';
 import { settled } from './support/settled';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { openCardMenu } from './support/card-menu';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted), MOCK_NAME.FolderReading and FolderAngular
 // (libs/shared/contracts); the e2e project cannot import from them. Angular sits inside Reading.
@@ -14,11 +15,7 @@ const ANGULAR = 'Angular';
 const ANGULAR_PATH = `${READING} / ${ANGULAR}`;
 
 async function openMovePicker(page: Page, item: 'ui-card' | 'ui-list-item'): Promise<Locator> {
-  const trigger = page
-    .locator(item)
-    .filter({ hasText: PASTA })
-    .getByRole('button', { name: /^Actions for / });
-  await trigger.click();
+  await openCardMenu(page.locator(item).filter({ hasText: PASTA }));
   await page.getByRole('menuitem', { name: 'Move to folder…' }).click();
   const picker = page.getByRole('dialog', { name: `Move “${PASTA}”` });
   await expect(picker).toBeVisible();

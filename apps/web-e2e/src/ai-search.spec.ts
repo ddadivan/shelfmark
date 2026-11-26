@@ -5,6 +5,7 @@ import { seedSession } from './support/mock-session';
 import { openSearchDialog, SEARCH_FIELD_NAME } from './support/search-button';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
+import { openCardMenu } from './support/card-menu';
 
 // Same values as MOCK_LINKS_SCENARIO_KEY / Showcase and MOCK_AI_STORAGE_KEY in apps/web: the mock
 // starts from the demo library (titles, tags, summaries), the AI account from what is stored here.
@@ -180,11 +181,7 @@ test.describe('search by meaning (AI-3, mock API)', () => {
         test.info().project.use.hasTouch ? target.tap() : target.click();
       const opened: string[] = [];
       context.on('page', (other) => opened.push(other.url()));
-      await page
-        .locator('ui-card')
-        .filter({ hasText: 'Nano Puff jacket' })
-        .getByRole('button', { name: /^Actions for / })
-        .click();
+      await openCardMenu(page.locator('ui-card').filter({ hasText: 'Nano Puff jacket' }));
       await page.getByRole('menuitem', { name: /Preview here/ }).click();
       await expect(page).toHaveURL(/[?&]preview=/);
       const before = page.url();
@@ -212,11 +209,7 @@ test.describe('search by meaning (AI-3, mock API)', () => {
 
   test('Edit link no longer lists related links (#572)', async ({ page }) => {
     await openLibrary(page);
-    await page
-      .locator('ui-card')
-      .filter({ hasText: 'Nano Puff jacket' })
-      .getByRole('button', { name: /^Actions for / })
-      .click();
+    await openCardMenu(page.locator('ui-card').filter({ hasText: 'Nano Puff jacket' }));
     await page.getByRole('menuitem', { name: 'Edit' }).click();
     const dialog = page.getByRole('dialog', { name: 'Edit link' });
     await expect(dialog.getByRole('textbox', { name: 'Title' })).toBeVisible();

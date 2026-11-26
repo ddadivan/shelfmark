@@ -268,16 +268,26 @@ test.describe('sign-in flow (mock auth)', () => {
   });
 
   test(
-    'on a phone the sign-in is the one card, with no cards around it and no sideways scroll',
+    'on a phone small cards fly up behind a full-width panel, with no sideways scroll',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
-      // Shelf block 6b: one card on every width, the drift only from 64em, no phone strip.
+      // Phone strip: six small cards fly up, then the flat panel rises over them.
       await page.setViewportSize({ width: 360, height: 780 });
       await page.goto('/sign-in');
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
       await expect(page.locator('.sign-in__panel')).toBeVisible();
       await expect(page.locator('.sd-card')).toHaveCount(0);
-      await expect(page.locator('.pc-card')).toHaveCount(0);
+      await expect(page.locator('.pc-card')).toHaveCount(6);
+      // The strip is decoration: hidden from assistive tech and never in the way of the panel.
+      await expect(page.locator('.sign-in__art')).toHaveAttribute('aria-hidden', 'true');
+      await expect(page.locator('.sign-in__art .pc-card')).toHaveCount(6);
+      const order = await page.evaluate<boolean>(
+        "!!(document.querySelector('.sign-in__art')?.compareDocumentPosition(document.querySelector('.sign-in__panel'))  & Node.DOCUMENT_POSITION_FOLLOWING)",
+      );
+      expect(order).toBe(true);
+
+      const panel = await page.locator('.sign-in__panel').boundingBox();
+      expect(panel?.width ?? 0).toBeGreaterThanOrEqual(359);
 
       const overflow = await page.evaluate<number>(
         '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',

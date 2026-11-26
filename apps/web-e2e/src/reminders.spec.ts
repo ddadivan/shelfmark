@@ -3,6 +3,7 @@ import { openFeed } from './support/a11y-flows';
 import { isCompact, openSidebar, viewEntry } from './support/sidebar';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { openCardMenu } from './support/card-menu';
 
 // Same value as MOCK_LINKS_SCENARIO_KEY / MOCK_LINKS_SCENARIO.Showcase in apps/web: the mock
 // starts from the demo library, which has one due and one upcoming reminder (#275).
@@ -49,7 +50,7 @@ test.describe('reminders (mock API)', { tag: E2E_TAG.Phone }, () => {
     await openFeed(page);
     const card = page.locator('ui-card').first();
     const title = await card.getByRole('heading').innerText();
-    await card.getByRole('button', { name: /^Actions for / }).click();
+    await openCardMenu(card);
     await page.getByRole('menuitem', { name: 'Remind me…' }).click();
 
     const dialog = page.getByRole('dialog', { name: 'Remind me' });
@@ -75,7 +76,7 @@ test.describe('reminders (mock API)', { tag: E2E_TAG.Phone }, () => {
     await openFeed(page);
     const card = page.locator('ui-card').first();
     const title = await card.getByRole('heading').innerText();
-    await card.getByRole('button', { name: /^Actions for / }).click();
+    await openCardMenu(card);
     await page.getByRole('menuitem', { name: 'Remind me…' }).click();
     const dialog = page.getByRole('dialog', { name: 'Remind me' });
     await dialog.getByRole('button', { name: 'Pick date and time…' }).click();
@@ -89,7 +90,7 @@ test.describe('reminders (mock API)', { tag: E2E_TAG.Phone }, () => {
     await dialog.getByRole('button', { name: 'Set reminder' }).click();
     await expect(dialog).toBeHidden();
 
-    await card.getByRole('button', { name: /^Actions for / }).click();
+    await openCardMenu(card);
     await page.getByRole('menuitem', { name: 'Change reminder…' }).click();
     await expect(dialog).toContainText('Current reminder:');
     await dialog.getByRole('button', { name: 'Remove reminder' }).click();

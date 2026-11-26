@@ -4,6 +4,7 @@ import { MOCK_FIXTURE } from './models/mock-fixture.const';
 import { openFeed } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
 import { expect, test } from './support/test';
+import { openCardMenu } from './support/card-menu';
 
 // Domain rules (#398) on the mock API: a link's domain puts it into a folder with tags. The mock
 // data lives in memory, so each test stays on one page load.
@@ -41,7 +42,7 @@ async function ruleFromCard(page: Page): Promise<void> {
   await saveLink(page, 'https://www.youtube.com/watch?v=first');
   await page.mouse.move(0, 0);
   const card = page.locator('ui-card').filter({ hasText: 'youtube.com' }).first();
-  await card.getByRole('button', { name: /^Actions for / }).click();
+  await openCardMenu(card);
   await page.getByRole('menuitem', { name: 'Create a rule for youtube.com…' }).click();
   const dialog = page.getByRole('dialog', { name: 'Add rule' });
   await expect(dialog.getByLabel('Domain', { exact: true })).toHaveValue('youtube.com');

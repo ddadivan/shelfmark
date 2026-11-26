@@ -42,7 +42,15 @@ export async function switchView(page: Page, view: LibraryView): Promise<void> {
 
 /** "Export this view…" of the ⋯ menu: opens the Export dialog and returns it. */
 export async function openExportView(page: Page): Promise<Locator> {
-  await exportButton(page).click();
+  // A slim toolbar (mobile shell, beside the preview) keeps Export in the ⋯ menu.
+  const more = page.getByRole('button', { name: 'More view options' });
+  await exportButton(page).or(more).first().waitFor();
+  if (await more.isVisible()) {
+    await more.click();
+    await page.getByRole('menuitem', { name: 'Export this view…' }).click();
+  } else {
+    await exportButton(page).click();
+  }
   const dialog = page.getByRole('dialog', { name: 'Export links' });
   await expect(dialog).toBeVisible();
   return dialog;

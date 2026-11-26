@@ -3,6 +3,7 @@ import { E2E_TAG } from './models/e2e-tag.const';
 import { seedSession } from './support/mock-session';
 import { isCompact, isPhone } from './support/sidebar';
 import { expect, test } from './support/test';
+import { openCardMenu } from './support/card-menu';
 
 // Mirror the first MOCK_LINKS entries (libs/shared/contracts); the e2e project cannot import them.
 const FIRST = 'Angular overview';
@@ -29,11 +30,10 @@ async function openLibrary(page: Page): Promise<void> {
 
 /** "Preview here" from the card's ⋯ menu (works with touch and with a mouse). */
 async function previewFromMenu(page: Page, title: string): Promise<void> {
-  await page
-    .locator('app-link-card', { hasText: title })
-    .first()
-    .getByRole('button', { name: `Actions for ${title}` })
-    .click();
+  await openCardMenu(
+    page.locator('app-link-card', { hasText: title }).first(),
+    `Actions for ${title}`,
+  );
   await page.getByRole('menuitem', { name: /Preview here/ }).click();
 }
 

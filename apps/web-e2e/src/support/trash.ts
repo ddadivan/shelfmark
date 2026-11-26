@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { pickFolderMenuItem } from './a11y-flows';
 import { isCompact, openSidebar, viewEntry } from './sidebar';
+import { openCardMenu } from './card-menu';
 
 /**
  * Deletes the first link of the feed through its card menu and the confirmation; resolves with its
@@ -9,7 +10,7 @@ import { isCompact, openSidebar, viewEntry } from './sidebar';
 export async function deleteFirstLink(page: Page): Promise<string> {
   const card = page.locator('ui-card').first();
   const title = await card.getByRole('heading').innerText();
-  await card.getByRole('button', { name: /^Actions for / }).click();
+  await openCardMenu(card);
   await page.getByRole('menuitem', { name: 'Delete' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).click();
   await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);

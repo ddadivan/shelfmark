@@ -16,6 +16,7 @@ import {
   tagSuggestions,
 } from './support/ai';
 import type { Page } from '@playwright/test';
+import { openCardMenu } from './support/card-menu';
 
 /** Signed in on All links; with `ai`, the mock account has AI on (intro seen). */
 async function openLinks(page: Page, ai = true): Promise<void> {
@@ -136,7 +137,7 @@ test.describe('AI (#389, mock API)', () => {
     await saveWithSummary(page);
 
     const card = cardOf(page, AI_TITLE);
-    await card.getByRole('button', { name: `Actions for ${AI_TITLE}` }).click();
+    await openCardMenu(card, `Actions for ${AI_TITLE}`);
     await page.getByRole('menuitem', { name: 'Edit' }).click();
     const edit = page.getByRole('dialog', { name: 'Edit link' });
     const summary = edit.getByLabel('Summary', { exact: true });
@@ -169,9 +170,7 @@ test.describe('AI (#389, mock API)', () => {
     await toast.getByRole('button', { name: 'Undo' }).click();
     await expect(toast).toBeHidden();
 
-    await cardOf(page, AI_TITLE)
-      .getByRole('button', { name: `Actions for ${AI_TITLE}` })
-      .click();
+    await openCardMenu(cardOf(page, AI_TITLE), `Actions for ${AI_TITLE}`);
     await page.getByRole('menuitem', { name: 'Edit' }).click();
     const edit = page.getByRole('dialog', { name: 'Edit link' });
     await expect(edit.getByRole('combobox', { name: 'Folder' })).toContainText('Unsorted');

@@ -5,6 +5,7 @@ import { seedSession } from './support/mock-session';
 import { switchView } from './support/library-toolbar';
 import { isCompact } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { openCardMenu } from './support/card-menu';
 
 // The mock library has 60 links (a first page of 50).
 const ALL_LINKS = 60;
@@ -143,11 +144,7 @@ test.describe('links feed (mock API)', () => {
       await openFeed(page);
       const title = await firstTitle(page);
 
-      await page
-        .locator('ui-card')
-        .first()
-        .getByRole('button', { name: /^Actions for / })
-        .click();
+      await openCardMenu(page.locator('ui-card').first());
       await page.getByRole('menuitem', { name: 'Delete' }).click();
       const confirm = page.getByRole('alertdialog');
       await expect(confirm).toContainText('moves to Trash');
@@ -165,11 +162,7 @@ test.describe('links feed (mock API)', () => {
     await openFeed(page);
     const title = await firstTitle(page);
 
-    await page
-      .locator('ui-card')
-      .first()
-      .getByRole('button', { name: /^Actions for / })
-      .click();
+    await openCardMenu(page.locator('ui-card').first());
     await page.getByRole('menuitem', { name: 'Delete' }).click();
     await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).press('Enter');
     await expect(page.getByText('Moved to Trash')).toBeVisible();

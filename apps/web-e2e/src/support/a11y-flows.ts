@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { seedSession } from './mock-session';
 import { openSidebar, openTags } from './sidebar';
+import { openCardMenu } from './card-menu';
 
 /** Signed-in user on a screen that lists links. */
 export async function openSignedIn(page: Page, path: string): Promise<void> {
@@ -39,11 +40,7 @@ export async function pickTagMenuItem(page: Page, tag: string, item: string): Pr
 
 /** Opens "Edit" from the menu of the first card and returns the dialog. */
 export async function openCardEdit(page: Page): Promise<Locator> {
-  await page
-    .locator('ui-card')
-    .first()
-    .getByRole('button', { name: /^Actions for / })
-    .click();
+  await openCardMenu(page.locator('ui-card').first());
   await page.getByRole('menuitem', { name: 'Edit' }).click();
   const dialog = page.getByRole('dialog', { name: 'Edit link' });
   await expect(dialog).toBeVisible();
@@ -52,11 +49,7 @@ export async function openCardEdit(page: Page): Promise<Locator> {
 
 /** Opens "Move to folder…" from the menu of the first card and returns the picker. */
 export async function openCardMove(page: Page): Promise<Locator> {
-  await page
-    .locator('ui-card')
-    .first()
-    .getByRole('button', { name: /^Actions for / })
-    .click();
+  await openCardMenu(page.locator('ui-card').first());
   await page.getByRole('menuitem', { name: 'Move to folder…' }).click();
   const picker = page.getByRole('dialog', { name: /^Move “/ });
   await expect(picker).toBeVisible();

@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession, signOutFromUi } from './support/mock-session';
+import { openCardMenu } from './support/card-menu';
 
 // Mirror MOCK_LINKS ("Simple pasta"); the e2e project cannot import from libs/shared/contracts.
 const PASTA = 'Simple pasta';
@@ -27,11 +28,7 @@ test.describe('sync between browser tabs (mock API)', () => {
     await other.goto('/links');
     await expect(other.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
 
-    await page
-      .locator('ui-card')
-      .filter({ hasText: PASTA })
-      .getByRole('button', { name: /^Actions for / })
-      .click();
+    await openCardMenu(page.locator('ui-card').filter({ hasText: PASTA }));
     await page.getByRole('menuitem', { name: 'Delete' }).click();
     await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).click();
     await expect(page.getByRole('heading', { name: PASTA, exact: true })).toHaveCount(0);
