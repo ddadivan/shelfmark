@@ -99,6 +99,20 @@
   border-block-end: 1px solid var(--sep);
 }
 
+.ui-view-menu__choice {
+  display: grid;
+  gap: rem(6px);
+  padding: var(--space-2) rem(10px) var(--space-3);
+  margin-block-end: var(--space-1);
+  border-block-end: 1px solid var(--sep);
+}
+
+.ui-view-menu__choice .ui-view-menu__heading {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
 .ui-view-menu__head,
 .ui-view-menu__ends {
   @include type(caption);

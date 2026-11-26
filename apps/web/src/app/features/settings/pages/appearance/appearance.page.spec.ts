@@ -16,7 +16,6 @@ import {
   CUSTOM_THEME_ATTRIBUTE,
   TOAST_KIND,
   LAYOUT_ATTRIBUTE,
-  LAYOUT_OFF,
   THEME_ATTRIBUTE,
   THEME_CUSTOM,
   ToastService,
@@ -31,7 +30,6 @@ import { CUSTOM_THEME_STORAGE_KEY } from '../../../../core/theme/models/custom-t
 import { MOTION_STORAGE_KEY } from '../../../../core/theme/models/motion-storage-key.const';
 import { THEME_STORAGE_KEY } from '../../../../core/theme/models/theme-storage-key.const';
 import { USER_SETTINGS_API } from '../../models/user-settings-api.const';
-import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { AppearanceSettingsService } from '../../services/appearance-settings.service';
 import AppearancePage from './appearance.page';
 
@@ -56,15 +54,9 @@ function radioIn(root: HTMLElement, group: string, label: string): HTMLInputElem
   return found;
 }
 
-/** "Custom theme › Customize" (Shelf 05-settings), which turns the Custom theme on. */
+/** The Custom tile of the Theme row, which turns the Custom theme on. */
 function customize(root: HTMLElement): void {
-  const button = Array.from(root.querySelectorAll<HTMLButtonElement>('button')).find(
-    (item) => item.textContent?.trim() === 'Customize',
-  );
-  if (!button) {
-    throw new Error('No Customize button');
-  }
-  button.click();
+  radioIn(root, 'Theme', 'Custom').click();
 }
 
 /** The own-colour picker whose swatch button is named `label`. */
@@ -139,51 +131,33 @@ describe('AppearancePage', () => {
     }
   });
 
-  it('shows the theme choice, animations and the preview, without the moved rows (#315)', async () => {
+  it('shows the theme choice with Custom as a tile, animations, without the moved rows (#315)', async () => {
     const { root: page } = await setup();
 
     expect(page.querySelector('h1')?.textContent).toContain('Appearance');
     expect(page.textContent).toContain('Saved as you go and synced to all your devices.');
-    // Shelf 05-settings: System, Light, Dark, the Accent row and the Custom theme row.
+    // System, Light, Dark and Custom are four tiles; the Accent row follows.
     expect(page.textContent).toContain('Graphite keeps the interface quiet');
-    expect(page.textContent).toContain('Your own accent and background, checked for contrast.');
-    expect(() => radioIn(page, 'Theme', 'Custom')).toThrow();
+    for (const label of ['System', 'Light', 'Dark', 'Custom']) {
+      expect(radioIn(page, 'Theme', label)).toBeTruthy();
+    }
+    expect(radioIn(page, 'Theme', 'Custom').checked).toBe(false);
     expect(page.textContent).toContain('Animations');
     // Language has its own page, link counts live in Library, recently opened in Privacy.
     expect(page.querySelector('a[href="/settings/language"]')).toBeNull();
     for (const gone of ['Change language', 'Link counts', 'Remember recently opened']) {
       expect(page.textContent).not.toContain(gone);
     }
-    expect(page.querySelector('ui-theme-preview')?.getAttribute('aria-label')).toBe(
-      'Preview of your settings',
-    );
+    // No live preview and no Cards section (the card size and "Show site" live in the View menu).
+    expect(page.querySelector('ui-theme-preview')).toBeNull();
+    expect(page.textContent).not.toContain('Live preview');
     // The custom options appear only for Custom.
     expect(page.textContent).not.toContain('Start from');
     // The extras of #285.
-    for (const title of ['Text and layout', 'Cards', 'Sidebar and motion']) {
+    for (const title of ['Text and layout', 'Sidebar and motion']) {
       expect(page.textContent).toContain(title);
     }
-  });
-
-  it('draws the link counts and Recently opened in the preview as Library and Privacy set them (#315)', async () => {
-    const shown = await setup();
-    const preview = () => shown.root.querySelector('ui-theme-preview') as HTMLElement;
-    await vi.waitFor(() => {
-      shown.harness.detectChanges();
-      expect(preview().querySelectorAll('.ui-theme-preview__count').length).toBeGreaterThan(0);
-      expect(preview().textContent).toContain('Recently opened');
-    });
-  });
-
-  it('leaves the counts and Recently opened out of the preview when they are off (#315)', async () => {
-    const off = await setup({ settings: { showFolderCounts: false, pauseHistory: true } });
-    await TestBed.inject(UserSettingsStore).load();
-    await vi.waitFor(() => {
-      off.harness.detectChanges();
-      const preview = off.root.querySelector('ui-theme-preview') as HTMLElement;
-      expect(preview.querySelectorAll('.ui-theme-preview__count')).toHaveLength(0);
-      expect(preview.textContent).not.toContain('Recently opened');
-    });
+    expect(page.textContent).not.toContain('Cards');
   });
 
   it('applies and saves a fixed theme on the account', async () => {
@@ -456,7 +430,7 @@ describe('AppearancePage', () => {
     expect(settingsApi.update).not.toHaveBeenCalled();
   });
 
-  describe('text, layout, cards and sidebar (#285)', () => {
+  describe('text, layout and sidebar (#285)', () => {
     function switchNamed(page: HTMLElement, name: string): HTMLButtonElement {
       const found = page.querySelector<HTMLButtonElement>(
         `button[role="switch"][aria-label="${name}"]`,
@@ -467,7 +441,7 @@ describe('AppearancePage', () => {
       return found;
     }
 
-    it('sets text size, font, density and the preview image on <html> and the account', async () => {
+    it('sets text size, font and density on <html> and the account', async () => {
       const { root: page, settingsApi, stable, theme } = await setup();
 
       radioIn(page, 'Text size', '125%').click();
@@ -476,33 +450,14 @@ describe('AppearancePage', () => {
       await stable();
       radioIn(page, 'Density', 'Compact').click();
       await stable();
-      radioIn(page, 'Preview image', 'Small').click();
-      await stable();
 
       expect(settingsApi.update).toHaveBeenCalledWith({ textSize: 'xl' });
       expect(settingsApi.update).toHaveBeenCalledWith({ font: 'readable' });
       expect(settingsApi.update).toHaveBeenCalledWith({ density: 'compact' });
-      expect(settingsApi.update).toHaveBeenCalledWith({ cardPreview: 'small' });
       expect(theme.layout().textSize).toBe('xl');
       expect(root.getAttribute(LAYOUT_ATTRIBUTE.TextSize)).toBe('xl');
       expect(root.getAttribute(LAYOUT_ATTRIBUTE.Font)).toBe('readable');
       expect(root.getAttribute(LAYOUT_ATTRIBUTE.Density)).toBe('compact');
-      expect(root.getAttribute(LAYOUT_ATTRIBUTE.CardPreview)).toBe('small');
-    });
-
-    it('hides site, notes and tags of cards with the switches', async () => {
-      const { root: page, settingsApi, stable } = await setup();
-
-      for (const [name, key, attribute] of [
-        ['Show site', 'cardSite', LAYOUT_ATTRIBUTE.CardSite],
-        ['Show notes', 'cardNotes', LAYOUT_ATTRIBUTE.CardNotes],
-        ['Show tags', 'cardTags', LAYOUT_ATTRIBUTE.CardTags],
-      ] as const) {
-        switchNamed(page, name).click();
-        await stable();
-        expect(settingsApi.update).toHaveBeenCalledWith({ [key]: false });
-        expect(root.getAttribute(attribute)).toBe(LAYOUT_OFF);
-      }
     });
 
     it('rolls a layout change back with a toast when saving fails', async () => {

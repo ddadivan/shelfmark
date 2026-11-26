@@ -22,7 +22,9 @@ import type { ConnectedOverlay } from '../../services/overlay/connected-overlay'
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { UiOverlay } from '../../services/overlay/overlay.service';
 import { RangeComponent } from '../range/range.component';
+import { SegmentedControlComponent } from '../segmented-control/segmented-control.component';
 import { SwitchComponent } from '../switch/switch.component';
+import type { ViewMenuChoice } from './models/view-menu-choice.interface';
 import type { ViewMenuFieldChange } from './models/view-menu-field-change.interface';
 import type { ViewMenuField } from './models/view-menu-field.interface';
 import type { ViewMenuStepText } from './models/view-menu-step-text.type';
@@ -50,7 +52,7 @@ const FOCUSABLE =
  */
 @Component({
   selector: 'ui-view-menu',
-  imports: [RangeComponent, SwitchComponent],
+  imports: [RangeComponent, SegmentedControlComponent, SwitchComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-view-menu',
@@ -80,11 +82,15 @@ export class ViewMenuComponent {
   readonly gridDisabled = input(false, { transform: booleanAttribute });
   /** The switches of what cards show. */
   readonly fields = input<readonly ViewMenuField[]>([]);
+  /** An optional one-of-few setting under the grid size, as a segmented control (card image size). */
+  readonly choice = input<ViewMenuChoice>();
   /** Render the panel in place, always open (docs and Storybook). */
   readonly inline = input(false, { transform: booleanAttribute });
 
   /** A switch was flipped. */
   readonly fieldChange = output<ViewMenuFieldChange>();
+  /** An option of `choice` was picked (its `value`). */
+  readonly choiceChange = output<string>();
   /** The panel opened. */
   readonly opened = output<void>();
   /** The panel closed (Esc, a press outside, Tab out, the trigger or `close()`). */

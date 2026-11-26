@@ -8,7 +8,6 @@ import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/services/motion';
 import {
   CUSTOM_THEME_ATTRIBUTE,
   LAYOUT_ATTRIBUTE,
-  LAYOUT_OFF,
   THEME,
   THEME_ATTRIBUTE,
   THEME_CUSTOM,
@@ -680,21 +679,6 @@ describe('appearance layout attributes (#285)', () => {
       /:host-context\(\[data-card-preview=off\]\) \.ui-card__media \{\s*display: none;/,
     );
     expect(card).toContain('padding: var(--density-card-padding)');
-    const preview = compile(
-      resolve(STYLES_DIR, '../lib/components/theme-preview/theme-preview.component.scss'),
-      {
-        loadPaths: [STYLES_DIR],
-      },
-    ).css;
-    for (const [attribute, part] of [
-      [LAYOUT_ATTRIBUTE.CardSite, 'site'],
-      [LAYOUT_ATTRIBUTE.CardNotes, 'note'],
-      [LAYOUT_ATTRIBUTE.CardTags, 'tag'],
-    ] as const) {
-      expect(preview).toContain(
-        `:host-context([${attribute}=${LAYOUT_OFF}]) .ui-theme-preview__${part}`,
-      );
-    }
   });
 });
 

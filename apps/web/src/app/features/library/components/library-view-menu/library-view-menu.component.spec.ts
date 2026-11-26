@@ -9,6 +9,8 @@ import { LINKS_SCOPE } from '../../../links/models/links-scope.const';
 import type { LinksScope } from '../../../links/models/links-scope.type';
 import { FEED_MEMORY_STORAGE_KEY } from '../../models/feed-memory-storage-key.const';
 import { GRID_STEP_DEFAULT } from '../../models/grid-step-default.const';
+import { ThemeService } from '../../../../core/theme/theme.service';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { LibraryFilterService } from '../../services/library-filter.service';
 import { FeedMemoryService } from '../../services/feed-memory.service';
 import { provideLibraryPage } from '../../services/provide-library-page';
@@ -43,13 +45,14 @@ describe('LibraryViewMenuComponent', () => {
   beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
-  it('is the "View" button with the default step and the five fields switched on', async () => {
+  it('is the "View" button with the default step and Show site and the five fields switched on', async () => {
     const { menu } = await setup();
 
     expect(await menu.getLabel()).toBe('View');
     expect(await menu.getStep()).toBe(GRID_STEP_DEFAULT);
     expect(await menu.getStepText()).toBe(`${GRID_STEP_DEFAULT} / 6`);
     expect(await menu.getFields()).toEqual([
+      { label: 'Show site', checked: true },
       { label: 'Note', checked: true },
       { label: 'Hashtags', checked: true },
       { label: 'Folder', checked: true },
@@ -80,6 +83,29 @@ describe('LibraryViewMenuComponent', () => {
 
     await menu.toggleField('Hashtags');
     expect(filters.fieldShown('tags')).toBe(true);
+  });
+
+  it('sets the preview image size and Show site on the layout and the account', async () => {
+    const { fixture, menu } = await setup();
+    const theme = TestBed.inject(ThemeService);
+    const settings = TestBed.inject(UserSettingsStore);
+    const save = vi.spyOn(settings, 'setAppearance').mockResolvedValue(true);
+
+    await menu.open();
+    const radio = (label: string) =>
+      document.querySelector<HTMLInputElement>(
+        `.ui-view-menu__choice input[type="radio"][aria-label="${label}"], .ui-view-menu__choice label:has(input) input`,
+      );
+    expect(radio('Large')).not.toBeNull();
+    const labels = [...document.querySelectorAll('.ui-view-menu__choice label')];
+    expect(labels.map((el) => el.textContent?.trim())).toEqual(['Large', 'Small', 'Off']);
+    (labels[2]?.querySelector('input') as HTMLInputElement).click();
+    await fixture.whenStable();
+    expect(save).toHaveBeenCalledWith({ cardPreview: 'off' });
+
+    await menu.toggleField('Show site');
+    expect(save).toHaveBeenCalledWith({ cardSite: false });
+    expect(theme.layout().cardSite).toBeTypeOf('boolean');
   });
 
   it('turns the Grid size slider off in the List and Headlines views only', async () => {

@@ -1307,7 +1307,14 @@
         "tags": "Hashtags",
         "folder": "Carpeta",
         "date": "Fecha",
-        "description": "Descripción"
+        "description": "Descripción",
+        "site": "Mostrar el sitio"
+      },
+      "preview": {
+        "label": "Imagen de vista previa",
+        "large": "Grande",
+        "small": "Pequeña",
+        "off": "Ninguna"
       }
     },
     "split": {
@@ -1865,28 +1872,6 @@
           "compact": "Compacta"
         }
       },
-      "cards": {
-        "title": "Tarjetas",
-        "preview": {
-          "label": "Imagen de vista previa",
-          "hint": "La imagen en la parte superior de cada tarjeta",
-          "large": "Grande",
-          "small": "Pequeña",
-          "off": "Ninguna"
-        },
-        "site": {
-          "label": "Mostrar el sitio",
-          "hint": "Dominio y favicon encima del título"
-        },
-        "notes": {
-          "label": "Mostrar las notas",
-          "hint": "Tu nota debajo del título"
-        },
-        "tags": {
-          "label": "Mostrar las etiquetas",
-          "hint": "Las etiquetas al pie de la tarjeta"
-        }
-      },
       "sidebar": {
         "colours": {
           "label": "Colores de carpeta",
@@ -1901,41 +1886,11 @@
         "full": "Completas",
         "reduced": "Reducidas"
       },
-      "preview": {
-        "title": "Vista previa en directo",
-        "label": "Vista previa de tus ajustes",
-        "hint": "Los cambios se aplican al momento en toda la app.",
-        "folders": {
-          "angular": "Angular",
-          "clothes": "Ropa",
-          "recipes": "Recetas"
-        },
-        "cards": {
-          "one": {
-            "site": "youtube.com",
-            "title": "Signal Forms en 20 minutos",
-            "tag": "angular",
-            "note": "Ver el fin de semana"
-          },
-          "two": {
-            "site": "cos.com",
-            "title": "Abrigo de lana, corte recto",
-            "tag": "ropa",
-            "note": "Esperar a las rebajas"
-          }
-        },
-        "recent": "Abiertos recientemente"
-      },
       "failed": "No se pudo guardar la apariencia",
       "failedDetail": "Ha vuelto a como estaba.",
       "accent": {
         "label": "Acento",
         "hint": "Grafito mantiene la interfaz tranquila; Tinta y Salvia añaden un color."
-      },
-      "customRow": {
-        "label": "Tema personalizado",
-        "hint": "Tu propio acento y fondo, con el contraste comprobado.",
-        "action": "Personalizar"
       }
     },
     "privacy": {

@@ -7,7 +7,9 @@
   [smallLabel]="'library.viewMenu.small' | transloco"
   [largeLabel]="'library.viewMenu.large' | transloco"
   [gridDisabled]="listView()"
+  [choice]="previewChoice()"
   [fields]="fields()"
   (stepChange)="setStep($event)"
+  (choiceChange)="setPreview($event)"
   (fieldChange)="setField($event)"
 />
