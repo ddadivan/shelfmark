@@ -179,8 +179,8 @@
   border-block-start: 1px solid var(--sep);
 }
 
-// The mobile shell's top bar (shell `.shell__top`, Shelf block 1): 16px from the top, the search
-// field (48px, 44px on a phone, radius 16) and the 32px avatar in its 40px button; below 64em.
+// The mobile shell's top bar (shell `.shell__top`, Shelf block 1): 16px from the top, the logo
+// block at the start and the 32px avatar in its 40px button at the end; below 64em.
 .boot__topbar {
   display: none;
   flex: none;
@@ -197,21 +197,18 @@
   }
 }
 
-.boot__top-search {
-  flex: 1 1 0;
-  height: rem(48px);
-  border-radius: var(--radius-lg);
-
-  @include phone {
-    height: rem(44px);
-  }
+.boot__top-logo {
+  flex: none;
+  width: rem(104px);
+  height: rem(22px);
+  margin-inline-start: var(--space-2);
 }
 
 .boot__avatar {
   flex: none;
   width: rem(32px);
   height: rem(32px);
-  margin-inline: rem(4px);
+  margin-inline: auto rem(4px);
   border-radius: var(--radius-full);
 }
 

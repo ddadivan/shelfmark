@@ -22,7 +22,6 @@ import {
   MenuItemComponent,
   MenuSeparatorComponent,
   MenuTriggerDirective,
-  SearchTriggerComponent,
   ToastService,
   TooltipDirective,
 } from '@shelfmark/ui';
@@ -37,7 +36,6 @@ import { AiAnnouncementService } from '../features/ai/services/ai-announcement.s
 import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
-import { FeedSearchService } from '../features/search/services/feed-search.service';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
@@ -66,7 +64,7 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
  * Layout around the signed-in pages (Shelf, ADR 0061). Desktop: the 240px sidebar on the left (logo,
  * account avatar, Add link, navigation, Theme and the footer rows), the header (search field, Ask at
  * the far right) and the page on the right. Mobile shell (below 64em, Shelf `01-library.html`): a
- * top bar with the search field and the avatar (settings and the account menu behind it), the page,
+ * top bar with the logo and the avatar (settings and the account menu behind it), the page,
  * and the floating tab bar (Today, Library, Add, Search, Ask, or Tags while Ask is off).
  */
 @Component({
@@ -93,7 +91,6 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
     SettingsChipsComponent,
     SidebarComponent,
     TabBarComponent,
-    SearchTriggerComponent,
     TooltipDirective,
   ],
   host: {
@@ -108,8 +105,6 @@ export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
   protected readonly actions = inject(LinkActionsService);
   protected readonly search = inject(SearchDialogService);
-  /** The feed's search text, shown in the top bar field (Shelf block 3). */
-  protected readonly feedSearch = inject(FeedSearchService);
   protected readonly shortcuts = inject(ShortcutsDialogService);
   protected readonly viewport = inject(ViewportService);
   private readonly transloco = inject(TranslocoService);
@@ -141,7 +136,7 @@ export default class AppShellComponent {
     () => this.viewport.compact() && !this.viewport.phone() && this.inSettings(),
   );
   /**
-   * The top bar of the mobile shell (search and avatar): not on a pushed page (it has its own bar)
+   * The top bar of the mobile shell (logo and avatar): not on a pushed page (it has its own bar)
    * nor on the settings pages (their own header leads back).
    */
   protected readonly topBar = computed(
