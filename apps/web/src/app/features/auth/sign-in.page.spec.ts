@@ -114,15 +114,23 @@ describe('SignInPage', () => {
     expect(drift?.hasAttribute('inert')).toBe(true);
     expect(drift?.querySelectorAll('.sd-card')).toHaveLength(14);
     expect(drift?.textContent).toContain('A ten-minute morning stretch');
+    expect(root.querySelector('app-sign-in-phone-cards')).toBeNull();
   });
 
-  it('shows the card alone below 64em, with the "or" divider (Shelf 06-public)', async () => {
+  it('shows the strip of small cards above the card below 64em, with the "or" divider', async () => {
     const { harness } = await setup(undefined, undefined, false);
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
 
     expect(root.querySelector('app-sign-in-drift')).toBeNull();
-    expect(root.querySelector('.sign-in__panel')).not.toBeNull();
+    expect(root.querySelector('.sign-in__art')?.getAttribute('aria-hidden')).toBe('true');
+    const strip = root.querySelector('app-sign-in-phone-cards');
+    expect(strip?.hasAttribute('inert')).toBe(true);
+    expect(strip?.querySelectorAll('.pc-card')).toHaveLength(6);
+    // Decorative and first in the DOM: the panel (and its buttons) is the first thing to focus.
+    expect(strip?.compareDocumentPosition(root.querySelector('.sign-in__panel') as Node)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
     expect(root.querySelector('.sign-in__or')).not.toBeNull();
   });
 

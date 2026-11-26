@@ -1,6 +1,10 @@
 <div class="sign-in">
   @if (isDesktop()) {
   <app-sign-in-drift />
+  } @else {
+  <div class="sign-in__art" aria-hidden="true">
+    <app-sign-in-phone-cards />
+  </div>
   }
 
   <main class="sign-in__panel">

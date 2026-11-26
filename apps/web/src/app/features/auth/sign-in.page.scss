@@ -1,15 +1,41 @@
 @use 'ui' as *;
 
-// Shelf 06-public: one centred 400px card on `bg`; from 64em saved-link cards drift around it.
+// Shelf 06-public: one 400px card on `bg`. From 64em it is centred and saved-link cards drift around
+// it; below 64em (author, Nov 26: as in production) a strip of small cards flies up from the bottom
+// of the screen, then the panel, a full-width band, rises under it.
 .sign-in {
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-height: 100dvh;
-  padding: var(--space-6) var(--space-4);
   overflow: hidden;
   color: var(--text);
   background: var(--bg);
-  place-items: center;
+
+  @include desktop {
+    display: grid;
+    padding: var(--space-6) var(--space-4);
+    place-items: center;
+  }
+}
+
+// Not clipped: the cards fly in from below the screen (the page clips them). The 240px lane sits at
+// the bottom of the strip: the top cards reach about 60px above it and stay on screen.
+.sign-in__art {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  justify-content: center;
+  align-self: stretch;
+  height: rem(320px);
+  padding-block-end: var(--space-2);
+}
+
+// The strip's host fills the strip by default; here it keeps the lane's own height so the lane
+// sits at the strip's bottom.
+.sign-in__art app-sign-in-phone-cards {
+  height: auto;
 }
 
 .sign-in__panel {
@@ -18,17 +44,41 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  flex: 1;
   width: 100%;
-  max-width: rem(400px);
-  padding: var(--space-8);
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    var(--shadow-l2),
-    0 0 0 1px var(--line);
 
-  @include phone {
-    padding: var(--space-6);
+  // Below 64em the panel is a full-width band to the bottom of the screen (author, Nov 26: no
+  // shadow, no corners); its content keeps the card's 400px column.
+  padding: var(--space-8) max(var(--space-6), calc((100% - #{rem(400px)}) / 2));
+  background: var(--surface);
+  border-block-start: 1px solid var(--line);
+
+  @include desktop {
+    flex: none;
+    max-width: rem(400px);
+    padding: var(--space-8);
+    border-block-start: 0;
+    border-radius: var(--radius-lg);
+    box-shadow:
+      var(--shadow-l2),
+      0 0 0 1px var(--line);
+  }
+
+  // The card rises after the cards have flown past (480 ms): a short slide and fade, `transform`
+  // and `opacity` only. It is in place, clickable and focusable from the first frame.
+  @include compact {
+    animation: sign-in-rise var(--duration-slow) var(--ease-drawer) 480ms backwards;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+@keyframes sign-in-rise {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(40px)});
   }
 }
 
@@ -46,7 +96,6 @@
   @include type(display);
 
   margin: var(--space-2) 0 0;
-  line-height: 1.15;
   letter-spacing: -0.01em;
   text-wrap: balance;
 }

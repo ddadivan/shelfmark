@@ -28,6 +28,7 @@ import { isSignInError } from '../../core/auth/is-sign-in-error';
 import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
 import { SignInDriftComponent } from './components/sign-in-drift/sign-in-drift.component';
+import { SignInPhoneCardsComponent } from './components/sign-in-phone-cards/sign-in-phone-cards.component';
 import { SIGN_IN_ERROR_GENERIC_KEY } from './models/sign-in-error-generic-key.const';
 import { SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
 import { DEMO_ERROR_REASON } from './models/demo-error-reason.const';
@@ -44,6 +45,7 @@ import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
     NoticeComponent,
     ShakeDirective,
     SignInDriftComponent,
+    SignInPhoneCardsComponent,
   ],
   templateUrl: './sign-in.page.html',
   styleUrl: './sign-in.page.scss',
@@ -56,7 +58,7 @@ export default class SignInPage {
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly LOGO_VARIANT = LOGO_VARIANT;
 
-  /** From 64em saved-link cards drift around the card; below it the card stands alone. */
+  /** From 64em saved-link cards drift around the card; below it a strip of small cards flies in above it. */
   protected readonly isDesktop = inject(ViewportService).desktop;
 
   protected readonly auth = inject(AuthStore);
