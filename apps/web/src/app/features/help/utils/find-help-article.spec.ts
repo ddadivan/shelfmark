@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { HELP_ARTICLES } from '../models/help-articles.const';
+import { HELP_BLOCK } from '../models/help-block-kind.const';
 import { HELP_CATEGORIES } from '../models/help-categories.const';
+import { HELP_LINK } from '../models/help-link.const';
 import { HELP_POPULAR } from '../models/help-popular.const';
 import { findHelpArticle, helpArticleNeighbours } from './find-help-article';
 
@@ -37,6 +39,23 @@ describe('help articles', () => {
     for (const article of HELP_ARTICLES) {
       for (const id of article.related) {
         expect(findHelpArticle(id)).toBeDefined();
+      }
+    }
+  });
+
+  it('sends only to app paths from HELP_LINK and names every image with a slug', () => {
+    const routes = new Set<string>(Object.values(HELP_LINK).map((link) => link.route));
+    for (const article of HELP_ARTICLES) {
+      const links = (article.links ?? []).map((link) => link.route);
+      for (const route of links) {
+        expect(routes.has(route)).toBe(true);
+        expect(route.startsWith('/')).toBe(true);
+      }
+      expect(new Set(links).size).toBe(links.length);
+      for (const block of article.sections.flatMap((section) => section.blocks)) {
+        if (block.kind === HELP_BLOCK.Image) {
+          expect(block.keys[0]).toMatch(/^[a-z-]+$/);
+        }
       }
     }
   });

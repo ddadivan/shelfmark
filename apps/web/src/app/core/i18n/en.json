@@ -4854,6 +4854,9 @@
             "title": "Import the file",
             "b0": "Open Data and help, choose Import links and pick the file. Folders are kept, and links you already saved are skipped."
           }
+        },
+        "images": {
+          "import-page": "The Import page with its steps and the drop area for a bookmarks file."
         }
       },
       "use-on-phone": {
@@ -4938,6 +4941,9 @@
             "title": "Narrow it down",
             "b0": "Add a folder or tag to the search to narrow the results. Matching words are highlighted."
           }
+        },
+        "images": {
+          "search-results": "Search results for a word: the matching links with the words marked."
         }
       },
       "search-by-meaning": {
@@ -4994,6 +5000,9 @@
             "title": "Clear it",
             "b0": "Open a link, snooze it or mark it done, and it leaves the page."
           }
+        },
+        "images": {
+          "today": "The Today page with reminders that are due, links saved this week and a link from your shelf."
         }
       },
       "reminders": {
@@ -5064,6 +5073,9 @@
             "title": "Switch it off again",
             "b0": "Turning AI off stops all suggestions at once. You can also delete your AI data under Privacy and data."
           }
+        },
+        "images": {
+          "settings-ai": "Settings, AI: the “Use AI in Shelfmark” switch, off until you turn it on, and the AI data below it."
         }
       },
       "ai-suggestions": {
@@ -5092,6 +5104,9 @@
             "title": "Check the sources",
             "b0": "Every answer lists the links it used, so you can open them and check."
           }
+        },
+        "images": {
+          "ask-chat": "The Ask panel with a question and an answer that lists the links it used."
         }
       },
       "ai-privacy": {
@@ -5134,6 +5149,9 @@
             "title": "Make it yours",
             "b0": "Settings also lets you pick an accent colour and how rounded the corners look."
           }
+        },
+        "images": {
+          "settings-appearance": "Settings, Appearance: the Theme choice with Light, Dark and System, and the accent colour."
         }
       },
       "keyboard-shortcuts": {
@@ -5148,6 +5166,9 @@
             "title": "A few to start with",
             "b0": "Ctrl K searches, R sets a reminder on the selected link, and Shift ? opens help."
           }
+        },
+        "images": {
+          "settings-shortcuts": "Settings, Keyboard shortcuts: every shortcut in one list."
         }
       },
       "notifications": {
@@ -5206,6 +5227,26 @@
         }
       }
     },
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "goThere": "Go there",
+    "links": {
+      "library": "Open your library",
+      "unsorted": "Open Unsorted",
+      "favorites": "Open Favorites",
+      "tags": "Open Tags",
+      "today": "Open Today",
+      "reminders": "Open Reminders",
+      "recent": "Open Recently opened",
+      "trash": "Open Trash",
+      "import": "Import bookmarks",
+      "ask": "Open Ask",
+      "settingsAccount": "Settings › Account",
+      "settingsAppearance": "Settings › Appearance",
+      "settingsLibrary": "Settings › Library",
+      "settingsNotifications": "Settings › Notifications",
+      "settingsAi": "Settings › AI",
+      "settingsData": "Settings › Your data",
+      "settingsShortcuts": "Settings › Keyboard shortcuts"
+    }
   }
 }

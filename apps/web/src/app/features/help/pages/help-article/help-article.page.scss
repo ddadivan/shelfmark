@@ -82,6 +82,7 @@
 }
 
 .doc__related,
+.doc__links,
 .doc__pager {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

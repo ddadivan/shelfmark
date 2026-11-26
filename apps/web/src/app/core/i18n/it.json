@@ -4973,6 +4973,9 @@
             "title": "Importa il file",
             "b0": "Apri Dati e aiuto, scegli Importa link e seleziona il file. Le cartelle vengono mantenute e i link già salvati vengono saltati."
           }
+        },
+        "images": {
+          "import-page": "La pagina di importazione con i suoi passaggi e l’area in cui trascinare un file di segnalibri."
         }
       },
       "use-on-phone": {
@@ -5057,6 +5060,9 @@
             "title": "Restringi i risultati",
             "b0": "Aggiungi una cartella o un tag alla ricerca per restringere i risultati. Le parole trovate sono evidenziate."
           }
+        },
+        "images": {
+          "search-results": "Risultati di ricerca per una parola: i link corrispondenti con le parole evidenziate."
         }
       },
       "search-by-meaning": {
@@ -5113,6 +5119,9 @@
             "title": "Svuotala",
             "b0": "Apri un link, rimandalo o segnalo come fatto e lascia la pagina."
           }
+        },
+        "images": {
+          "today": "La pagina Oggi con i promemoria in scadenza, i link salvati questa settimana e un link dalla tua libreria."
         }
       },
       "reminders": {
@@ -5183,6 +5192,9 @@
             "title": "Disattivala di nuovo",
             "b0": "Disattivare l’IA ferma subito tutti i suggerimenti. Puoi anche eliminare i tuoi dati IA in Privacy e dati."
           }
+        },
+        "images": {
+          "settings-ai": "Impostazioni, IA: l’interruttore «Usa l’IA in Shelfmark», spento finché non lo attivi, e sotto i dati dell’IA."
         }
       },
       "ai-suggestions": {
@@ -5211,6 +5223,9 @@
             "title": "Controlla le fonti",
             "b0": "Ogni risposta elenca i link usati, così puoi aprirli e verificare."
           }
+        },
+        "images": {
+          "ask-chat": "Il pannello Chiedi con una domanda e una risposta che elenca i link usati."
         }
       },
       "ai-privacy": {
@@ -5253,6 +5268,9 @@
             "title": "Personalizzalo",
             "b0": "Nelle impostazioni puoi anche scegliere un colore d’accento e quanto arrotondare gli angoli."
           }
+        },
+        "images": {
+          "settings-appearance": "Impostazioni, Aspetto: la scelta del tema (chiaro, scuro, sistema) e il colore di accento."
         }
       },
       "keyboard-shortcuts": {
@@ -5267,6 +5285,9 @@
             "title": "Alcune per cominciare",
             "b0": "Ctrl K cerca, R imposta un promemoria sul link selezionato e Maiusc ? apre l’aiuto."
           }
+        },
+        "images": {
+          "settings-shortcuts": "Impostazioni, Scorciatoie da tastiera: tutte le scorciatoie in un elenco."
         }
       },
       "notifications": {
@@ -5325,6 +5346,26 @@
         }
       }
     },
-    "closeMenu": "Chiudi il menu"
+    "closeMenu": "Chiudi il menu",
+    "goThere": "Vai lì",
+    "links": {
+      "library": "Apri la libreria",
+      "unsorted": "Apri Senza cartella",
+      "favorites": "Apri Preferiti",
+      "tags": "Apri Tag",
+      "today": "Apri Oggi",
+      "reminders": "Apri Promemoria",
+      "recent": "Apri Aperti di recente",
+      "trash": "Apri il cestino",
+      "import": "Importa i segnalibri",
+      "ask": "Apri Chiedi",
+      "settingsAccount": "Impostazioni › Account",
+      "settingsAppearance": "Impostazioni › Aspetto",
+      "settingsLibrary": "Impostazioni › Libreria",
+      "settingsNotifications": "Impostazioni › Notifiche",
+      "settingsAi": "Impostazioni › IA",
+      "settingsData": "Impostazioni › I tuoi dati",
+      "settingsShortcuts": "Impostazioni › Scorciatoie da tastiera"
+    }
   }
 }

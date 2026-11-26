@@ -47,6 +47,7 @@ test.describe('Help center', { tag: E2E_TAG.Mobile }, () => {
       'Apply a rule to links you already have',
       'When Shelfmark suggests a rule',
       'Good to know',
+      'Go there',
       'Related',
     ]);
     await settled(page);
@@ -57,6 +58,32 @@ test.describe('Help center', { tag: E2E_TAG.Mobile }, () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Favorites and pinned links' }),
     ).toBeVisible();
+  });
+
+  test('a Go there link opens the place it names, after sign-in for a guest', async ({ page }) => {
+    await page.goto('/help/themes');
+    const link = page.getByRole('link', { name: 'Settings › Appearance' });
+    await expect(link).toHaveAttribute('href', '/settings/appearance');
+    await link.click();
+    // A guest is sent to sign-in with the way back.
+    await expect(page).toHaveURL(/\/sign-in\?returnUrl=%2Fsettings%2Fappearance$/);
+
+    await seedSession(page);
+    await page.goto('/help/themes');
+    await page.getByRole('link', { name: 'Settings › Appearance' }).click();
+    await expect(page).toHaveURL('/settings/appearance');
+    await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
+  });
+
+  test('an article with a screenshot shows the picture of the theme', async ({ page }) => {
+    await page.goto('/help/themes');
+    const image = page.getByRole('img', { name: /^Settings, Appearance/ });
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute(
+      'src',
+      /\/media\/help\/settings-appearance-(light|dark)\.webp$/,
+    );
+    expect(await image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   });
 
   test('the topics are a full-height sidebar from 64em and a drawer below it', async ({ page }) => {

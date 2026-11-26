@@ -14,6 +14,17 @@
             }
           </ol>
         }
+        @case (HELP_BLOCK.Image) {
+          <figure class="body__figure">
+            <img
+              class="body__image"
+              [ngSrc]="imageSrc(block.keys[0])"
+              [width]="HELP_MEDIA.width"
+              [height]="HELP_MEDIA.height"
+              [alt]="key('images.' + block.keys[0]) | transloco"
+            />
+          </figure>
+        }
         @case (HELP_BLOCK.RuleMock) {
           <app-help-rule-mock />
         }

@@ -4973,6 +4973,9 @@
             "title": "Importer le fichier",
             "b0": "Ouvrez Données et aide, choisissez Importer des liens et sélectionnez le fichier. Les dossiers sont conservés et les liens déjà enregistrés sont ignorés."
           }
+        },
+        "images": {
+          "import-page": "La page d’import avec ses étapes et la zone de dépôt d’un fichier de favoris."
         }
       },
       "use-on-phone": {
@@ -5057,6 +5060,9 @@
             "title": "Affiner",
             "b0": "Ajoutez un dossier ou un tag à la recherche pour affiner les résultats. Les mots trouvés sont surlignés."
           }
+        },
+        "images": {
+          "search-results": "Résultats de recherche pour un mot : les liens correspondants avec les mots surlignés."
         }
       },
       "search-by-meaning": {
@@ -5113,6 +5119,9 @@
             "title": "Le vider",
             "b0": "Ouvrez un lien, repoussez-le ou marquez-le comme fait, et il quitte la page."
           }
+        },
+        "images": {
+          "today": "La page Aujourd’hui avec les rappels échus, les liens enregistrés cette semaine et un lien de votre étagère."
         }
       },
       "reminders": {
@@ -5183,6 +5192,9 @@
             "title": "La désactiver à nouveau",
             "b0": "Désactiver l’IA arrête toutes les suggestions d’un coup. Vous pouvez aussi supprimer vos données d’IA dans Confidentialité et données."
           }
+        },
+        "images": {
+          "settings-ai": "Réglages, IA : l’interrupteur « Utiliser l’IA dans Shelfmark », désactivé tant que vous ne l’activez pas, et vos données d’IA en dessous."
         }
       },
       "ai-suggestions": {
@@ -5211,6 +5223,9 @@
             "title": "Vérifier les sources",
             "b0": "Chaque réponse liste les liens utilisés, pour que vous puissiez les ouvrir et vérifier."
           }
+        },
+        "images": {
+          "ask-chat": "Le panneau Question avec une question et une réponse qui liste les liens utilisés."
         }
       },
       "ai-privacy": {
@@ -5253,6 +5268,9 @@
             "title": "Personnaliser",
             "b0": "Les paramètres permettent aussi de choisir une couleur d’accent et l’arrondi des coins."
           }
+        },
+        "images": {
+          "settings-appearance": "Réglages, Apparence : le choix du thème (clair, sombre, système) et la couleur d’accent."
         }
       },
       "keyboard-shortcuts": {
@@ -5267,6 +5285,9 @@
             "title": "Quelques-uns pour commencer",
             "b0": "Ctrl K lance la recherche, R programme un rappel sur le lien sélectionné et Maj ? ouvre l’aide."
           }
+        },
+        "images": {
+          "settings-shortcuts": "Réglages, Raccourcis clavier : tous les raccourcis dans une seule liste."
         }
       },
       "notifications": {
@@ -5325,6 +5346,26 @@
         }
       }
     },
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "goThere": "Y aller",
+    "links": {
+      "library": "Ouvrir votre bibliothèque",
+      "unsorted": "Ouvrir Sans dossier",
+      "favorites": "Ouvrir Favoris",
+      "tags": "Ouvrir Tags",
+      "today": "Ouvrir Aujourd'hui",
+      "reminders": "Ouvrir Rappels",
+      "recent": "Ouvrir Ouverts récemment",
+      "trash": "Ouvrir la corbeille",
+      "import": "Importer des favoris",
+      "ask": "Ouvrir Question",
+      "settingsAccount": "Réglages › Compte",
+      "settingsAppearance": "Réglages › Apparence",
+      "settingsLibrary": "Réglages › Bibliothèque",
+      "settingsNotifications": "Réglages › Notifications",
+      "settingsAi": "Réglages › IA",
+      "settingsData": "Réglages › Vos données",
+      "settingsShortcuts": "Réglages › Raccourcis clavier"
+    }
   }
 }
