@@ -59,7 +59,7 @@ describe('CardComponent select slot', () => {
     expect(base).toMatch(/box-shadow: 0 0 0 2px var\(--accent\)/);
     // Unchecked it is the Shelf box: `surface` with the `control` edge, so it reads as a checkbox.
     expect(base).toContain('--ui-checkbox-bg: var(--surface)');
-    expect(base).toContain('--ui-checkbox-border: var(--border-control)');
+    expect(base).toContain('--ui-checkbox-border: var(--line-strong)');
     // The checkbox takes the place of the play mark.
     expect(hover).toContain('.ui-card__play');
   });
