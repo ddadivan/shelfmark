@@ -24,7 +24,7 @@ export class LibraryBulkService {
   private readonly compact = inject(ViewportService).compact;
 
   private readonly i18n = toSignal(this.transloco.selectTranslation());
-  /** The bulk bar: desktop Move, Tags, Favorite, Remind, Open all, Copy links, Delete; the phone shares instead of opening. */
+  /** The bulk bar: desktop Move, Tags, Favorite, Remind, Open all, Copy links, Delete; the phone Move, Tags, Favorite, More, Delete. */
   readonly barActions = computed<BulkBarAction[]>(() => {
     this.i18n();
     const t = (key: string): string => this.transloco.translate(key);
@@ -43,25 +43,24 @@ export class LibraryBulkService {
         folder: this.split.rightTile(),
       });
     }
+    const favoriteAction: BulkBarAction = {
+      id: BULK_ACTION.Favorite,
+      label: t('bulk.bar.favorite'),
+      icon: favorite ? 'star-filled' : 'star',
+      pressed: favorite,
+    };
     actions.push(
       { id: BULK_ACTION.Move, label: t('bulk.bar.move'), icon: 'folder-move' },
       { id: BULK_ACTION.Tags, label: t('bulk.bar.tags'), icon: 'tag' },
-      {
-        id: BULK_ACTION.Favorite,
-        label: t('bulk.bar.favorite'),
-        icon: favorite ? 'star-filled' : 'star',
-        pressed: favorite,
-      },
-      { id: BULK_ACTION.Remind, label: t('bulk.bar.remind'), icon: 'bell' },
+      favoriteAction,
     );
     if (this.compact()) {
-      actions.push(
-        this.links.canShare()
-          ? { id: BULK_ACTION.Share, label: t('bulk.bar.share'), icon: 'share' }
-          : { id: BULK_ACTION.Copy, label: t('bulk.bar.copy'), icon: 'copy' },
-      );
+      // The phone bar holds five like the tab bar (author, Nov 26: six labels ran together at
+      // 360px); Remind and Share / Copy wait in "More".
+      actions.push({ id: BULK_ACTION.More, label: t('bulk.bar.more'), icon: 'more' });
     } else {
       actions.push(
+        { id: BULK_ACTION.Remind, label: t('bulk.bar.remind'), icon: 'bell' },
         { id: BULK_ACTION.OpenAll, label: t('bulk.bar.openAll'), icon: 'external' },
         { id: BULK_ACTION.Copy, label: t('bulk.bar.copy'), icon: 'copy' },
       );
@@ -76,6 +75,18 @@ export class LibraryBulkService {
     return this.selection.selectedCount() === 0
       ? actions.map((action) => ({ ...action, disabled: true }))
       : actions;
+  });
+
+  /** The phone bar's "More" sheet: Remind, then Share (where the device shares) or Copy links. */
+  readonly moreActions = computed<BulkBarAction[]>(() => {
+    this.i18n();
+    const t = (key: string): string => this.transloco.translate(key);
+    return [
+      { id: BULK_ACTION.Remind, label: t('bulk.bar.remind'), icon: 'bell' },
+      this.links.canShare()
+        ? { id: BULK_ACTION.Share, label: t('bulk.bar.share'), icon: 'share' }
+        : { id: BULK_ACTION.Copy, label: t('bulk.bar.copy'), icon: 'copy' },
+    ];
   });
 
   /** A bulk bar button: runs the action on the picked links; some clear the selection afterwards. */

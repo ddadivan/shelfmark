@@ -3073,7 +3073,8 @@
       "share": "Teilen",
       "delete": "Löschen",
       "moveToFolder": "In {{folder}} verschieben",
-      "remind": "Erinnern"
+      "remind": "Erinnern",
+      "more": "Mehr"
     },
     "header": {
       "label": "Auswahl",

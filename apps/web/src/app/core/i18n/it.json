@@ -3139,7 +3139,8 @@
       "share": "Condividi",
       "delete": "Elimina",
       "moveToFolder": "Sposta in {{folder}}",
-      "remind": "Promemoria"
+      "remind": "Promemoria",
+      "more": "Altro"
     },
     "header": {
       "label": "Selezione",

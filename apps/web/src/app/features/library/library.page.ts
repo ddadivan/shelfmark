@@ -1,3 +1,4 @@
+import { BULK_ACTION } from '../links/models/bulk-action.const';
 import { LINK_SELECT_SHORTCUT } from '../links/models/link-select-shortcut.const';
 import { LibraryFilterPanelComponent } from './components/library-filter-panel/library-filter-panel.component';
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
@@ -7,6 +8,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   input,
   viewChild,
@@ -309,6 +311,18 @@ export default class LibraryPage {
 
   /** The "Side by side" toggle: after the split closes it takes the focus the close control had. */
   private readonly splitOpener = viewChild<ButtonComponent>('splitOpener');
+  private readonly bulkMore = viewChild.required<MenuComponent>('bulkMore');
+  private readonly bulkBarEl = viewChild('bulkBarEl', { read: ElementRef<HTMLElement> });
+
+  /** A bulk bar button: "More" opens its sheet, every other one runs. */
+  protected bulkAction(id: string): void {
+    const bar = this.bulkBarEl()?.nativeElement;
+    if (id === BULK_ACTION.More && bar) {
+      this.bulkMore().openFrom(bar);
+      return;
+    }
+    void this.bulk.run(id);
+  }
 
   constructor() {
     this.filters.connect({

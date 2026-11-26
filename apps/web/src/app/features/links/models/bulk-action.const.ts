@@ -11,4 +11,6 @@ export const BULK_ACTION = {
   Copy: 'copy',
   Share: 'share',
   Delete: 'delete',
+  /** The phone bar's "More": opens a sheet with the actions that do not fit (Remind, Share or Copy). */
+  More: 'more',
 } as const;

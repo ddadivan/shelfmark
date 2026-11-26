@@ -3139,7 +3139,8 @@
       "share": "Partager",
       "delete": "Supprimer",
       "moveToFolder": "Déplacer vers {{folder}}",
-      "remind": "Rappel"
+      "remind": "Rappel",
+      "more": "Plus"
     },
     "header": {
       "label": "Sélection",

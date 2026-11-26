@@ -438,8 +438,12 @@ test.describe('select links and bulk actions (mock API)', () => {
       await page.addInitScript('delete Navigator.prototype.share; delete navigator.share;');
       await openFeed(page);
       await longPress(page, cards(page).nth(0));
-      await expect(barButton(page, 'Share')).toHaveCount(0);
-      await expect(barButton(page, 'Copy links')).toBeVisible();
+      // The phone bar holds Move, Tags, Favorite, More and Delete; Remind and Share / Copy are
+      // in the More sheet (author, Nov 26).
+      await barButton(page, 'More').click();
+      await expect(page.getByRole('menuitem', { name: 'Share' })).toHaveCount(0);
+      await expect(page.getByRole('menuitem', { name: 'Copy links' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: 'Remind' })).toBeVisible();
     });
 
     test('Share hands the URLs to the share sheet', async ({ page }) => {
@@ -449,7 +453,8 @@ test.describe('select links and bulk actions (mock API)', () => {
       await openFeed(page);
       await longPress(page, cards(page).nth(0));
       await cards(page).nth(1).locator('.ui-card__link').tap();
-      await barButton(page, 'Share').click();
+      await barButton(page, 'More').click();
+      await page.getByRole('menuitem', { name: 'Share' }).click();
       const shared = (await page.evaluate('window.__shared')) as { text: string }[];
       expect(shared).toHaveLength(1);
       expect(shared[0]?.text.split('\n')).toHaveLength(2);

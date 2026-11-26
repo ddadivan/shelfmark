@@ -813,6 +813,7 @@
   <app-library-filter-panel #filterPanel />
   <ng-template #bulkBar>
     <ui-bulk-bar
+      #bulkBarEl
       #bulkFit="appBulkBarFit"
       class="library__bulk"
       [appBulkBarFit]="bulk.barActions()"
@@ -824,8 +825,14 @@
       [layout]="compact() || bulkFit.stacked() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
       [count]="compact() ? '' : (pluralKey('bulk.header.selected', selection.selectedCount()) | transloco: { count: selection.selectedCount() })"
       [closeLabel]="compact() ? '' : ('bulk.header.cancel' | transloco)"
-      (action)="bulk.run($event)"
+      (action)="bulkAction($event)"
       (closed)="selection.endSelection()"
     />
   </ng-template>
+  <!-- The phone bar's "More": a sheet with the actions that do not fit in the bar. -->
+  <ui-menu #bulkMore [ariaLabel]="'bulk.bar.more' | transloco">
+    @for (item of bulk.moreActions(); track item.id) {
+    <ui-menu-item [icon]="item.icon" (activated)="bulk.run(item.id)">{{ item.label }}</ui-menu-item>
+    }
+  </ui-menu>
 </section>
