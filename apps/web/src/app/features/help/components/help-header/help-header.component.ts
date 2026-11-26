@@ -13,6 +13,7 @@ import { ThemeService } from '../../../../core/theme/theme.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { AppLinkDirective } from '../../../landing/directives/app-link.directive';
 import { LANDING_LINKS } from '../../../landing/models/landing-links.const';
+import { matchesSearchShortcut } from '../../../search/utils/matches-search-shortcut';
 
 /**
  * The top bar of the Help main area (like the app's header, Shelf 17-help): the menu button below
@@ -48,7 +49,7 @@ export class HelpHeaderComponent {
   readonly searchRequested = output<void>();
 
   protected onKeydown(event: KeyboardEvent): void {
-    if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === 'k') {
+    if (matchesSearchShortcut(event)) {
       event.preventDefault();
       this.searchRequested.emit();
     }
