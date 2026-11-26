@@ -59,7 +59,9 @@
     display: block;
   }
 
-  .ui-icon__svg--24 {
+  // Only when there is a 16px drawing to show instead: the brand marks (Google, GitHub) have
+  // none and keep their one drawing at every size.
+  .ui-icon__svg--24:has(+ .ui-icon__svg--16) {
     display: none;
   }
 }

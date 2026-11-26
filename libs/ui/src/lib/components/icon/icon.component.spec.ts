@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss } from '../../../testing/scss';
 import { IconComponent } from './icon.component';
 import { ICON_SPRITE_URL } from './icon-sprite-url.const';
 import type { IconName } from './models/icon-name.type';
@@ -104,5 +105,11 @@ describe('IconComponent', () => {
 
     decorative.remove();
     labelled.remove();
+  });
+
+  it('hides the full drawing at small sizes only when a 16px drawing replaces it (brand marks)', () => {
+    const css = compileScss('lib/components/icon/icon.component.scss').replace(/\s+/g, ' ');
+    expect(css).toContain('.ui-icon__svg--24:has(+ .ui-icon__svg--16) { display: none; }');
+    expect(css).not.toMatch(/[^)] \.ui-icon__svg--24 \{ display: none; \}/u);
   });
 });
