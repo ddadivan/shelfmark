@@ -100,6 +100,9 @@ test.describe('link preview (mock API)', () => {
   });
 
   test('resizes the list with the keyboard and hides it with Wider preview', async ({ page }) => {
+    // Wide enough for the toolbar to keep Wider preview as its own button (it moves into ⋯ below
+    // a 35rem panel).
+    await page.setViewportSize({ width: 1440, height: 900 });
     await openLibrary(page);
     await previewFromMenu(page, FIRST);
     const handle = page.getByRole('separator', { name: 'Resize the list' });
