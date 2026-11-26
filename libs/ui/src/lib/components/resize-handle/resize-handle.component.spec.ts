@@ -102,6 +102,17 @@ describe('ui-resize-handle', () => {
     expect(host.value()).toBe(200);
   });
 
+  it('drops its hint while a drag runs, so the tooltip never follows the pointer', async () => {
+    const { handle, fixture } = await setup();
+    expect(handle.getAttribute('aria-description')).toBe('Drag or use the arrow keys');
+    handle.dispatchEvent(pointer('pointerdown', { clientX: 100 }));
+    await fixture.whenStable();
+    expect(handle.hasAttribute('aria-description')).toBe(false);
+    handle.dispatchEvent(pointer('pointerup', { clientX: 120 }));
+    await fixture.whenStable();
+    expect(handle.getAttribute('aria-description')).toBe('Drag or use the arrow keys');
+  });
+
   it('ignores other buttons and other pointers, and restores the body on destroy', async () => {
     const { handle, host, fixture } = await setup();
     handle.dispatchEvent(pointer('pointerdown', { clientX: 100, button: 2 }));

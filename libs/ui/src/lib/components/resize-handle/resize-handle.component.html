@@ -8,7 +8,7 @@
   [attr.aria-valuenow]="now()"
   [attr.aria-valuemin]="min()"
   [attr.aria-valuemax]="max()"
-  [uiTooltip]="hint()"
+  [uiTooltip]="dragging() ? '' : hint()"
   [position]="OVERLAY_SIDE.Right"
   (pointerdown)="onPointerDown($event)"
   (pointermove)="onPointerMove($event)"
