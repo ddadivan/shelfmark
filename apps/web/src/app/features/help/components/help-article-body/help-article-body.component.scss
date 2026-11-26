@@ -56,3 +56,16 @@
 .body__note {
   margin-top: rem(18px);
 }
+
+// A screenshot of the app: the theme's own file, a hairline frame, never wider than the column.
+.body__figure {
+  margin: var(--space-4) 0 0;
+}
+
+.body__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}

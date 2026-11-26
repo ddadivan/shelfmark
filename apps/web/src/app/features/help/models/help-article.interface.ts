@@ -1,3 +1,4 @@
+import type { HelpArticleLink } from './help-article-link.interface';
 import type { HelpCategoryId } from './help-category-id.type';
 import type { HelpSection } from './help-section.interface';
 
@@ -14,5 +15,7 @@ export interface HelpArticle {
   readonly updated: string;
   /** Ids of up to four articles to read next. */
   readonly related: readonly string[];
+  /** "Go there" actions to the places the article describes (shown before "Related"). */
+  readonly links?: readonly HelpArticleLink[];
   readonly sections: readonly HelpSection[];
 }

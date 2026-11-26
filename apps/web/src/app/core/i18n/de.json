@@ -4854,6 +4854,9 @@
             "title": "Die Datei importieren",
             "b0": "Öffne Daten und Hilfe, wähle Links importieren und die Datei aus. Ordner bleiben erhalten, bereits gespeicherte Links werden übersprungen."
           }
+        },
+        "images": {
+          "import-page": "Die Importseite mit ihren Schritten und dem Ablagebereich für eine Lesezeichen-Datei."
         }
       },
       "use-on-phone": {
@@ -4938,6 +4941,9 @@
             "title": "Eingrenzen",
             "b0": "Füge der Suche einen Ordner oder Tag hinzu, um die Ergebnisse einzugrenzen. Treffer werden hervorgehoben."
           }
+        },
+        "images": {
+          "search-results": "Suchergebnisse zu einem Wort: die passenden Links mit markierten Wörtern."
         }
       },
       "search-by-meaning": {
@@ -4994,6 +5000,9 @@
             "title": "Abarbeiten",
             "b0": "Öffne einen Link, verschiebe ihn oder markiere ihn als erledigt, und er verschwindet von der Seite."
           }
+        },
+        "images": {
+          "today": "Die Seite Heute mit fälligen Erinnerungen, in dieser Woche gespeicherten Links und einem Link aus deinem Regal."
         }
       },
       "reminders": {
@@ -5064,6 +5073,9 @@
             "title": "Wieder ausschalten",
             "b0": "Das Ausschalten der KI beendet sofort alle Vorschläge. Deine KI-Daten kannst du auch unter Datenschutz und Daten löschen."
           }
+        },
+        "images": {
+          "settings-ai": "Einstellungen, KI: der Schalter „KI in Shelfmark nutzen“, aus, bis du ihn einschaltest, darunter deine KI-Daten."
         }
       },
       "ai-suggestions": {
@@ -5092,6 +5104,9 @@
             "title": "Quellen prüfen",
             "b0": "Jede Antwort nennt die verwendeten Links, damit du sie öffnen und prüfen kannst."
           }
+        },
+        "images": {
+          "ask-chat": "Das Fenster Fragen mit einer Frage und einer Antwort, die die verwendeten Links aufführt."
         }
       },
       "ai-privacy": {
@@ -5134,6 +5149,9 @@
             "title": "Nach deinem Geschmack",
             "b0": "In den Einstellungen kannst du außerdem eine Akzentfarbe und die Rundung der Ecken wählen."
           }
+        },
+        "images": {
+          "settings-appearance": "Einstellungen, Darstellung: die Wahl des Designs (hell, dunkel, System) und die Akzentfarbe."
         }
       },
       "keyboard-shortcuts": {
@@ -5148,6 +5166,9 @@
             "title": "Ein paar zum Anfangen",
             "b0": "Strg K sucht, R setzt eine Erinnerung für den ausgewählten Link, und Umschalt ? öffnet die Hilfe."
           }
+        },
+        "images": {
+          "settings-shortcuts": "Einstellungen, Tastenkürzel: alle Kürzel in einer Liste."
         }
       },
       "notifications": {
@@ -5206,6 +5227,26 @@
         }
       }
     },
-    "closeMenu": "Menü schließen"
+    "closeMenu": "Menü schließen",
+    "goThere": "Direkt hin",
+    "links": {
+      "library": "Bibliothek öffnen",
+      "unsorted": "Ohne Ordner öffnen",
+      "favorites": "Favoriten öffnen",
+      "tags": "Tags öffnen",
+      "today": "Heute öffnen",
+      "reminders": "Erinnerungen öffnen",
+      "recent": "Zuletzt geöffnet anzeigen",
+      "trash": "Papierkorb öffnen",
+      "import": "Lesezeichen importieren",
+      "ask": "Fragen öffnen",
+      "settingsAccount": "Einstellungen › Konto",
+      "settingsAppearance": "Einstellungen › Darstellung",
+      "settingsLibrary": "Einstellungen › Bibliothek",
+      "settingsNotifications": "Einstellungen › Benachrichtigungen",
+      "settingsAi": "Einstellungen › KI",
+      "settingsData": "Einstellungen › Deine Daten",
+      "settingsShortcuts": "Einstellungen › Tastenkürzel"
+    }
   }
 }

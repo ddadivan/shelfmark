@@ -4973,6 +4973,9 @@
             "title": "Importe o arquivo",
             "b0": "Abra Dados e ajuda, escolha Importar links e selecione o arquivo. As pastas são mantidas e os links já salvos são ignorados."
           }
+        },
+        "images": {
+          "import-page": "A página de importação com seus passos e a área para soltar um arquivo de favoritos."
         }
       },
       "use-on-phone": {
@@ -5057,6 +5060,9 @@
             "title": "Refine os resultados",
             "b0": "Adicione uma pasta ou tag à pesquisa para refinar os resultados. As palavras encontradas ficam destacadas."
           }
+        },
+        "images": {
+          "search-results": "Resultados de busca por uma palavra: os links correspondentes com as palavras destacadas."
         }
       },
       "search-by-meaning": {
@@ -5113,6 +5119,9 @@
             "title": "Esvazie",
             "b0": "Abra um link, adie ou marque como feito, e ele sai da página."
           }
+        },
+        "images": {
+          "today": "A página Hoje com lembretes vencidos, links salvos nesta semana e um link da sua estante."
         }
       },
       "reminders": {
@@ -5183,6 +5192,9 @@
             "title": "Desligue de novo",
             "b0": "Desligar a IA interrompe todas as sugestões na hora. Você também pode excluir seus dados de IA em Privacidade e dados."
           }
+        },
+        "images": {
+          "settings-ai": "Configurações, IA: o interruptor «Usar IA no Shelfmark», desligado até você ativá-lo, e abaixo os dados de IA."
         }
       },
       "ai-suggestions": {
@@ -5211,6 +5223,9 @@
             "title": "Confira as fontes",
             "b0": "Cada resposta lista os links usados, para você abri-los e conferir."
           }
+        },
+        "images": {
+          "ask-chat": "O painel Consulta com uma pergunta e uma resposta que lista os links usados."
         }
       },
       "ai-privacy": {
@@ -5253,6 +5268,9 @@
             "title": "Deixe com a sua cara",
             "b0": "Nas configurações você também escolhe uma cor de destaque e o arredondamento dos cantos."
           }
+        },
+        "images": {
+          "settings-appearance": "Configurações, Aparência: a escolha do tema (claro, escuro, sistema) e a cor de destaque."
         }
       },
       "keyboard-shortcuts": {
@@ -5267,6 +5285,9 @@
             "title": "Alguns para começar",
             "b0": "Ctrl K pesquisa, R define um lembrete no link selecionado e Shift ? abre a ajuda."
           }
+        },
+        "images": {
+          "settings-shortcuts": "Configurações, Atalhos de teclado: todos os atalhos em uma lista."
         }
       },
       "notifications": {
@@ -5325,6 +5346,26 @@
         }
       }
     },
-    "closeMenu": "Fechar o menu"
+    "closeMenu": "Fechar o menu",
+    "goThere": "Ir para lá",
+    "links": {
+      "library": "Abrir sua biblioteca",
+      "unsorted": "Abrir Sem pasta",
+      "favorites": "Abrir Favoritos",
+      "tags": "Abrir Tags",
+      "today": "Abrir Hoje",
+      "reminders": "Abrir Lembretes",
+      "recent": "Abrir Abertos recentemente",
+      "trash": "Abrir a lixeira",
+      "import": "Importar favoritos",
+      "ask": "Abrir Consulta",
+      "settingsAccount": "Configurações › Conta",
+      "settingsAppearance": "Configurações › Aparência",
+      "settingsLibrary": "Configurações › Biblioteca",
+      "settingsNotifications": "Configurações › Notificações",
+      "settingsAi": "Configurações › IA",
+      "settingsData": "Configurações › Seus dados",
+      "settingsShortcuts": "Configurações › Atalhos de teclado"
+    }
   }
 }

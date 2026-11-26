@@ -1,5 +1,6 @@
 import { HELP_BLOCK } from './help-block-kind.const';
 import { HELP_CATEGORY } from './help-category-id.const';
+import { HELP_LINK } from './help-link.const';
 import type { HelpArticle } from './help-article.interface';
 
 /** Every help article in reading order (previous / next follow it); texts are in `help.articles.<id>`. */
@@ -10,6 +11,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['install-extension', 'import-bookmarks', 'tags', 'folders'],
+    links: [HELP_LINK.Library],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -32,8 +34,15 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['save-first-link', 'install-extension', 'use-on-phone', 'folders'],
+    links: [HELP_LINK.Import],
     sections: [
-      { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
+      {
+        id: 's1',
+        blocks: [
+          { kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] },
+          { kind: HELP_BLOCK.Image, keys: ['import-page'] },
+        ],
+      },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
     ],
   },
@@ -54,6 +63,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['tags', 'rules', 'favorites-pins', 'search'],
+    links: [HELP_LINK.Library],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -65,6 +75,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['folders', 'rules', 'favorites-pins', 'search'],
+    links: [HELP_LINK.Tags],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -76,6 +87,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 3,
     updated: '2026-11-20',
     related: ['folders', 'ai-suggestions', 'import-bookmarks', 'tags'],
+    links: [HELP_LINK.SettingsLibrary],
     sections: [
       {
         id: 'create',
@@ -99,6 +111,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['folders', 'tags', 'rules', 'search'],
+    links: [HELP_LINK.Favorites],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -110,6 +123,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['folders', 'tags', 'rules', 'search'],
+    links: [HELP_LINK.Trash],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -121,8 +135,15 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['search-by-meaning', 'saved-views', 'keyboard-shortcuts', 'tags'],
+    links: [HELP_LINK.Library],
     sections: [
-      { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
+      {
+        id: 's1',
+        blocks: [
+          { kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] },
+          { kind: HELP_BLOCK.Image, keys: ['search-results'] },
+        ],
+      },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
     ],
   },
@@ -132,6 +153,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['search', 'saved-views', 'side-by-side', 'today'],
+    links: [HELP_LINK.SettingsAi],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -143,6 +165,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['search', 'search-by-meaning', 'side-by-side', 'today'],
+    links: [HELP_LINK.Library],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -165,8 +188,15 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['reminders', 'recently-opened', 'link-preview', 'reader'],
+    links: [HELP_LINK.Today],
     sections: [
-      { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
+      {
+        id: 's1',
+        blocks: [
+          { kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] },
+          { kind: HELP_BLOCK.Image, keys: ['today'] },
+        ],
+      },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
     ],
   },
@@ -176,6 +206,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['today', 'notifications', 'keyboard-shortcuts', 'recently-opened'],
+    links: [HELP_LINK.Reminders, HELP_LINK.SettingsNotifications],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -187,6 +218,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['today', 'reminders', 'link-preview', 'reader'],
+    links: [HELP_LINK.Recent],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -198,6 +230,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['reader', 'turn-on-ai', 'ai-suggestions', 'ask-your-shelf'],
+    links: [HELP_LINK.Library],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -220,8 +253,15 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['ai-suggestions', 'ai-privacy', 'ask-your-shelf', 'search-by-meaning'],
+    links: [HELP_LINK.SettingsAi],
     sections: [
-      { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
+      {
+        id: 's1',
+        blocks: [
+          { kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] },
+          { kind: HELP_BLOCK.Image, keys: ['settings-ai'] },
+        ],
+      },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
     ],
   },
@@ -231,6 +271,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['turn-on-ai', 'ask-your-shelf', 'ai-privacy', 'export'],
+    links: [HELP_LINK.Unsorted],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -242,8 +283,15 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['turn-on-ai', 'ai-suggestions', 'ai-privacy', 'export'],
+    links: [HELP_LINK.Ask],
     sections: [
-      { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
+      {
+        id: 's1',
+        blocks: [
+          { kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] },
+          { kind: HELP_BLOCK.Image, keys: ['ask-chat'] },
+        ],
+      },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
     ],
   },
@@ -253,6 +301,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['turn-on-ai', 'ai-suggestions', 'ask-your-shelf', 'export'],
+    links: [HELP_LINK.SettingsAi, HELP_LINK.SettingsData],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -264,6 +313,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['import-bookmarks', 'delete-account', 'ai-privacy', 'trash'],
+    links: [HELP_LINK.SettingsData],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -275,8 +325,15 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['export', 'keyboard-shortcuts', 'notifications', 'save-first-link'],
+    links: [HELP_LINK.SettingsAppearance],
     sections: [
-      { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
+      {
+        id: 's1',
+        blocks: [
+          { kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] },
+          { kind: HELP_BLOCK.Image, keys: ['settings-appearance'] },
+        ],
+      },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
     ],
   },
@@ -286,8 +343,15 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['export', 'themes', 'notifications', 'save-first-link'],
+    links: [HELP_LINK.SettingsShortcuts],
     sections: [
-      { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
+      {
+        id: 's1',
+        blocks: [
+          { kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] },
+          { kind: HELP_BLOCK.Image, keys: ['settings-shortcuts'] },
+        ],
+      },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
     ],
   },
@@ -297,6 +361,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['export', 'themes', 'keyboard-shortcuts', 'save-first-link'],
+    links: [HELP_LINK.SettingsNotifications],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },
@@ -308,6 +373,7 @@ export const HELP_ARTICLES: readonly HelpArticle[] = [
     minutes: 2,
     updated: '2026-11-20',
     related: ['export', 'themes', 'keyboard-shortcuts', 'save-first-link'],
+    links: [HELP_LINK.SettingsAccount, HELP_LINK.SettingsData],
     sections: [
       { id: 's1', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s1.b0'] }] },
       { id: 's2', blocks: [{ kind: HELP_BLOCK.Text, keys: ['sections.s2.b0'] }] },

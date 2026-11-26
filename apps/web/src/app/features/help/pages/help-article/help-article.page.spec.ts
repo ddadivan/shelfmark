@@ -62,6 +62,40 @@ describe('HelpArticlePage', () => {
     expect(root.querySelector('app-help-feedback')?.textContent).toContain('Thanks for telling us');
   });
 
+  it('offers "Go there" links to the places of the article, from the route constants', async () => {
+    provideArticle('reminders');
+    const root = (await createTranslated(HelpArticlePage)).nativeElement as HTMLElement;
+    const links = [...root.querySelectorAll('.doc__links a')];
+
+    expect(links.map((a) => a.getAttribute('href'))).toEqual([
+      '/reminders',
+      '/settings/notifications',
+    ]);
+    expect(links.map((a) => a.textContent?.trim())).toEqual([
+      'Open Reminders',
+      'Settings › Notifications',
+    ]);
+    expect(root.textContent).not.toMatch(/help\.links/);
+  });
+
+  it('has no "Go there" block for an article without a place', async () => {
+    provideArticle('use-on-phone');
+    const root = (await createTranslated(HelpArticlePage)).nativeElement as HTMLElement;
+
+    expect(root.querySelector('.doc__links')).toBeNull();
+  });
+
+  it('shows a screenshot with its alt text for the theme in use', async () => {
+    provideArticle('themes');
+    const root = (await createTranslated(HelpArticlePage)).nativeElement as HTMLElement;
+    const image = root.querySelector('img.body__image');
+
+    expect(image?.getAttribute('src')).toMatch(
+      /^\/media\/help\/settings-appearance-(light|dark)\.webp$/,
+    );
+    expect(image?.getAttribute('alt')).toMatch(/^Settings, Appearance/);
+  });
+
   it('sets the document title to the article', async () => {
     provideArticle('tags');
     await createTranslated(HelpArticlePage);
