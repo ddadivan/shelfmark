@@ -47,13 +47,10 @@ async function misalignment(plus: Locator, last: Locator): Promise<number> {
   return a.y > b.y + b.height + 16 ? 0 : Number.POSITIVE_INFINITY;
 }
 
-/**
- * Turns the Custom theme on: the "Customize" button of the Custom theme row (Shelf 05-settings),
- * after which the Theme group gains its Custom choice and the Custom rows show.
- */
+/** Turns the Custom theme on from its tile in the Theme group; the Custom rows then show. */
 async function openCustom(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Customize' }).click();
-  await expect(choice(page, 'Theme', 'Custom')).toBeChecked();
+  await expect(choice(page, 'Theme', 'Custom')).not.toBeChecked();
+  await pick(page, 'Theme', 'Custom');
 }
 
 async function openAppearance(page: Page): Promise<void> {
@@ -425,7 +422,7 @@ async function scanSettled(page: Page, testInfo: TestInfo): Promise<void> {
 test.describe('appearance width (mock API, Shelf 05-settings)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
-  test('Appearance is the one 840px settings column like the other pages, the preview under the options', async ({
+  test('Appearance is the one 840px settings column like the other pages, no live preview', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
@@ -442,16 +439,13 @@ test.describe('appearance width (mock API, Shelf 05-settings)', () => {
       await openAppearance(page);
       const host = await boxOf(page.locator('app-settings-appearance-page'));
       const options = await boxOf(page.locator('.appearance__options'));
-      const preview = await boxOf(page.locator('.appearance__preview'));
 
       // Every settings page is the `settings-page` column: at most 840px, the same edges.
       expect(library.width).toBeLessThanOrEqual(840.5);
       expect(host.width).toBeCloseTo(library.width, 0);
       expect(host.x).toBeCloseTo(library.x, 0);
-      // The live preview follows the options in the same column, never squeezed beside them.
-      expect(preview.y).toBeGreaterThanOrEqual(options.y + options.height);
-      expect(preview.x).toBeCloseTo(options.x, 0);
-      expect(preview.width).toBeCloseTo(options.width, 0);
+      expect(options.width).toBeCloseTo(host.width, 0);
+      await expect(page.locator('ui-theme-preview')).toHaveCount(0);
     }
   });
 });

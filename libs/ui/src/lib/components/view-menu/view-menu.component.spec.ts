@@ -7,6 +7,7 @@ import { compileScss } from '../../../testing/scss';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { overlayLayerClass } from '../../services/overlay/overlay-layer';
+import type { ViewMenuChoice } from './models/view-menu-choice.interface';
 import type { ViewMenuFieldChange } from './models/view-menu-field-change.interface';
 import type { ViewMenuField } from './models/view-menu-field.interface';
 import type { ViewMenuStepText } from './models/view-menu-step-text.type';
@@ -28,7 +29,9 @@ import { ViewMenuComponent } from './view-menu.component';
       [stepText]="stepText()"
       [gridDisabled]="list()"
       [fields]="fields()"
+      [choice]="choice()"
       (fieldChange)="onField($event)"
+      (choiceChange)="picked.update((list) => [...list, $event])"
       (opened)="opened.set(opened() + 1)"
       (closed)="closed.set(closed() + 1)"
     />
@@ -39,6 +42,8 @@ class HostComponent {
   readonly step = signal(4);
   readonly list = signal(false);
   readonly stepText = signal<ViewMenuStepText | undefined>(undefined);
+  readonly choice = signal<ViewMenuChoice | undefined>(undefined);
+  readonly picked = signal<string[]>([]);
   readonly opened = signal(0);
   readonly closed = signal(0);
   readonly changes = signal<ViewMenuFieldChange[]>([]);
@@ -273,6 +278,33 @@ describe('ViewMenuComponent', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     fixture.detectChanges();
     expect(fixture.componentInstance.changes().at(-1)).toEqual({ id: 'note', checked: false });
+  });
+
+  it('shows a choice as a named segmented control and reports a picked option', async () => {
+    const { fixture, click, trigger, panel } = await setup();
+    fixture.componentInstance.choice.set({
+      label: 'Preview image',
+      value: 'large',
+      options: [
+        { value: 'large', label: 'Large' },
+        { value: 'small', label: 'Small' },
+        { value: 'off', label: 'Off' },
+      ],
+    });
+    await click(trigger);
+    expect(panel().querySelector('.ui-view-menu__choice')?.textContent).toContain('Preview image');
+    const radios = [...panel().querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+    expect(radios).toHaveLength(3);
+    expect(radios[0]?.checked).toBe(true);
+    radios[2]?.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(fixture.componentInstance.picked()).toEqual(['off']);
+  });
+
+  it('has no choice block without a choice', async () => {
+    const { click, trigger, panel } = await setup();
+    await click(trigger);
+    expect(panel().querySelector('.ui-view-menu__choice')).toBeNull();
   });
 
   it('shows the panel in place, always open, with inline', async () => {

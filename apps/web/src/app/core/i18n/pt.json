@@ -1307,7 +1307,14 @@
         "tags": "Hashtags",
         "folder": "Pasta",
         "date": "Data",
-        "description": "Descrição"
+        "description": "Descrição",
+        "site": "Mostrar o site"
+      },
+      "preview": {
+        "label": "Imagem de prévia",
+        "large": "Grande",
+        "small": "Pequena",
+        "off": "Nenhuma"
       }
     },
     "split": {
@@ -1865,28 +1872,6 @@
           "compact": "Compacta"
         }
       },
-      "cards": {
-        "title": "Cartões",
-        "preview": {
-          "label": "Imagem de prévia",
-          "hint": "A imagem no topo de cada cartão",
-          "large": "Grande",
-          "small": "Pequena",
-          "off": "Nenhuma"
-        },
-        "site": {
-          "label": "Mostrar o site",
-          "hint": "Domínio e favicon acima do título"
-        },
-        "notes": {
-          "label": "Mostrar as notas",
-          "hint": "Sua nota abaixo do título"
-        },
-        "tags": {
-          "label": "Mostrar as tags",
-          "hint": "As tags no rodapé do cartão"
-        }
-      },
       "sidebar": {
         "colours": {
           "label": "Cores das pastas",
@@ -1901,41 +1886,11 @@
         "full": "Completas",
         "reduced": "Reduzidas"
       },
-      "preview": {
-        "title": "Prévia ao vivo",
-        "label": "Prévia das suas configurações",
-        "hint": "As mudanças valem na hora para o app inteiro.",
-        "folders": {
-          "angular": "Angular",
-          "clothes": "Roupas",
-          "recipes": "Receitas"
-        },
-        "cards": {
-          "one": {
-            "site": "youtube.com",
-            "title": "Signal Forms em 20 minutos",
-            "tag": "angular",
-            "note": "Ver no fim de semana"
-          },
-          "two": {
-            "site": "cos.com",
-            "title": "Casaco de lã, corte reto",
-            "tag": "roupas",
-            "note": "Esperar a liquidação"
-          }
-        },
-        "recent": "Abertos recentemente"
-      },
       "failed": "Não foi possível salvar a aparência",
       "failedDetail": "Ela voltou a ser como era.",
       "accent": {
         "label": "Destaque",
         "hint": "Grafite mantém a interface discreta; Tinta e Sálvia juntam uma cor."
-      },
-      "customRow": {
-        "label": "Tema personalizado",
-        "hint": "O seu destaque e fundo, com o contraste verificado.",
-        "action": "Personalizar"
       }
     },
     "privacy": {

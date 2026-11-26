@@ -8,8 +8,10 @@
   [largeLabel]="'library.viewMenu.large' | transloco"
   [gridDisabled]="listView()"
   [gridHidden]="gridHidden()"
+  [choice]="previewChoice()"
   [fields]="fields()"
   (stepChange)="setStep($event)"
+  (choiceChange)="setPreview($event)"
   (fieldChange)="setField($event)"
 >
   <ng-content />

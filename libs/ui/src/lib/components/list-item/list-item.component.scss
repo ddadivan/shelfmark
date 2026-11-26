@@ -43,6 +43,10 @@
   }
 }
 
+:host(.ui-list-item--pinned) {
+  background: var(--ui-row-hover, var(--fill));
+}
+
 :host(.ui-list-item--selected) {
   background: var(--pick);
 }
@@ -282,7 +286,13 @@
   inset-block: 0;
   inset-inline-end: rem(8px);
   padding-inline-start: rem(8px);
-  background: var(--ui-row-hover, var(--fill));
+
+  // The hover fill is see-through, and the row under the box already has it: painting it on the
+  // row's own ground first makes the box exactly the row's colour, so it covers the columns without
+  // showing as a lighter block (author, Nov 25). `--ui-row-ground` is the surface the rows sit on.
+  background:
+    linear-gradient(var(--ui-row-hover, var(--fill)), var(--ui-row-hover, var(--fill))),
+    var(--ui-row-ground, var(--surface));
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
 }
@@ -300,7 +310,8 @@
   }
 }
 
-:host(.ui-list-item--headline:has(:focus-visible)) .ui-list-item__trailing {
+:host(.ui-list-item--headline:has(:focus-visible)) .ui-list-item__trailing,
+:host(.ui-list-item--headline.ui-list-item--pinned) .ui-list-item__trailing {
   opacity: 1;
 }
 
@@ -321,7 +332,9 @@
   inset-block: 0;
   inset-inline-start: rem(12px);
   padding-inline: rem(4px);
-  background: var(--ui-row-hover, var(--fill));
+  background:
+    linear-gradient(var(--ui-row-hover, var(--fill)), var(--ui-row-hover, var(--fill))),
+    var(--ui-row-ground, var(--surface));
 }
 
 :host(.ui-list-item--headline.ui-list-item--checked) .ui-list-item__select {

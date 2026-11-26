@@ -14,9 +14,11 @@ ui-dialog {
 }
 
 .shortcuts-dialog__heading {
-  @include type(label);
+  // Shelf `.kcols h3`: 12px 600 muted, 8px above the rows.
+  @include type(caption);
 
-  margin: 0;
+  margin: 0 0 var(--space-2);
+  font-weight: 600;
   color: var(--text-muted);
 }
 

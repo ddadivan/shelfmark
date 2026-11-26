@@ -9,12 +9,9 @@
   color: var(--text-muted);
 }
 
-// A group heading in the bottom sheet of a menu (Shelf): the sheet title style.
+// A group heading in the bottom sheet of a menu (Shelf): the same muted caption as on desktop, a
+// little more room above it, so it reads as a label over the 16px items and never as one of them
+// (author, Nov 25: an 18px heading merged with the items).
 :host-context(.ui-menu__surface--sheet) {
-  @include type(heading);
-
-  padding: var(--space-2) var(--space-2) var(--space-1);
-  font-size: var(--font-size-section);
-  line-height: 1.3;
-  color: var(--text);
+  padding-block-start: var(--space-3);
 }

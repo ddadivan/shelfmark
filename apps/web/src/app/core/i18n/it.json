@@ -1307,7 +1307,14 @@
         "tags": "Hashtag",
         "folder": "Cartella",
         "date": "Data",
-        "description": "Descrizione"
+        "description": "Descrizione",
+        "site": "Mostra il sito"
+      },
+      "preview": {
+        "label": "Immagine di anteprima",
+        "large": "Grande",
+        "small": "Piccola",
+        "off": "Nessuna"
       }
     },
     "split": {
@@ -1865,28 +1872,6 @@
           "compact": "Compatta"
         }
       },
-      "cards": {
-        "title": "Schede",
-        "preview": {
-          "label": "Immagine di anteprima",
-          "hint": "L’immagine in cima a ogni scheda",
-          "large": "Grande",
-          "small": "Piccola",
-          "off": "Nessuna"
-        },
-        "site": {
-          "label": "Mostra il sito",
-          "hint": "Dominio e favicon sopra il titolo"
-        },
-        "notes": {
-          "label": "Mostra le note",
-          "hint": "La tua nota sotto il titolo"
-        },
-        "tags": {
-          "label": "Mostra i tag",
-          "hint": "I tag in fondo alla scheda"
-        }
-      },
       "sidebar": {
         "colours": {
           "label": "Colori delle cartelle",
@@ -1901,41 +1886,11 @@
         "full": "Complete",
         "reduced": "Ridotte"
       },
-      "preview": {
-        "title": "Anteprima dal vivo",
-        "label": "Anteprima delle tue impostazioni",
-        "hint": "Le modifiche si applicano subito a tutta l’app.",
-        "folders": {
-          "angular": "Angular",
-          "clothes": "Vestiti",
-          "recipes": "Ricette"
-        },
-        "cards": {
-          "one": {
-            "site": "youtube.com",
-            "title": "Signal Forms in 20 minuti",
-            "tag": "angular",
-            "note": "Da guardare nel weekend"
-          },
-          "two": {
-            "site": "cos.com",
-            "title": "Cappotto di lana, taglio dritto",
-            "tag": "vestiti",
-            "note": "Aspettare i saldi"
-          }
-        },
-        "recent": "Aperti di recente"
-      },
       "failed": "Impossibile salvare l’aspetto",
       "failedDetail": "È tornato com’era.",
       "accent": {
         "label": "Accento",
         "hint": "Grafite mantiene l’interfaccia sobria; Inchiostro e Salvia aggiungono un colore."
-      },
-      "customRow": {
-        "label": "Tema personalizzato",
-        "hint": "Il tuo accento e il tuo sfondo, con il contrasto verificato.",
-        "action": "Personalizza"
       }
     },
     "privacy": {
