@@ -3,12 +3,13 @@ import { PHONE_TAB } from './models/phone-tab.const';
 import type { PhoneTab } from './models/phone-tab.type';
 
 /**
- * The tab a URL belongs to: Today, Tags and Ask have their own page, the settings pages are `You`
- * (no tab of the bar, so none is current there), every other signed-in page (the feed, a folder,
- * Recently opened, the Library page) is under Library. Search opens over the page and is never the
- * current tab.
+ * The tab a URL belongs to: Today, Library, Tags and Ask have their own page, the settings pages
+ * are `You` (no tab of the bar, so none is current there). A page reached from the Library page
+ * (the feed, a folder, Recently opened) has no current tab (author, round 11): a lit Library tab
+ * there read as "you are on Library", and pressing it did not seem to go anywhere. Search opens
+ * over the page and is never the current tab.
  */
-export function phoneTabForUrl(url: string): PhoneTab {
+export function phoneTabForUrl(url: string): PhoneTab | null {
   const first = (url.split(/[?#]/)[0] ?? '').split('/').find(Boolean);
   switch (first) {
     case APP_PATH.Today:
@@ -17,9 +18,11 @@ export function phoneTabForUrl(url: string): PhoneTab {
       return PHONE_TAB.Tags;
     case APP_PATH.Ask:
       return PHONE_TAB.Ask;
+    case APP_PATH.Library:
+      return PHONE_TAB.Library;
     case APP_PATH.Settings:
       return PHONE_TAB.You;
     default:
-      return PHONE_TAB.Library;
+      return null;
   }
 }

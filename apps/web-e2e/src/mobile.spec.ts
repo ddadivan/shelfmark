@@ -93,7 +93,11 @@ test.describe('mobile layout (mock API)', () => {
     'the active tab follows the route and carries aria-current',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
+      // A feed reached from the Library page lights no tab (author, round 11); the Library page does.
       await page.goto('/links');
+      await expect(tab(page, 'Library')).not.toHaveAttribute('aria-current', 'page');
+      await tab(page, 'Library').click();
+      await expect(page).toHaveURL('/library');
       await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
 
       await tab(page, 'Tags').click();
@@ -107,7 +111,7 @@ test.describe('mobile layout (mock API)', () => {
       await expect(tab(page, 'Tags')).not.toHaveAttribute('aria-current', 'page');
 
       await page.goto(`/folders/${READING.id}`);
-      await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
+      await expect(tab(page, 'Library')).not.toHaveAttribute('aria-current', 'page');
     },
   );
 
@@ -140,7 +144,10 @@ test.describe('mobile layout (mock API)', () => {
       await page.getByRole('link', { name: /^Favorites/ }).click();
       await expect(page).toHaveURL('/favorites');
       await expect(page.getByRole('heading', { level: 1, name: 'Favorites' })).toBeVisible();
-      await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
+      await expect(tab(page, 'Library')).not.toHaveAttribute('aria-current', 'page');
+      // From a view, the Library tab goes back to the Library page.
+      await tab(page, 'Library').click();
+      await expect(page).toHaveURL('/library');
     },
   );
 

@@ -59,7 +59,7 @@
 @if (viewport.compact() && !pushed()) {
   <ui-tab-bar
     [items]="tabs()"
-    [active]="activeTab()"
+    [active]="activeTab() ?? undefined"
     [ariaLabel]="'shell.tabs.label' | transloco"
     [addLabel]="'shell.addLink' | transloco"
     (selected)="selectTab($event)"

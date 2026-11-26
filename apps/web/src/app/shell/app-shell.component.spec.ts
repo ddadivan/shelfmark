@@ -326,6 +326,7 @@ describe('AppShellComponent', () => {
                 { path: 'settings', children: [{ path: 'account', children: [] }] },
                 { path: 'recent', children: [] },
                 { path: 'today', children: [] },
+                { path: 'library', children: [] },
                 { path: 'tags', children: [] },
                 { path: 'ask', children: [] },
               ],
@@ -458,6 +459,10 @@ describe('AppShellComponent', () => {
 
     it('marks the tab of the current route with aria-current', async () => {
       const { harness, root } = await setup(true);
+      // A feed lights no tab (author, round 11); the Library page lights Library.
+      expect(root.querySelector('ui-tab-bar [aria-current]')).toBeNull();
+      await TestBed.inject(Router).navigateByUrl('/library');
+      await harness.fixture.whenStable();
       expect(tab(root, 'Library')?.getAttribute('aria-current')).toBe('page');
 
       await TestBed.inject(Router).navigateByUrl('/today');
