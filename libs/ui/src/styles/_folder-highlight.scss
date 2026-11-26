@@ -27,6 +27,11 @@
     color: var(--text);
     background: var(--ui-folder-tint);
 
+    // The open row must stand out from the other highlighted rows (author, Nov 26: with several
+    // tinted rows it was unclear which one is open): a hairline in the folder's own colour.
+    outline: 1px solid var(--ui-folder-ink);
+    outline-offset: -1px;
+
     @include hover {
       background: color-mix(in srgb, var(--ui-folder-tint) 85%, var(--ui-folder-ink));
     }

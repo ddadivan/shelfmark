@@ -93,6 +93,14 @@
   overflow: visible;
 }
 
+// The phone Library card holds only the folders: no group hairline or gap above them (author,
+// Nov 26: an empty strip and a line sat above "Folders").
+.sidebar--folders .sidebar__folders {
+  padding-block-start: 0;
+  margin-block-start: 0;
+  border-block-start: 0;
+}
+
 // Groups are 24px apart and divided by `sep` hairlines with 16px under them (Shelf reference
 // `.grp + .grp`): above Pinned, Folders and Tags.
 .sidebar__folders,
