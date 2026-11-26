@@ -95,7 +95,9 @@ test.describe('library Filter and Select links (mock API)', () => {
 
       const empty = page.getByText('Nothing matches these filters');
       await expect(empty).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Clear filters' })).toBeVisible();
+      // The empty state's own button (the filter row has a "Clear filters" too).
+      const clear = page.locator('ui-empty-state').getByRole('button', { name: 'Clear filters' });
+      await expect(clear).toBeVisible();
       // The tools stay: Filter (to change the filters), View and the view switch; Save view too
       // (the phone has the chip). Select cannot act on nothing.
       await expect(filterButton(page)).toBeVisible();
@@ -103,7 +105,7 @@ test.describe('library Filter and Select links (mock API)', () => {
       await expect(page.getByRole('radio', { name: 'Headlines', exact: true })).toBeVisible();
       await expect(selectButton(page)).toHaveCount(0);
 
-      await page.getByRole('button', { name: 'Clear filters' }).click();
+      await clear.click();
       await expect(page).not.toHaveURL(/kind=|saved=|tag=/);
       await expect(selectButton(page)).toBeVisible();
     },
