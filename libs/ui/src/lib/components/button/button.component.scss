@@ -189,6 +189,7 @@ a.ui-button {
 
   &:not([aria-disabled='true']) {
     @include hover {
+      color: var(--ui-button-glass-hover-color, var(--on-glass));
       background: var(--ui-button-glass-hover-bg, var(--ui-button-glass-bg, var(--glass)));
       box-shadow: var(--shadow-hover);
     }
