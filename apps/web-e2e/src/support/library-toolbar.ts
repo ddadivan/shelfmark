@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import { isPhone } from './sidebar';
+import { isCompact, isPhone } from './sidebar';
 
 export type LibraryView = 'Masonry' | 'Cards' | 'List' | 'Headlines';
 
@@ -30,6 +30,13 @@ export function exportButton(page: Page): Locator {
 
 /** Switches the feed to Masonry, Cards, List or Headlines. */
 export async function switchView(page: Page, view: LibraryView): Promise<void> {
+  if (isCompact(page)) {
+    // The mobile shell keeps the view switch inside the View menu.
+    await page.getByRole('button', { name: 'View', exact: true }).click();
+    await page.getByRole('radio', { name: view, exact: true }).click();
+    await page.keyboard.press('Escape');
+    return;
+  }
   await page.getByRole('radio', { name: view, exact: true }).click();
 }
 
@@ -84,17 +91,37 @@ export function selectButton(page: Page) {
   return page.getByRole('button', { name: 'Select links', exact: true });
 }
 
-/**
- * Saves the current filter: the "Save this view" chip of the saved views bar on a phone, the
- * toolbar's Save view button elsewhere.
- */
-export function saveThisViewButton(page: Page): Locator {
-  return isPhone(page)
-    ? page.locator('app-saved-view-chips').getByRole('button', { name: 'Save this view' })
-    : page.getByRole('button', { name: 'Save view', exact: true });
+/** The phone's saved views picker (the views are a menu in the toolbar's row, not a chip bar). */
+export function savedViewsPicker(page: Page): Locator {
+  return page.getByRole('button', { name: /^Saved view: / });
 }
 
-/** Opens the New view dialog for the current filter (see `saveThisViewButton`). */
+/**
+ * A saved view of the feed by its name (a regular expression or text): the chip of the Saved views
+ * bar, on a phone the radio item of the picker's menu (this opens the menu; `Escape` closes it).
+ */
+export async function savedViewEntry(page: Page, name: string | RegExp): Promise<Locator> {
+  if (!isPhone(page)) {
+    return page.getByRole('toolbar', { name: 'Saved views' }).getByRole('button', { name });
+  }
+  await savedViewsPicker(page).click();
+  return page.getByRole('menuitemradio', { name });
+}
+
+/** Opens the New view dialog for the current filter (the Save view button, on a phone the picker). */
 export async function openSaveThisView(page: Page): Promise<void> {
+  if (isPhone(page)) {
+    await savedViewsPicker(page).click();
+    await page.getByRole('menuitem', { name: 'Save this view' }).click();
+    return;
+  }
   await saveThisViewButton(page).click();
+}
+
+/**
+ * Saves the current filter: the toolbar's Save view button (on a phone: "Save this view" in the
+ * picker's menu, see `openSaveThisView`).
+ */
+export function saveThisViewButton(page: Page): Locator {
+  return page.getByRole('button', { name: 'Save view', exact: true });
 }

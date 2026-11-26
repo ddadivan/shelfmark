@@ -123,17 +123,29 @@
   // title row, in every scope (All links, Unsorted, Favorites, folders, tags, views).
   margin-bottom: calc(var(--space-3) + #{rem(10px)});
 
-  // Phone: the title and the tools (Filter, Select, the view switch, ⋯) share a line while the
-  // title keeps its words whole; when they do not fit, the tools drop under the title.
+  // Phone: the head is the title, then one control row: the saved-views picker on the left, the
+  // tools (Filter, Sort, View, ⋯) on the right, then the feed. The title keeps its words whole.
   @include phone {
-    gap: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
 
     .library__heading {
-      flex: 1 1 auto;
+      flex: 1 1 100%;
     }
 
+    .library__views--picker {
+      flex: 0 1 auto;
+      margin: 0;
+    }
+
+    // Tight gaps: the picker and the tools stay on one row at 360px in the longer languages.
     .library__tools {
+      gap: var(--space-1);
       margin-inline-start: auto;
+    }
+
+    .library__controls {
+      gap: var(--space-1);
     }
   }
 }
@@ -148,6 +160,10 @@
   flex-shrink: 0;
   gap: var(--space-4);
   align-items: center;
+
+  // Shelf toolbar buttons (Filter, Select, Side by side, Save view, Sort, Export) are regular
+  // weight (author, Nov 26); the "Add link here" button keeps the label weight.
+  --ui-button-weight: 400;
 
   // Pressed to the right edge, also when the group drops under the title.
   justify-content: flex-end;
@@ -425,4 +441,8 @@
 // The sort menu's group headings (Date, Name) read from the start, whatever the menu's alignment.
 ui-menu-label {
   text-align: start;
+}
+
+.library__tools .library__add-here {
+  --ui-button-weight: 500;
 }

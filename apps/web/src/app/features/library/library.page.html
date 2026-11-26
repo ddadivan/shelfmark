@@ -197,6 +197,13 @@
           </ng-template>
           <!-- Shelf toolbar: View (grid size and card fields; not on a phone, where the feed has two
                columns), the view switch, then ⋯ with the rest (a bottom sheet below 64em). -->
+          @if (phone() && !feed.emptyLibrary()) {
+          <!-- Phone: the saved views are a picker in the control row, under the title. -->
+          <app-saved-view-chips
+            class="library__views library__views--picker"
+            [filter]="filters.filter()"
+          />
+          }
           <div class="library__tools" uiTooltipGroup>
             @if (selection.selecting() && !compact()) {
             <!-- Shelf selection (08-select-move): the hint and "Select all N" take the tools' place;
@@ -387,7 +394,7 @@
       <app-extension-banner class="library__extension" />
       } @if (filters.searching()) {
       <app-search-question-hint [query]="filters.query()" />
-      } @if (!feed.emptyLibrary()) {
+      } @if (!feed.emptyLibrary() && !phone()) {
       <app-saved-view-chips class="library__views" [filter]="filters.filter()" />
       } @if (filters.searching()) {
       <app-search-go-to

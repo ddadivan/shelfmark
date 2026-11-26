@@ -2579,6 +2579,10 @@
     "label": "Gespeicherte Ansichten",
     "all": "Alle",
     "add": "Diese Ansicht speichern",
+    "picker": {
+      "label": "Gespeicherte Ansicht: {{name}}",
+      "manage": "„{{name}}“ verwalten …"
+    },
     "menu": {
       "for": "Aktionen für {{name}}",
       "rename": "Umbenennen",

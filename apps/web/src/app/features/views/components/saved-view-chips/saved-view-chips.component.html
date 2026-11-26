@@ -1,14 +1,47 @@
-<ui-saved-views
-  [items]="items()"
-  [activeId]="activeId()"
-  [ariaLabel]="'views.label' | transloco"
-  [addLabel]="phone() ? ('views.add' | transloco) : ''"
-  [layout]="layout()"
-  (selected)="select($event)"
-  (add)="add()"
-  (menuRequested)="openMenu($event)"
-/>
-<ui-menu [ariaLabel]="menuLabel()">
+@if (phone()) {
+  <!-- Phone: the views are one picker ("All 58" with a caret) in the toolbar's row; its menu lists
+     All and the views with their counts, then "Save this view" and the open view's own menu. -->
+  <ui-button
+    #pickerTrigger
+    [uiMenuTrigger]="pickerMenu"
+    class="saved-view-chips__picker"
+    variant="ghost"
+    size="sm"
+    iconRight="chevron-down"
+    [ariaLabel]="'views.picker.label' | transloco: { name: activeLabel() }"
+  >
+    {{ activeLabel() }}
+  </ui-button>
+  <ui-menu #pickerMenu align="start" [ariaLabel]="'views.label' | transloco">
+    @for (item of items(); track item.id) {
+      <ui-menu-item type="radio" [selected]="item.id === activeId()" (activated)="select(item.id)">
+        {{ item.label }}
+        @if (item.count !== null) {
+          <span class="saved-view-chips__count">{{ item.count }}</span>
+        }
+      </ui-menu-item>
+    }
+    <ui-menu-separator />
+    <ui-menu-item icon="add" (activated)="add()">{{ 'views.add' | transloco }}</ui-menu-item>
+    @if (activeView(); as view) {
+      <ui-menu-item icon="more" (activated)="openActiveMenu(view)">
+        {{ 'views.picker.manage' | transloco: { name: view.name } }}
+      </ui-menu-item>
+    }
+  </ui-menu>
+} @else {
+  <ui-saved-views
+    [items]="items()"
+    [activeId]="activeId()"
+    [ariaLabel]="'views.label' | transloco"
+    [addLabel]="phone() ? ('views.add' | transloco) : ''"
+    [layout]="layout()"
+    (selected)="select($event)"
+    (add)="add()"
+    (menuRequested)="openMenu($event)"
+  />
+}
+<ui-menu #viewMenu [ariaLabel]="menuLabel()">
   <ui-menu-item icon="filter" (activated)="editView()">
     {{ 'views.menu.edit' | transloco }}
   </ui-menu-item>

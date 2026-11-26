@@ -2579,6 +2579,10 @@
     "label": "Saved views",
     "all": "All",
     "add": "Save this view",
+    "picker": {
+      "label": "Saved view: {{name}}",
+      "manage": "Manage “{{name}}”…"
+    },
     "menu": {
       "for": "Actions for {{name}}",
       "rename": "Rename",

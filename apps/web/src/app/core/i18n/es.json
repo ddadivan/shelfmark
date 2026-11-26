@@ -2641,6 +2641,10 @@
     "label": "Vistas guardadas",
     "all": "Todos",
     "add": "Guardar esta vista",
+    "picker": {
+      "label": "Vista guardada: {{name}}",
+      "manage": "Gestionar «{{name}}»…"
+    },
     "menu": {
       "for": "Acciones para {{name}}",
       "rename": "Cambiar nombre",

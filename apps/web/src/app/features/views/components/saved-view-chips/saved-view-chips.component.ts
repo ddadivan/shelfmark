@@ -10,6 +10,7 @@ import {
   signal,
   untracked,
   viewChild,
+  ElementRef,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -20,8 +21,10 @@ import {
   type SavedViewResponse,
 } from '@shelfmark/contracts';
 import {
+  ButtonComponent,
   MenuComponent,
   MenuItemComponent,
+  MenuTriggerDirective,
   MenuSeparatorComponent,
   SAVED_VIEWS_LAYOUT,
   SavedViewsComponent,
@@ -48,6 +51,8 @@ import { activeViewOf, feedQueryOf, viewOnFeed } from '../../utils/feed-views';
 @Component({
   selector: 'app-saved-view-chips',
   imports: [
+    ButtonComponent,
+    MenuTriggerDirective,
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
@@ -71,8 +76,13 @@ export class SavedViewChipsComponent {
   protected readonly phone = inject(ViewportService).phone;
   /** Desktop (Shelf): "Save this view" lives in the feed's ⋯ menu, not at the end of the tabs. */
   private readonly injector = inject(Injector);
-  private readonly menu = viewChild.required(MenuComponent);
-  private readonly chips = viewChild.required(SavedViewsComponent);
+  private readonly menu = viewChild.required<MenuComponent, MenuComponent>('viewMenu', {
+    read: MenuComponent,
+  });
+  private readonly pickerTrigger = viewChild<string, ElementRef<HTMLElement>>('pickerTrigger', {
+    read: ElementRef,
+  });
+  private readonly chips = viewChild(SavedViewsComponent);
   /** Ticks when the active language or its translations change. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
@@ -109,6 +119,21 @@ export class SavedViewChipsComponent {
     const filter = this.filter();
     const match = activeViewOf(filter, this.visible());
     return match?.id ?? (!filter.q && filter.kind === undefined ? ALL_VIEW_ID : null);
+  });
+
+  /** The saved view on screen (none for All or an unsaved filter). */
+  protected readonly activeView = computed(() => {
+    const id = this.activeId();
+    return id === null || id === ALL_VIEW_ID
+      ? null
+      : (this.store.items().find((view) => view.id === id) ?? null);
+  });
+  /** The picker's label: the active view's name (or All); the counts are in its menu. */
+  protected readonly activeLabel = computed(() => {
+    const items = this.items();
+    const id = this.activeId();
+    const item = items.find((entry) => entry.id === id) ?? items[0];
+    return item.label;
   });
 
   /** The view whose menu is open. */
@@ -162,7 +187,7 @@ export class SavedViewChipsComponent {
     const created = await this.actions.saveCurrent(this.filter());
     if (created !== null) {
       // The dialog handed focus back to "+ Save this view": the new chip is the result.
-      afterNextRender(() => this.chips().focusItem(created), { injector: this.injector });
+      afterNextRender(() => this.chips()?.focusItem(created), { injector: this.injector });
     }
   }
 
@@ -173,6 +198,15 @@ export class SavedViewChipsComponent {
     return plain && query.kind !== null && query.kind !== LINK_KIND.Other
       ? this.transloco.translate(`views.kindHint.${query.kind}`)
       : undefined;
+  }
+
+  /** "Manage…" of the picker: the open view's own menu, under the picker's button. */
+  protected openActiveMenu(view: SavedViewResponse): void {
+    const origin = this.pickerTrigger()?.nativeElement;
+    this.menuView.set(view);
+    if (origin) {
+      this.menu().openFrom(origin);
+    }
   }
 
   protected openMenu(request: SavedViewMenuRequest): void {

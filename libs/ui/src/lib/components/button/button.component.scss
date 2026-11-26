@@ -36,6 +36,10 @@
 .ui-button {
   @include type(label);
 
+  // `--ui-button-weight`: a feature that wants lighter text than the label's 500 (the library
+  // toolbar's 400) sets it on an ancestor.
+  font-weight: var(--ui-button-weight, 500);
+
   // Inside a dialog every icon is 24px (`--ui-dialog-icon-size` from `ui-dialog`).
   // `--ui-button-icon-size`: a feature that draws a button's icon smaller than its size gives (the
   // Shelf sidebar's 14px chevrons and "+", the 12px glyphs of the glass buttons on a card).

@@ -2,7 +2,8 @@ import { type Locator, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
 import { AI_DISCLAIMER, seedAi } from './support/ai';
 import { E2E_TAG } from './models/e2e-tag.const';
-import { openSaveThisView } from './support/library-toolbar';
+import { openSaveThisView, savedViewEntry, savedViewsPicker } from './support/library-toolbar';
+import { isPhone } from './support/sidebar';
 import { expect, test } from './support/test';
 
 // "+ Save view" (#535): one dialog for everyone, a phrase step while AI is on (mock API).
@@ -51,9 +52,7 @@ test.describe('new view dialog (mock API)', () => {
       await dialog.getByRole('button', { name: 'Save view' }).click();
       await expect(dialog).toHaveCount(0);
       await expect(page.getByText('View saved')).toBeVisible();
-      await expect(
-        views(page).getByRole('button', { name: /^Starred videos \d+$/u }),
-      ).toBeVisible();
+      await expect(await savedViewEntry(page, /^Starred videos \d+$/u)).toBeVisible();
     },
   );
 
@@ -80,9 +79,7 @@ test.describe('new view dialog (mock API)', () => {
 
       await dialog.getByRole('button', { name: 'Save view' }).click();
       await expect(dialog).toHaveCount(0);
-      await expect(
-        views(page).getByRole('button', { name: /^Videos, newest first \d+$/u }),
-      ).toBeVisible();
+      await expect(await savedViewEntry(page, /^Videos, newest first \d+$/u)).toBeVisible();
     },
   );
 
@@ -114,9 +111,14 @@ test.describe('new view dialog (mock API)', () => {
       await dialog.getByRole('textbox', { name: 'Name' }).fill('Cooking');
       await dialog.getByRole('button', { name: 'Save view' }).click();
       await expect(dialog).toHaveCount(0);
-      const cooking = views(page).getByRole('button', { name: /^Cooking \d+$/u });
+      const cooking = await savedViewEntry(page, /^Cooking \d+$/u);
       await cooking.click();
-      await expect(cooking).toHaveAttribute('aria-pressed', 'true');
+      await expect(page).toHaveURL(/kind=recipe/u);
+      if (isPhone(page)) {
+        await expect(savedViewsPicker(page)).toContainText('Cooking');
+      } else {
+        await expect(cooking).toHaveAttribute('aria-pressed', 'true');
+      }
       await expect(page).toHaveURL(/kind=recipe/u);
     },
   );
