@@ -3055,6 +3055,7 @@
     },
     "madeWith": "Made with Shelfmark",
     "startOwn": "Start your own shelf",
+    "signIn": "Sign in",
     "offline": {
       "title": "You’re offline",
       "text": "This collection loads once you’re back online."
@@ -3164,6 +3165,10 @@
     "share": {
       "failed": "Couldn't share the links"
     },
+    "partial": {
+      "title": "Only some links were changed",
+      "detail": "{{done}} of {{total}} were updated. The rest are back as they were."
+    },
     "delete": {
       "title": {
         "one": "Move {{count}} link to Trash?",
@@ -3179,7 +3184,9 @@
       },
       "failed": "Couldn't delete the links",
       "failedDetail": "They are back in the list",
-      "undoFailed": "Couldn't restore the links"
+      "undoFailed": "Couldn't restore the links",
+      "partial": "Only some links were moved to Trash",
+      "partialDetail": "{{done}} of {{total}} are in Trash. The rest are back in the list."
     }
   },
   "reminders": {

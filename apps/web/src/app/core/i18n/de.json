@@ -3055,6 +3055,7 @@
     },
     "madeWith": "Gemacht mit Shelfmark",
     "startOwn": "Eigenes Regal anlegen",
+    "signIn": "Anmelden",
     "offline": {
       "title": "Du bist offline",
       "text": "Die Sammlung lädt, sobald du wieder online bist."
@@ -3164,6 +3165,10 @@
     "share": {
       "failed": "Links konnten nicht geteilt werden"
     },
+    "partial": {
+      "title": "Nur einige Links wurden geändert",
+      "detail": "{{done}} von {{total}} wurden aktualisiert. Die übrigen sind wieder wie vorher."
+    },
     "delete": {
       "title": {
         "one": "{{count}} Link in den Papierkorb verschieben?",
@@ -3179,7 +3184,9 @@
       },
       "failed": "Links konnten nicht gelöscht werden",
       "failedDetail": "Sie sind wieder in der Liste",
-      "undoFailed": "Links konnten nicht wiederhergestellt werden"
+      "undoFailed": "Links konnten nicht wiederhergestellt werden",
+      "partial": "Nur einige Links wurden in den Papierkorb verschoben",
+      "partialDetail": "{{done}} von {{total}} sind im Papierkorb. Die übrigen sind wieder in der Liste."
     }
   },
   "reminders": {

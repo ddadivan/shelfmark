@@ -3120,6 +3120,7 @@
     },
     "madeWith": "Creato con Shelfmark",
     "startOwn": "Crea il tuo scaffale",
+    "signIn": "Accedi",
     "offline": {
       "title": "Sei offline",
       "text": "La raccolta si caricherà appena tornerai online."
@@ -3239,6 +3240,10 @@
     "share": {
       "failed": "Impossibile condividere i link"
     },
+    "partial": {
+      "title": "Solo alcuni link sono stati modificati",
+      "detail": "{{done}} su {{total}} sono stati aggiornati. Gli altri sono tornati com’erano."
+    },
     "delete": {
       "title": {
         "one": "Spostare {{count}} link nel cestino?",
@@ -3256,7 +3261,9 @@
       },
       "failed": "Impossibile eliminare i link",
       "failedDetail": "Sono di nuovo nell’elenco",
-      "undoFailed": "Impossibile ripristinare i link"
+      "undoFailed": "Impossibile ripristinare i link",
+      "partial": "Solo alcuni link sono stati spostati nel cestino",
+      "partialDetail": "{{done}} su {{total}} sono nel cestino. Gli altri sono di nuovo nell’elenco."
     }
   },
   "reminders": {

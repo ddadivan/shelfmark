@@ -3120,6 +3120,7 @@
     },
     "madeWith": "Feito com Shelfmark",
     "startOwn": "Crie sua estante",
+    "signIn": "Entrar",
     "offline": {
       "title": "Você está offline",
       "text": "A coleção carrega assim que você voltar a ficar online."
@@ -3239,6 +3240,10 @@
     "share": {
       "failed": "Não foi possível compartilhar os links"
     },
+    "partial": {
+      "title": "Apenas alguns links foram alterados",
+      "detail": "{{done}} de {{total}} foram atualizados. Os outros voltaram como estavam."
+    },
     "delete": {
       "title": {
         "one": "Mover {{count}} link para a lixeira?",
@@ -3256,7 +3261,9 @@
       },
       "failed": "Não foi possível excluir os links",
       "failedDetail": "Eles voltaram para a lista",
-      "undoFailed": "Não foi possível restaurar os links"
+      "undoFailed": "Não foi possível restaurar os links",
+      "partial": "Apenas alguns links foram movidos para a lixeira",
+      "partialDetail": "{{done}} de {{total}} estão na lixeira. Os outros voltaram para a lista."
     }
   },
   "reminders": {

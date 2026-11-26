@@ -3120,6 +3120,7 @@
     },
     "madeWith": "Fait avec Shelfmark",
     "startOwn": "Créer votre étagère",
+    "signIn": "Se connecter",
     "offline": {
       "title": "Vous êtes hors ligne",
       "text": "Cette collection se chargera dès que vous serez de nouveau en ligne."
@@ -3239,6 +3240,10 @@
     "share": {
       "failed": "Impossible de partager les liens"
     },
+    "partial": {
+      "title": "Seuls certains liens ont été modifiés",
+      "detail": "{{done}} sur {{total}} ont été mis à jour. Les autres sont revenus comme avant."
+    },
     "delete": {
       "title": {
         "one": "Placer {{count}} lien dans la corbeille ?",
@@ -3256,7 +3261,9 @@
       },
       "failed": "Impossible de supprimer les liens",
       "failedDetail": "Ils sont de retour dans la liste",
-      "undoFailed": "Impossible de restaurer les liens"
+      "undoFailed": "Impossible de restaurer les liens",
+      "partial": "Seuls certains liens ont été placés dans la corbeille",
+      "partialDetail": "{{done}} sur {{total}} sont dans la corbeille. Les autres sont de retour dans la liste."
     }
   },
   "reminders": {

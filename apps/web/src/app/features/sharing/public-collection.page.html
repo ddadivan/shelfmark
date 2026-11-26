@@ -10,7 +10,12 @@
     @if (signedIn()) {
     <ui-button [href]="shelfHref">{{ 'publicCollection.backToShelf' | transloco }}</ui-button>
     } @else {
-    <ui-button [href]="signInHref">{{ 'publicCollection.startOwn' | transloco }}</ui-button>
+    <div class="collection__guest">
+      <ui-button [href]="signInHref" [variant]="BUTTON_VARIANT.Ghost"
+        >{{ 'publicCollection.signIn' | transloco }}</ui-button
+      >
+      <ui-button [href]="signInHref">{{ 'publicCollection.startOwn' | transloco }}</ui-button>
+    </div>
     }
   </header>
 
