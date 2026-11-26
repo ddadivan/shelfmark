@@ -29,4 +29,12 @@ describe('buildFolderOptions', () => {
     );
     expect(option).toMatchObject({ colour: 'shown-rose', icon: '🍋' });
   });
+
+  it('does not hang on a cyclic parent and keeps the rest', () => {
+    const root: FolderResponse = { ...MOCK_FOLDERS[0], id: 'root', parentId: null };
+    const a: FolderResponse = { ...MOCK_FOLDERS[0], id: 'a', parentId: 'b' };
+    const b: FolderResponse = { ...MOCK_FOLDERS[0], id: 'b', parentId: 'a' };
+    const selfLoop: FolderResponse = { ...MOCK_FOLDERS[0], id: 'self', parentId: 'self' };
+    expect(buildFolderOptions([root, a, b, selfLoop]).map((option) => option.id)).toEqual(['root']);
+  });
 });

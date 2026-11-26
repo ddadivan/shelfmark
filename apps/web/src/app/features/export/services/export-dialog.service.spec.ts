@@ -10,7 +10,10 @@ import { ExportDialogService } from './export-dialog.service';
 const folder = (id: string, parentId: string | null, linkCount: number): FolderResponse =>
   ({ id, name: id, parentId, linkCount }) as FolderResponse;
 
-function setup(openDialogs: number) {
+function setup(
+  openDialogs: number,
+  folders: FolderResponse[] = [folder('a', null, 3), folder('b', 'a', 4), folder('c', null, 9)],
+) {
   const open = vi.fn();
   TestBed.configureTestingModule({
     providers: [
@@ -20,7 +23,7 @@ function setup(openDialogs: number) {
       {
         provide: FoldersStore,
         useValue: {
-          entities: () => [folder('a', null, 3), folder('b', 'a', 4), folder('c', null, 9)],
+          entities: () => folders,
         },
       },
     ],
@@ -42,6 +45,24 @@ describe('ExportDialogService', () => {
 
   it('offers the folder of the page with the links of its subfolders', async () => {
     const { open, service } = setup(0);
+    await TestBed.inject(Router).navigateByUrl('/folders/a');
+
+    service.open();
+
+    expect(open).toHaveBeenCalledWith(ExportDialogComponent, {
+      size: DIALOG_SIZE.Sm,
+      data: { folder: { id: 'a', name: 'a', count: 7 }, view: null },
+    });
+  });
+
+  it('counts nested subfolders once and survives a cyclic parent', async () => {
+    const { open, service } = setup(0, [
+      folder('a', null, 1),
+      folder('b', 'a', 2),
+      folder('c', 'b', 4),
+      folder('d', 'e', 8),
+      folder('e', 'd', 16),
+    ]);
     await TestBed.inject(Router).navigateByUrl('/folders/a');
 
     service.open();

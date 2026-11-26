@@ -2,6 +2,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
+import { descendantIds } from '../../../stores/folder-tree';
 import { APP_PATH } from '../../../models/app-path.const';
 import { FoldersStore } from '../../../stores/folders.store';
 import { ExportDialogComponent } from '../components/export-dialog/export-dialog.component';
@@ -44,17 +45,7 @@ export class ExportDialogService {
     const folder = folders.find((item) => item.id === second.path);
     if (!folder) return null;
     // The export takes the subfolders too, so the count does.
-    const ids = new Set([folder.id]);
-    let grew = true;
-    while (grew) {
-      grew = false;
-      for (const item of folders) {
-        if (item.parentId !== null && ids.has(item.parentId) && !ids.has(item.id)) {
-          ids.add(item.id);
-          grew = true;
-        }
-      }
-    }
+    const ids = new Set([folder.id, ...descendantIds(folders, folder.id)]);
     const count = folders
       .filter((item) => ids.has(item.id))
       .reduce((sum, item) => sum + item.linkCount, 0);
