@@ -12,7 +12,7 @@ import {
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { hasApiMessage } from '../core/api/api-error';
-import { SessionScope } from '../core/auth/session-scope.service';
+import { withSessionLoad } from './features/with-session-load';
 import { RULES_API } from '../features/rules/models/rules-api.const';
 import { RULE_OUTCOME } from './models/rule-outcome.const';
 import type { RuleOutcome } from './models/rule-outcome.type';
@@ -48,27 +48,25 @@ function outcomeOf(error: unknown): RuleOutcome {
  */
 export const RulesStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState<RulesState>(initialState),
+  withSessionLoad<RulesState>(initialState),
   withComputed(({ items }) => ({
     atLimit: computed(() => items().length >= RULE_LIMIT.PerUserMax),
   })),
   withMethods((store) => {
     const injector = inject(Injector);
     const api = () => injector.get(RULES_API);
-    const scope = inject(SessionScope);
-    let epoch = 0;
-    let firstLoad: Promise<void> | null = null;
 
     async function fetchList(): Promise<void> {
-      const started = epoch;
+      const started = store._epoch();
       patchState(store, { loading: true, error: false });
       try {
         const response = await firstValueFrom(api().list());
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, { items: response.items, loaded: true, loading: false });
         }
       } catch {
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, { loading: false, error: !store.loaded() });
         }
       }
@@ -80,20 +78,13 @@ export const RulesStore = signalStore(
       });
     }
 
-    scope.onEnd(() => {
-      epoch++;
-      firstLoad = null;
-      patchState(store, initialState);
-    });
-
     return {
       /** Loads the rules once; a failure can be retried by calling again. */
       load(): Promise<void> {
         if (store.loaded()) {
           return Promise.resolve();
         }
-        firstLoad ??= fetchList().finally(() => (firstLoad = null));
-        return firstLoad;
+        return store._dedupe(() => fetchList());
       },
 
       /** Re-reads the rules (a folder was deleted or restored). Only once loaded. */
@@ -111,10 +102,10 @@ export const RulesStore = signalStore(
         if (store.atLimit()) {
           return { outcome: RULE_OUTCOME.Limit };
         }
-        const started = epoch;
+        const started = store._epoch();
         try {
           const rule = await firstValueFrom(api().create(request));
-          if (started === epoch) {
+          if (started === store._epoch()) {
             put(rule);
           }
           return { outcome: RULE_OUTCOME.Done, rule };
@@ -125,16 +116,16 @@ export const RulesStore = signalStore(
 
       /** Changes a rule; waits for the server. */
       async update(id: string, request: UpdateRuleRequest): Promise<RuleSaveResult> {
-        const started = epoch;
+        const started = store._epoch();
         try {
           const rule = await firstValueFrom(api().update(id, request));
-          if (started === epoch) {
+          if (started === store._epoch()) {
             put(rule);
           }
           return { outcome: RULE_OUTCOME.Done, rule };
         } catch (error) {
           const outcome = outcomeOf(error);
-          if (outcome === RULE_OUTCOME.Missing && started === epoch) {
+          if (outcome === RULE_OUTCOME.Missing && started === store._epoch()) {
             patchState(store, { items: store.items().filter((item) => item.id !== id) });
           }
           return { outcome };

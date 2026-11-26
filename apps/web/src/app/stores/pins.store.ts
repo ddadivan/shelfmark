@@ -12,7 +12,7 @@ import {
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { isConflictError } from '../core/api/is-conflict-error';
-import { SessionScope } from '../core/auth/session-scope.service';
+import { withSessionLoad } from './features/with-session-load';
 import { PIN_OUTCOME } from '../features/pins/models/pin-outcome.const';
 import type { PinOutcome } from '../features/pins/models/pin-outcome.type';
 import type { PinRow } from '../features/pins/models/pin-row.interface';
@@ -48,7 +48,8 @@ function renumber(items: readonly PinResponse[]): PinResponse[] {
  */
 export const PinsStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState<PinsState>(initialState),
+  withSessionLoad<PinsState>(initialState),
   withComputed(({ items }) => {
     const folders = inject(FoldersStore);
     const links = inject(LinksStore);
@@ -88,31 +89,26 @@ export const PinsStore = signalStore(
     const folders = inject(FoldersStore);
     const links = inject(LinksStore);
     const views = inject(SavedViewsStore);
-    const scope = inject(SessionScope);
-    let epoch = 0;
-    // Bumped by every change: a list that started before it must not overwrite it.
-    let version = 0;
-    let firstLoad: Promise<void> | null = null;
 
     async function fetchList(): Promise<void> {
-      const started = epoch;
-      const startedVersion = version;
+      const started = store._epoch();
+      const startedVersion = store._version();
       if (!store.loaded()) {
         patchState(store, { loading: true, error: false });
       }
       try {
         const response = await firstValueFrom(api().list());
-        if (started !== epoch) {
+        if (started !== store._epoch()) {
           return;
         }
         patchState(
           store,
-          startedVersion === version
+          startedVersion === store._version()
             ? { items: response.items, loaded: true, loading: false, error: false }
             : { loading: false },
         );
       } catch {
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, { loading: false, error: !store.loaded() });
         }
       }
@@ -139,21 +135,13 @@ export const PinsStore = signalStore(
       return store.keys().has(pinKey(ref.kind, ref.id));
     }
 
-    scope.onEnd(() => {
-      epoch++;
-      version++;
-      firstLoad = null;
-      patchState(store, initialState);
-    });
-
     return {
       /** Loads the pins once; a failure can be retried by calling again. */
       load(): Promise<void> {
         if (store.loaded()) {
           return Promise.resolve();
         }
-        firstLoad ??= fetchList().finally(() => (firstLoad = null));
-        return firstLoad;
+        return store._dedupe(() => fetchList());
       },
 
       /** Reloads the pins from the server (after something may have unpinned items). Only once loaded. */
@@ -176,23 +164,23 @@ export const PinsStore = signalStore(
         if (store.atLimit()) {
           return PIN_OUTCOME.Limit;
         }
-        const started = epoch;
+        const started = store._epoch();
         const before = store.items();
         const optimistic = placeholder(ref);
-        const mine = ++version;
+        const mine = store._bumpVersion();
         if (optimistic) {
           patchState(store, { items: [...before, optimistic] });
         }
         try {
           const response = await firstValueFrom(api().create(ref));
-          if (started === epoch && version === mine) {
-            version++;
+          if (started === store._epoch() && store._version() === mine) {
+            store._bumpVersion();
             patchState(store, { items: response.items, loaded: true });
           }
           return PIN_OUTCOME.Done;
         } catch (error) {
-          if (started === epoch) {
-            version++;
+          if (started === store._epoch()) {
+            store._bumpVersion();
             patchState(store, {
               items: store.items().filter((pin) => !samePin(pin, ref)),
             });
@@ -210,15 +198,15 @@ export const PinsStore = signalStore(
         if (!isPinned(ref)) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         patchState(store, { items: renumber(before.filter((pin) => !samePin(pin, ref))) });
         try {
           await firstValueFrom(api().remove(ref));
           return true;
         } catch {
-          if (started === epoch) {
-            version++;
+          if (started === store._epoch()) {
+            store._bumpVersion();
             if (!isPinned(ref)) {
               patchState(store, { items: before });
             }
@@ -238,21 +226,21 @@ export const PinsStore = signalStore(
         const next = [...before];
         const [moved] = next.splice(from, 1);
         next.splice(to, 0, moved);
-        const started = epoch;
-        const mine = ++version;
+        const started = store._epoch();
+        const mine = store._bumpVersion();
         patchState(store, { items: renumber(next) });
         try {
           const response = await firstValueFrom(api().reorder(next.map(toRef)));
           // Another change since (an unpin, a pin) already shows the newer state: keep it.
-          if (started === epoch && version === mine) {
-            version++;
+          if (started === store._epoch() && store._version() === mine) {
+            store._bumpVersion();
             patchState(store, { items: response.items });
           }
           return true;
         } catch {
-          if (started === epoch) {
-            if (version === mine) {
-              version++;
+          if (started === store._epoch()) {
+            if (store._version() === mine) {
+              store._bumpVersion();
               patchState(store, { items: before });
             } else {
               // Later changes sit on top of this one: do not undo them, ask the server instead.
@@ -265,7 +253,7 @@ export const PinsStore = signalStore(
 
       /** Folders that went to Trash are no longer pinned. */
       dropFolders(ids: readonly string[]): void {
-        version++;
+        store._bumpVersion();
         patchState(store, {
           items: renumber(
             store
@@ -277,7 +265,7 @@ export const PinsStore = signalStore(
 
       /** A deleted saved view is no longer pinned (the server drops the pin with the row). */
       dropView(id: string): void {
-        version++;
+        store._bumpVersion();
         patchState(store, {
           items: renumber(
             store.items().filter((pin) => pin.kind !== PIN_KIND.View || toRef(pin).id !== id),
@@ -287,7 +275,7 @@ export const PinsStore = signalStore(
 
       /** A link that went to Trash is no longer pinned. */
       dropLink(id: string): void {
-        version++;
+        store._bumpVersion();
         patchState(store, {
           items: renumber(
             store.items().filter((pin) => pin.kind !== PIN_KIND.Link || toRef(pin).id !== id),

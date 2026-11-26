@@ -17,7 +17,7 @@ import { firstValueFrom } from 'rxjs';
 import type { Appearance } from '../core/theme/models/appearance.type';
 import { ThemeService } from '../core/theme/theme.service';
 import { LocaleService } from '../core/i18n/locale.service';
-import { SessionScope } from '../core/auth/session-scope.service';
+import { withSessionLoad } from './features/with-session-load';
 import { ReaderSettingsService } from '../features/reader/services/reader-settings.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import {
@@ -55,7 +55,8 @@ const initialState: UserSettingsState = {
  */
 export const UserSettingsStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState<UserSettingsState>(initialState),
+  withSessionLoad<UserSettingsState>(initialState),
   withComputed(({ trashRetentionDays, folderColours, pauseHistory, library }) => ({
     /** The retention to show: the account's, or the default until it is known. */
     retentionDays: computed<TrashRetentionDays>(
@@ -82,28 +83,23 @@ export const UserSettingsStore = signalStore(
   withMethods((store) => {
     const injector = inject(Injector);
     const api = () => injector.get(USER_SETTINGS_API);
-    const scope = inject(SessionScope);
     const theme = inject(ThemeService);
     const locale = inject(LocaleService);
-    let epoch = 0;
-    // Bumped by every change: a settings read that started before it must not overwrite it.
-    let version = 0;
-    let firstLoad: Promise<void> | null = null;
 
     async function fetchSettings(): Promise<void> {
-      const started = epoch;
-      const startedVersion = version;
+      const started = store._epoch();
+      const startedVersion = store._version();
       const reader = injector.get(ReaderSettingsService);
       const readerToken = reader.editToken();
       patchState(store, { loading: true, error: false });
       try {
         const settings = await firstValueFrom(api().get());
-        if (started !== epoch) {
+        if (started !== store._epoch()) {
           return;
         }
         // Reading settings of Reader: the account wins once saved, else a local copy is saved once.
         reader.adopt(settings, readerToken);
-        if (startedVersion === version) {
+        if (startedVersion === store._version()) {
           if (settings.appearanceSaved) {
             // The account wins over the copy in this browser (it follows the user to every device).
             theme.apply(appearanceOf(settings));
@@ -123,7 +119,7 @@ export const UserSettingsStore = signalStore(
         }
         patchState(
           store,
-          startedVersion === version
+          startedVersion === store._version()
             ? {
                 trashRetentionDays: settings.trashRetentionDays,
                 folderColours: settings.folderColours,
@@ -143,7 +139,7 @@ export const UserSettingsStore = signalStore(
               },
         );
       } catch {
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, { loading: false, error: store.trashRetentionDays() === null });
         }
       }
@@ -164,31 +160,24 @@ export const UserSettingsStore = signalStore(
       if (previous.length === next.length && previous.every((item, i) => item === next[i])) {
         return true;
       }
-      const started = epoch;
+      const started = store._epoch();
       const mine = ++listSaves[field];
-      version++;
+      store._bumpVersion();
       patchState(store, { [field]: next });
       try {
         const saved = await firstValueFrom(api().update({ [field]: next }));
         // A newer add or remove already changed the list: its answer is the one that counts.
-        if (started === epoch && mine === listSaves[field]) {
+        if (started === store._epoch() && mine === listSaves[field]) {
           patchState(store, { [field]: saved[field] });
         }
         return true;
       } catch {
-        if (started === epoch && mine === listSaves[field]) {
+        if (started === store._epoch() && mine === listSaves[field]) {
           patchState(store, { [field]: previous });
         }
         return false;
       }
     }
-
-    scope.onEnd(() => {
-      epoch++;
-      version++;
-      firstLoad = null;
-      patchState(store, initialState);
-    });
 
     return {
       /** Loads the settings once; a failure can be retried by calling again. */
@@ -201,8 +190,7 @@ export const UserSettingsStore = signalStore(
         ) {
           return Promise.resolve();
         }
-        firstLoad ??= fetchSettings().finally(() => (firstLoad = null));
-        return firstLoad;
+        return store._dedupe(() => fetchSettings());
       },
 
       /**
@@ -275,17 +263,17 @@ export const UserSettingsStore = signalStore(
         if ((previous ?? true) === on) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         patchState(store, { folderColours: on });
         try {
           const saved = await firstValueFrom(api().update({ folderColours: on }));
-          if (started === epoch) {
+          if (started === store._epoch()) {
             patchState(store, { folderColours: saved.folderColours });
           }
           return true;
         } catch {
-          if (started === epoch && store.folderColours() === on) {
+          if (started === store._epoch() && store.folderColours() === on) {
             patchState(store, { folderColours: previous });
           }
           return false;
@@ -301,7 +289,7 @@ export const UserSettingsStore = signalStore(
         if (store.whatsNewKnown() && store.whatsNewSeen() === release) {
           return true;
         }
-        version++;
+        store._bumpVersion();
         patchState(store, { whatsNewSeen: release, whatsNewKnown: true });
         try {
           await firstValueFrom(api().update({ whatsNewSeen: release }));
@@ -320,17 +308,17 @@ export const UserSettingsStore = signalStore(
         if ((previous ?? false) === paused) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         patchState(store, { pauseHistory: paused });
         try {
           const saved = await firstValueFrom(api().update({ pauseHistory: paused }));
-          if (started === epoch) {
+          if (started === store._epoch()) {
             patchState(store, { pauseHistory: saved.pauseHistory });
           }
           return true;
         } catch {
-          if (started === epoch && store.pauseHistory() === paused) {
+          if (started === store._epoch() && store.pauseHistory() === paused) {
             patchState(store, { pauseHistory: previous });
           }
           return false;
@@ -349,17 +337,17 @@ export const UserSettingsStore = signalStore(
         if (sameAppearance(previous, next)) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         theme.apply(next);
         try {
           const saved = await firstValueFrom(api().update(change));
-          if (started === epoch && sameAppearance(theme.appearance(), next)) {
+          if (started === store._epoch() && sameAppearance(theme.appearance(), next)) {
             theme.apply(appearanceOf(saved));
           }
           return true;
         } catch {
-          if (started === epoch && sameAppearance(theme.appearance(), next)) {
+          if (started === store._epoch() && sameAppearance(theme.appearance(), next)) {
             theme.apply(previous);
           }
           return false;
@@ -378,17 +366,17 @@ export const UserSettingsStore = signalStore(
         if (sameLanguage(previous, next)) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         locale.apply(next);
         try {
           const saved = await firstValueFrom(api().update(change));
-          if (started === epoch && sameLanguage(locale.settings(), next)) {
+          if (started === store._epoch() && sameLanguage(locale.settings(), next)) {
             locale.apply(languageOf(saved));
           }
           return true;
         } catch {
-          if (started === epoch && sameLanguage(locale.settings(), next)) {
+          if (started === store._epoch() && sameLanguage(locale.settings(), next)) {
             locale.apply(previous);
           }
           return false;
@@ -409,8 +397,8 @@ export const UserSettingsStore = signalStore(
           return true;
         }
         const next: LibrarySettings = { ...previous, ...change };
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         patchState(store, { library: next });
         const unchangedSince = (): boolean => {
           const current = store.libraryShown();
@@ -418,12 +406,12 @@ export const UserSettingsStore = signalStore(
         };
         try {
           const saved = await firstValueFrom(api().update(change));
-          if (started === epoch && unchangedSince()) {
+          if (started === store._epoch() && unchangedSince()) {
             patchState(store, { library: libraryOf(saved) });
           }
           return true;
         } catch {
-          if (started === epoch && unchangedSince()) {
+          if (started === store._epoch() && unchangedSince()) {
             const restored: Partial<LibrarySettings> = {};
             for (const key of keys) {
               Object.assign(restored, { [key]: previous[key] });
@@ -440,19 +428,19 @@ export const UserSettingsStore = signalStore(
         if (previous === days) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         patchState(store, { trashRetentionDays: days });
         try {
           const saved = await firstValueFrom(api().update({ trashRetentionDays: days }));
-          if (started === epoch) {
+          if (started === store._epoch()) {
             patchState(store, { trashRetentionDays: saved.trashRetentionDays });
             void injector.get(TrashStore).refresh();
           }
           return true;
         } catch {
           // Only while the value is still the optimistic one: a later choice must not be undone.
-          if (started === epoch && store.trashRetentionDays() === days) {
+          if (started === store._epoch() && store.trashRetentionDays() === days) {
             patchState(store, { trashRetentionDays: previous });
           }
           return false;

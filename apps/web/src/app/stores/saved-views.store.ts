@@ -11,7 +11,7 @@ import {
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { isConflictError } from '../core/api/is-conflict-error';
-import { SessionScope } from '../core/auth/session-scope.service';
+import { withSessionLoad } from './features/with-session-load';
 import { SAVED_VIEWS_API } from '../features/views/models/saved-views-api.const';
 import type { SavedViewsState } from './models/saved-views-state.interface';
 import { PinsStore } from './pins.store';
@@ -55,25 +55,21 @@ function outcomeOf(error: unknown): ViewOutcome {
  */
 export const SavedViewsStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState<SavedViewsState>(initialState),
+  withSessionLoad<SavedViewsState>(initialState),
   withComputed(({ items }) => ({
     atLimit: computed(() => items().length >= SAVED_VIEW_LIMIT.PerUserMax),
   })),
   withMethods((store) => {
     const injector = inject(Injector);
     const api = () => injector.get(SAVED_VIEWS_API);
-    const scope = inject(SessionScope);
-    let epoch = 0;
-    // Bumped by every change: a list that started before it must not overwrite it.
-    let version = 0;
-    let firstLoad: Promise<void> | null = null;
     // The feed the chips sit on (#335); bumped when it changes so a late answer is dropped.
     let feed: ListSavedViewsQuery | undefined;
     let feedSeq = 0;
 
     async function fetchList(force = false): Promise<void> {
-      const started = epoch;
-      const startedVersion = version;
+      const started = store._epoch();
+      const startedVersion = store._version();
       const startedFeed = feedSeq;
       const startedKey = feedKeyOf(feed);
       if (!store.loaded()) {
@@ -81,12 +77,12 @@ export const SavedViewsStore = signalStore(
       }
       try {
         const response = await firstValueFrom(api().list(feed));
-        if (started !== epoch || startedFeed !== feedSeq) {
+        if (started !== store._epoch() || startedFeed !== feedSeq) {
           return;
         }
         patchState(
           store,
-          force || startedVersion === version
+          force || startedVersion === store._version()
             ? {
                 items: response.items,
                 total: response.total,
@@ -98,7 +94,7 @@ export const SavedViewsStore = signalStore(
             : { loading: false, total: response.total, feedKey: startedKey },
         );
       } catch {
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, { loading: false, error: !store.loaded() });
         }
       }
@@ -110,13 +106,9 @@ export const SavedViewsStore = signalStore(
       });
     }
 
-    scope.onEnd(() => {
-      epoch++;
-      version++;
-      firstLoad = null;
+    store._onSessionEnd(() => {
       feed = undefined;
       feedSeq++;
-      patchState(store, initialState);
     });
 
     return {
@@ -126,14 +118,13 @@ export const SavedViewsStore = signalStore(
           // Another feed: the counts are read again for it (the views themselves stay).
           feed = next;
           feedSeq++;
-          firstLoad = null;
+          store._clearFirstLoad();
           return fetchList(true);
         }
         if (store.loaded()) {
           return Promise.resolve();
         }
-        firstLoad ??= fetchList().finally(() => (firstLoad = null));
-        return firstLoad;
+        return store._dedupe(() => fetchList());
       },
 
       /** Re-reads views and counts (the library changed). Only once loaded. */
@@ -150,13 +141,13 @@ export const SavedViewsStore = signalStore(
         if (store.atLimit()) {
           return { outcome: VIEW_OUTCOME.Limit };
         }
-        const started = epoch;
+        const started = store._epoch();
         try {
           const view = await firstValueFrom(
             api().create({ name, query, ...(icon === null ? {} : { icon }) }),
           );
-          if (started === epoch) {
-            version++;
+          if (started === store._epoch()) {
+            store._bumpVersion();
             patchState(store, {
               items: renumber([...store.items().filter((item) => item.id !== view.id), view]),
             });
@@ -173,11 +164,11 @@ export const SavedViewsStore = signalStore(
        */
       async edit(id: string, change: UpdateSavedViewRequest): Promise<ViewCreateResult> {
         const before = store.items().find((item) => item.id === id);
-        const started = epoch;
+        const started = store._epoch();
         try {
           const saved = await firstValueFrom(api().update(id, change));
-          if (started === epoch) {
-            version++;
+          if (started === store._epoch()) {
+            store._bumpVersion();
             replace({ ...saved, position: before?.position ?? saved.position });
             if (feed !== undefined) {
               void fetchList();
@@ -195,18 +186,18 @@ export const SavedViewsStore = signalStore(
         if (!before || before.name === name) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         replace({ ...before, name });
         try {
           const saved = await firstValueFrom(api().update(id, { name }));
-          if (started === epoch) {
+          if (started === store._epoch()) {
             replace({ ...saved, position: before.position });
           }
           return true;
         } catch {
-          if (started === epoch) {
-            version++;
+          if (started === store._epoch()) {
+            store._bumpVersion();
             const current = store.items().find((item) => item.id === id);
             if (current) {
               replace({ ...current, name: before.name });
@@ -222,19 +213,19 @@ export const SavedViewsStore = signalStore(
         if (!before.some((item) => item.id === id)) {
           return true;
         }
-        const started = epoch;
-        version++;
+        const started = store._epoch();
+        store._bumpVersion();
         patchState(store, { items: renumber(before.filter((item) => item.id !== id)) });
         try {
           await firstValueFrom(api().remove(id));
           // The server drops the view's sidebar pin with the row.
-          if (started === epoch) {
+          if (started === store._epoch()) {
             injector.get(PinsStore).dropView(id);
           }
           return true;
         } catch {
-          if (started === epoch) {
-            version++;
+          if (started === store._epoch()) {
+            store._bumpVersion();
             patchState(store, { items: before });
           }
           return false;
@@ -252,13 +243,13 @@ export const SavedViewsStore = signalStore(
         const next = [...before];
         const [moved] = next.splice(from, 1);
         next.splice(to, 0, moved);
-        const started = epoch;
-        const mine = ++version;
+        const started = store._epoch();
+        const mine = store._bumpVersion();
         patchState(store, { items: renumber(next) });
         try {
           const response = await firstValueFrom(api().reorder(next.map((item) => item.id)));
-          if (started === epoch && version === mine) {
-            version++;
+          if (started === store._epoch() && store._version() === mine) {
+            store._bumpVersion();
             // The answer counts the whole library: inside a feed the order is already shown.
             patchState(
               store,
@@ -267,9 +258,9 @@ export const SavedViewsStore = signalStore(
           }
           return true;
         } catch {
-          if (started === epoch) {
-            if (version === mine) {
-              version++;
+          if (started === store._epoch()) {
+            if (store._version() === mine) {
+              store._bumpVersion();
               patchState(store, { items: before });
             } else {
               void fetchList();

@@ -9,7 +9,7 @@ import {
 } from '@ngrx/signals';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
-import { SessionScope } from '../core/auth/session-scope.service';
+import { withSessionLoad } from './features/with-session-load';
 import { REMINDERS_API } from '../features/reminders/models/reminders-api.const';
 import { followLinkChanges } from './follow-link-changes';
 import { LinksStore } from './links.store';
@@ -40,7 +40,8 @@ function bySoonest(a: LinkResponse, b: LinkResponse): number {
  */
 export const RemindersStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState<RemindersState>(initialState),
+  withSessionLoad<RemindersState>(initialState),
   withComputed(({ due, upcoming }) => ({
     /** Due and upcoming links, for a quick lookup by id. */
     byId: computed(() => new Map([...due(), ...upcoming()].map((link) => [link.id, link]))),
@@ -49,26 +50,16 @@ export const RemindersStore = signalStore(
     // Resolved on use: specs of pages that never touch reminders provide no `REMINDERS_API`.
     const injector = inject(Injector);
     const api = () => injector.get(REMINDERS_API);
-    let epoch = 0;
-    let listSeq = 0;
-    let firstLoad: Promise<void> | null = null;
-
-    inject(SessionScope).onEnd(() => {
-      epoch++;
-      listSeq++;
-      firstLoad = null;
-      patchState(store, initialState);
-    });
 
     async function fetchList(): Promise<void> {
-      const started = epoch;
-      const seq = ++listSeq;
+      const started = store._epoch();
+      const seq = store._nextSeq();
       if (!store.loaded()) {
         patchState(store, { loading: true, error: false });
       }
       try {
         const { due, upcoming } = await firstValueFrom(api().list());
-        if (started !== epoch || seq !== listSeq) {
+        if (started !== store._epoch() || !store._isNewest(seq)) {
           return;
         }
         patchState(store, {
@@ -81,17 +72,17 @@ export const RemindersStore = signalStore(
           error: false,
         });
       } catch {
-        if (started === epoch && seq === listSeq) {
+        if (started === store._epoch() && store._isNewest(seq)) {
           patchState(store, { loading: false, error: !store.loaded() });
         }
       }
     }
 
     async function fetchCount(): Promise<void> {
-      const started = epoch;
+      const started = store._epoch();
       try {
         const { due } = await firstValueFrom(api().count());
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, { dueCount: due, countLoaded: true });
         }
       } catch {
@@ -182,8 +173,7 @@ export const RemindersStore = signalStore(
       if (store.loaded()) {
         return Promise.resolve();
       }
-      firstLoad ??= fetchList().finally(() => (firstLoad = null));
-      return firstLoad;
+      return store._dedupe(() => fetchList());
     }
 
     return {
@@ -209,7 +199,7 @@ export const RemindersStore = signalStore(
         if (links.length === 0) {
           return true;
         }
-        const started = epoch;
+        const started = store._epoch();
         try {
           let changed: LinkResponse[];
           const [only] = links;
@@ -224,7 +214,7 @@ export const RemindersStore = signalStore(
             const ids = links.map((link) => link.id);
             changed = (await firstValueFrom(api().setMany({ ids, remindAt }))).links;
           }
-          if (started === epoch) {
+          if (started === store._epoch()) {
             apply(changed, links);
           }
           return true;

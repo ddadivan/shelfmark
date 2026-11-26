@@ -15,7 +15,7 @@ import {
   type UpdateAiSettingsRequest,
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
-import { SessionScope } from '../../../core/auth/session-scope.service';
+import { withSessionLoad } from '../../../stores/features/with-session-load';
 import { AI_API } from '../models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../models/ai-settings-default.const';
 import type { AiSettingsState } from '../models/ai-settings-state.interface';
@@ -31,7 +31,8 @@ const initialState: AiSettingsState = { response: null, loading: false, error: f
  */
 export const AiSettingsStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState<AiSettingsState>(initialState),
+  withSessionLoad<AiSettingsState>(initialState),
   withComputed(({ response }) => {
     const settings = computed<AiSettings>(() => response()?.settings ?? AI_SETTINGS_DEFAULT);
     const isOn = computed(() => settings().enabled);
@@ -129,11 +130,6 @@ export const AiSettingsStore = signalStore(
   withMethods((store) => {
     const injector = inject(Injector);
     const api = () => injector.get(AI_API);
-    const scope = inject(SessionScope);
-    let epoch = 0;
-    // Bumped by every settings change: a response that started before it must not overwrite it.
-    let version = 0;
-    let firstLoad: Promise<void> | null = null;
 
     function patchResponse(patch: Partial<AiSettingsResponse>): void {
       const response = store.response();
@@ -143,19 +139,19 @@ export const AiSettingsStore = signalStore(
     }
 
     async function fetchSettings(): Promise<void> {
-      const started = epoch;
-      const startedVersion = version;
+      const started = store._epoch();
+      const startedVersion = store._version();
       patchState(store, { loading: true, error: false });
       try {
         const response = await firstValueFrom(api().getSettings());
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, {
-            response: startedVersion === version ? response : store.response(),
+            response: startedVersion === store._version() ? response : store.response(),
             loading: false,
           });
         }
       } catch {
-        if (started === epoch) {
+        if (started === store._epoch()) {
           patchState(store, { loading: false, error: !store.loaded() });
         }
       }
@@ -165,21 +161,13 @@ export const AiSettingsStore = signalStore(
       patchResponse({ backfill });
     }
 
-    scope.onEnd(() => {
-      epoch++;
-      version++;
-      firstLoad = null;
-      patchState(store, initialState);
-    });
-
     return {
       /** Loads the settings once; a failure can be retried by calling again. */
       load(): Promise<void> {
         if (store.loaded()) {
           return Promise.resolve();
         }
-        firstLoad ??= fetchSettings().finally(() => (firstLoad = null));
-        return firstLoad;
+        return store._dedupe(() => fetchSettings());
       },
 
       /** Re-reads the settings (usage, provider status, backfill). */
@@ -196,8 +184,8 @@ export const AiSettingsStore = signalStore(
         if (!current) {
           return false;
         }
-        const started = epoch;
-        const changeVersion = ++version;
+        const started = store._epoch();
+        const changeVersion = store._bumpVersion();
         const before = current.settings;
         const { announcementSeen, ...settingsChange } = change;
         patchResponse({
@@ -207,13 +195,13 @@ export const AiSettingsStore = signalStore(
         });
         try {
           const response = await firstValueFrom(api().updateSettings(change));
-          if (started === epoch && changeVersion === version) {
+          if (started === store._epoch() && changeVersion === store._version()) {
             patchState(store, { response });
           }
           return true;
         } catch {
           const now = store.response();
-          if (started === epoch && now) {
+          if (started === store._epoch() && now) {
             const reverted = { ...now.settings };
             for (const key of Object.keys(settingsChange) as Array<keyof AiSettings>) {
               if (now.settings[key] === settingsChange[key]) {
@@ -233,10 +221,10 @@ export const AiSettingsStore = signalStore(
 
       /** Starts "Process existing links"; false when the server refuses or fails. */
       async startBackfill(): Promise<boolean> {
-        const started = epoch;
+        const started = store._epoch();
         try {
           const backfill = await firstValueFrom(api().startBackfill());
-          if (started === epoch) {
+          if (started === store._epoch()) {
             applyBackfill(backfill);
           }
           return true;
@@ -247,10 +235,10 @@ export const AiSettingsStore = signalStore(
 
       /** Stops "Process existing links"; what was done stays. */
       async stopBackfill(): Promise<boolean> {
-        const started = epoch;
+        const started = store._epoch();
         try {
           const backfill = await firstValueFrom(api().stopBackfill());
-          if (started === epoch) {
+          if (started === store._epoch()) {
             applyBackfill(backfill);
           }
           return true;
@@ -264,10 +252,10 @@ export const AiSettingsStore = signalStore(
        * failure changes nothing.
        */
       async tick(): Promise<AiTickResponse | null> {
-        const started = epoch;
+        const started = store._epoch();
         try {
           const response = await firstValueFrom(api().tick());
-          if (started === epoch) {
+          if (started === store._epoch()) {
             patchResponse({
               pendingJobs: response.pendingJobs,
               backfill: response.backfill,
