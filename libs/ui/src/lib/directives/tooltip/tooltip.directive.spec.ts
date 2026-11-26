@@ -33,6 +33,9 @@ import type { OverlaySide } from '../../services/overlay/models/overlay-side.typ
     <button id="wide" type="button" uiTooltip="Wide" [uiTooltipPointerTarget]="label">
       <span #label id="label">Label</span>
     </button>
+    <button id="cut" type="button" uiTooltip="A long full title" [uiTooltipIfTruncated]="cutText">
+      <span #cutText id="cut-text">A long full…</span>
+    </button>
   `,
 })
 class HostComponent {
@@ -194,6 +197,30 @@ describe('TooltipDirective', () => {
     await vi.advanceTimersByTimeAsync(150);
     settle();
     expect(panelEl()).toBeNull();
+  });
+
+  it('with uiTooltipIfTruncated shows only while that text is cut, and adds no description', async () => {
+    const { fixture, settle, panelEl } = await setup();
+    const root = fixture.nativeElement as HTMLElement;
+    const cut = root.querySelector<HTMLElement>('#cut') as HTMLElement;
+    const text = root.querySelector<HTMLElement>('#cut-text') as HTMLElement;
+    settle();
+    expect(cut.hasAttribute('aria-description')).toBe(false);
+
+    // jsdom lays nothing out: 0 / 0 is "fits".
+    enter(cut);
+    await vi.advanceTimersByTimeAsync(500);
+    settle();
+    expect(panelEl()).toBeNull();
+    leave(cut);
+    await vi.advanceTimersByTimeAsync(200);
+
+    Object.defineProperty(text, 'scrollWidth', { configurable: true, value: 240 });
+    Object.defineProperty(text, 'clientWidth', { configurable: true, value: 160 });
+    enter(cut);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()?.textContent).toContain('A long full title');
   });
 
   it('honours a custom delay', async () => {

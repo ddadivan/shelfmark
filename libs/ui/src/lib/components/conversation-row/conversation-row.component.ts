@@ -1,3 +1,4 @@
+import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { NgTemplateOutlet } from '@angular/common';
 import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
@@ -12,7 +13,7 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } f
  */
 @Component({
   selector: 'ui-conversation-row',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, TooltipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-conversation-row',
@@ -27,6 +28,11 @@ export class ConversationRowComponent {
   readonly href = input<string>();
   /** The open conversation (`aria-current="page"`). */
   readonly current = input(false, { transform: booleanAttribute });
+  /**
+   * The whole title as text: shown as a tooltip on hover or keyboard focus only while the
+   * one-line title is cut (pointer devices). With touch the title wraps instead.
+   */
+  readonly fullTitle = input('');
 
   /** The row was activated (click, Enter or Space on the link or button). */
   readonly activated = output<MouseEvent>();

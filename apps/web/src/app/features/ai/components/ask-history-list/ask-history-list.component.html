@@ -20,6 +20,7 @@
         <ui-conversation-row
           [href]="href(item.id)"
           [current]="item.id === activeId()"
+          [fullTitle]="item.title"
           (activated)="open($event, item.id)"
         >
           {{ item.title }}

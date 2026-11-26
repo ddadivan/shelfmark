@@ -106,6 +106,7 @@ export * from './lib/utils/media';
 export * from './lib/utils/platform';
 export * from './lib/utils/reorder-drop-line';
 export * from './lib/utils/spring';
+export * from './lib/utils/text-cut';
 
 export * from './lib/models/heading';
 export * from './lib/models/keyboard';

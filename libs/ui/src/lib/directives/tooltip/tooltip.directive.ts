@@ -1,3 +1,4 @@
+import { isTextCut } from '../../utils/text-cut/is-text-cut';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
 import {
@@ -69,6 +70,12 @@ export class TooltipDirective implements TooltipGroupMember {
    * pointer is on its text.
    */
   readonly pointerTarget = input<HTMLElement | null>(null, { alias: 'uiTooltipPointerTarget' });
+  /**
+   * Show the tooltip only while this element's text is cut (an ellipsis or a clamp): the full text
+   * of a long title, nothing when it fits. The text is already in the DOM, so no
+   * `aria-description` is added (it would be read twice).
+   */
+  readonly ifTruncated = input<HTMLElement | null>(null, { alias: 'uiTooltipIfTruncated' });
 
   private readonly focusTarget = inject(UI_FOCUS_TARGET, { optional: true, self: true });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -286,7 +293,15 @@ export class TooltipDirective implements TooltipGroupMember {
 
   private show(): void {
     const target = this.target();
-    if (!target || !this.text() || this.visible || !this.canHover() || this.openMenus.any()) {
+    const cutElement = this.ifTruncated();
+    if (
+      !target ||
+      !this.text() ||
+      this.visible ||
+      !this.canHover() ||
+      this.openMenus.any() ||
+      (cutElement !== null && !isTextCut(cutElement))
+    ) {
       this.disarmEscape();
       return;
     }
@@ -441,7 +456,11 @@ export class TooltipDirective implements TooltipGroupMember {
     if (!target) {
       return;
     }
-    if (!text || (!shortcut && target.getAttribute('aria-label')?.trim() === text.trim())) {
+    if (
+      !text ||
+      this.ifTruncated() !== null ||
+      (!shortcut && target.getAttribute('aria-label')?.trim() === text.trim())
+    ) {
       this.removeDescription(target);
       return;
     }

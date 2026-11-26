@@ -61,6 +61,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  // Touch (the phone sheet) has no tooltip: the whole title shows, wrapping (author, Nov 26).
+  @media not ((hover: hover) and (pointer: fine)) {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
 }
 
 .ui-conversation-row__actions {

@@ -4,17 +4,24 @@
     class="ui-conversation-row__link"
     [attr.href]="url"
     [attr.aria-current]="current() ? 'page' : null"
+    [uiTooltip]="fullTitle()"
+    [uiTooltipIfTruncated]="titleText"
     (click)="activated.emit($event)"
-    ><span class="ui-conversation-row__title"><ng-container [ngTemplateOutlet]="title" /></span
+    ><span #titleText class="ui-conversation-row__title"
+      ><ng-container [ngTemplateOutlet]="title" /></span
   ></a>
 } @else {
   <button
     class="ui-conversation-row__link"
     type="button"
     [attr.aria-current]="current() ? 'page' : null"
+    [uiTooltip]="fullTitle()"
+    [uiTooltipIfTruncated]="titleText"
     (click)="activated.emit($event)"
   >
-    <span class="ui-conversation-row__title"><ng-container [ngTemplateOutlet]="title" /></span>
+    <span #titleText class="ui-conversation-row__title"
+      ><ng-container [ngTemplateOutlet]="title"
+    /></span>
   </button>
 }
 <span class="ui-conversation-row__actions"><ng-content select="[slot=actions]" /></span>
