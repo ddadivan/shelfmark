@@ -130,6 +130,13 @@
 
 // A link without a picture shows the feature's `thumb-fallback` (the site's mark at 28px) in the
 // tile instead of a generic picture icon, so the rows stay apart (author, Nov 26).
+// A phone gives the title the room: a 48px square (like `ui-history-row`), round 12.
+@include phone {
+  .ui-list-item__thumb {
+    width: rem(48px);
+  }
+}
+
 .ui-list-item__thumb-fallback {
   --ui-favicon-scale: 1.75;
 

@@ -20,6 +20,8 @@
 }
 
 .preview-panel__bar {
+  // Never squeezed by the body below (Reader's long article shrank it to one line).
+  flex: none;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -135,10 +137,11 @@
     flex: 1 0 calc(100% - 5rem);
   }
 
+  // The tools spread over the second line (author, round 12).
   .preview-panel__tools {
     flex: 1 1 auto;
     order: 1;
-    justify-content: flex-start;
+    justify-content: space-between;
   }
 
   .preview-panel__sep,
@@ -149,17 +152,19 @@
 
 // Narrower still: Open shows only its icon (the label stays its accessible name); Related shows
 // its spark and count (related-links answers the same container).
-@container preview-panel (width < 40rem) {
+@container preview-panel (width < 42rem) {
   .preview-panel__open-label {
     @include visually-hidden;
   }
 }
 
-// Narrowest (the smallest panel the resize handle allows): Wider and Details move into the ⋯ menu
-// (PreviewNarrowDirective, the same 30rem), so × stays on the second line.
-@container preview-panel (width < 30rem) {
+// Narrowest (the smallest panel the resize handle allows): Wider, Details and the star move into
+// the ⋯ menu (it always has Add to / Remove from favorites)
+// (PreviewNarrowDirective, the same 35rem; room for Reader's Aa too), so × stays on the second line.
+@container preview-panel (width < 35rem) {
   .preview-panel__wider,
-  .preview-panel__details-toggle {
+  .preview-panel__details-toggle,
+  .preview-panel__star {
     display: none;
   }
 }

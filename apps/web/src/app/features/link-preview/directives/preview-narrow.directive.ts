@@ -20,7 +20,7 @@ import {
 })
 export class PreviewNarrowDirective {
   /** The width, in rem of the root font size, below which the host counts as narrow. */
-  readonly below = input(30, { alias: 'appPreviewNarrowBelow' });
+  readonly below = input(35, { alias: 'appPreviewNarrowBelow' });
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly narrowNow = signal(false);

@@ -13,7 +13,7 @@
   display: none;
 }
 
-@container preview-panel (width < 40rem) {
+@container preview-panel (width < 42rem) {
   .related-links__label {
     @include visually-hidden;
   }
