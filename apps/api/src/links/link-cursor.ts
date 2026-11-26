@@ -4,12 +4,12 @@ import {
   LINK_SORT_FIELD,
   PAGE_LIMIT,
   SORT_ORDER,
+  hasControlChars,
   type LinkSortField,
   type SortOrder,
 } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { isRecord } from '../common/util/is-record';
-import { hasControlChars } from '../common/validation/has-control-chars';
 import { LINK_CURSOR_VERSION } from './models/link-cursor-version.const';
 import type { CursorKeys } from './models/cursor-keys.interface';
 import type { CursorRow } from './models/cursor-row.interface';

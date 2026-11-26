@@ -224,6 +224,7 @@
         "hint": "Cole um link — o título e a prévia se preenchem sozinhos",
         "required": "Digite um link",
         "invalid": "Digite um endereço que comece com http:// ou https://",
+        "credentials": "Remova o usuário e a senha do link",
         "tooLong": "O link é longo demais (no máximo {{max}} caracteres)",
         "panel": "Cole um link, ou vários"
       },

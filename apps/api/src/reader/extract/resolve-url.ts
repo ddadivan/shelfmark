@@ -1,4 +1,4 @@
-import { stripControlChars } from '../../common/validation/has-control-chars';
+import { stripControlChars } from '@shelfmark/contracts';
 import { READER_EXTRACT_LIMIT } from '../models/reader-extract-limit.const';
 
 const HTTP_PROTOCOLS: ReadonlySet<string> = new Set(['http:', 'https:']);

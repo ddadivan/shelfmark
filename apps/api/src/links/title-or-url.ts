@@ -1,5 +1,4 @@
-import { LINK_LIMIT } from '@shelfmark/contracts';
-import { stripControlChars } from '../common/validation/has-control-chars';
+import { LINK_LIMIT, stripControlChars } from '@shelfmark/contracts';
 
 /**
  * The title to store: the cleaned page title, or the URL when the page gave none; cut to the title

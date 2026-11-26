@@ -1,4 +1,4 @@
-import { isHttpUrl, LINK_LIMIT, normalizeUrl } from '@shelfmark/contracts';
+import { isHttpUrl, isStorableUrl, LINK_LIMIT, normalizeUrl } from '@shelfmark/contracts';
 import type { WindowTab } from '../../core/chrome/models/window-tab.interface';
 import type { TabEntry } from '../models/tab-entry.interface';
 import { toPageInfo } from './to-page-info';
@@ -14,7 +14,7 @@ export function toTabEntries(tabs: readonly WindowTab[]): TabEntry[] {
   const seen = new Set<string>();
   const entries: TabEntry[] = [];
   for (const tab of ordered) {
-    if (tab.url === null || !isHttpUrl(tab.url)) continue;
+    if (tab.url === null || !isStorableUrl(tab.url)) continue;
     const page = toPageInfo({ url: tab.url, title: tab.title });
     if (page === null) continue;
     const key = normalizeUrl(tab.url);

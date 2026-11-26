@@ -1,5 +1,5 @@
 import { parse } from 'parse5';
-import { stripControlChars } from '../../common/validation/has-control-chars';
+import { stripControlChars } from '@shelfmark/contracts';
 import { HTML_NODE_NAME } from '../../preview/models/html-node-name.const';
 import { EXCERPT_CONTENT_TAGS, EXCERPT_SKIPPED_TAGS } from '../models/excerpt-tag.const';
 import { EXCERPT_LIMIT } from '../models/excerpt-limit.const';

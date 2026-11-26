@@ -1,4 +1,4 @@
-import { hasControlChars } from '../../../common/validation/has-control-chars';
+import { hasControlChars } from '@shelfmark/contracts';
 import type { AskParse } from '../../models/ask-parse.type';
 
 type Fields = Record<string, unknown>;

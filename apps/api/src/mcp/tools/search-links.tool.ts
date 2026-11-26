@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { MCP_LIMIT, TAG_LIMIT, normalizeTagName } from '@shelfmark/contracts';
-import { hasControlChars } from '../../common/validation/has-control-chars';
+import { MCP_LIMIT, TAG_LIMIT, hasControlChars, normalizeTagName } from '@shelfmark/contracts';
 import { buildLinkWhere } from '../../links/link-where';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MCP_LINK_SCHEMA } from '../models/mcp-link-schema.const';

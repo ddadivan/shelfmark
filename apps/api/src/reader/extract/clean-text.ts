@@ -1,4 +1,4 @@
-import { stripControlChars } from '../../common/validation/has-control-chars';
+import { stripControlChars } from '@shelfmark/contracts';
 
 const ELLIPSIS = '…';
 const LINE_FEED = '\n';

@@ -11,9 +11,8 @@ import {
   ruleHost,
   TAG_LIMIT,
 } from '@shelfmark/contracts';
-import { FOLDER_COLOUR, FOLDER_LIMIT } from '@shelfmark/contracts';
+import { FOLDER_COLOUR, FOLDER_LIMIT, isStorableUrl } from '@shelfmark/contracts';
 import { MOCK_ASK_THEMES } from '../ai/models/mock-ask-themes.const';
-import { isStorableUrl } from '../links/dto/is-http-url.decorator';
 import { DEMO_SEED } from './demo-seed';
 
 describe('demo seed (seed.json)', () => {

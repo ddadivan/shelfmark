@@ -23,6 +23,17 @@ describe('toTabEntries', () => {
     expect(entries.map((entry) => entry.tabId)).toEqual([1]);
   });
 
+  it('leaves out tabs the API would reject (credentials, control characters, too long)', () => {
+    const tooLong = `https://a.test/${'x'.repeat(LINK_LIMIT.UrlMax)}`;
+    const entries = toTabEntries([
+      tab(1, 'https://a.test/'),
+      tab(2, 'https://user:pw@a.test/'),
+      tab(3, tooLong),
+      tab(4, 'https://a.test/a\u0000b'),
+    ]);
+    expect(entries.map((entry) => entry.tabId)).toEqual([1]);
+  });
+
   it('lists a repeated address once, the first tab winning, ignoring fragment and utm', () => {
     const entries = toTabEntries([
       tab(1, 'https://a.test/post'),

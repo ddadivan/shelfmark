@@ -1,5 +1,5 @@
 import {
-  isHttpUrl,
+  isStorableUrl,
   LINK_ERROR_MESSAGE,
   LINK_LIMIT,
   type FolderResponse,
@@ -50,7 +50,7 @@ async function lookup(url: string): Promise<LinkLookupResponse> {
  * rule's folder and tags, else Unsorted. Only the address and, for a page, the tab title are sent.
  */
 export async function saveToShelfmark(url: string, title: string | null): Promise<SaveResult> {
-  if (!isHttpUrl(url)) return result(SAVE_OUTCOME.Unsupported);
+  if (!isStorableUrl(url)) return result(SAVE_OUTCOME.Unsupported);
   try {
     const session = await workerApi.session();
     if (session === null) return result(SAVE_OUTCOME.SignedOut);

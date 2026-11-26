@@ -1,4 +1,4 @@
-import { AI_LIMIT, isHttpUrl, LINK_LIMIT } from '@shelfmark/contracts';
+import { AI_LIMIT, isStorableUrl, LINK_LIMIT } from '@shelfmark/contracts';
 
 /** The link fields a create or an update may carry; every one is optional here. */
 interface LinkFields {
@@ -18,8 +18,8 @@ export function linkFieldsProblems(fields: LinkFields): string[] {
   const problems: string[] = [];
   if (fields.url !== undefined) {
     const url = fields.url.trim();
-    if (!isHttpUrl(url) || url.length > LINK_LIMIT.UrlMax) {
-      problems.push('url must be an http(s) URL, at most 2048 characters');
+    if (!isStorableUrl(url)) {
+      problems.push('url must be an http(s) URL without credentials, at most 2048 characters');
     }
   }
   if (fields.title !== undefined) {

@@ -2,7 +2,7 @@ import { inject, Service } from '@angular/core';
 import {
   deriveLinkKind,
   FOLDER_ERROR_MESSAGE,
-  isHttpUrl,
+  isStorableUrl,
   isPreviewableUrl,
   LINK_FRAMING,
   linkHost,
@@ -670,12 +670,8 @@ function batchProblems(request: CreateLinksBatchRequest): string[] {
   if (request.items.length < 1 || request.items.length > LINK_LIMIT.BatchMax) {
     problems.push('items must hold 1 to 100 links');
   }
-  if (
-    request.items.some(
-      (item) => !isHttpUrl(item.url.trim()) || item.url.trim().length > LINK_LIMIT.UrlMax,
-    )
-  ) {
-    problems.push('every url must be an http(s) URL, at most 2048 characters');
+  if (request.items.some((item) => !isStorableUrl(item.url.trim()))) {
+    problems.push('every url must be an http(s) URL without credentials, at most 2048 characters');
   }
   return problems;
 }

@@ -1,4 +1,4 @@
-import { isHttpUrl, LINK_LIMIT, normalizeUrl, withDefaultScheme } from '@shelfmark/contracts';
+import { isStorableUrl, LINK_LIMIT, normalizeUrl, withDefaultScheme } from '@shelfmark/contracts';
 import { FILE_NAME_EXTENSIONS } from './models/file-name-extensions.const';
 import type { ParsedPaste } from './models/parsed-paste.interface';
 import { PASTE_LIMIT } from './models/paste-limits.const';
@@ -71,11 +71,7 @@ function toUrl(match: string, wholeLine: boolean): string | null {
     return null;
   }
   const url = withDefaultScheme(trimmed);
-  if (url.length > LINK_LIMIT.UrlMax || !isHttpUrl(url)) {
-    return null;
-  }
-  const parsed = new URL(url);
-  return parsed.username === '' && parsed.password === '' ? url : null;
+  return isStorableUrl(url) ? url : null;
 }
 
 /** A non-link line for the list: trimmed, inner whitespace collapsed, shortened by code points. */

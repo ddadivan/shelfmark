@@ -1,4 +1,4 @@
-import { stripControlChars } from '../../common/validation/has-control-chars';
+import { stripControlChars } from '@shelfmark/contracts';
 import { absoluteHttpUrl, clean } from '../extract-preview';
 import { PREVIEW_LIMITS } from '../models/preview-limits.const';
 import { YOUTUBE_LIMIT } from './models/youtube-limit.const';

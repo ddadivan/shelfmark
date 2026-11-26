@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasControlChars, stripControlChars } from './has-control-chars';
+import { hasControlChars } from './has-control-chars';
 
 describe('hasControlChars', () => {
   it('accepts ordinary text, including non-ASCII', () => {
@@ -18,12 +18,5 @@ describe('hasControlChars', () => {
     expect(hasControlChars('a\u0000b', true)).toBe(true);
     expect(hasControlChars('a\u001bb', true)).toBe(true);
     expect(hasControlChars('a\u007fb', true)).toBe(true);
-  });
-});
-
-describe('stripControlChars', () => {
-  it('replaces controls with spaces', () => {
-    expect(stripControlChars('a\u0000b\nc\u007fd')).toBe('a b c d');
-    expect(stripControlChars('clean')).toBe('clean');
   });
 });

@@ -1,6 +1,12 @@
-import { AI_LIMIT, LINK_KIND, LINK_LIMIT, TAG_LIMIT, normalizeTagName } from '@shelfmark/contracts';
-import type { LinkKind } from '@shelfmark/contracts';
-import { stripControlChars } from '../../common/validation/has-control-chars';
+import {
+  AI_LIMIT,
+  LINK_KIND,
+  LINK_LIMIT,
+  TAG_LIMIT,
+  normalizeTagName,
+  stripControlChars,
+  type LinkKind,
+} from '@shelfmark/contracts';
 import { AI_PART } from '../models/ai-part.const';
 import type { LinkJobOutput } from '../models/link-job-output.interface';
 import type { ParseLinkContext } from '../models/parse-link-context.interface';

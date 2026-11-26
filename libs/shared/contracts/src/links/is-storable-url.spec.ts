@@ -1,5 +1,6 @@
-import { LINK_LIMIT } from '@shelfmark/contracts';
-import { isStorableUrl } from './storable-url';
+import { describe, expect, it } from 'vitest';
+import { LINK_LIMIT } from './link-limit.const';
+import { isStorableUrl } from './is-storable-url';
 
 describe('isStorableUrl', () => {
   it.each(['https://example.com', 'http://example.com/a?b=1#c', 'https://example.com:8080/x'])(

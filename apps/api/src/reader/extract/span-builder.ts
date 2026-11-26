@@ -1,5 +1,4 @@
-import type { ReaderSpan } from '@shelfmark/contracts';
-import { stripControlChars } from '../../common/validation/has-control-chars';
+import { stripControlChars, type ReaderSpan } from '@shelfmark/contracts';
 import type { ReaderSpanStyle } from '../models/reader-span-style.interface';
 
 const NO_STYLE: ReaderSpanStyle = { href: null, code: false, emphasis: false, strong: false };

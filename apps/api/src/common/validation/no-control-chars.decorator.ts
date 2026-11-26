@@ -1,5 +1,5 @@
 import { registerDecorator, type ValidationOptions } from 'class-validator';
-import { hasControlChars } from './has-control-chars';
+import { hasControlChars } from '@shelfmark/contracts';
 
 /**
  * Rejects strings with control characters (NUL included). Non-strings pass: `@IsString` reports

@@ -224,6 +224,7 @@
         "hint": "Collez un lien — le titre et l’aperçu se remplissent tout seuls",
         "required": "Saisissez un lien",
         "invalid": "Saisissez une adresse qui commence par http:// ou https://",
+        "credentials": "Retirez l’identifiant et le mot de passe du lien",
         "tooLong": "Le lien est trop long ({{max}} caractères au maximum)",
         "panel": "Collez un lien, ou plusieurs"
       },

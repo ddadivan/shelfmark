@@ -5,12 +5,15 @@ describe('toPageInfo', () => {
     expect(toPageInfo(null)).toBeNull();
   });
 
-  it.each(['chrome://extensions', 'file:///tmp/a.html', 'about:blank', 'javascript:alert(1)'])(
-    'returns null for the non-http page %s',
-    (url) => {
-      expect(toPageInfo({ url, title: 'x' })).toBeNull();
-    },
-  );
+  it.each([
+    'chrome://extensions',
+    'file:///tmp/a.html',
+    'about:blank',
+    'javascript:alert(1)',
+    'https://user:pw@example.com/',
+  ])('returns null for the non-http page %s', (url) => {
+    expect(toPageInfo({ url, title: 'x' })).toBeNull();
+  });
 
   it('returns the url, trimmed title and host without www', () => {
     expect(toPageInfo({ url: 'https://www.example.com/a?b=1', title: '  Hello  ' })).toEqual({

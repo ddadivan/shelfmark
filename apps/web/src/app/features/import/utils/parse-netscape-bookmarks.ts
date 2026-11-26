@@ -1,6 +1,7 @@
 import {
   FOLDER_LIMIT,
   IMPORT_LIMIT,
+  isStorableUrl,
   LINK_LIMIT,
   normalizeTagName,
   stripTrackingParams,
@@ -14,7 +15,6 @@ import type { ParsedImportLink } from '../models/parsed-import-link.interface';
 import { bookmarkDate } from './bookmark-date';
 import { cleanLine, cleanNote } from './clean-text';
 import { ImportParseError } from './import-parse-error';
-import { isStorableUrl } from './storable-url';
 
 const NETSCAPE_DOCTYPE = /<!DOCTYPE\s+NETSCAPE-Bookmark-file-1>/i;
 

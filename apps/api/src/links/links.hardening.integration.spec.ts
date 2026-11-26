@@ -1,8 +1,9 @@
 import {
   LINK_LIMIT,
+  hasControlChars,
   type LinkResponse,
-  type ListLinksResponse,
   type LinkSortField,
+  type ListLinksResponse,
 } from '@shelfmark/contracts';
 import { vi } from 'vitest';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
@@ -14,7 +15,6 @@ import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
-import { hasControlChars } from '../common/validation/has-control-chars';
 import { encodeCursor } from './link-cursor';
 
 const BASE = '/api/links';

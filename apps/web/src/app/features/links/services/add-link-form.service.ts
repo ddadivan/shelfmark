@@ -9,7 +9,14 @@ import {
   type ValidationError,
 } from '@angular/forms/signals';
 import { TranslocoService } from '@jsverse/transloco';
-import { AI_LIMIT, isHttpUrl, LINK_LIMIT, withDefaultScheme } from '@shelfmark/contracts';
+import {
+  AI_LIMIT,
+  isHttpUrl,
+  isStorableUrl,
+  LINK_LIMIT,
+  withDefaultScheme,
+} from '@shelfmark/contracts';
+import { hasCredentials } from '../utils/has-credentials';
 import { injectDialogData } from '@shelfmark/ui';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { normalizeTagNames } from '../../tags/utils/normalize-tag-names';
@@ -85,9 +92,18 @@ export class AddLinkFormService {
       validate(path.url, ({ value }): ValidationError.WithoutFieldTree | undefined => {
         // A bare host counts as https:// (#405): `example.com` is valid while it is typed.
         const url = withDefaultScheme(value());
-        return url === '' || isHttpUrl(url)
-          ? undefined
-          : { kind: 'url', message: this.text('links.add.url.invalid') };
+        if (url === '' || isStorableUrl(url)) {
+          return undefined;
+        }
+        // A valid link that only fails on a username or password gets its own hint.
+        return {
+          kind: 'url',
+          message: this.text(
+            isHttpUrl(url) && hasCredentials(url)
+              ? 'links.add.url.credentials'
+              : 'links.add.url.invalid',
+          ),
+        };
       });
       if (this.editing) {
         // Adding may leave the title empty (the preview fills it); an edit must not lose it.

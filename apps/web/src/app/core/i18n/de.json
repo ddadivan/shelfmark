@@ -224,6 +224,7 @@
         "hint": "Füge einen Link ein — Titel und Vorschau füllen sich von selbst",
         "required": "Gib einen Link ein",
         "invalid": "Gib eine Adresse ein, die mit http:// oder https:// beginnt",
+        "credentials": "Entferne Benutzername und Passwort aus dem Link",
         "tooLong": "Der Link ist zu lang (höchstens {{max}} Zeichen)",
         "panel": "Link einfügen, oder mehrere"
       },

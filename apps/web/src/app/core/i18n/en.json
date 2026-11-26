@@ -224,6 +224,7 @@
         "hint": "Paste a link — the title and preview fill in by themselves",
         "required": "Enter a link",
         "invalid": "Enter an address that starts with http:// or https://",
+        "credentials": "Remove the username and password from the link",
         "tooLong": "The link is too long (at most {{max}} characters)",
         "panel": "Paste a link, or several"
       },

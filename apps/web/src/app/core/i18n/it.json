@@ -224,6 +224,7 @@
         "hint": "Incolla un link — titolo e anteprima si compilano da soli",
         "required": "Inserisci un link",
         "invalid": "Inserisci un indirizzo che inizia con http:// o https://",
+        "credentials": "Rimuovi nome utente e password dal link",
         "tooLong": "Il link è troppo lungo (massimo {{max}} caratteri)",
         "panel": "Incolla un link, o più di uno"
       },

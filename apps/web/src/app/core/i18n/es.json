@@ -224,6 +224,7 @@
         "hint": "Pega un enlace — el título y la vista previa se rellenan solos",
         "required": "Introduce un enlace",
         "invalid": "Introduce una dirección que empiece por http:// o https://",
+        "credentials": "Quita el usuario y la contraseña del enlace",
         "tooLong": "El enlace es demasiado largo (máximo {{max}} caracteres)",
         "panel": "Pega un enlace, o varios"
       },
