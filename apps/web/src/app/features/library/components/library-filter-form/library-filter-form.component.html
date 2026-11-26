@@ -21,14 +21,29 @@
     <span id="library-filter-saved" class="filter-panel__label">
       {{ 'library.filterPanel.savedLabel' | transloco }}
     </span>
-    <ui-segmented-control
-      class="filter-panel__saved"
-      [block]="block()"
-      ariaLabelledby="library-filter-saved"
-      [options]="savedOptions()"
-      [value]="savedValue()"
-      (valueChange)="chooseSaved($event)"
-    />
+    @if (block()) {
+      <!-- Sheet: chips that wrap, so no label is cut at 360px in any language. -->
+      <div class="filter-panel__chips" role="group" aria-labelledby="library-filter-saved">
+        @for (option of savedOptions(); track option.value) {
+          <ui-chip
+            [variant]="CHIP_VARIANT.Filter"
+            clickable
+            [pressed]="savedValue() === option.value"
+            (clicked)="chooseSaved(option.value)"
+          >
+            {{ option.label }}
+          </ui-chip>
+        }
+      </div>
+    } @else {
+      <ui-segmented-control
+        class="filter-panel__saved"
+        ariaLabelledby="library-filter-saved"
+        [options]="savedOptions()"
+        [value]="savedValue()"
+        (valueChange)="chooseSaved($event)"
+      />
+    }
   </div>
 
   <div class="filter-panel__group" role="group" aria-labelledby="library-filter-tags">

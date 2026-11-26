@@ -6,7 +6,7 @@ import { LibraryFilterFormComponent } from '../library-filter-form/library-filte
 
 /**
  * The library's Filter below 64em (mobile shell): a bottom sheet titled "Filter" with the same
- * groups as the desktop popover, the Saved control at full width so no label is cut. Opened by
+ * groups as the desktop popover, Saved as wrapping chips so no label is cut. Opened by
  * `LibraryFilterPanelComponent` through `DialogService.open`, which passes the page's
  * `LibraryFilterService` as `data`. Closed by dragging down, Esc, the scrim or the close button;
  * every choice already applied.

@@ -42,7 +42,7 @@ import { SAVED_ANY } from './models/saved-any.const';
 export class LibraryFilterFormComponent {
   /** The page's filter state. */
   readonly filters = input.required<LibraryFilterService>();
-  /** Stretch the Saved control over the full width (the bottom sheet). */
+  /** The bottom sheet: Saved is a row of wrapping chips instead of the segmented control. */
   readonly block = input(false, { transform: booleanAttribute });
 
   private readonly tags = inject(TagsStore);

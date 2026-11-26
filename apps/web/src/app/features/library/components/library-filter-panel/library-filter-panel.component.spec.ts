@@ -122,12 +122,13 @@ describe('LibraryFilterPanelComponent', () => {
     expect(dialog().querySelector('[role="switch"]')).toBeNull();
   });
 
-  it('opens as a bottom sheet below 64em, with the Saved control at full width', async () => {
+  it('opens as a bottom sheet below 64em, with Saved as chips', async () => {
     await setup(LINKS_SCOPE.All, true);
     expect(document.querySelector('ui-popover.filter-panel .ui-popover__surface')).toBeNull();
     const sheet = document.querySelector('app-library-filter-sheet');
     expect(sheet?.textContent).toContain('Filter');
-    expect(sheet?.querySelector('.ui-seg--block')).not.toBeNull();
+    expect(sheet?.querySelector('[role="radiogroup"]')).toBeNull();
+    expect(sheet?.textContent).toContain('Past month');
     expect(sheet?.querySelector('[role="switch"]')).not.toBeNull();
   });
 });

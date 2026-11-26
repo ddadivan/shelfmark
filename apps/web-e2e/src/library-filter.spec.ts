@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
+import { isCompact } from './support/sidebar';
 import { filterButton, saveThisViewButton, selectButton } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { expect, test } from './support/test';
@@ -29,7 +30,12 @@ test.describe('library Filter and Select links (mock API)', () => {
       await expect(
         filter(page).getByRole('button', { name: 'Articles', exact: true }),
       ).toHaveAttribute('aria-pressed', 'true');
-      await filter(page).getByRole('radio', { name: 'Past month' }).check();
+      // Below 64em Filter is a bottom sheet and Saved is a row of chips, not a radio group.
+      if (isCompact(page)) {
+        await filter(page).getByRole('button', { name: 'Past month', exact: true }).click();
+      } else {
+        await filter(page).getByRole('radio', { name: 'Past month' }).check();
+      }
       await expect(page).toHaveURL(/[?&]saved=month(&|$)/);
       await filter(page).getByRole('switch', { name: 'Only favorites' }).click();
       await expect(page).toHaveURL(/[?&]fav=1(&|$)/);
