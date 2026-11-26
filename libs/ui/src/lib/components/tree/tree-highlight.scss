@@ -1,5 +1,12 @@
 @use '../../../styles/ui' as *;
 
+// The open folder row also has the hairline of a highlighted one (author, round 9: a plain open
+// folder was hard to tell apart), in the text colour; a highlight colour replaces it below.
+.ui-tree__row--folder[aria-current]:not(:focus-visible) {
+  outline: 1px solid color-mix(in srgb, var(--text) 25%, transparent);
+  outline-offset: -1px;
+}
+
 // Highlighted folders (#440): a soft background in the folder colour, stronger when open.
 .ui-tree__row--folder {
   @include folder-highlight;
