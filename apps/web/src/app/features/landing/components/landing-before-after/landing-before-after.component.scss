@@ -9,7 +9,7 @@
   @include landing.wrap;
   @include landing.section-pad;
 
-  padding-block-start: rem(24px);
+  padding-block-start: var(--space-6);
 
   > div:first-child {
     @include landing.reveal;
@@ -25,7 +25,7 @@
 
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: rem(16px);
+  gap: var(--space-4);
   margin-top: rem(36px);
 
   @include landing.stacked {
@@ -69,7 +69,7 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  padding: rem(10px) rem(12px);
+  padding: var(--space-2-5) var(--space-3);
   font-size: var(--font-size-meta);
   line-height: var(--line-height-meta);
   background: var(--surface);
@@ -139,19 +139,19 @@
 }
 
 .landing-ba__more {
-  margin-top: rem(4px);
+  margin-top: var(--space-1);
 }
 
 .landing-ba__tabs {
   display: flex;
   gap: rem(2px);
-  padding: rem(6px) rem(6px) 0;
+  padding: var(--space-1-5) var(--space-1-5) 0;
   background: var(--surface-pressed);
 
   span {
     flex: 1;
     min-width: 0;
-    padding: rem(5px) rem(6px);
+    padding: rem(5px) var(--space-1-5);
     overflow: hidden;
     font-size: var(--font-size-micro);
     text-overflow: ellipsis;
@@ -166,7 +166,7 @@
 }
 
 .landing-ba__tabs-note {
-  padding: rem(10px) rem(12px);
+  padding: var(--space-2-5) var(--space-3);
 }
 
 .landing-ba__shelf {
@@ -194,10 +194,10 @@
   --ui-icon-size: #{rem(13px)};
 
   display: flex;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
   height: rem(30px);
-  padding-inline: rem(10px);
+  padding-inline: var(--space-2-5);
   font-size: var(--font-size-meta);
   border-radius: var(--radius-sm);
 
@@ -216,7 +216,7 @@
 .landing-ba__links {
   display: flex;
   flex-direction: column;
-  gap: rem(8px);
+  gap: var(--space-2);
 
   // The rows slide in from the side, one by one (`revealStartMs`, `revealStepMs`).
   & > * {
@@ -245,9 +245,9 @@
 .landing-ba__link {
   display: grid;
   grid-template-columns: rem(56px) minmax(0, 1fr);
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
-  padding: rem(8px);
+  padding: var(--space-2);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);

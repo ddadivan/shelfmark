@@ -28,8 +28,8 @@
 
 .landing-header__nav {
   display: flex;
-  gap: rem(4px);
-  margin-inline-start: rem(24px);
+  gap: var(--space-1);
+  margin-inline-start: var(--space-6);
 
   @include landing.stacked {
     display: none;
@@ -42,7 +42,7 @@
   display: flex;
   align-items: center;
   height: rem(36px);
-  padding-inline: rem(12px);
+  padding-inline: var(--space-3);
   color: var(--text-muted);
   text-decoration: none;
   white-space: nowrap;

@@ -144,7 +144,7 @@ ui-dialog {
     grid-template-columns: rem(96px) minmax(0, 1fr);
     gap: var(--space-3);
     align-items: center;
-    padding: rem(10px) var(--space-3);
+    padding: var(--space-2-5) var(--space-3);
 
     > .nv__row-label {
       @include type(caption);

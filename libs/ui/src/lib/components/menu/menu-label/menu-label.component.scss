@@ -4,7 +4,7 @@
   @include type(caption);
 
   display: block;
-  padding: var(--space-2) rem(12px) var(--space-1);
+  padding: var(--space-2) var(--space-3) var(--space-1);
   font-weight: 500;
   color: var(--text-muted);
 }

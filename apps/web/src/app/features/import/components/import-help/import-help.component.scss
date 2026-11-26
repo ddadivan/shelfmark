@@ -32,7 +32,7 @@
   place-items: center;
   min-width: rem(22px);
   height: rem(22px);
-  padding: 0 rem(6px);
+  padding: 0 var(--space-1-5);
   font-family: var(--font-mono);
   line-height: 1;
   color: var(--text-muted);

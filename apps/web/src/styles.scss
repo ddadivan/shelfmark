@@ -192,7 +192,7 @@ app-link-card ui-card {
   inset-block-start: calc(var(--drag-y) - #{rem(12px)});
   inset-inline-start: calc(var(--drag-x) + 65% - #{rem(24px)});
   z-index: 1;
-  padding: rem(4px) rem(10px);
+  padding: var(--space-1) var(--space-2-5);
   font-weight: 500;
   color: var(--on-primary);
   white-space: nowrap;

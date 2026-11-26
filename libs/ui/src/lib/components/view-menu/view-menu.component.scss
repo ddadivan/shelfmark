@@ -10,7 +10,7 @@
   @include type(secondary);
 
   display: inline-flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   align-items: center;
   justify-content: center;
   height: var(--control-sm);
@@ -95,7 +95,7 @@
 .ui-view-menu__slot {
   display: flex;
   justify-content: center;
-  padding: var(--space-1) rem(10px) var(--space-2);
+  padding: var(--space-1) var(--space-2-5) var(--space-2);
 
   &:empty {
     display: none;
@@ -104,16 +104,16 @@
 
 .ui-view-menu__grid {
   display: grid;
-  gap: rem(6px);
-  padding: var(--space-2) rem(10px) var(--space-3);
+  gap: var(--space-1-5);
+  padding: var(--space-2) var(--space-2-5) var(--space-3);
   margin-block-end: var(--space-1);
   border-block-end: 1px solid var(--sep);
 }
 
 .ui-view-menu__choice {
   display: grid;
-  gap: rem(6px);
-  padding: var(--space-2) rem(10px) var(--space-3);
+  gap: var(--space-1-5);
+  padding: var(--space-2) var(--space-2-5) var(--space-3);
   margin-block-end: var(--space-1);
   border-block-end: 1px solid var(--sep);
 }
@@ -142,9 +142,9 @@
   @include type(secondary);
 
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
-  padding: var(--space-2) rem(10px);
+  padding: var(--space-2) var(--space-2-5);
   cursor: pointer;
   border-radius: var(--radius-tile);
 

@@ -7,19 +7,19 @@
   pointer-events: auto;
 
   &--top {
-    padding-bottom: rem(8px);
+    padding-bottom: var(--space-2);
   }
 
   &--bottom {
-    padding-top: rem(8px);
+    padding-top: var(--space-2);
   }
 
   &--left {
-    padding-right: rem(8px);
+    padding-right: var(--space-2);
   }
 
   &--right {
-    padding-left: rem(8px);
+    padding-left: var(--space-2);
   }
 }
 
@@ -28,7 +28,7 @@
 
   display: inline-block;
   max-width: rem(280px);
-  padding: rem(6px) rem(8px);
+  padding: var(--space-1-5) var(--space-2);
   font-size: var(--font-size-meta);
   line-height: rem(16px);
   color: var(--on-primary);

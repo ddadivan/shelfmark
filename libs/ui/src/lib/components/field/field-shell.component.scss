@@ -14,7 +14,7 @@
 .ui-field__label {
   @include type(label);
 
-  margin-block-end: rem(6px);
+  margin-block-end: var(--space-1-5);
   color: var(--text);
 }
 
@@ -98,7 +98,7 @@
 }
 
 .ui-field__message--filled {
-  margin-block-start: rem(6px);
+  margin-block-start: var(--space-1-5);
 }
 
 .ui-field__hint--hidden {

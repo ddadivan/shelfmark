@@ -4,12 +4,12 @@
 // the tint in both themes, own colours through their readable shades. Graphite without a choice.
 :host {
   display: inline-flex;
-  gap: rem(4px);
+  gap: var(--space-1);
   align-items: center;
   max-inline-size: 100%;
   min-inline-size: 0;
   block-size: rem(24px);
-  padding-inline: rem(8px) rem(10px);
+  padding-inline: var(--space-2) var(--space-2-5);
   color: var(--ui-folder-ink, var(--folder-graphite));
   background: var(--ui-folder-tint, var(--folder-graphite-bg));
   border-radius: var(--radius-full);

@@ -77,7 +77,7 @@ h2 {
 ul {
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   padding-left: rem(20px);
 }
 

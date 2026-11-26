@@ -7,13 +7,13 @@
 .help-toc {
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
+  gap: var(--space-1-5);
 
   @include type(secondary);
 }
 
 .help-toc__heading {
-  margin: 0 0 rem(4px);
+  margin: 0 0 var(--space-1);
   color: var(--text-muted);
 
   @include type(caption);

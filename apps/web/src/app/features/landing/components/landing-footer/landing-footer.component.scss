@@ -14,7 +14,7 @@
 
   display: flex;
   flex-wrap: wrap;
-  gap: rem(16px) rem(28px);
+  gap: var(--space-4) rem(28px);
   align-items: center;
   color: var(--text-muted);
 }

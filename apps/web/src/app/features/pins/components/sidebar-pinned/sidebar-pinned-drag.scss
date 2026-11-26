@@ -10,12 +10,12 @@
   @include type(body);
 
   display: flex;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
   box-sizing: border-box;
   min-height: rem(36px);
   padding-block: 0;
-  padding-inline: rem(10px) rem(40px);
+  padding-inline: var(--space-2-5) rem(40px);
   font-size: var(--font-size-secondary);
   line-height: rem(20px);
   color: var(--text-muted);
@@ -38,11 +38,11 @@
   @include type(body);
 
   display: flex;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
   max-width: rem(240px);
   min-height: rem(36px);
-  padding-inline: rem(10px) rem(14px);
+  padding-inline: var(--space-2-5) rem(14px);
   font-size: var(--font-size-label);
   font-weight: 500;
   line-height: rem(20px);
@@ -74,7 +74,7 @@
   @include type(caption);
 
   flex: none;
-  padding: rem(2px) rem(8px);
+  padding: rem(2px) var(--space-2);
   margin-inline-start: auto;
   font-weight: 500;
   color: var(--accent-text);

@@ -54,7 +54,7 @@
 .ui-emoji-picker__search-input {
   @include field-native;
 
-  padding: rem(6px) 0;
+  padding: var(--space-1-5) 0;
 }
 
 .ui-emoji-picker__tabs-root {
@@ -171,6 +171,6 @@
   color: var(--text-muted);
 
   &--filled {
-    padding: rem(7px) rem(10px);
+    padding: rem(7px) var(--space-2-5);
   }
 }

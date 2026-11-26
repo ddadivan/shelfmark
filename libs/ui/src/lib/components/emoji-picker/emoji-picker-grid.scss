@@ -7,7 +7,7 @@
 .ui-emoji-picker__heading {
   @include type(caption);
 
-  padding: var(--space-1) rem(6px);
+  padding: var(--space-1) var(--space-1-5);
   margin: 0;
   color: var(--text-muted);
 }

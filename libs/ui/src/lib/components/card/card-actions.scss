@@ -16,12 +16,12 @@
   // them down and blurred them, author Nov 26), 10px in from the preview's edges.
   --ui-button-icon-size: #{rem(16px)};
 
-  inset-block-start: rem(10px);
+  inset-block-start: var(--space-2-5);
   z-index: 2;
 }
 
 .ui-card__play {
-  inset-inline-start: rem(10px);
+  inset-inline-start: var(--space-2-5);
   display: flex;
   transition: opacity var(--duration-fast) var(--ease-out);
 
@@ -52,7 +52,7 @@
   --on-glass: var(--text-muted);
   --ui-button-glass-hover-color: var(--text);
 
-  inset-inline-end: rem(10px);
+  inset-inline-end: var(--space-2-5);
   display: flex;
   block-size: var(--ui-card-action);
   color: var(--on-glass);
@@ -172,8 +172,8 @@
   --ui-checkbox-pressed-bg: var(--surface);
 
   // On the marks' line, 10px in like the star.
-  inset-block-start: rem(10px);
-  inset-inline-start: rem(10px);
+  inset-block-start: var(--space-2-5);
+  inset-inline-start: var(--space-2-5);
   display: flex;
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);

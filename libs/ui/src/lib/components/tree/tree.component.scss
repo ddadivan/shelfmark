@@ -24,7 +24,7 @@
 
   position: relative;
   display: flex;
-  gap: rem(12px);
+  gap: var(--space-3);
   align-items: center;
   min-height: var(--row-nav);
   padding-block: 0;
@@ -98,7 +98,7 @@
   .ui-tree__more {
     position: absolute;
     inset-block: 0;
-    inset-inline-end: rem(4px);
+    inset-inline-end: var(--space-1);
     display: inline-flex;
     align-items: center;
   }
@@ -182,7 +182,7 @@
 
   // Tall enough for the heading action (30px button, 44px on touch) that sits over its end.
   min-height: calc(#{rem(30px)} + #{rem(12px)});
-  padding: rem(18px) rem(14px) rem(6px);
+  padding: rem(18px) rem(14px) var(--space-1-5);
   font-weight: 500;
   color: var(--text-muted);
 

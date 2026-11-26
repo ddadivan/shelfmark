@@ -3,7 +3,7 @@
 
 .ui-select__search {
   flex: none;
-  padding: var(--space-1) var(--space-1) rem(6px);
+  padding: var(--space-1) var(--space-1) var(--space-1-5);
   margin-bottom: var(--space-1);
   border-bottom: 1px solid var(--border);
 }
@@ -29,7 +29,7 @@
 .ui-select__search-input {
   @include field-native;
 
-  padding: rem(4px) 0;
+  padding: var(--space-1) 0;
 }
 
 // Long lists scroll inside the popup; the search box stays above.
@@ -49,10 +49,10 @@
   @include type(label);
 
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
   min-height: rem(36px);
-  padding: 0 rem(12px);
+  padding: 0 var(--space-3);
   padding-inline-start: calc(#{rem(12px)} + var(--ui-select-level, 0) * #{rem(16px)});
   color: var(--text);
   cursor: pointer;
@@ -109,7 +109,7 @@
   color: var(--text-muted);
 
   &--filled {
-    padding: rem(7px) rem(10px);
+    padding: rem(7px) var(--space-2-5);
   }
 }
 

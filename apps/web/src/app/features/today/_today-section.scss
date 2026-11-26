@@ -63,7 +63,7 @@
   .today-clear {
     display: flex;
     flex-direction: column;
-    gap: rem(6px);
+    gap: var(--space-1-5);
     align-items: center;
     padding: var(--space-6);
     text-align: center;

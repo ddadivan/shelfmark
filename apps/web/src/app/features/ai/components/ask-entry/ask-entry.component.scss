@@ -13,7 +13,7 @@
   align-self: flex-end;
   max-width: 75%;
   margin: 0;
-  padding: rem(10px) rem(14px);
+  padding: var(--space-2-5) rem(14px);
   overflow-wrap: anywhere;
   color: var(--text);
   background: var(--surface-hover);

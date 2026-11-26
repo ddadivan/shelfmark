@@ -10,12 +10,12 @@
   flex-direction: column;
   gap: rem(22px);
   height: 100%;
-  padding: rem(32px);
+  padding: var(--space-8);
   background: var(--surface-hover);
   border-radius: var(--radius-lg);
 
   @include landing.narrow {
-    padding: rem(24px);
+    padding: var(--space-6);
   }
 }
 
@@ -44,7 +44,7 @@
 
 .landing-why__author {
   display: flex;
-  gap: rem(12px);
+  gap: var(--space-3);
   align-items: center;
 }
 

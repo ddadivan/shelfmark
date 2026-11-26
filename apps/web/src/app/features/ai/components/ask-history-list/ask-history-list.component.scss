@@ -33,7 +33,7 @@
   @include type(caption);
 
   margin: 0;
-  padding: var(--space-3) rem(10px) var(--space-1);
+  padding: var(--space-3) var(--space-2-5) var(--space-1);
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -52,7 +52,7 @@
   gap: var(--space-1);
   align-items: center;
   margin: 0;
-  padding: var(--space-3) rem(10px) 0;
+  padding: var(--space-3) var(--space-2-5) 0;
   color: var(--text-muted);
 }
 
@@ -74,7 +74,7 @@
   flex-direction: column;
   gap: var(--space-1);
   align-items: flex-start;
-  padding: var(--space-3) rem(10px) 0;
+  padding: var(--space-3) var(--space-2-5) 0;
 
   // "Clear all" lines up with the text above: the ghost button's 12px side padding hangs out to
   // the left instead of indenting the label (author, Nov 25).

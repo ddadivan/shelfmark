@@ -16,19 +16,19 @@
 :host(.ui-theme-picker--accent) {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(10px);
+  gap: var(--space-2-5);
 }
 
 :host(.ui-theme-picker--background) {
   grid-template-columns: repeat(4, minmax(0, rem(72px)));
-  gap: rem(10px);
+  gap: var(--space-2-5);
 }
 
 .ui-theme-picker__option {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   min-width: 0;
   cursor: pointer;
 }
@@ -91,7 +91,7 @@
 
 .ui-theme-picker__surface {
   position: absolute;
-  inset: rem(10px) rem(26px) auto rem(10px);
+  inset: var(--space-2-5) rem(26px) auto var(--space-2-5);
   block-size: rem(24px);
   background: var(--surface);
   border-radius: var(--radius-tile);
@@ -100,8 +100,8 @@
 
 .ui-theme-picker__accent {
   position: absolute;
-  bottom: rem(10px);
-  left: rem(10px);
+  bottom: var(--space-2-5);
+  left: var(--space-2-5);
   inline-size: rem(30px);
   block-size: rem(9px);
   background: var(--accent);
@@ -110,8 +110,8 @@
 
 .ui-theme-picker__dot {
   position: absolute;
-  right: rem(10px);
-  bottom: rem(9px);
+  right: var(--space-2-5);
+  bottom: var(--space-2);
   inline-size: rem(11px);
   block-size: rem(11px);
   background: var(--accent-bg);

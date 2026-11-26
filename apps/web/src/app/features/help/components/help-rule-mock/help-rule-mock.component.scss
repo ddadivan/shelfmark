@@ -44,7 +44,7 @@
 .mock__field {
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
+  gap: var(--space-1-5);
 }
 
 .mock__label {

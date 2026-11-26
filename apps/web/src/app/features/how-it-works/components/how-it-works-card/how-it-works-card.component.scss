@@ -35,7 +35,7 @@
   @include type(caption);
 
   display: inline-flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   align-items: center;
   color: var(--text-muted);
 }

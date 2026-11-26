@@ -7,7 +7,7 @@
 
 .ui-steps__dots {
   display: flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
 }
 
 .ui-steps__dot {

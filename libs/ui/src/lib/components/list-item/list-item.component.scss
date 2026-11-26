@@ -6,7 +6,7 @@
 :host {
   position: relative;
   display: flex;
-  gap: rem(12px);
+  gap: var(--space-3);
   align-items: center;
   padding: var(--density-row-padding);
   color: var(--text);
@@ -24,7 +24,7 @@
 }
 
 :host(.ui-list-item--compact) {
-  padding: rem(8px);
+  padding: var(--space-2);
 }
 
 :host {
@@ -224,7 +224,7 @@
   z-index: 2;
   display: flex;
   flex: none;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
 
   &:empty {
@@ -236,9 +236,9 @@
 :host(.ui-list-item--tile) {
   --ui-row-hover: var(--surface-pressed);
 
-  gap: rem(10px);
+  gap: var(--space-2-5);
   min-height: 0;
-  padding: rem(8px);
+  padding: var(--space-2);
   background: var(--surface-hover);
   border-radius: var(--ui-list-item-radius, var(--radius-sm));
 }
@@ -272,9 +272,9 @@
 // Headline row (Shelf LinkRow, Headlines view): 40px, favicon, title in `label`, then the meta
 // columns; 48px on a phone. The trailing controls show on hover and focus, like the checkbox.
 :host(.ui-list-item--headline) {
-  gap: rem(12px);
+  gap: var(--space-3);
   min-height: rem(40px);
-  padding: 0 rem(16px);
+  padding: 0 var(--space-4);
   border-radius: 0;
 
   @include phone {
@@ -284,7 +284,7 @@
 
 :host(.ui-list-item--headline) .ui-list-item__link {
   flex-direction: row;
-  gap: rem(12px);
+  gap: var(--space-3);
   align-items: center;
 }
 
@@ -298,7 +298,7 @@
 :host(.ui-list-item--headline) .ui-list-item__meta {
   display: flex;
   flex: none;
-  gap: rem(12px);
+  gap: var(--space-3);
   align-items: center;
 }
 
@@ -307,8 +307,8 @@
   // for them, so the date stays at the edge). Touch: in the row, always there.
   position: absolute;
   inset-block: 0;
-  inset-inline-end: rem(8px);
-  padding-inline-start: rem(8px);
+  inset-inline-end: var(--space-2);
+  padding-inline-start: var(--space-2);
 
   // The box takes exactly the row's colour, so it covers the columns without showing as a block
   // (author, Nov 25; round 11): the row's own ground at rest (keyboard focus alone gives the row
@@ -368,7 +368,7 @@
 
   position: absolute;
   inset-block: 0;
-  inset-inline-start: rem(15px);
+  inset-inline-start: var(--space-4);
 }
 
 :host(.ui-list-item--headline:has(.ui-list-item__select:not(:empty))) {

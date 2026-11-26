@@ -64,7 +64,7 @@
   display: block;
   width: 100%;
   min-height: rem(36px);
-  padding: rem(8px) rem(10px);
+  padding: var(--space-2) var(--space-2-5);
   line-height: 1.4;
   color: var(--text);
   text-align: start;
@@ -94,7 +94,7 @@
   display: block;
   width: 100%;
   min-height: rem(44px);
-  padding: rem(10px) rem(12px);
+  padding: var(--space-2-5) var(--space-3);
   color: var(--text);
   text-align: start;
   cursor: pointer;

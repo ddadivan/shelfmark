@@ -7,7 +7,7 @@
   inset-block: 0;
   block-size: fit-content;
   margin-block: auto; // centred without a transform, which can land on half a pixel
-  inset-inline-end: rem(4px);
+  inset-inline-end: var(--space-1);
   display: flex;
   gap: var(--space-1);
   align-items: center;

@@ -19,7 +19,7 @@
   inline-size: max-content;
   min-inline-size: min(rem(300px), 100%);
   max-inline-size: min(rem(540px), 100%);
-  padding: rem(10px) rem(10px) rem(10px) var(--space-3);
+  padding: var(--space-2-5) var(--space-2-5) var(--space-2-5) var(--space-3);
   color: var(--ui-toast-ink);
   pointer-events: auto;
   background: var(--text);

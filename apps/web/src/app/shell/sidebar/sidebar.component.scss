@@ -52,7 +52,7 @@
   display: flex;
   flex: none;
   align-items: center;
-  padding: var(--space-1) rem(10px) rem(14px);
+  padding: var(--space-1) var(--space-2-5) rem(14px);
   color: var(--text);
   text-decoration: none;
   border-radius: var(--radius-md);
@@ -80,7 +80,7 @@
   @include scroll-fade(var(--sidebar));
 
   // A focused field (the new tag / folder name) scrolls clear of the bottom fade.
-  scroll-padding-block: rem(24px);
+  scroll-padding-block: var(--space-6);
 
   > * {
     flex: none;

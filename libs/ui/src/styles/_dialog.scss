@@ -56,11 +56,11 @@
       @include tablet-up {
         align-items: flex-start;
         justify-content: flex-end;
-        padding: rem(52px) rem(16px) 0;
+        padding: rem(52px) var(--space-4) 0;
       }
 
       @include desktop {
-        padding-inline-end: rem(48px);
+        padding-inline-end: var(--space-12);
       }
     }
 

@@ -15,7 +15,7 @@
 
   @include tablet-up {
     align-items: center;
-    padding: rem(48px);
+    padding: var(--space-12);
   }
 }
 

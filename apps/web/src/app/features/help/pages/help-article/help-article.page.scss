@@ -59,7 +59,7 @@
 }
 
 .doc__lead {
-  margin: rem(10px) 0 0;
+  margin: var(--space-2-5) 0 0;
   font-size: var(--font-size-section);
   line-height: 1.6;
   color: var(--text-muted);

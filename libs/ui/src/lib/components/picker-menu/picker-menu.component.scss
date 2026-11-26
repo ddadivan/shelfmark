@@ -11,12 +11,12 @@
   @include type(title);
 
   display: inline-flex;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
   min-width: 0;
   max-width: 100%;
   min-height: rem(44px);
-  padding: 0 rem(12px) 0 rem(6px);
+  padding: 0 var(--space-3) 0 var(--space-1-5);
   font-family: inherit;
   color: var(--text);
   cursor: pointer;

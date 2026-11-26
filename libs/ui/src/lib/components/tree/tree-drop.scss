@@ -44,7 +44,7 @@
   @include type(caption);
 
   flex: none;
-  padding: rem(2px) rem(8px);
+  padding: rem(2px) var(--space-2);
   margin-inline-start: auto;
   font-weight: 500;
   color: var(--accent-text);

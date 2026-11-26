@@ -9,7 +9,7 @@
   @include landing.wrap;
   @include landing.section-pad;
 
-  padding-block-start: rem(24px);
+  padding-block-start: var(--space-6);
 }
 
 .landing-finale__reveal {
@@ -20,7 +20,7 @@
 .landing-finale__card {
   position: relative;
   isolation: isolate;
-  padding: rem(64px) rem(32px);
+  padding: var(--space-16) var(--space-8);
   overflow: hidden;
   text-align: center;
   background: var(--surface-hover);
@@ -45,7 +45,7 @@
   }
 
   @include landing.narrow {
-    padding: rem(48px) rem(20px);
+    padding: var(--space-12) rem(20px);
   }
 }
 
@@ -63,7 +63,7 @@
   @include landing.section-lead;
 
   max-width: 34em;
-  margin: rem(16px) auto 0;
+  margin: var(--space-4) auto 0;
 }
 
 .landing-finale__actions {

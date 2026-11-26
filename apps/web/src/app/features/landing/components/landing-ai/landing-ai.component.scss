@@ -126,8 +126,8 @@
 .landing-ai__body {
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
-  padding: rem(14px) rem(16px);
+  gap: var(--space-1-5);
+  padding: rem(14px) var(--space-4);
 }
 
 .landing-ai__video {
@@ -145,8 +145,8 @@
 .landing-ai__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(6px);
-  margin-top: rem(4px);
+  gap: var(--space-1-5);
+  margin-top: var(--space-1);
 }
 
 .landing-ai__chip {
@@ -165,15 +165,15 @@
 .landing-ai__ask {
   display: flex;
   flex-direction: column;
-  gap: rem(10px);
-  padding: rem(14px) rem(16px);
+  gap: var(--space-2-5);
+  padding: rem(14px) var(--space-4);
 }
 
 .landing-ai__field {
   @include type(secondary);
 
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
   height: rem(40px);
   padding-inline: rem(14px);
@@ -185,7 +185,7 @@
   --ui-icon-size: #{rem(12px)};
 
   display: flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   align-items: center;
 }
 
@@ -197,7 +197,7 @@
   @include type(caption);
 
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
 }
 
@@ -220,7 +220,7 @@
 
 .landing-ai__question {
   align-self: flex-end;
-  padding: rem(8px) rem(12px);
+  padding: var(--space-2) var(--space-3);
   background: var(--surface-hover);
   border-radius: var(--radius-md);
 }

@@ -27,7 +27,7 @@
 :host(.ui-input--compact) .ui-input__native {
   @include type(caption);
 
-  padding: rem(4px) 0;
+  padding: var(--space-1) 0;
 
   // A touch screen zooms into fields under 16px.
   @include coarse {

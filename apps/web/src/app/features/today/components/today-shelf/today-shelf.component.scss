@@ -55,7 +55,7 @@
 .today-shelf__title {
   @include type(heading);
 
-  margin: var(--space-1) 0 rem(6px);
+  margin: var(--space-1) 0 var(--space-1-5);
   font-size: var(--font-size-section);
   line-height: 1.3;
   overflow-wrap: anywhere;

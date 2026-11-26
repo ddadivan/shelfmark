@@ -36,7 +36,7 @@ $narrow-max: 35em;
   padding-block: rem(72px);
 
   @include narrow {
-    padding-block: rem(48px);
+    padding-block: var(--space-12);
   }
 }
 
@@ -67,10 +67,10 @@ $narrow-max: 35em;
 // The sage pill above a heading ("Optional AI", "Browser extension").
 @mixin eyebrow {
   display: inline-flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   align-items: center;
   height: rem(28px);
-  padding-inline: rem(12px);
+  padding-inline: var(--space-3);
   font-size: var(--font-size-meta);
   font-weight: 500;
   line-height: var(--line-height-meta);
@@ -103,10 +103,10 @@ $narrow-max: 35em;
 // A suggestion chip of the AI card and the extension popup: sage ring, `on` filled.
 @mixin chip {
   display: inline-flex;
-  gap: rem(4px);
+  gap: var(--space-1);
   align-items: center;
   height: rem(26px);
-  padding-inline: rem(10px);
+  padding-inline: var(--space-2-5);
   font-size: var(--font-size-meta);
   line-height: var(--line-height-meta);
   color: var(--note-text);

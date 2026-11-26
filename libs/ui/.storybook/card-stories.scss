@@ -54,7 +54,7 @@
 }
 
 .cs-surface {
-  padding: rem(6px);
+  padding: var(--space-1-5);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -62,7 +62,7 @@
 
 .cs-site {
   display: flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   align-items: center;
   min-width: 0;
   overflow: hidden;
@@ -72,7 +72,7 @@
 
 .cs-meta {
   display: flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
   align-items: center;
   justify-content: space-between;
   min-width: 0;
@@ -104,12 +104,12 @@
 .cs-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(6px);
+  gap: var(--space-1-5);
 }
 
 .cs-overlay {
   display: flex;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
   justify-content: space-between;
 }

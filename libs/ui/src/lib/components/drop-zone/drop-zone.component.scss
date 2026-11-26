@@ -3,7 +3,7 @@
 :host {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
   justify-content: center;
   min-width: 0;
@@ -39,7 +39,7 @@
 .ui-drop-zone__row {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
   justify-content: center;
 }

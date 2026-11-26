@@ -13,7 +13,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
   gap: rem(56px);
   align-items: center;
-  padding-block-start: rem(24px);
+  padding-block-start: var(--space-6);
 
   @include landing.stacked {
     grid-template-columns: minmax(0, 1fr);
@@ -42,16 +42,16 @@
 
 .landing-extension__bar {
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
   height: rem(44px);
-  padding-inline: rem(12px);
+  padding-inline: var(--space-3);
   background: var(--surface-pressed);
 }
 
 .landing-extension__dots {
   display: flex;
-  gap: rem(6px);
+  gap: var(--space-1-5);
 
   i {
     width: rem(10px);
@@ -68,7 +68,7 @@
   align-items: center;
   min-width: 0;
   height: rem(28px);
-  padding-inline: rem(12px);
+  padding-inline: var(--space-3);
   overflow: hidden;
   font-size: var(--font-size-meta);
   color: var(--text-muted);
@@ -95,9 +95,9 @@
   position: relative;
   display: grid;
   grid-template-columns: 1.1fr 1fr;
-  gap: rem(24px);
+  gap: var(--space-6);
   height: rem(380px);
-  padding: rem(24px);
+  padding: var(--space-6);
   background: var(--surface);
 
   @include landing.narrow {
@@ -122,7 +122,7 @@
   i {
     display: block;
     height: rem(10px);
-    margin-bottom: rem(10px);
+    margin-bottom: var(--space-2-5);
     background: var(--surface-hover);
     border-radius: var(--radius-full);
 
@@ -151,11 +151,11 @@
 
 .landing-extension__popup {
   position: absolute;
-  top: rem(10px);
+  top: var(--space-2-5);
   right: rem(14px);
   display: flex;
   flex-direction: column;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   width: rem(300px);
   padding: rem(14px);
   font-size: var(--font-size-meta);
@@ -167,15 +167,15 @@
     0 0 0 1px var(--sep);
 
   @include landing.narrow {
-    right: rem(12px);
-    left: rem(12px);
+    right: var(--space-3);
+    left: var(--space-3);
     width: auto;
   }
 }
 
 .landing-extension__head {
   display: flex;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
   font-weight: 600;
 }
@@ -189,7 +189,7 @@
 
 .landing-extension__link {
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-2-5);
   align-items: center;
 }
 
@@ -213,9 +213,9 @@
 
 .landing-extension__rule {
   display: flex;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
-  padding: rem(8px) rem(10px);
+  padding: var(--space-2) var(--space-2-5);
   background: var(--surface-hover);
   border-radius: var(--radius-sm);
 
@@ -238,7 +238,7 @@
 .landing-extension__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(6px);
+  gap: var(--space-1-5);
 }
 
 .landing-extension__chip {

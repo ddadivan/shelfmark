@@ -329,8 +329,8 @@
 
 .fd-ease__dot {
   position: absolute;
-  inset-block: rem(4px);
-  inset-inline-start: rem(4px);
+  inset-block: var(--space-1);
+  inset-inline-start: var(--space-1);
   width: rem(16px);
   background: var(--primary);
   border-radius: var(--radius-full);
@@ -475,7 +475,7 @@
 
 .fd-glass-stage__blob--a {
   top: rem(-20px);
-  left: rem(32px);
+  left: var(--space-8);
   background: var(--accent-bg);
 }
 
@@ -487,7 +487,7 @@
 
 .fd-glass-bar {
   position: absolute;
-  inset: rem(36px) rem(24px) auto;
+  inset: rem(36px) var(--space-6) auto;
   display: flex;
   gap: var(--space-4);
   align-items: center;

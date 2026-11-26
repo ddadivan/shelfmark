@@ -21,7 +21,7 @@
     grid-template-columns: minmax(0, 1fr);
     gap: rem(36px);
     align-content: center;
-    padding-block: rem(32px) rem(48px);
+    padding-block: var(--space-8) var(--space-12);
   }
 }
 

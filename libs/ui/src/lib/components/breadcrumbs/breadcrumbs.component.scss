@@ -46,7 +46,7 @@
 .ui-crumbs__current {
   display: block;
   max-width: rem(220px);
-  padding: rem(3px) rem(6px);
+  padding: rem(3px) var(--space-1-5);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -94,6 +94,6 @@
   @include touch-target;
 
   @include coarse {
-    padding-block: rem(13px);
+    padding-block: var(--space-3);
   }
 }
