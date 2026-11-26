@@ -4,11 +4,12 @@ import {
   computed,
   effect,
   inject,
+  signal,
   untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { NgTemplateOutlet } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   AvatarComponent,
@@ -51,6 +52,7 @@ import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
+import { nextPaint } from './next-paint';
 import { isPushedUrl } from './pushed-url';
 import { PushedPage } from '../core/layout/pushed-page.service';
 import { PreviewFullScreen } from '../features/link-preview/services/preview-full-screen.service';
@@ -124,7 +126,13 @@ export default class AppShellComponent {
   /** The feed or folder the Library tab was pressed on; pressing it again returns there. */
   private libraryReturn: string | null = null;
   /** The tab of the current page (the tab bar marks it with `aria-current`). */
-  protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
+  /**
+   * The tab a press is taking the user to, shown at once while the page builds (author, round 14:
+   * the bar lagged behind a slow feed); cleared when the navigation ends either way.
+   */
+  private readonly pendingUrl = signal<string | null>(null);
+  private readonly document = inject(DOCUMENT);
+  protected readonly activeTab = computed(() => phoneTabForUrl(this.pendingUrl() ?? this.url()));
   private readonly pushedPage = inject(PushedPage);
   /**
    * A pushed page with its own bottom bar (Tidy Unsorted, the phone Ask page while a conversation
@@ -252,7 +260,7 @@ export default class AppShellComponent {
         const back = this.libraryReturn;
         this.libraryReturn = null;
         if (back) {
-          await this.router.navigateByUrl(back);
+          await this.goFromTab(back);
         }
         return;
       }
@@ -260,7 +268,19 @@ export default class AppShellComponent {
     }
     const href = this.tabs().find((tab) => tab.id === id)?.href;
     if (href) {
-      await this.router.navigateByUrl(href);
+      await this.goFromTab(href);
+    }
+  }
+
+  /** Navigates from a tab press with the bar already showing where it goes. */
+  private async goFromTab(url: string): Promise<void> {
+    this.pendingUrl.set(url);
+    try {
+      // Let the bar paint first: building the feed blocks the frame the router renders in.
+      await nextPaint(this.document);
+      await this.router.navigateByUrl(url);
+    } finally {
+      this.pendingUrl.set(null);
     }
   }
 
