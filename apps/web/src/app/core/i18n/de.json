@@ -21,22 +21,6 @@
     },
     "preview": {
       "label": "Die Shelfmark-App: ein Ordner gespeicherter Links mit Vorschauen, Notizen und der Meldung „In Später ansehen gespeichert“",
-      "add": "+ Link hinzufügen",
-      "folders": "Ordner",
-      "search": "Links, Ordner und Tags suchen",
-      "toast": "In Später ansehen gespeichert",
-      "undo": "Rückgängig",
-      "rows": {
-        "all": "Alle Links",
-        "unsorted": "Unsortiert",
-        "favorites": "Favoriten",
-        "today": "Heute"
-      },
-      "tabs": {
-        "all": "Alle",
-        "video": "Videos",
-        "shop": "Shops"
-      },
       "items": {
         "nihilism": {
           "title": "Optimistic Nihilism",

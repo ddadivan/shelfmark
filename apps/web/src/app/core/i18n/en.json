@@ -21,22 +21,6 @@
     },
     "preview": {
       "label": "The Shelfmark app: a folder of saved links with previews, notes and a toast that says Saved to Watch later",
-      "add": "+ Add link",
-      "folders": "Folders",
-      "search": "Search links, folders and tags",
-      "toast": "Saved to Watch later",
-      "undo": "Undo",
-      "rows": {
-        "all": "All links",
-        "unsorted": "Unsorted",
-        "favorites": "Favorites",
-        "today": "Today"
-      },
-      "tabs": {
-        "all": "All",
-        "video": "Videos",
-        "shop": "Shops"
-      },
       "items": {
         "nihilism": {
           "title": "Optimistic Nihilism",

@@ -1,18 +1,16 @@
 @use 'ui' as *;
-@use '../../landing' as landing;
+@use '../../../../shell/sidebar/sidebar-section';
 
-// A small copy of the Shelf app: the type is the DS meta / micro scale, radii the DS steps.
+// A picture of the Shelf app. The real components are laid out by the app's own rules: the stage
+// is a 1400px window (scaled down by `--landing-scale`) or, on a phone, the mobile shell at its
+// own size. The values below are the shell's, the library page's and the sidebar's.
 :host {
   display: block;
   min-width: 0;
-  container-type: inline-size;
 }
 
 .preview {
   position: relative;
-  display: grid;
-  grid-template-columns: rem(148px) minmax(0, 1fr);
-  height: clamp(#{rem(460px)}, 38vw, #{rem(760px)});
   overflow: hidden;
   contain: paint;
   background: var(--bg);
@@ -20,221 +18,305 @@
   box-shadow:
     var(--shadow-l3),
     0 0 0 1px var(--sep);
+}
 
-  @include landing.narrow {
-    grid-template-columns: minmax(0, 1fr);
-    height: rem(420px);
+.stage {
+  position: absolute;
+  inset: 0 auto auto 0;
+  display: flex;
+  width: rem(1400px);
+  height: rem(860px);
+  overflow: hidden;
+  pointer-events: none;
+  transform: scale(var(--landing-scale, 0.5));
+  transform-origin: 0 0;
+
+  &--phone {
+    inset: 0;
+    width: auto;
+    height: auto;
+    transform: none;
   }
 }
 
-.preview__side {
+// ---- Sidebar (shell.scss, sidebar.component.scss) ----
+
+.stage__side {
   display: flex;
+  flex: none;
   flex-direction: column;
-  gap: rem(2px);
-  padding: rem(14px) rem(10px);
-  font-size: var(--font-size-meta);
-  line-height: var(--line-height-meta);
+  width: var(--sidebar-width);
+  padding: var(--space-4) var(--space-3) 0;
   background: var(--sidebar);
   border-inline-end: 1px solid var(--sep);
-
-  @include landing.narrow {
-    display: none;
-  }
 }
 
-.preview__logo {
+.stage__brand {
   display: flex;
-  gap: rem(6px);
+  flex: none;
   align-items: center;
-  padding: 0 rem(6px) rem(10px);
-  font-weight: 600;
+  justify-content: space-between;
+  height: var(--control-sm);
+  padding-inline-end: var(--space-1);
+
+  --ui-avatar-size: #{rem(32px)};
 }
 
-.preview__logo-mark {
+.stage__logo {
+  --ui-logo-size: #{rem(22px)};
+  --ui-logo-gap: var(--space-2);
+  --ui-logo-wordmark-size: #{rem(16px)};
+  --ui-logo-wordmark-line: #{rem(24px)};
+
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-inline: var(--space-2);
   color: var(--text);
 }
 
-.preview__add {
-  display: grid;
-  place-items: center;
-  height: rem(28px);
-  margin: 0 rem(2px) rem(10px);
-  font-weight: 500;
-  color: var(--on-primary);
-  background: var(--primary);
-  border-radius: var(--radius-full);
+.stage__add {
+  flex: none;
+  margin-block: var(--space-6);
+  margin-inline: var(--space-1);
 }
 
-.preview__row {
+.stage__scroll {
   display: flex;
-  gap: rem(8px);
-  align-items: center;
-  height: rem(26px);
-  padding-inline: rem(8px);
-  white-space: nowrap;
-  cursor: pointer;
-  border-radius: var(--radius-tile);
-  transition:
-    background-color 300ms,
-    font-weight 300ms;
-
-  &--on {
-    font-weight: 500;
-    background: var(--surface-pressed);
-  }
-}
-
-.preview__count {
-  margin-inline-start: auto;
-  font-weight: 400;
-  color: var(--text-muted);
-
-  &--strong {
-    font-weight: 600;
-    color: var(--text);
-  }
-}
-
-.preview__folder {
-  --ui-icon-size: #{rem(12px)};
-}
-
-.preview__heading {
-  padding: rem(10px) rem(8px) rem(4px);
-  margin-top: rem(8px);
-  font-size: var(--font-size-micro);
-  color: var(--text-muted);
-  border-top: 1px solid var(--sep);
-}
-
-.preview__main {
-  position: relative;
-  padding: rem(14px) rem(16px);
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
   overflow: hidden;
 }
 
-.preview__search {
-  display: flex;
-  gap: rem(8px);
-  align-items: center;
-  max-width: rem(280px);
-  height: rem(32px);
-  padding-inline: rem(12px);
-  font-size: var(--font-size-meta);
-  color: var(--text-muted);
-  background: var(--surface-hover);
-  border-radius: var(--radius-md);
-  box-shadow: inset 0 0 0 1px var(--search-hairline);
+.stage__section {
+  padding-block-start: var(--space-4);
+  margin-block-start: var(--space-6);
+  border-block-start: 1px solid var(--sep);
 }
 
-.preview__search-icon {
-  --ui-icon-size: #{rem(13px)};
+.stage__section-header {
+  @include sidebar-section.header;
 }
 
-.preview__head {
-  display: flex;
-  gap: rem(8px);
-  align-items: center;
-  margin-top: rem(14px);
+.stage__section-heading {
+  @include sidebar-section.heading;
 }
 
-.preview__title {
-  flex: 1;
-  font-size: var(--font-size-title-s);
-  font-weight: 600;
-  line-height: var(--line-height-title-s);
-}
+.stage__section-toggle {
+  @include sidebar-section.toggle;
 
-.preview__views {
-  display: flex;
-  gap: rem(2px);
-  padding: rem(2px);
-  background: var(--surface-hover);
-  border-radius: var(--radius-tile);
-}
-
-.preview__view {
-  --ui-icon-size: #{rem(12px)};
-
-  display: grid;
-  place-items: center;
-  width: rem(24px);
-  height: rem(20px);
-  color: var(--text-muted);
-  border-radius: var(--radius-tile-sm);
-
-  &--on {
-    color: var(--text);
-    background: var(--surface);
+  &--folded {
+    transform: rotate(-90deg);
   }
 }
 
-.preview__tabs {
+.stage__section-add {
+  @include sidebar-section.small-glyph;
+
+  margin-inline-start: auto;
+}
+
+.stage__footer {
+  flex: none;
+  padding-block: var(--space-2) var(--space-3);
+}
+
+// ---- Content: header and main (shell.scss, library.page.scss) ----
+
+.stage__content {
+  position: relative;
   display: flex;
-  gap: rem(2px);
-  margin-top: rem(8px);
-  font-size: var(--font-size-micro);
-  line-height: var(--line-height-meta);
-  color: var(--text-muted);
-  transition: opacity 300ms;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stage__header {
+  display: flex;
+  flex: none;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4) var(--space-8) 0;
+}
+
+.stage__search {
+  flex: 100 1 rem(640px);
+  min-width: 0;
+  max-width: rem(640px);
+}
+
+.stage__top {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-4) 0;
+
+  --ui-avatar-size: #{rem(40px)};
+}
+
+.stage__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-6) var(--space-8) 0;
+  overflow: hidden;
+}
+
+.stage--phone .stage__main {
+  padding: var(--space-4) var(--space-4) 0;
+}
+
+.stage__toolbar {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  padding-block-start: var(--space-2);
+  margin-bottom: calc(var(--space-3) + #{rem(10px)});
+}
+
+.stage--phone .stage__toolbar {
+  gap: var(--space-2) var(--space-3);
+  padding-block-start: var(--space-3);
+}
+
+.stage__title {
+  @include type(title);
+
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.stage--phone .stage__title {
+  font-size: var(--font-size-title-l);
+  line-height: rem(28px);
+}
+
+.stage__tools {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  gap: var(--space-4);
+  align-items: center;
+  max-width: 100%;
+}
+
+.stage--phone .stage__tools {
+  gap: var(--space-2);
+  margin-inline-start: auto;
+}
+
+.stage__actions {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.stage__views {
+  flex: none;
+  margin-bottom: var(--space-6);
+  transition: opacity var(--duration-base) var(--ease-out);
 
   &--off {
     opacity: 0;
   }
 }
 
-.preview__tab {
-  padding: rem(3px) rem(8px);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition:
-    background-color 250ms,
-    color 250ms;
-
-  &--on {
-    font-weight: 500;
-    color: var(--text);
-    background: var(--surface-pressed);
-  }
+.stage--phone .stage__views {
+  margin-bottom: var(--space-3);
 }
 
-.preview__grid {
-  margin-top: rem(12px);
-  column-gap: rem(10px);
-  columns: 3;
-  transition: opacity 260ms ease;
+// ---- The masonry feed ----
+
+.stage__grid {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  list-style: none;
+  column-gap: var(--space-6);
+  columns: 4;
+  transition: opacity var(--duration-base) var(--ease-out);
 
   &--fade {
     opacity: 0;
   }
-
-  @include landing.narrow {
-    columns: 2;
-  }
-
-  // A wider window shows a fourth column of cards.
-  @container (width > 46em) {
-    columns: 4;
-  }
 }
 
-.preview__card {
-  margin-bottom: rem(10px);
-  overflow: hidden;
-  font-size: var(--font-size-micro);
-  line-height: 1.3;
+.stage--phone .stage__grid {
+  column-gap: var(--space-3);
+  columns: 2;
+}
+
+.stage__item {
+  display: block;
+  margin-block-end: var(--space-6);
   break-inside: avoid;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
 
   &--hidden {
     display: none;
   }
 }
 
+.stage--phone .stage__item {
+  margin-block-end: var(--space-3);
+}
+
+// What the app puts into the card's slots (link-card.component.scss).
+.stage__folder {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  min-width: 0;
+}
+
+.stage__folder-icon {
+  --ui-icon-size: #{rem(12px)};
+
+  flex: none;
+  color: var(--ui-folder-ink, var(--text-muted));
+}
+
+.stage__folder-name {
+  @include line-clamp(1);
+}
+
+.stage__site {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.stage__host {
+  @include type(caption);
+  @include line-clamp(1);
+
+  color: var(--text-muted);
+}
+
+.stage__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: center;
+  min-inline-size: 0;
+
+  ui-chip {
+    --ui-chip-max-inline-size: 100%;
+  }
+}
+
 // The first frame: the cards land one by one (once).
-.preview--intro .preview__card {
+.preview--intro .stage__item {
   animation: landing-card-land 520ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
   animation-delay: calc(250ms + var(--landing-card-index, 0) * 140ms);
 }
@@ -251,60 +333,18 @@
   }
 }
 
-.preview__image {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: cover;
+// ---- Phone tab bar and the toast ----
 
-  &--product {
-    object-fit: contain;
-    background: var(--surface-hover);
-  }
-}
-
-.preview__body {
-  display: flex;
-  flex-direction: column;
-  gap: rem(2px);
-  padding: rem(6px) rem(8px) rem(8px);
-}
-
-.preview__meta {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-muted);
-}
-
-.preview__name {
-  font-size: var(--font-size-micro);
-  font-weight: 500;
-}
-
-.preview__note {
-  width: fit-content;
-  padding: rem(3px) rem(6px);
-  margin-top: rem(4px);
-  color: var(--note-text);
-  background: var(--ai-bg);
-  border-radius: var(--radius-tile-sm);
-}
-
-.preview__toast {
+.stage__tabs {
   position: absolute;
-  bottom: rem(14px);
-  left: 50%;
-  display: flex;
-  gap: rem(10px);
-  align-items: center;
-  padding: rem(8px) rem(8px) rem(8px) rem(12px);
-  font-size: var(--font-size-meta);
-  line-height: var(--line-height-meta);
-  color: var(--bg);
-  white-space: nowrap;
-  background: var(--text);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-l2);
+  inset-block-end: var(--space-2);
+  inset-inline: var(--space-2);
+}
+
+.stage__toast {
+  position: absolute;
+  inset-block-end: var(--space-6);
+  inset-inline-start: 50%;
   opacity: 0;
   transform: translate(-50%, rem(16px));
   transition:
@@ -320,23 +360,19 @@
   }
 }
 
-.preview__undo {
-  padding: rem(4px) rem(8px);
-  font-weight: 500;
-  background: var(--toast-tile);
-  border-radius: var(--radius-tile);
+.stage--phone .stage__toast {
+  inset-block-end: rem(104px);
+  max-inline-size: calc(100% - var(--space-4));
 }
 
 @include reduced-motion {
-  .preview--intro .preview__card {
+  .preview--intro .stage__item {
     animation: none;
   }
 
-  .preview__toast,
-  .preview__row,
-  .preview__tab,
-  .preview__tabs,
-  .preview__grid {
+  .stage__toast,
+  .stage__views,
+  .stage__grid {
     transition: none;
   }
 }

@@ -21,22 +21,6 @@
     },
     "preview": {
       "label": "O app Shelfmark: uma pasta de links salvos com prévias, notas e o aviso “Salvo em Ver depois”",
-      "add": "+ Adicionar link",
-      "folders": "Pastas",
-      "search": "Buscar links, pastas e tags",
-      "toast": "Salvo em Ver depois",
-      "undo": "Desfazer",
-      "rows": {
-        "all": "Todos os links",
-        "unsorted": "Sem pasta",
-        "favorites": "Favoritos",
-        "today": "Hoje"
-      },
-      "tabs": {
-        "all": "Todos",
-        "video": "Vídeos",
-        "shop": "Lojas"
-      },
       "items": {
         "nihilism": {
           "title": "Optimistic Nihilism",

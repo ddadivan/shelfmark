@@ -1,11 +1,11 @@
-import type { LandingPreviewScope } from './landing-preview-scope.type';
+import type { LandingFolder } from './landing-folder.type';
 
-/** One row of the app preview's sidebar. */
+/** One folder row of the app preview's sidebar. */
 export interface LandingPreviewRow {
-  readonly scope: LandingPreviewScope;
+  readonly scope: LandingFolder;
   readonly count: number;
-  /** A folder row (folder glyph in its colour, under the Folders heading). */
-  readonly folder: boolean;
-  /** The count is news (Today's due reminders): full colour, semibold. */
-  readonly strong?: boolean;
+  /** The folder tile colour (`FOLDER_COLOUR`). */
+  readonly colour: string;
+  /** Subfolders shown under the row (collapsed). */
+  readonly children?: readonly { readonly scope: LandingFolder; readonly count: number }[];
 }

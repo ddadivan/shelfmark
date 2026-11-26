@@ -1,111 +1,254 @@
 <!--
-  A picture of the app, not the app: one image with its name. The rows and the tabs still answer
-  a mouse click (they pick that frame of the cycle); they are no tab stops.
+  A picture of the app, not the app: the real libs/ui components laid out at app size (the window
+  of a 1400px screen, scaled down with a transform; on a phone the mobile shell at its own size).
+  The stage is inert and aria-hidden; the picture has one name.
 -->
 <div
   class="preview"
   role="img"
   data-ds-ignore
   [attr.aria-label]="'landing.preview.label' | transloco"
+  [class.preview--phone]="phone()"
   [class.preview--intro]="cycle.intro()"
+  [style.height.px]="height()"
+  (appElementWidth)="measured($event)"
 >
-  <div class="preview__side" aria-hidden="true">
-    <span class="preview__logo"
-      ><ui-icon class="preview__logo-mark" name="saved-link" [size]="16" />{{
-        'landing.header.brand' | transloco
-      }}</span
-    >
-    <span class="preview__add">{{ 'landing.preview.add' | transloco }}</span>
-    @for (row of libraryRows; track row.scope) {
-      <span
-        class="preview__row"
-        [class.preview__row--on]="row.scope === cycle.state().scope"
-        (click)="pickRow(row)"
-        >{{ rowKey(row.scope) | transloco
-        }}<b class="preview__count" [class.preview__count--strong]="row.strong">{{
-          row.count
-        }}</b></span
-      >
-    }
-    <span class="preview__heading">{{ 'landing.preview.folders' | transloco }}</span>
-    @for (item of folderRows; track item.row.scope) {
-      <span
-        class="preview__row"
-        [class.preview__row--on]="item.row.scope === cycle.state().scope"
-        (click)="pickRow(item.row)"
-        ><ui-icon
-          class="preview__folder"
-          name="folder-filled"
-          [size]="16"
-          [style.color]="item.colour"
-        />{{ rowKey(item.row.scope) | transloco
-        }}<b class="preview__count">{{ item.row.count }}</b></span
-      >
-    }
-  </div>
-  <div class="preview__main" aria-hidden="true">
-    <span class="preview__search"
-      ><ui-icon class="preview__search-icon" name="search" [size]="16" />{{
-        'landing.preview.search' | transloco
-      }}</span
-    >
-    <div class="preview__head">
-      <b class="preview__title">{{ titleKey() | transloco }}</b>
-      <span class="preview__views">
-        <span class="preview__view preview__view--on"><ui-icon name="masonry" [size]="16" /></span>
-        <span class="preview__view"><ui-icon name="cards" [size]="16" /></span>
-        <span class="preview__view"><ui-icon name="list" [size]="16" /></span>
-      </span>
-    </div>
-    <div class="preview__tabs" [class.preview__tabs--off]="cycle.state().scope !== ALL">
-      @for (item of TABS; track item.tab) {
-        <span
-          class="preview__tab"
-          [class.preview__tab--on]="cycle.state().scope === ALL && cycle.state().tab === item.tab"
-          (click)="pickTab(item.tab)"
-          >{{ 'landing.preview.tabs.' + item.tab | transloco }} {{ item.count }}</span
-        >
-      }
-    </div>
-    <div class="preview__grid" [class.preview__grid--fade]="cycle.fading()">
-      @for (item of cards(); track item.card.id) {
-        <div
-          class="preview__card"
-          [class.preview__card--hidden]="!item.shown"
-          [style.--landing-card-index]="item.index"
-          [style.view-transition-name]="cycle.named() ? 'landing-card-' + item.card.id : null"
-        >
-          <img
-            class="preview__image"
-            alt=""
-            priority
-            [class.preview__image--product]="item.card.product"
-            [ngSrc]="item.card.image.src"
-            [width]="item.card.image.width"
-            [height]="item.card.image.height"
+  <div
+    class="stage"
+    inert
+    aria-hidden="true"
+    [class.stage--phone]="phone()"
+    [style.--landing-scale]="scale()"
+  >
+    @if (!phone()) {
+      <div class="stage__side">
+        <div class="stage__brand">
+          <ui-logo class="stage__logo" />
+          <ui-avatar [name]="user" />
+        </div>
+        <ui-button class="stage__add" variant="primary" block iconLeft="add">{{
+          'shell.addLink' | transloco
+        }}</ui-button>
+        <div class="stage__scroll">
+          <ui-tree
+            [fixedNodes]="library()"
+            [activeId]="cycle.state().scope"
+            [ariaLabel]="'shell.sidebar.views' | transloco"
           />
-          <span class="preview__body">
-            <span class="preview__meta"
-              ><span>{{ folderKey(item.card.folder) | transloco }}</span
-              ><span>{{
-                'landing.preview.items.' + item.card.id + '.date' | transloco
-              }}</span></span
-            >
-            <span class="preview__name">{{
-              'landing.preview.items.' + item.card.id + '.title' | transloco
-            }}</span>
-            @if (item.card.note) {
-              <span class="preview__note">{{
-                'landing.preview.items.' + item.card.id + '.note' | transloco
-              }}</span>
-            }
-          </span>
+          <section class="stage__section">
+            <div class="stage__section-header">
+              <p class="stage__section-heading">{{ 'shell.sidebar.folders' | transloco }}</p>
+              <ui-button
+                class="stage__section-toggle"
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="chevron-down"
+                [ariaLabel]="'shell.sidebar.toggle.folders' | transloco"
+              />
+              <ui-button
+                class="stage__section-add"
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="add"
+                [ariaLabel]="'shell.sidebar.newFolder' | transloco"
+              />
+            </div>
+            <ui-tree
+              [nodes]="folders()"
+              [activeId]="cycle.state().scope"
+              [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
+            />
+          </section>
+          <section class="stage__section">
+            <div class="stage__section-header">
+              <p class="stage__section-heading">{{ 'tags.sidebar.heading' | transloco }}</p>
+              <ui-button
+                class="stage__section-toggle stage__section-toggle--folded"
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="chevron-down"
+                [ariaLabel]="'shell.sidebar.toggle.tags' | transloco"
+              />
+              <ui-button
+                class="stage__section-add"
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="add"
+                [ariaLabel]="'tags.sidebar.add' | transloco"
+              />
+            </div>
+          </section>
+        </div>
+        <div class="stage__footer">
+          <ui-tree [fixedNodes]="footerRows()" [ariaLabel]="'shell.sidebar.footer' | transloco" />
+          <ui-tree [fixedNodes]="trash()" [ariaLabel]="'trash.title' | transloco" />
+        </div>
+      </div>
+    }
+    <div class="stage__content">
+      @if (phone()) {
+        <div class="stage__top">
+          <ui-logo class="stage__logo" />
+          <ui-avatar [name]="user" />
+        </div>
+      } @else {
+        <div class="stage__header">
+          <ui-search-trigger
+            class="stage__search"
+            [label]="'search.placeholder' | transloco"
+            [shortcut]="shortcut"
+          />
+          <ui-ask-button [label]="'ai.ask.button' | transloco" />
         </div>
       }
+      <div class="stage__main">
+        <header class="stage__toolbar">
+          <p class="stage__title">{{ titleKey() | transloco }}</p>
+          <div class="stage__tools">
+            @if (phone()) {
+              <ui-button variant="ghost" size="sm" iconOnly iconLeft="filter" />
+              <ui-button variant="ghost" size="sm" iconOnly iconLeft="check" />
+              <ui-button variant="ghost" size="sm" iconOnly iconLeft="sort" />
+              <ui-segmented-control
+                iconOnly
+                [options]="viewOptions()"
+                value="masonry"
+                [ariaLabel]="'library.view.label' | transloco"
+              />
+              <ui-button variant="ghost" size="sm" iconOnly iconLeft="upload" />
+            } @else {
+              <div class="stage__actions">
+                <ui-button variant="ghost" size="sm" iconLeft="filter">{{
+                  'library.toolbar.filter' | transloco
+                }}</ui-button>
+                <ui-button variant="ghost" size="sm" iconLeft="check">{{
+                  'library.toolbar.select' | transloco
+                }}</ui-button>
+                <ui-button variant="ghost" size="sm" iconLeft="columns">{{
+                  'library.split.open' | transloco
+                }}</ui-button>
+                <ui-button variant="ghost" size="sm" iconLeft="add">{{
+                  'library.toolbar.saveView' | transloco
+                }}</ui-button>
+                <ui-button variant="ghost" size="sm" iconLeft="sort">{{
+                  'library.toolbar.sort' | transloco
+                }}</ui-button>
+              </div>
+              <ui-view-menu
+                [label]="'library.viewMenu.view' | transloco"
+                [heading]="'library.viewMenu.gridSize' | transloco"
+              />
+              <ui-segmented-control
+                iconOnly
+                [options]="viewOptions()"
+                value="masonry"
+                [ariaLabel]="'library.view.label' | transloco"
+              />
+              <ui-button variant="ghost" size="sm" iconLeft="upload">{{
+                'export.menu' | transloco
+              }}</ui-button>
+            }
+          </div>
+        </header>
+        <div class="stage__views" [class.stage__views--off]="!onAll()">
+          <ui-saved-views
+            [items]="views()"
+            [activeId]="viewActive()"
+            [ariaLabel]="'views.label' | transloco"
+            [addLabel]="phone() ? ('views.add' | transloco) : ''"
+            [layout]="phone() ? SAVED_VIEWS_LAYOUT.Scroll : SAVED_VIEWS_LAYOUT.Wrap"
+          />
+        </div>
+        <ul class="stage__grid" [class.stage__grid--fade]="cycle.fading()">
+          @for (item of cards(); track item.card.id) {
+            <li
+              class="stage__item"
+              [class.stage__item--hidden]="!item.shown"
+              [style.--landing-card-index]="item.index"
+              [style.view-transition-name]="cycle.named() ? 'landing-card-' + item.card.id : null"
+            >
+              <ui-card
+                [headingLevel]="3"
+                [media]="item.card.product ? CARD_MEDIA.Contain : CARD_MEDIA.Natural"
+                [imageRatio]="item.ratio"
+                [image]="item.card.image.src"
+                [favorited]="item.card.favorite"
+              >
+                <ui-button
+                  slot="favorite"
+                  variant="glass"
+                  iconOnly
+                  [iconLeft]="item.card.favorite ? 'star-filled' : 'star'"
+                  [ariaLabel]="
+                    'links.item.favorite'
+                      | transloco
+                        : {
+                            title: ('landing.preview.items.' + item.card.id + '.title' | transloco),
+                          }
+                  "
+                />
+                <span
+                  slot="meta"
+                  class="stage__folder"
+                  [uiFolderColour]="folderColour(item.card.folder)"
+                >
+                  <ui-icon class="stage__folder-icon" name="folder-filled" [size]="ICON_SIZE.Sm" />
+                  <span class="stage__folder-name">{{
+                    folderKey(item.card.folder) | transloco
+                  }}</span>
+                </span>
+                <span slot="date">{{
+                  'landing.preview.items.' + item.card.id + '.date' | transloco
+                }}</span>
+                <span slot="title">{{
+                  'landing.preview.items.' + item.card.id + '.title' | transloco
+                }}</span>
+                <span slot="source" class="stage__site">
+                  <ui-favicon [letter]="item.card.site.letter" [colour]="item.card.site.colour" />
+                  <span class="stage__host">{{ item.card.site.host }}</span>
+                </span>
+                <span slot="tags" class="stage__tags">
+                  @for (tag of item.card.tags; track tag) {
+                    <ui-chip [variant]="CHIP_VARIANT.Hashtag" truncate
+                      ><span aria-hidden="true">#</span>{{ tag }}</ui-chip
+                    >
+                  }
+                </span>
+                @if (item.card.note) {
+                  <span slot="note">{{
+                    'landing.preview.items.' + item.card.id + '.note' | transloco
+                  }}</span>
+                }
+              </ui-card>
+            </li>
+          }
+        </ul>
+      </div>
+      @if (phone()) {
+        <ui-tab-bar
+          class="stage__tabs"
+          [items]="tabs()"
+          active="library"
+          [fixed]="false"
+          [ariaLabel]="'shell.tabs.label' | transloco"
+          [addLabel]="'shell.addLink' | transloco"
+        />
+      }
+      <ui-toast
+        class="stage__toast"
+        [class.stage__toast--shown]="cycle.toast()"
+        [kind]="TOAST_KIND.Saved"
+        [title]="
+          'links.item.savedTo' | transloco: { folder: ('landing.folders.watchLater' | transloco) }
+        "
+        [detail]="'landing.preview.items.nihilism.title' | transloco"
+        [thumb]="IMAGES.nihilism.src"
+        [actionLabel]="'links.item.undo' | transloco"
+      />
     </div>
-    <span class="preview__toast" [class.preview__toast--shown]="cycle.toast()"
-      >{{ 'landing.preview.toast' | transloco
-      }}<b class="preview__undo">{{ 'landing.preview.undo' | transloco }}</b></span
-    >
   </div>
 </div>
