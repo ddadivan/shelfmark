@@ -303,32 +303,41 @@
   inset-inline-end: rem(8px);
   padding-inline-start: rem(8px);
 
-  // The hover fill is see-through, and the row under the box already has it: painting it on the
-  // row's own ground first makes the box exactly the row's colour, so it covers the columns without
-  // showing as a lighter block (author, Nov 25). `--ui-row-ground` is the surface the rows sit on.
-  background:
-    linear-gradient(var(--ui-row-hover, var(--fill)), var(--ui-row-hover, var(--fill))),
-    var(--ui-row-ground, var(--surface));
+  // The box takes exactly the row's colour, so it covers the columns without showing as a block
+  // (author, Nov 25; round 11): the row's own ground at rest (keyboard focus alone gives the row
+  // no fill), and the see-through hover fill painted on that ground while the row is hovered or
+  // its menu is open. `--ui-row-ground` is the surface the rows sit on.
+  background: var(--ui-row-ground, var(--surface));
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-:host(.ui-list-item--headline.ui-list-item--selected) .ui-list-item__trailing,
-:host(.ui-list-item--headline.ui-list-item--checked) .ui-list-item__trailing {
-  background: var(--pick);
 }
 
 :host(.ui-list-item--headline) {
   @include hover {
     .ui-list-item__trailing {
+      background:
+        linear-gradient(var(--ui-row-hover, var(--fill)), var(--ui-row-hover, var(--fill))),
+        var(--ui-row-ground, var(--surface));
       opacity: 1;
     }
   }
 }
 
-:host(.ui-list-item--headline:has(:focus-visible)) .ui-list-item__trailing,
-:host(.ui-list-item--headline.ui-list-item--pinned) .ui-list-item__trailing {
+:host(.ui-list-item--headline:has(:focus-visible)) .ui-list-item__trailing {
   opacity: 1;
+}
+
+:host(.ui-list-item--headline.ui-list-item--pinned) .ui-list-item__trailing {
+  background:
+    linear-gradient(var(--ui-row-hover, var(--fill)), var(--ui-row-hover, var(--fill))),
+    var(--ui-row-ground, var(--surface));
+  opacity: 1;
+}
+
+// A picked or checked row keeps its `pick` colour under the box (after the hover and pinned fills).
+:host(.ui-list-item--headline.ui-list-item--selected) .ui-list-item__trailing,
+:host(.ui-list-item--headline.ui-list-item--checked) .ui-list-item__trailing {
+  background: var(--pick);
 }
 
 @media (hover: none) {
