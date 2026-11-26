@@ -85,6 +85,11 @@ async function openAccountMenu(
   await fixture.whenStable();
 }
 
+/** A tab press paints the bar first, then navigates (`nextPaint`): wait that frame out. */
+function afterPaint(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)));
+}
+
 describe('AppShellComponent', () => {
   it('shows the user and signs out to the sign-in screen', async () => {
     const api: AuthApi = {
@@ -446,6 +451,7 @@ describe('AppShellComponent', () => {
         .spyOn(TestBed.inject(SearchDialogService), 'open')
         .mockImplementation(() => undefined);
       tab(root, 'Search')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       expect(open).toHaveBeenCalled();
     });
@@ -482,11 +488,13 @@ describe('AppShellComponent', () => {
 
       expect(tab(root, 'Today')?.getAttribute('href')).toBe('/today');
       tab(root, 'Today')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       expect(TestBed.inject(Router).url).toBe('/today');
 
       expect(tab(root, 'Tags')?.getAttribute('href')).toBe('/tags');
       tab(root, 'Tags')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       expect(TestBed.inject(Router).url).toBe('/tags');
     });
@@ -498,10 +506,12 @@ describe('AppShellComponent', () => {
       await harness.fixture.whenStable();
 
       tab(root, 'Library')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       expect(router.url).toBe('/library');
 
       tab(root, 'Library')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       expect(router.url).toBe('/recent');
 
@@ -509,8 +519,10 @@ describe('AppShellComponent', () => {
       await router.navigateByUrl('/today');
       await harness.fixture.whenStable();
       tab(root, 'Library')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       tab(root, 'Library')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       expect(router.url).toBe('/library');
     });
@@ -530,6 +542,7 @@ describe('AppShellComponent', () => {
         /-spark$/,
       );
       tab(root, 'Ask')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
       expect(TestBed.inject(Router).url).toBe('/ask');
       // The Ask start is a tab page; a running conversation pushes it and the tab bar hides.
@@ -557,6 +570,7 @@ describe('AppShellComponent', () => {
         .mockImplementation(() => undefined);
 
       tab(root, 'Search')?.click();
+      await afterPaint();
       await harness.fixture.whenStable();
 
       expect(open).toHaveBeenCalled();
