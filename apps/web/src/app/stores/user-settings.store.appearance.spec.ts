@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../core/storage/models/storage-key.const';
 import { LAYOUT_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
@@ -11,7 +12,6 @@ import {
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { of, Subject, throwError } from 'rxjs';
 import { SessionScope } from '../core/auth/session-scope.service';
-import { THEME_STORAGE_KEY } from '../core/theme/models/theme-storage-key.const';
 import { ThemeService } from '../core/theme/theme.service';
 import { ToastService } from '@shelfmark/ui';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
@@ -70,7 +70,7 @@ describe('UserSettingsStore appearance', () => {
   });
 
   it('keeps a theme this browser had while the account never stored one, and saves it once', async () => {
-    localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+    localStorage.setItem(STORAGE_KEY.Theme, THEME_PREFERENCE.Dark);
     const { store, theme, api } = setup();
     theme.init();
 
@@ -87,7 +87,7 @@ describe('UserSettingsStore appearance', () => {
   });
 
   it('saves the local theme silently: a failure keeps it and shows nothing', async () => {
-    localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+    localStorage.setItem(STORAGE_KEY.Theme, THEME_PREFERENCE.Dark);
     const { store, theme, api } = setup();
     theme.init();
     api.update.mockReturnValueOnce(throwError(() => new Error('down')));
@@ -115,7 +115,7 @@ describe('UserSettingsStore appearance', () => {
   });
 
   it('lets a saved account appearance win over the browser', async () => {
-    localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+    localStorage.setItem(STORAGE_KEY.Theme, THEME_PREFERENCE.Dark);
     const { store, theme, api } = setup({ theme: THEME_PREFERENCE.Light, appearanceSaved: true });
     theme.init();
 

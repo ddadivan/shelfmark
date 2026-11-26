@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import {
   APP_FONT,
@@ -8,7 +9,6 @@ import {
   type LayoutSettings,
 } from '@shelfmark/contracts';
 import { LAYOUT_ATTRIBUTE, LAYOUT_OFF } from '@shelfmark/ui';
-import { LAYOUT_STORAGE_KEY } from './models/layout-storage-key.const';
 import { ThemeService } from './theme.service';
 
 const ALL: LayoutSettings = {
@@ -81,7 +81,7 @@ describe('ThemeService text, layout and card options (#285)', () => {
 
   it('remembers the layout for the first paint, whole and without extra keys', () => {
     createService().setLayout({ ...ALL, extra: 'x' } as LayoutSettings);
-    expect(JSON.parse(localStorage.getItem(LAYOUT_STORAGE_KEY) ?? 'null')).toEqual(ALL);
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.Layout) ?? 'null')).toEqual(ALL);
 
     TestBed.resetTestingModule();
     const restored = createService();
@@ -99,7 +99,7 @@ describe('ThemeService text, layout and card options (#285)', () => {
       JSON.stringify({ textSize: 'xl' }),
       JSON.stringify({ ...ALL, font: 'comic' }),
     ]) {
-      localStorage.setItem(LAYOUT_STORAGE_KEY, stored);
+      localStorage.setItem(STORAGE_KEY.Layout, stored);
       TestBed.resetTestingModule();
       const service = createService();
       expect(service.layout()).toEqual(LAYOUT_SETTINGS_DEFAULT);
@@ -109,7 +109,7 @@ describe('ThemeService text, layout and card options (#285)', () => {
 
   it('reads a layout stored with the retired folderHighlight key without it (#440)', () => {
     localStorage.setItem(
-      LAYOUT_STORAGE_KEY,
+      STORAGE_KEY.Layout,
       JSON.stringify({ ...ALL, folderHighlight: 'background' }),
     );
     const service = createService();
@@ -120,8 +120,8 @@ describe('ThemeService text, layout and card options (#285)', () => {
 
   it('follows a layout changed in another tab', () => {
     const service = createService();
-    localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(ALL));
-    window.dispatchEvent(new StorageEvent('storage', { key: LAYOUT_STORAGE_KEY }));
+    localStorage.setItem(STORAGE_KEY.Layout, JSON.stringify(ALL));
+    window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY.Layout }));
     TestBed.tick();
     expect(service.layout()).toEqual(ALL);
   });

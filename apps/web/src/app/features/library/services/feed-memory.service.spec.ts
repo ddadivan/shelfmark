@@ -1,8 +1,8 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { LIBRARY_SORT, LIBRARY_VIEW } from '@shelfmark/contracts';
 import { FeedMemoryService } from './feed-memory.service';
 import { FEED_MEMORY_LIMIT } from '../models/feed-memory-limit.const';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 
 function create(): FeedMemoryService {
   TestBed.resetTestingModule();
@@ -10,8 +10,8 @@ function create(): FeedMemoryService {
 }
 
 describe('FeedMemoryService', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('knows nothing until a feed is switched', () => {
     const memory = create();
@@ -35,7 +35,7 @@ describe('FeedMemoryService', () => {
 
   it('drops broken entries and survives corrupt storage', () => {
     localStorage.setItem(
-      FEED_MEMORY_STORAGE_KEY,
+      STORAGE_KEY.FeedMemory,
       JSON.stringify({ a: { view: 'grid', sort: 'title' }, b: 'list', c: { view: 'list' } }),
     );
     const memory = create();
@@ -44,9 +44,9 @@ describe('FeedMemoryService', () => {
     expect(memory.view('b')).toBeUndefined();
     expect(memory.view('c')).toBe(LIBRARY_VIEW.List);
 
-    localStorage.setItem(FEED_MEMORY_STORAGE_KEY, '{nope');
+    localStorage.setItem(STORAGE_KEY.FeedMemory, '{nope');
     expect(create().view('c')).toBeUndefined();
-    localStorage.setItem(FEED_MEMORY_STORAGE_KEY, '[1]');
+    localStorage.setItem(STORAGE_KEY.FeedMemory, '[1]');
     expect(create().view('c')).toBeUndefined();
   });
 
@@ -90,18 +90,18 @@ describe('FeedMemoryService', () => {
     });
 
     it.each([0, 7, 2.5, '3', null, -1])('drops the invalid grid step %s', (grid) => {
-      localStorage.setItem(FEED_MEMORY_STORAGE_KEY, JSON.stringify({ a: { grid } }));
+      localStorage.setItem(STORAGE_KEY.FeedMemory, JSON.stringify({ a: { grid } }));
       expect(create().grid('a')).toBeUndefined();
     });
 
     it.each([1, 6])('keeps the grid step %s at the edge of the range', (grid) => {
-      localStorage.setItem(FEED_MEMORY_STORAGE_KEY, JSON.stringify({ a: { grid } }));
+      localStorage.setItem(STORAGE_KEY.FeedMemory, JSON.stringify({ a: { grid } }));
       expect(create().grid('a')).toBe(grid);
     });
 
     it('keeps only known field names with boolean values', () => {
       localStorage.setItem(
-        FEED_MEMORY_STORAGE_KEY,
+        STORAGE_KEY.FeedMemory,
         JSON.stringify({
           a: { fields: { note: false, tags: 'no', folder: 1, bogus: true, date: true } },
         }),
@@ -112,14 +112,14 @@ describe('FeedMemoryService', () => {
     it.each([[[true]], ['note'], [{ bogus: true }], [{}], [null]])(
       'drops the fields value %j when none of it is usable',
       (fields) => {
-        localStorage.setItem(FEED_MEMORY_STORAGE_KEY, JSON.stringify({ a: { fields } }));
+        localStorage.setItem(STORAGE_KEY.FeedMemory, JSON.stringify({ a: { fields } }));
         expect(create().fields('a')).toBeUndefined();
       },
     );
 
     it('drops a whole entry when nothing in it is valid', () => {
       localStorage.setItem(
-        FEED_MEMORY_STORAGE_KEY,
+        STORAGE_KEY.FeedMemory,
         JSON.stringify({ a: { grid: 99, fields: { bogus: true }, view: 'grid' }, b: null }),
       );
       const memory = create();

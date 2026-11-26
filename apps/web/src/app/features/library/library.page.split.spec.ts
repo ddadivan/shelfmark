@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -18,7 +19,6 @@ import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import type { LinksScope } from '../links/models/links-scope.type';
 import { LibrarySelectionService } from './services/library-selection.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import LibraryPage from './library.page';
 
 const A = '00000000-0000-4000-8000-0000000000a1';
@@ -118,8 +118,8 @@ async function sideBySideButtons(fixture: ComponentFixture<LibraryPage>) {
 }
 
 describe('LibraryPage side by side', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('has one feed and a "Side by side" toolbar button without ?split, from 80em', async () => {
     const { element, fixture } = await setup();

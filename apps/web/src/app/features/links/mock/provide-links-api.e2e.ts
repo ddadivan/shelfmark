@@ -1,8 +1,9 @@
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { DOCUMENT } from '@angular/common';
 import { inject, type Provider } from '@angular/core';
 import { MockExportApi } from '../../export/mock/mock-export.api';
 import { EXPORT_API } from '../../export/models/export-api.const';
-import { REAL_AUTH_API_STORAGE_KEY } from '../../../core/auth/models/real-auth-api-storage-key.const';
 import { HttpUserSettingsApi } from '../../settings/http/http-user-settings.api';
 import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
 import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
@@ -93,8 +94,7 @@ import { TabSyncService } from '../../../core/sync/tab-sync.service';
 
 /** True when `sm-real-auth-api` is set in `localStorage` (the same switch as `provide-auth-api.dev.ts`). */
 function useRealApi(): boolean {
-  const storage = inject(DOCUMENT).defaultView?.localStorage;
-  return Boolean(storage?.getItem(REAL_AUTH_API_STORAGE_KEY));
+  return Boolean(inject(SafeStorage).getString(STORAGE_KEY.RealAuthApi));
 }
 
 /**

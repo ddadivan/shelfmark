@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { type NavigationExtras, Router } from '@angular/router';
@@ -7,7 +8,6 @@ import type { LinksScope } from '../../links/models/links-scope.type';
 import { CARD_FIELD } from '../models/card-field.const';
 import { GRID_COLUMNS } from '../models/grid-columns.const';
 import { GRID_STEP_DEFAULT } from '../models/grid-step-default.const';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryFilterService } from './library-filter.service';
 import { provideLibraryPage } from './provide-library-page';
 
@@ -32,8 +32,8 @@ function setup() {
 }
 
 describe('LibraryFilterService', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('builds the filter from the scope and the query', () => {
     const { service, scope, tag, q, kind, sort } = setup();

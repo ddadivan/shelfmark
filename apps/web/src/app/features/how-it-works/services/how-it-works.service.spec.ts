@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { AuthUser } from '@shelfmark/contracts';
@@ -5,7 +6,6 @@ import { DialogService } from '@shelfmark/ui';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { HowItWorksService } from './how-it-works.service';
 import { HowItWorksDialogComponent } from '../components/how-it-works-dialog/how-it-works-dialog.component';
-import { HOW_IT_WORKS_STORAGE_PREFIX } from '../models/how-it-works-card.const';
 
 const USER = { id: 'u1', isDemo: false } as AuthUser;
 const DAY = 86_400_000;
@@ -21,7 +21,7 @@ function setup(user: AuthUser | null = USER) {
   return { service: TestBed.inject(HowItWorksService), open };
 }
 
-const key = HOW_IT_WORKS_STORAGE_PREFIX + USER.id;
+const key = STORAGE_KEY.HowItWorksPrefix + USER.id;
 
 describe('HowItWorksService', () => {
   afterEach(() => localStorage.clear());
@@ -65,7 +65,7 @@ describe('HowItWorksService', () => {
   it('shows the card to a demo visitor past two weeks, until the video was opened or hidden', async () => {
     const demo = { ...USER, id: 'demo-1', isDemo: true } as AuthUser;
     localStorage.setItem(
-      HOW_IT_WORKS_STORAGE_PREFIX + demo.id,
+      STORAGE_KEY.HowItWorksPrefix + demo.id,
       JSON.stringify({ firstSeen: '2020-01-01T00:00:00.000Z', done: false }),
     );
     const first = setup(demo);

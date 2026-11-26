@@ -3,12 +3,12 @@
 // src/_boot-skeleton.scss) and, for a fixed light or dark preference, which theme it wears. The
 // app (ThemeService, AuthStore) takes over and removes the skeleton once a page is rendered.
 (function () {
-  const HINT_KEY = 'sm-session-hint'; // SESSION_HINT_STORAGE_KEY
+  const HINT_KEY = 'sm-session-hint'; // STORAGE_KEY.SessionHint
   const DEMO_HINT = 'demo'; // SESSION_HINT_KIND.Demo: the hint of a demo session (#440)
-  const THEME_KEY = 'sm-theme'; // THEME_STORAGE_KEY
+  const THEME_KEY = 'sm-theme'; // STORAGE_KEY.Theme
   const MAX_MS = 15000; // never leave an overlay over a page that failed to start
   // The library's extension banner (#455, #490), held in the skeleton when the app will show it.
-  const EXTENSION_DISMISSED_KEY = 'sm-extension-banner-dismissed'; // EXTENSION_BANNER_DISMISSED_STORAGE_KEY
+  const EXTENSION_DISMISSED_KEY = 'sm-extension-banner-dismissed'; // STORAGE_KEY.ExtensionBannerDismissed
   const EXTENSION_BRANDS = ['Google Chrome', 'Microsoft Edge', 'Brave', 'Chromium']; // EXTENSION_BROWSER_BRAND
   const OTHER_BRANDS = ['Opera', 'Opera GX', 'Samsung Internet']; // OTHER_CHROMIUM_BRAND
   const DESKTOP_QUERY = '(width >= 64em)'; // ViewportService.desktop

@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { ElementRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
@@ -11,7 +12,6 @@ import type { LinksApi } from '../../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { BulkLinkActionsService } from '../../links/services/bulk-link-actions.service';
 import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryBulkService } from './library-bulk.service';
 import { LibraryFilterService } from './library-filter.service';
 import { LibrarySelectionService } from './library-selection.service';
@@ -81,8 +81,8 @@ async function setup(deleted: boolean, rightTarget: string | null | undefined = 
 }
 
 describe('LibraryBulkService', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('offers move, tags, favorite, copy and delete', async () => {
     const { bulk } = await setup(true);

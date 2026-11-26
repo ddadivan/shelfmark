@@ -1,5 +1,6 @@
-import { Service, signal } from '@angular/core';
-import { SIDEBAR_COLLAPSED_STORAGE_KEY } from '../models/sidebar-collapsed-storage-key.const';
+import { inject, Service, signal } from '@angular/core';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { SIDEBAR_SECTION } from '../models/sidebar-section.const';
 import type { SidebarSection } from '../models/sidebar-section.type';
 
@@ -12,17 +13,13 @@ function isSection(value: unknown): value is SidebarSection {
 /** Until the person folds or opens a section, Tags starts folded (Shelf reference sidebar). */
 const DEFAULT_COLLAPSED: readonly SidebarSection[] = [SIDEBAR_SECTION.Tags];
 
-function readCollapsed(): ReadonlySet<SidebarSection> {
-  try {
-    const stored = localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
-    if (stored === null) {
-      return new Set(DEFAULT_COLLAPSED);
-    }
-    const value: unknown = JSON.parse(stored);
-    return new Set(Array.isArray(value) ? value.filter(isSection) : []);
-  } catch {
+function readCollapsed(storage: SafeStorage): ReadonlySet<SidebarSection> {
+  // Not stored, garbage or blocked: the default. A stored non-list means "all open".
+  const stored = storage.getJsonValue(STORAGE_KEY.SidebarCollapsed);
+  if (stored === undefined) {
     return new Set(DEFAULT_COLLAPSED);
   }
+  return new Set(Array.isArray(stored) ? stored.filter(isSection) : []);
 }
 
 /**
@@ -33,7 +30,8 @@ function readCollapsed(): ReadonlySet<SidebarSection> {
  */
 @Service()
 export class SidebarSections {
-  private readonly folded = signal(readCollapsed());
+  private readonly storage = inject(SafeStorage);
+  private readonly folded = signal(readCollapsed(this.storage));
 
   collapsed(section: SidebarSection): boolean {
     return this.folded().has(section);
@@ -50,10 +48,7 @@ export class SidebarSections {
       next.delete(section);
     }
     this.folded.set(next);
-    try {
-      localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify([...next]));
-    } catch {
-      // Storage blocked: the sections stay as they are for this page only.
-    }
+    // Storage blocked: the sections stay as they are for this page only.
+    this.storage.setJson(STORAGE_KEY.SidebarCollapsed, [...next]);
   }
 }

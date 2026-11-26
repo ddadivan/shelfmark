@@ -1,7 +1,7 @@
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { EXTENSION_BANNER_DISMISSED_STORAGE_KEY } from '../auth/models/extension-banner-dismissed-storage-key.const';
-import { USER_STORAGE_KEYS } from '../auth/models/user-storage-keys.const';
+import { USER_STORAGE_KEYS } from '../storage/models/user-storage-keys.const';
 import { SessionScope } from '../auth/session-scope.service';
 import { BrowserExtensionService } from './browser-extension.service';
 import { ExtensionBannerService } from './extension-banner.service';
@@ -37,11 +37,11 @@ describe('ExtensionBannerService', () => {
 
     expect(banner.bannerShown()).toBe(false);
     expect(banner.entryShown()).toBe(true);
-    expect(localStorage.getItem(EXTENSION_BANNER_DISMISSED_STORAGE_KEY)).toBe('1');
+    expect(localStorage.getItem(STORAGE_KEY.ExtensionBannerDismissed)).toBe('1');
   });
 
   it('starts closed when this device closed it before', () => {
-    localStorage.setItem(EXTENSION_BANNER_DISMISSED_STORAGE_KEY, '1');
+    localStorage.setItem(STORAGE_KEY.ExtensionBannerDismissed, '1');
     const { banner } = setup();
 
     expect(banner.bannerShown()).toBe(false);
@@ -62,8 +62,8 @@ describe('ExtensionBannerService', () => {
 
     TestBed.inject(SessionScope).end();
 
-    expect(USER_STORAGE_KEYS).toContain(EXTENSION_BANNER_DISMISSED_STORAGE_KEY);
-    expect(localStorage.getItem(EXTENSION_BANNER_DISMISSED_STORAGE_KEY)).toBeNull();
+    expect(USER_STORAGE_KEYS).toContain(STORAGE_KEY.ExtensionBannerDismissed);
+    expect(localStorage.getItem(STORAGE_KEY.ExtensionBannerDismissed)).toBeNull();
     expect(banner.bannerShown()).toBe(true);
   });
 });

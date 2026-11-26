@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { ElementRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
@@ -8,7 +9,6 @@ import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco
 import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksApi } from '../../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryFilterService } from './library-filter.service';
 import { LibrarySelectionService } from './library-selection.service';
 import { provideLibraryPage } from './provide-library-page';
@@ -49,8 +49,8 @@ async function setup() {
 }
 
 describe('LibrarySelectionService', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('starts without a selection', async () => {
     const { selection } = await setup();

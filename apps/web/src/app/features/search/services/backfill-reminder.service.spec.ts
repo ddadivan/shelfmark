@@ -1,8 +1,8 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { AI_BACKFILL_STATE } from '@shelfmark/contracts';
 import { of } from 'rxjs';
 import { aiSettingsResponse, fakeAiApi } from '../../../../testing/fake-ai-api';
-import { BACKFILL_REMINDER_DISMISSED_STORAGE_KEY } from '../../../core/auth/models/backfill-reminder-dismissed-storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { AI_API } from '../../ai/models/ai-api.const';
@@ -31,7 +31,7 @@ async function setup() {
 describe('BackfillReminderService', () => {
   afterEach(() => {
     vi.useRealTimers();
-    localStorage.removeItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY.BackfillReminderDismissed);
   });
 
   it('names the links on offer and confirms a start for a moment', async () => {
@@ -51,9 +51,9 @@ describe('BackfillReminderService', () => {
     const { reminder } = await setup();
     reminder.dismiss();
     expect(reminder.shown()).toBe(false);
-    expect(localStorage.getItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY)).toBe('1');
+    expect(localStorage.getItem(STORAGE_KEY.BackfillReminderDismissed)).toBe('1');
     TestBed.inject(SessionScope).end();
-    expect(localStorage.getItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.BackfillReminderDismissed)).toBeNull();
     // The next account starts with the reminder back (once its settings load).
     await TestBed.inject(AiSettingsStore).load();
     expect(reminder.count()).toBe(7);

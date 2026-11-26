@@ -3,13 +3,14 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { NOTIFICATION_PERMISSION } from '../models/notification-permission.const';
 import type { NotificationPermissionState } from '../models/notification-permission.type';
-import { NOTIFICATION_STORAGE_KEY } from '../models/notification-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { deviceParts, needsHomeScreen } from '../utils/device-name';
 import { PushSubscriptionService } from './push-subscription.service';
 
 /**
  * Notifications on this device (Shelf 05-settings "On this device", 12-notify): the browser's
- * permission, the device switch (a device preference: `NOTIFICATION_STORAGE_KEY.Device`), the
+ * permission, the device switch (a device preference: `STORAGE_KEY.NotificationsDevice`), the
  * browser's own prompt (only from a user's press, never on its own) and a test notification.
  * Turning on also subscribes this browser to Web Push (`PushSubscriptionService`, in the
  * background) so reminders arrive while Shelfmark is closed; turning off removes the device.
@@ -17,6 +18,7 @@ import { PushSubscriptionService } from './push-subscription.service';
 @Service()
 export class DeviceNotificationsService {
   private readonly window = inject(DOCUMENT).defaultView;
+  private readonly storage = inject(SafeStorage);
   private readonly transloco = inject(TranslocoService);
   private readonly push = inject(PushSubscriptionService);
 
@@ -115,23 +117,16 @@ export class DeviceNotificationsService {
   }
 
   private readOff(): boolean {
-    try {
-      return this.window?.localStorage.getItem(NOTIFICATION_STORAGE_KEY.Device) === 'off';
-    } catch {
-      return false;
-    }
+    return this.storage.getString(STORAGE_KEY.NotificationsDevice) === 'off';
   }
 
   private writeOff(off: boolean): void {
     this.switchedOff.set(off);
-    try {
-      if (off) {
-        this.window?.localStorage.setItem(NOTIFICATION_STORAGE_KEY.Device, 'off');
-      } else {
-        this.window?.localStorage.removeItem(NOTIFICATION_STORAGE_KEY.Device);
-      }
-    } catch {
-      // Storage blocked: the switch lasts for this load.
+    // Storage blocked: the switch lasts for this load.
+    if (off) {
+      this.storage.set(STORAGE_KEY.NotificationsDevice, 'off');
+    } else {
+      this.storage.remove(STORAGE_KEY.NotificationsDevice);
     }
   }
 

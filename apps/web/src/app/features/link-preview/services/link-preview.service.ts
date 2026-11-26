@@ -20,6 +20,8 @@ import { LinkActionsService } from '../../links/services/link-actions.service';
 import { safeHref } from '../../links/utils/link-view';
 import { PREVIEW_BODY_KIND } from '../models/preview-body-kind.const';
 import type { PreviewBodyKind } from '../models/preview-body-kind.type';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { PREVIEW_LIST_WIDTH } from '../models/preview-list-width.const';
 import { clampListWidth } from '../utils/clamp-list-width';
 import { neighbourId } from '../utils/neighbour-id';
@@ -46,6 +48,7 @@ export class LinkPreviewService {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
+  private readonly storage = inject(SafeStorage);
   private readonly full = inject(PreviewFullScreen);
 
   readonly currentId = this.route.currentId;
@@ -260,11 +263,8 @@ export class LinkPreviewService {
   setListWidth(width: number): void {
     const next = Math.min(clampListWidth(width), this.listMax());
     this.listWidth.set(next);
-    try {
-      this.doc.defaultView?.localStorage.setItem(PREVIEW_LIST_WIDTH.StorageKey, String(next));
-    } catch {
-      // Storage blocked: the width lasts for this page.
-    }
+    // Storage blocked: the width lasts for this page.
+    this.storage.set(STORAGE_KEY.PreviewWidth, String(next));
   }
 
   resetListWidth(): void {
@@ -272,14 +272,9 @@ export class LinkPreviewService {
   }
 
   private readWidth(): number {
-    try {
-      return clampListWidth(
-        this.doc.defaultView?.localStorage.getItem(PREVIEW_LIST_WIDTH.StorageKey) ??
-          PREVIEW_LIST_WIDTH.Default,
-      );
-    } catch {
-      return PREVIEW_LIST_WIDTH.Default;
-    }
+    return clampListWidth(
+      this.storage.getString(STORAGE_KEY.PreviewWidth) ?? PREVIEW_LIST_WIDTH.Default,
+    );
   }
 
   private follow(id: string | null, link: LinkResponse | null): void {

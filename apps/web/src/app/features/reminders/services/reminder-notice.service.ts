@@ -1,10 +1,10 @@
-import { DOCUMENT } from '@angular/common';
 import { DestroyRef, inject, Injector, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { REMINDERS_SEEN_STORAGE_KEY } from '../../../core/auth/models/reminders-seen-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../models/app-path.const';
@@ -19,7 +19,7 @@ import { REMINDER_NOTICE } from '../models/reminder-notice.const';
  * the moment it is due, so a tab that is open does not wait for the next visit. One link: "<title>
  * is due" with its site, Open (opens the link) and Snooze (an hour); several: how many, Show opens
  * the Reminders page. The latest due time announced is kept in `localStorage`
- * (`REMINDERS_SEEN_STORAGE_KEY`, a per-user key cleared at sign-out).
+ * (`STORAGE_KEY.RemindersSeen`, a per-user key cleared at sign-out).
  */
 @Service()
 export class ReminderNoticeService {
@@ -28,7 +28,7 @@ export class ReminderNoticeService {
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly injector = inject(Injector);
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
+  private readonly storage = inject(SafeStorage);
   private checked = false;
   private timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -150,18 +150,11 @@ export class ReminderNoticeService {
   }
 
   private readSeen(): string | null {
-    try {
-      return this.storage?.getItem(REMINDERS_SEEN_STORAGE_KEY) ?? null;
-    } catch {
-      return null;
-    }
+    return this.storage.getString(STORAGE_KEY.RemindersSeen);
   }
 
   private writeSeen(value: string): void {
-    try {
-      this.storage?.setItem(REMINDERS_SEEN_STORAGE_KEY, value);
-    } catch {
-      // Blocked storage: the note may show again on the next open, which is harmless.
-    }
+    // Blocked storage: the note may show again on the next open, which is harmless.
+    this.storage.set(STORAGE_KEY.RemindersSeen, value);
   }
 }

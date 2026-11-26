@@ -1,6 +1,6 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
-import { RECENT_SEARCHES_STORAGE_KEY } from '../../../core/auth/models/recent-searches-storage-key.const';
-import { USER_STORAGE_KEYS } from '../../../core/auth/models/user-storage-keys.const';
+import { USER_STORAGE_KEYS } from '../../../core/storage/models/user-storage-keys.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { RecentSearchesService } from './recent-searches.service';
 
@@ -15,7 +15,7 @@ describe('RecentSearchesService', () => {
     }
 
     expect(service.items()).toEqual(['TWO', 'six', 'five', 'four', 'three']);
-    expect(JSON.parse(localStorage.getItem(RECENT_SEARCHES_STORAGE_KEY) ?? '[]')).toEqual(
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.RecentSearches) ?? '[]')).toEqual(
       service.items(),
     );
   });
@@ -30,13 +30,13 @@ describe('RecentSearchesService', () => {
   });
 
   it('reads what this device stored and drops anything that is not text', () => {
-    localStorage.setItem(RECENT_SEARCHES_STORAGE_KEY, JSON.stringify(['shoes', 3, null, ' ']));
+    localStorage.setItem(STORAGE_KEY.RecentSearches, JSON.stringify(['shoes', 3, null, ' ']));
 
     expect(TestBed.inject(RecentSearchesService).items()).toEqual(['shoes']);
   });
 
   it('starts empty with broken storage', () => {
-    localStorage.setItem(RECENT_SEARCHES_STORAGE_KEY, '{oops');
+    localStorage.setItem(STORAGE_KEY.RecentSearches, '{oops');
 
     expect(TestBed.inject(RecentSearchesService).items()).toEqual([]);
   });
@@ -48,7 +48,7 @@ describe('RecentSearchesService', () => {
     TestBed.inject(SessionScope).end();
 
     expect(service.items()).toEqual([]);
-    expect(localStorage.getItem(RECENT_SEARCHES_STORAGE_KEY)).toBeNull();
-    expect(USER_STORAGE_KEYS).toContain(RECENT_SEARCHES_STORAGE_KEY);
+    expect(localStorage.getItem(STORAGE_KEY.RecentSearches)).toBeNull();
+    expect(USER_STORAGE_KEYS).toContain(STORAGE_KEY.RecentSearches);
   });
 });

@@ -1,6 +1,6 @@
-import { DOCUMENT } from '@angular/common';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { inject, type Provider } from '@angular/core';
-import { REAL_AUTH_API_STORAGE_KEY } from '../../../core/auth/models/real-auth-api-storage-key.const';
 import { HttpAccountDeletionApi } from '../http/http-account-deletion.api';
 import { ACCOUNT_DELETION_API } from '../models/account-deletion-api.const';
 import type { AccountDeletionApi } from '../models/account-deletion-api.interface';
@@ -14,8 +14,7 @@ export function provideAccountDeletionApi(): Provider {
   return {
     provide: ACCOUNT_DELETION_API,
     useFactory: (): AccountDeletionApi => {
-      const storage = inject(DOCUMENT).defaultView?.localStorage;
-      return storage?.getItem(REAL_AUTH_API_STORAGE_KEY)
+      return inject(SafeStorage).getString(STORAGE_KEY.RealAuthApi)
         ? inject(HttpAccountDeletionApi)
         : inject(MockAccountDeletionApi);
     },

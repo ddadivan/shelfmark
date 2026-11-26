@@ -1,8 +1,8 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { SwPush } from '@angular/service-worker';
 import { NOTIFICATION_DEFAULTS, type NotificationSettingsResponse } from '@shelfmark/contracts';
 import { of, throwError } from 'rxjs';
-import { PUSH_DEVICE_STORAGE_KEY } from '../../../core/auth/models/push-device-storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { NOTIFICATIONS_API } from '../models/notifications-api.const';
 import { NotificationSettingsStore } from './notification-settings.store';
@@ -59,7 +59,7 @@ function setup({
 }
 
 describe('PushSubscriptionService', () => {
-  afterEach(() => localStorage.removeItem(PUSH_DEVICE_STORAGE_KEY));
+  afterEach(() => localStorage.removeItem(STORAGE_KEY.NotificationsPushDevice));
 
   it('subscribes with the server key, stores the device and its id', async () => {
     const { push, store, swPush, api } = setup();

@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
 import { AI_BACKFILL_STATE, type AiBackfillStatus, type LinkResponse } from '@shelfmark/contracts';
@@ -7,8 +8,7 @@ import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
-import { BACKFILL_REMINDER_DISMISSED_STORAGE_KEY } from '../../../../core/auth/models/backfill-reminder-dismissed-storage-key.const';
-import { USER_STORAGE_KEYS } from '../../../../core/auth/models/user-storage-keys.const';
+import { USER_STORAGE_KEYS } from '../../../../core/storage/models/user-storage-keys.const';
 import { AI_API } from '../../../ai/models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../../../ai/models/ai-settings-default.const';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
@@ -94,10 +94,10 @@ async function setup(options: Options = {}) {
 const REMINDER = 'AI hasn’t read 48 older links yet — search finds them less well.';
 
 describe('SearchResultsComponent: the older-links reminder (hotfix 2.2.1)', () => {
-  beforeEach(() => localStorage.removeItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.BackfillReminderDismissed));
   afterEach(() => {
     vi.useRealTimers();
-    localStorage.removeItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY.BackfillReminderDismissed);
     document.querySelectorAll('.cdk-overlay-container').forEach((node) => node.replaceChildren());
     document.querySelectorAll('app-search-results').forEach((node) => node.remove());
   });
@@ -136,8 +136,8 @@ describe('SearchResultsComponent: the older-links reminder (hotfix 2.2.1)', () =
     await vi.waitFor(async () => expect(await list.getNoteText()).toContain(REMINDER), WAIT);
     await (await root.getHarness(UiButtonHarness.with({ label: 'Hide' }))).click();
     expect(await list.getNoteText()).toBe('');
-    expect(localStorage.getItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY)).toBe('1');
-    expect(USER_STORAGE_KEYS).toContain(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY);
+    expect(localStorage.getItem(STORAGE_KEY.BackfillReminderDismissed)).toBe('1');
+    expect(USER_STORAGE_KEYS).toContain(STORAGE_KEY.BackfillReminderDismissed);
   });
 
   it('stays away when hidden before, search by meaning or AI is off, or a run goes or is done', async () => {
@@ -155,7 +155,7 @@ describe('SearchResultsComponent: the older-links reminder (hotfix 2.2.1)', () =
       expect(await list.getNoteText()).not.toContain('older links');
     }
     TestBed.resetTestingModule();
-    localStorage.setItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY, '1');
+    localStorage.setItem(STORAGE_KEY.BackfillReminderDismissed, '1');
     const { list } = await setup();
     await vi.waitFor(async () => expect(await list.getOptions()).not.toHaveLength(0), WAIT);
     expect(await list.getNoteText()).not.toContain('older links');

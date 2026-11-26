@@ -1,4 +1,4 @@
-import { EMOJI_RECENT_STORAGE_KEY } from './models/emoji-recent-storage-key.const';
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
@@ -12,7 +12,6 @@ import { AppTranslocoLoader } from '../i18n/app-transloco.loader';
 import { translocoConfig } from '../i18n/transloco.config';
 import { DemoSignInError } from './demo-sign-in-error';
 import { DEMO_ERROR } from './models/demo-error.const';
-import { SESSION_HINT_STORAGE_KEY } from './models/session-hint-storage-key.const';
 import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import { AUTH_API } from './auth-api.token';
 import { SessionScope } from './session-scope.service';
@@ -49,7 +48,7 @@ function setup(overrides: Partial<AuthApi> = {}) {
 }
 
 describe('AuthStore', () => {
-  afterEach(() => localStorage.removeItem(SESSION_HINT_STORAGE_KEY));
+  afterEach(() => localStorage.removeItem(STORAGE_KEY.SessionHint));
 
   it('remembers a demo session as a demo, for the banner of the next skeleton (#440)', async () => {
     const { store } = setup({
@@ -62,17 +61,17 @@ describe('AuthStore', () => {
       ),
     });
     await store.ensureLoaded();
-    expect(localStorage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('demo');
+    expect(localStorage.getItem(STORAGE_KEY.SessionHint)).toBe('demo');
   });
 
   it('remembers an own session as a plain session, and a guest as nothing (#440)', async () => {
     const own = setup({ getSession: vi.fn(() => Promise.resolve(USER)) });
     await own.store.ensureLoaded();
-    expect(localStorage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('1');
+    expect(localStorage.getItem(STORAGE_KEY.SessionHint)).toBe('1');
     TestBed.resetTestingModule();
     const guest = setup();
     await guest.store.ensureLoaded();
-    expect(localStorage.getItem(SESSION_HINT_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.SessionHint)).toBeNull();
   });
 
   it('forgets the user and the cached library when the session expires', async () => {
@@ -107,9 +106,9 @@ describe('AuthStore', () => {
   it("forgets the emoji picker's Recent on sign-out (#363)", async () => {
     const { store } = setup();
     await store.ensureLoaded();
-    localStorage.setItem(EMOJI_RECENT_STORAGE_KEY, '["🍕"]');
+    localStorage.setItem(STORAGE_KEY.EmojiRecent, '["🍕"]');
     expect(await store.signOut()).toBe(true);
-    expect(localStorage.getItem(EMOJI_RECENT_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.EmojiRecent)).toBeNull();
   });
 
   it('is a guest until the session says otherwise', () => {

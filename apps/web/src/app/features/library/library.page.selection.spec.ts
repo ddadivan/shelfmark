@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../core/storage/models/storage-key.const';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
@@ -9,7 +10,6 @@ import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import { LinkSelectionStore } from '../../stores/link-selection.store';
-import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
 
@@ -78,7 +78,7 @@ function key(init: KeyboardEventInit, target: EventTarget = document.body): Keyb
 }
 
 describe('LibraryPage selection', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
   afterEach(() => document.body.replaceChildren());
 
   it('shows no header or bar until a link is picked', async () => {

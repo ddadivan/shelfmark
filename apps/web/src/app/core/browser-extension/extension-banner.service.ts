@@ -1,6 +1,6 @@
-import { DOCUMENT } from '@angular/common';
 import { Service, computed, inject, signal } from '@angular/core';
-import { EXTENSION_BANNER_DISMISSED_STORAGE_KEY } from '../auth/models/extension-banner-dismissed-storage-key.const';
+import { SafeStorage } from '../storage/safe-storage.service';
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { SessionScope } from '../auth/session-scope.service';
 import { BrowserExtensionService } from './browser-extension.service';
 
@@ -15,7 +15,7 @@ const DISMISSED = '1';
 @Service()
 export class ExtensionBannerService {
   private readonly extension = inject(BrowserExtensionService);
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
+  private readonly storage = inject(SafeStorage);
   private readonly dismissed = signal(this.readDismissed());
 
   readonly storeUrl = this.extension.storeUrl;
@@ -28,18 +28,11 @@ export class ExtensionBannerService {
 
   dismiss(): void {
     this.dismissed.set(true);
-    try {
-      this.storage?.setItem(EXTENSION_BANNER_DISMISSED_STORAGE_KEY, DISMISSED);
-    } catch {
-      // Blocked storage: closed for this visit only.
-    }
+    // Blocked storage: closed for this visit only.
+    this.storage.set(STORAGE_KEY.ExtensionBannerDismissed, DISMISSED);
   }
 
   private readDismissed(): boolean {
-    try {
-      return this.storage?.getItem(EXTENSION_BANNER_DISMISSED_STORAGE_KEY) === DISMISSED;
-    } catch {
-      return false;
-    }
+    return this.storage.getString(STORAGE_KEY.ExtensionBannerDismissed) === DISMISSED;
   }
 }

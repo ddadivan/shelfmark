@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { LAYOUT_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
 import {
@@ -12,8 +13,6 @@ import {
   contrastRatio,
   nearestAccessibleAccent,
 } from '@shelfmark/ui';
-import { CUSTOM_THEME_STORAGE_KEY } from './models/custom-theme-storage-key.const';
-import { MOTION_STORAGE_KEY } from './models/motion-storage-key.const';
 import {
   CUSTOM_THEME_ACCENT,
   CUSTOM_THEME_BACKGROUND,
@@ -24,7 +23,6 @@ import {
   THEME_PREFERENCE,
   type CustomTheme,
 } from '@shelfmark/contracts';
-import { THEME_STORAGE_KEY } from './models/theme-storage-key.const';
 import { ThemeService } from './theme.service';
 
 type ChangeListener = (event: MediaQueryListEvent) => void;
@@ -101,18 +99,18 @@ describe('ThemeService', () => {
     const service = createService();
     service.setPreference(THEME_PREFERENCE.Dark);
 
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe(THEME.Dark);
+    expect(localStorage.getItem(STORAGE_KEY.Theme)).toBe(THEME.Dark);
   });
 
   it('keeps the persisted storage key stable', () => {
     // Renaming it would drop every saved user preference.
     // eslint-disable-next-line no-restricted-syntax -- pinned on purpose (ADR 0024)
-    expect(THEME_STORAGE_KEY).toBe('sm-theme');
+    expect(STORAGE_KEY.Theme).toBe('sm-theme');
   });
 
   it.each(Object.values(THEME_PREFERENCE))('restores stored %s on init', (stored) => {
     stubSystemScheme(false);
-    localStorage.setItem(THEME_STORAGE_KEY, String(stored));
+    localStorage.setItem(STORAGE_KEY.Theme, String(stored));
     const service = createService();
 
     expect(service.preference()).toBe(stored);
@@ -120,7 +118,7 @@ describe('ThemeService', () => {
 
   it('falls back to system when the stored value is invalid', () => {
     stubSystemScheme(false);
-    localStorage.setItem(THEME_STORAGE_KEY, 'purple');
+    localStorage.setItem(STORAGE_KEY.Theme, 'purple');
     const service = createService();
 
     expect(service.preference()).toBe(THEME_PREFERENCE.System);
@@ -303,9 +301,9 @@ describe('ThemeService', () => {
         motion: MOTION_PREFERENCE.Reduced,
         ...LAYOUT_SETTINGS_DEFAULT,
       });
-      expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe(THEME_PREFERENCE.Custom);
-      expect(JSON.parse(localStorage.getItem(CUSTOM_THEME_STORAGE_KEY) ?? 'null')).toEqual(dark);
-      expect(localStorage.getItem(MOTION_STORAGE_KEY)).toBe(MOTION_PREFERENCE.Reduced);
+      expect(localStorage.getItem(STORAGE_KEY.Theme)).toBe(THEME_PREFERENCE.Custom);
+      expect(JSON.parse(localStorage.getItem(STORAGE_KEY.CustomTheme) ?? 'null')).toEqual(dark);
+      expect(localStorage.getItem(STORAGE_KEY.Motion)).toBe(MOTION_PREFERENCE.Reduced);
 
       TestBed.resetTestingModule();
       const restored = createService();
@@ -328,8 +326,8 @@ describe('ThemeService', () => {
       ],
     ])('ignores a stored custom theme that is %s', (_, stored) => {
       stubSystemScheme(false);
-      localStorage.setItem(CUSTOM_THEME_STORAGE_KEY, stored);
-      localStorage.setItem(MOTION_STORAGE_KEY, 'wild');
+      localStorage.setItem(STORAGE_KEY.CustomTheme, stored);
+      localStorage.setItem(STORAGE_KEY.Motion, 'wild');
       const service = createService();
       expect(service.customTheme()).toEqual(CUSTOM_THEME_DEFAULT);
       expect(service.motion()).toBe(MOTION_PREFERENCE.System);
@@ -338,19 +336,19 @@ describe('ThemeService', () => {
     it('follows a change made in another tab', () => {
       stubSystemScheme(false);
       const service = createService();
-      localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Custom);
-      localStorage.setItem(CUSTOM_THEME_STORAGE_KEY, JSON.stringify(dark));
-      window.dispatchEvent(new StorageEvent('storage', { key: CUSTOM_THEME_STORAGE_KEY }));
+      localStorage.setItem(STORAGE_KEY.Theme, THEME_PREFERENCE.Custom);
+      localStorage.setItem(STORAGE_KEY.CustomTheme, JSON.stringify(dark));
+      window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY.CustomTheme }));
       TestBed.tick();
 
       expect(service.preference()).toBe(THEME_PREFERENCE.Custom);
       expect(service.customTheme()).toEqual(dark);
       expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe('rose');
 
-      localStorage.setItem(MOTION_STORAGE_KEY, MOTION_PREFERENCE.Reduced);
+      localStorage.setItem(STORAGE_KEY.Motion, MOTION_PREFERENCE.Reduced);
       window.dispatchEvent(new StorageEvent('storage', { key: 'unrelated' }));
       expect(service.motion()).toBe(MOTION_PREFERENCE.System);
-      window.dispatchEvent(new StorageEvent('storage', { key: MOTION_STORAGE_KEY }));
+      window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY.Motion }));
       expect(service.motion()).toBe(MOTION_PREFERENCE.Reduced);
     });
 
@@ -359,17 +357,17 @@ describe('ThemeService', () => {
       const service = createService();
       expect(service.hasStoredAppearance()).toBe(false);
 
-      localStorage.setItem(THEME_STORAGE_KEY, 'purple');
-      localStorage.setItem(CUSTOM_THEME_STORAGE_KEY, '{');
+      localStorage.setItem(STORAGE_KEY.Theme, 'purple');
+      localStorage.setItem(STORAGE_KEY.CustomTheme, '{');
       expect(service.hasStoredAppearance()).toBe(false);
 
-      localStorage.setItem(CUSTOM_THEME_STORAGE_KEY, JSON.stringify(dark));
+      localStorage.setItem(STORAGE_KEY.CustomTheme, JSON.stringify(dark));
       expect(service.hasStoredAppearance()).toBe(true);
       localStorage.clear();
-      localStorage.setItem(MOTION_STORAGE_KEY, MOTION_PREFERENCE.Reduced);
+      localStorage.setItem(STORAGE_KEY.Motion, MOTION_PREFERENCE.Reduced);
       expect(service.hasStoredAppearance()).toBe(true);
       localStorage.clear();
-      localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+      localStorage.setItem(STORAGE_KEY.Theme, THEME_PREFERENCE.Dark);
       expect(service.hasStoredAppearance()).toBe(true);
     });
 

@@ -1,6 +1,6 @@
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { SESSION_HINT_KIND } from './models/session-hint-kind.const';
 import type { SessionHintKind } from './models/session-hint-kind.type';
-import { SESSION_HINT_STORAGE_KEY } from './models/session-hint-storage-key.const';
 
 type HintStorage = Pick<Storage, 'setItem' | 'removeItem'>;
 type HintReader = Pick<Storage, 'getItem'>;
@@ -22,7 +22,7 @@ export function markSessionHint(
   kind: SessionHintKind = SESSION_HINT_KIND.Session,
 ): void {
   try {
-    storage?.setItem(SESSION_HINT_STORAGE_KEY, kind);
+    storage?.setItem(STORAGE_KEY.SessionHint, kind);
   } catch {
     // Storage may be full or blocked; the skeleton is a nicety, never a requirement.
   }
@@ -31,7 +31,7 @@ export function markSessionHint(
 /** The session is gone (guest, sign-out, expiry): the next load shows the landing as usual. */
 export function clearSessionHint(storage: HintStorage | undefined = defaultStorage()): void {
   try {
-    storage?.removeItem(SESSION_HINT_STORAGE_KEY);
+    storage?.removeItem(STORAGE_KEY.SessionHint);
   } catch {
     // See markSessionHint.
   }
@@ -43,7 +43,7 @@ export function clearSessionHint(storage: HintStorage | undefined = defaultStora
  */
 export function hasSessionHint(storage: HintReader | undefined = defaultStorage()): boolean {
   try {
-    return storage?.getItem(SESSION_HINT_STORAGE_KEY) != null;
+    return storage?.getItem(STORAGE_KEY.SessionHint) != null;
   } catch {
     return false;
   }

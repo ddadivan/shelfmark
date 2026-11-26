@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import type { FolderResponse } from '@shelfmark/contracts';
@@ -8,7 +9,6 @@ import { of } from 'rxjs';
 import { FOLDERS_API } from '../links/models/folders-api.const';
 import { LINKS_API } from '../links/models/links-api.const';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
-import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
@@ -73,8 +73,8 @@ async function setup(folderId: string, inputs: Record<string, unknown> = {}) {
 }
 
 describe('LibraryPage subfolders', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('lists the direct subfolders first, by name, as links into the folders', async () => {
     const { element } = await setup('f1');
@@ -94,7 +94,7 @@ describe('LibraryPage subfolders', () => {
 
   it('shows rows in the list view', async () => {
     localStorage.setItem(
-      FEED_MEMORY_STORAGE_KEY,
+      STORAGE_KEY.FeedMemory,
       JSON.stringify({ ['folder:f1']: { view: UI_VIEW.List } }),
     );
     const { element } = await setup('f1');

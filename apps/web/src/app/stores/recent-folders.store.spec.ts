@@ -1,6 +1,6 @@
+import { STORAGE_KEY } from '../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { RECENT_FOLDERS_STORAGE_KEY } from '../core/auth/models/recent-folders-storage-key.const';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { FoldersStore } from './folders.store';
 import { RecentFoldersStore } from './recent-folders.store';
@@ -17,8 +17,8 @@ function create(known: readonly string[] = ['a', 'b', 'c']) {
 }
 
 describe('RecentFoldersStore', () => {
-  beforeEach(() => localStorage.removeItem(RECENT_FOLDERS_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(RECENT_FOLDERS_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.RecentFolders));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.RecentFolders));
 
   it('records the last targets, most recent first, and keeps them per device', () => {
     const { store } = create();
@@ -28,12 +28,12 @@ describe('RecentFoldersStore', () => {
     store.record('a');
 
     expect(store.ids()).toEqual(['a', 'b', null]);
-    expect(localStorage.getItem(RECENT_FOLDERS_STORAGE_KEY)).toBe('["a","b","unsorted"]');
+    expect(localStorage.getItem(STORAGE_KEY.RecentFolders)).toBe('["a","b","unsorted"]');
     expect(create().store.ids()).toEqual(['a', 'b', null]);
   });
 
   it('leaves folders that no longer exist out of the targets', () => {
-    localStorage.setItem(RECENT_FOLDERS_STORAGE_KEY, '["gone","a","unsorted"]');
+    localStorage.setItem(STORAGE_KEY.RecentFolders, '["gone","a","unsorted"]');
     const { store, entityMap } = create();
 
     expect(store.targets()).toEqual(['a', null]);
@@ -42,7 +42,7 @@ describe('RecentFoldersStore', () => {
   });
 
   it('starts empty on corrupt storage and survives blocked storage', () => {
-    localStorage.setItem(RECENT_FOLDERS_STORAGE_KEY, '{nope');
+    localStorage.setItem(STORAGE_KEY.RecentFolders, '{nope');
     const { store } = create();
     expect(store.ids()).toEqual([]);
 
@@ -61,6 +61,6 @@ describe('RecentFoldersStore', () => {
     TestBed.inject(SessionScope).end();
 
     expect(store.ids()).toEqual([]);
-    expect(localStorage.getItem(RECENT_FOLDERS_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.RecentFolders)).toBeNull();
   });
 });

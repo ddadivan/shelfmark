@@ -1,10 +1,10 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { of } from 'rxjs';
-import { REMINDERS_SEEN_STORAGE_KEY } from '../../../core/auth/models/reminders-seen-storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { REMINDERS_API } from '../models/reminders-api.const';
@@ -36,7 +36,7 @@ async function setup(due: LinkResponse[]) {
 }
 
 describe('ReminderNoticeService', () => {
-  beforeEach(() => localStorage.removeItem(REMINDERS_SEEN_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.RemindersSeen));
 
   it('says nothing when nothing is due', async () => {
     const { notice, api, show } = await setup([]);
@@ -86,14 +86,14 @@ describe('ReminderNoticeService', () => {
     const older = link('a', 5);
     const newer = link('b', 1);
     const { notice, show } = await setup([older, newer]);
-    localStorage.setItem(REMINDERS_SEEN_STORAGE_KEY, older.remindAt ?? '');
+    localStorage.setItem(STORAGE_KEY.RemindersSeen, older.remindAt ?? '');
     await notice.check();
     expect(show).toHaveBeenCalledWith(expect.objectContaining({ title: 'b is due' }));
-    expect(localStorage.getItem(REMINDERS_SEEN_STORAGE_KEY)).toBe(newer.remindAt);
+    expect(localStorage.getItem(STORAGE_KEY.RemindersSeen)).toBe(newer.remindAt);
 
     // A per-user key: the session end removes it.
     TestBed.inject(SessionScope).end();
-    expect(localStorage.getItem(REMINDERS_SEEN_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.RemindersSeen)).toBeNull();
   });
 
   it('says how many when several became due', async () => {
@@ -104,7 +104,7 @@ describe('ReminderNoticeService', () => {
 
   it('shows nothing when every due reminder was announced before', async () => {
     const { notice, show } = await setup([link('a', 5)]);
-    localStorage.setItem(REMINDERS_SEEN_STORAGE_KEY, new Date().toISOString());
+    localStorage.setItem(STORAGE_KEY.RemindersSeen, new Date().toISOString());
     await notice.check();
     expect(show).not.toHaveBeenCalled();
   });

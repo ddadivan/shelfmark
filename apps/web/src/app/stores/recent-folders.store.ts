@@ -8,25 +8,14 @@ import {
   withState,
 } from '@ngrx/signals';
 import { SessionScope } from '../core/auth/session-scope.service';
-import { RECENT_FOLDERS_STORAGE_KEY } from '../core/auth/models/recent-folders-storage-key.const';
+import { SafeStorage } from '../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../core/storage/models/storage-key.const';
 import { FoldersStore } from './folders.store';
 import type { RecentFoldersState } from './models/recent-folders-state.interface';
 import { parseRecentFolders, pushRecentFolder, serializeRecentFolders } from './recent-folders';
 
 function read(): RecentFoldersState {
-  try {
-    return { ids: parseRecentFolders(globalThis.localStorage.getItem(RECENT_FOLDERS_STORAGE_KEY)) };
-  } catch {
-    return { ids: [] };
-  }
-}
-
-function persist(ids: readonly (string | null)[]): void {
-  try {
-    globalThis.localStorage.setItem(RECENT_FOLDERS_STORAGE_KEY, serializeRecentFolders(ids));
-  } catch {
-    // Storage full or blocked (private mode): the list lasts until the page reloads.
-  }
+  return { ids: parseRecentFolders(inject(SafeStorage).getString(STORAGE_KEY.RecentFolders)) };
 }
 
 /**
@@ -43,12 +32,13 @@ export const RecentFoldersStore = signalStore(
       ids().filter((id) => id === null || folders.entityMap()[id] !== undefined),
     ),
   })),
-  withMethods((store) => ({
+  withMethods((store, storage = inject(SafeStorage)) => ({
     /** `target` (a folder id, `null` for Unsorted) was just used: it goes first. */
     record(target: string | null): void {
       const ids = pushRecentFolder(store.ids(), target);
       patchState(store, { ids });
-      persist(ids);
+      // Storage full or blocked (private mode): the list lasts until the page reloads.
+      storage.set(STORAGE_KEY.RecentFolders, serializeRecentFolders(ids));
     },
   })),
   withHooks({

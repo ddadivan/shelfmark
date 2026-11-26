@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import { DestroyRef, inject, Injector, Service, signal } from '@angular/core';
 import type { UserSettingsResponse } from '@shelfmark/contracts';
 import { READER_TEXT_SIZE } from '@shelfmark/ui';
@@ -6,7 +5,8 @@ import { firstValueFrom } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 import { READER_SETTINGS_DEFAULT } from '../models/reader-settings-default.const';
-import { READER_SETTINGS_STORAGE_KEY } from '../models/reader-settings-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import type { ReaderSettings } from '../models/reader-settings.interface';
 import { parseReaderSettings } from '../utils/parse-reader-settings';
 import { readerPreferencesOf, readerSettingsOf } from '../utils/reader-preferences-mapping';
@@ -25,7 +25,7 @@ const SAVE_DELAY_MS = 600;
  */
 @Service()
 export class ReaderSettingsService {
-  private readonly doc = inject(DOCUMENT);
+  private readonly storage = inject(SafeStorage);
   private readonly injector = inject(Injector);
   private readonly state = signal<ReaderSettings>(this.read());
   readonly settings = this.state.asReadonly();
@@ -96,11 +96,8 @@ export class ReaderSettingsService {
 
   private apply(next: ReaderSettings): void {
     this.state.set(next);
-    try {
-      this.doc.defaultView?.localStorage.setItem(READER_SETTINGS_STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // Storage blocked: the settings last for this page.
-    }
+    // Storage blocked: the settings last for this page.
+    this.storage.setJson(STORAGE_KEY.ReaderSettings, next);
   }
 
   private cancelTimer(): void {
@@ -137,20 +134,10 @@ export class ReaderSettingsService {
   }
 
   private hasStored(): boolean {
-    try {
-      return this.doc.defaultView?.localStorage.getItem(READER_SETTINGS_STORAGE_KEY) != null;
-    } catch {
-      return false;
-    }
+    return this.storage.getString(STORAGE_KEY.ReaderSettings) !== null;
   }
 
   private read(): ReaderSettings {
-    try {
-      return parseReaderSettings(
-        this.doc.defaultView?.localStorage.getItem(READER_SETTINGS_STORAGE_KEY) ?? null,
-      );
-    } catch {
-      return parseReaderSettings(null);
-    }
+    return parseReaderSettings(this.storage.getString(STORAGE_KEY.ReaderSettings));
   }
 }

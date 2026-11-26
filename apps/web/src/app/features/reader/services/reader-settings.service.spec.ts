@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import {
   READER_PREFERENCES_DEFAULT,
@@ -8,7 +9,6 @@ import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { of, throwError } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
-import { READER_SETTINGS_STORAGE_KEY } from '../models/reader-settings-storage-key.const';
 import { READER_SETTINGS_DEFAULT } from '../models/reader-settings-default.const';
 import { ReaderSettingsService } from './reader-settings.service';
 
@@ -16,7 +16,7 @@ describe('ReaderSettingsService', () => {
   afterEach(() => localStorage.clear());
 
   it('starts from the stored settings and keeps every change', () => {
-    localStorage.setItem(READER_SETTINGS_STORAGE_KEY, JSON.stringify({ font: 'serif' }));
+    localStorage.setItem(STORAGE_KEY.ReaderSettings, JSON.stringify({ font: 'serif' }));
     const service = TestBed.inject(ReaderSettingsService);
     expect(service.settings().font).toBe('serif');
 
@@ -28,7 +28,7 @@ describe('ReaderSettingsService', () => {
       lineSpacing: 'normal',
       width: 'normal',
     });
-    expect(JSON.parse(localStorage.getItem(READER_SETTINGS_STORAGE_KEY) ?? '{}')).toMatchObject({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.ReaderSettings) ?? '{}')).toMatchObject({
       theme: 'sepia',
     });
   });
@@ -51,7 +51,7 @@ describe('ReaderSettingsService', () => {
     service.set({ theme: 'black', size: 22, lineSpacing: 'relaxed', width: 'wide' });
     service.reset();
     expect(service.settings()).toEqual(READER_SETTINGS_DEFAULT);
-    expect(JSON.parse(localStorage.getItem(READER_SETTINGS_STORAGE_KEY) ?? '{}')).toMatchObject({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.ReaderSettings) ?? '{}')).toMatchObject({
       theme: null,
       size: 18,
     });
@@ -59,7 +59,7 @@ describe('ReaderSettingsService', () => {
 
   it('carries over the first version of the settings', () => {
     localStorage.setItem(
-      READER_SETTINGS_STORAGE_KEY,
+      STORAGE_KEY.ReaderSettings,
       JSON.stringify({ size: 'l', font: 'readable', width: 'narrow', tone: 'sepia' }),
     );
     const service = TestBed.inject(ReaderSettingsService);
@@ -120,7 +120,7 @@ describe('ReaderSettingsService', () => {
     });
 
     it('takes the account settings once saved there', () => {
-      localStorage.setItem(READER_SETTINGS_STORAGE_KEY, JSON.stringify({ font: 'serif' }));
+      localStorage.setItem(STORAGE_KEY.ReaderSettings, JSON.stringify({ font: 'serif' }));
       const service = TestBed.inject(ReaderSettingsService);
       service.adopt(
         account({
@@ -138,7 +138,7 @@ describe('ReaderSettingsService', () => {
         lineSpacing: 'normal',
         width: 'normal',
       });
-      expect(JSON.parse(localStorage.getItem(READER_SETTINGS_STORAGE_KEY) ?? '{}')).toMatchObject({
+      expect(JSON.parse(localStorage.getItem(STORAGE_KEY.ReaderSettings) ?? '{}')).toMatchObject({
         font: 'readable',
       });
       expect(update).not.toHaveBeenCalled();
@@ -153,7 +153,7 @@ describe('ReaderSettingsService', () => {
     });
 
     it('saves the settings of this browser once when the account has none', () => {
-      localStorage.setItem(READER_SETTINGS_STORAGE_KEY, JSON.stringify({ font: 'serif' }));
+      localStorage.setItem(STORAGE_KEY.ReaderSettings, JSON.stringify({ font: 'serif' }));
       const service = TestBed.inject(ReaderSettingsService);
       service.adopt(account({ readerSaved: false }), service.editToken());
       expect(update).toHaveBeenCalledExactlyOnceWith({
@@ -166,7 +166,7 @@ describe('ReaderSettingsService', () => {
       const service = TestBed.inject(ReaderSettingsService);
       service.adopt(account(), service.editToken());
       expect(update).not.toHaveBeenCalled();
-      expect(localStorage.getItem(READER_SETTINGS_STORAGE_KEY)).toBeNull();
+      expect(localStorage.getItem(STORAGE_KEY.ReaderSettings)).toBeNull();
     });
 
     it('sends a waiting change before the session ends and forgets it after', async () => {

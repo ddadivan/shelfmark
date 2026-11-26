@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { DOCUMENT } from '@angular/common';
 import { computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -117,8 +118,8 @@ async function settle(): Promise<void> {
 }
 
 describe('LinkPreviewService', () => {
-  beforeEach(() => localStorage.removeItem(PREVIEW_LIST_WIDTH.StorageKey));
-  afterAll(() => localStorage.removeItem(PREVIEW_LIST_WIDTH.StorageKey));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.PreviewWidth));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.PreviewWidth));
 
   describe('current link', () => {
     it('has no link and shows the loading body when nothing is open', async () => {
@@ -495,7 +496,7 @@ describe('LinkPreviewService', () => {
     });
 
     it('reads the stored width, clamped', () => {
-      localStorage.setItem(PREVIEW_LIST_WIDTH.StorageKey, '9999');
+      localStorage.setItem(STORAGE_KEY.PreviewWidth, '9999');
       const { service } = setup();
       expect(service.listWidth()).toBe(PREVIEW_LIST_WIDTH.Max);
     });
@@ -504,7 +505,7 @@ describe('LinkPreviewService', () => {
       const { service } = setup();
       service.setListWidth(500);
       expect(service.listWidth()).toBe(500);
-      expect(localStorage.getItem(PREVIEW_LIST_WIDTH.StorageKey)).toBe('500');
+      expect(localStorage.getItem(STORAGE_KEY.PreviewWidth)).toBe('500');
       service.setListWidth(10);
       expect(service.listWidth()).toBe(PREVIEW_LIST_WIDTH.Min);
     });
@@ -533,7 +534,7 @@ describe('LinkPreviewService', () => {
       service.setListWidth(500);
       service.resetListWidth();
       expect(service.listWidth()).toBe(PREVIEW_LIST_WIDTH.Default);
-      expect(localStorage.getItem(PREVIEW_LIST_WIDTH.StorageKey)).toBe(
+      expect(localStorage.getItem(STORAGE_KEY.PreviewWidth)).toBe(
         String(PREVIEW_LIST_WIDTH.Default),
       );
     });

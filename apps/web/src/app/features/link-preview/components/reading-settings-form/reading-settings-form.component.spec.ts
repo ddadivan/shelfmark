@@ -1,10 +1,10 @@
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { THEME } from '@shelfmark/ui';
 import { axeViolations } from '../../../../../testing/axe';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { ThemeService } from '../../../../core/theme/theme.service';
-import { READER_SETTINGS_STORAGE_KEY } from '../../../reader/models/reader-settings-storage-key.const';
 import { ReaderSettingsService } from '../../../reader/services/reader-settings.service';
 import { ReadingSettingsFormComponent } from './reading-settings-form.component';
 
@@ -85,7 +85,7 @@ describe('ReadingSettingsFormComponent', () => {
       lineSpacing: 'relaxed',
       width: 'wide',
     });
-    expect(JSON.parse(localStorage.getItem(READER_SETTINGS_STORAGE_KEY) ?? '{}')).toMatchObject({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.ReaderSettings) ?? '{}')).toMatchObject({
       font: 'serif',
     });
   });

@@ -1,6 +1,6 @@
-import { DOCUMENT } from '@angular/common';
 import { inject, Service } from '@angular/core';
-import { USER_STORAGE_KEYS } from './models/user-storage-keys.const';
+import { SafeStorage } from '../storage/safe-storage.service';
+import { USER_STORAGE_KEYS } from '../storage/models/user-storage-keys.const';
 
 /**
  * What to forget when the session ends (sign-out, expiry, a 401, a deleted account). Stores that
@@ -12,7 +12,7 @@ import { USER_STORAGE_KEYS } from './models/user-storage-keys.const';
  */
 @Service()
 export class SessionScope {
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
+  private readonly storage = inject(SafeStorage);
   private readonly handlers = new Set<() => void>();
   private readonly flushers = new Set<() => Promise<void>>();
 
@@ -39,11 +39,8 @@ export class SessionScope {
   /** Runs every registered handler; one that throws does not stop the others. */
   end(): void {
     for (const key of USER_STORAGE_KEYS) {
-      try {
-        this.storage?.removeItem(key);
-      } catch {
-        // Blocked storage (private mode) holds nothing to forget.
-      }
+      // Blocked storage (private mode) holds nothing to forget.
+      this.storage.remove(key);
     }
     for (const handler of this.handlers) {
       try {

@@ -1,4 +1,4 @@
-import { UI_STORAGE_KEY } from '../../../../stores/models/ui-storage-key.const';
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { UiStore } from '../../../../stores/ui.store';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../../../../testing/axe';
@@ -7,8 +7,8 @@ import { setupSettingsPage } from '../../../../../testing/settings-page-testbed'
 import ShortcutsPage from './shortcuts.page';
 
 describe('ShortcutsPage', () => {
-  beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.Ui));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.Ui));
 
   it('opens the dialog from the "Open list" row', async () => {
     const { root } = await setupSettingsPage(ShortcutsPage, 'shortcuts');
@@ -58,7 +58,7 @@ describe('ShortcutsPage', () => {
     await vi.waitFor(() => expect(toggle?.getAttribute('aria-checked')).toBe('false'));
 
     expect(TestBed.inject(UiStore).singleKeyShortcuts()).toBe(false);
-    expect(JSON.parse(localStorage.getItem(UI_STORAGE_KEY) ?? '{}')).toMatchObject({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.Ui) ?? '{}')).toMatchObject({
       singleKeyShortcuts: false,
     });
   });

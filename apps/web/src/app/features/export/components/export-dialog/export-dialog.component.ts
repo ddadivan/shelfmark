@@ -33,6 +33,7 @@ import type { LastExport } from '../../models/last-export.interface';
 import { FoldersStore } from '../../../../stores/folders.store';
 import type { ExportDialogData } from '../../models/export-dialog-data.interface';
 import { ExportActionsService } from '../../services/export-actions.service';
+import { SafeStorage } from '../../../../core/storage/safe-storage.service';
 import { readLastExport, writeLastExport } from '../../utils/last-export';
 
 /** The segmented value of "Whole library". */
@@ -80,7 +81,8 @@ export class ExportDialogComponent {
   private readonly formats = EXPORT_FORMAT_OPTIONS.filter((option) => isFormat(option.value));
   protected readonly format = signal<ExportFormat>(EXPORT_FORMAT.Json);
   protected readonly preparing = signal(false);
-  private readonly last = signal<LastExport | null>(readLastExport());
+  private readonly storage = inject(SafeStorage);
+  private readonly last = signal<LastExport | null>(readLastExport(this.storage));
   private readonly abort = new AbortController();
   private readonly folders = inject(FoldersStore);
 
@@ -187,7 +189,7 @@ export class ExportDialogComponent {
     }
     this.preparing.set(false);
     if (result === EXPORT_RESULT.Saved) {
-      this.last.set(writeLastExport(format));
+      this.last.set(writeLastExport(this.storage, format));
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.transloco.translate('export.dialog.saved'),

@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
@@ -8,7 +9,6 @@ import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksApi } from '../../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { LinkActionsService } from '../../links/services/link-actions.service';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryFeedService } from '../services/library-feed.service';
 import { LibraryFilterService } from '../services/library-filter.service';
 import { LibraryFolderService } from '../services/library-folder.service';
@@ -140,7 +140,7 @@ describe('LibraryHotkeysDirective F2', () => {
 
 describe('LibraryHotkeysDirective', () => {
   beforeEach(() => {
-    localStorage.removeItem(FEED_MEMORY_STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY.FeedMemory);
     previewStub.split.set(false);
     previewStub.currentId.set(null);
     previewStub.go.mockClear();
@@ -150,7 +150,7 @@ describe('LibraryHotkeysDirective', () => {
     previewStub.toggleFullScreen.mockClear();
     previewStub.exitFullScreen.mockClear();
   });
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('selects every link on screen with Ctrl+A and ends the selection with Esc', async () => {
     const { selection } = await setup();

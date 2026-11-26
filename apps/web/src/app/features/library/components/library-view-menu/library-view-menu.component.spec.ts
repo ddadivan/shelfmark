@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -7,7 +8,6 @@ import { UiViewMenuHarness } from '@shelfmark/ui/testing';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { LINKS_SCOPE } from '../../../links/models/links-scope.const';
 import type { LinksScope } from '../../../links/models/links-scope.type';
-import { FEED_MEMORY_STORAGE_KEY } from '../../models/feed-memory-storage-key.const';
 import { GRID_STEP_DEFAULT } from '../../models/grid-step-default.const';
 import { ThemeService } from '../../../../core/theme/theme.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
@@ -42,8 +42,8 @@ async function setup() {
 }
 
 describe('LibraryViewMenuComponent', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('is the "View" button with the default step and Show site and the five fields switched on', async () => {
     const { menu } = await setup();

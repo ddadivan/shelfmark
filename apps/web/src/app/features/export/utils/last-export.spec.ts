@@ -1,19 +1,24 @@
 import { EXPORT_FORMAT } from '@shelfmark/contracts';
-import { LAST_EXPORT_STORAGE_KEY } from '../../../core/auth/models/last-export-storage-key.const';
+import { TestBed } from '@angular/core/testing';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { readLastExport, writeLastExport } from './last-export';
 
 describe('last export', () => {
+  let storage: SafeStorage;
+
   beforeEach(() => {
+    storage = TestBed.inject(SafeStorage);
     localStorage.clear();
   });
 
   it('is unknown before the first export', () => {
-    expect(readLastExport()).toBeNull();
+    expect(readLastExport(storage)).toBeNull();
   });
 
   it('remembers the format and the time', () => {
-    writeLastExport(EXPORT_FORMAT.Html, new Date('2026-11-02T10:00:00Z'));
-    expect(readLastExport()).toEqual({ format: 'html', at: '2026-11-02T10:00:00.000Z' });
+    writeLastExport(storage, EXPORT_FORMAT.Html, new Date('2026-11-02T10:00:00Z'));
+    expect(readLastExport(storage)).toEqual({ format: 'html', at: '2026-11-02T10:00:00.000Z' });
   });
 
   it('ignores malformed values', () => {
@@ -24,8 +29,8 @@ describe('last export', () => {
       'null',
     ];
     for (const raw of bad) {
-      localStorage.setItem(LAST_EXPORT_STORAGE_KEY, raw);
-      expect(readLastExport()).toBeNull();
+      localStorage.setItem(STORAGE_KEY.LastExport, raw);
+      expect(readLastExport(storage)).toBeNull();
     }
   });
 
@@ -36,8 +41,8 @@ describe('last export', () => {
     const set = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('blocked');
     });
-    expect(readLastExport()).toBeNull();
-    expect(() => writeLastExport(EXPORT_FORMAT.Json)).not.toThrow();
+    expect(readLastExport(storage)).toBeNull();
+    expect(() => writeLastExport(storage, EXPORT_FORMAT.Json)).not.toThrow();
     get.mockRestore();
     set.mockRestore();
   });

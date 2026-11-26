@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
@@ -13,7 +14,6 @@ import { activeLang, setActiveLang } from './active-lang';
 import { AppTranslocoLoader } from './app-transloco.loader';
 import { LocaleService } from './locale.service';
 import { resetRelativeTimeFormats } from './relative-time';
-import { LANGUAGE_STORAGE_KEY } from './models/language-storage-key.const';
 import { translocoConfig } from './transloco.config';
 
 const DATE = new Date(2026, 10, 10, 15, 7);
@@ -24,7 +24,7 @@ function stubLanguages(languages: readonly string[]): void {
 
 function setup(stored?: unknown): { locale: LocaleService; transloco: TranslocoService } {
   if (stored !== undefined) {
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, JSON.stringify(stored));
+    localStorage.setItem(STORAGE_KEY.Language, JSON.stringify(stored));
   }
   TestBed.configureTestingModule({
     providers: [provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader })],
@@ -140,7 +140,7 @@ describe('LocaleService', () => {
     expect(transloco.translate('landing.hero.line1')).toBe('Collez un lien.');
     TestBed.tick();
     expect(TestBed.inject(DOCUMENT).documentElement.lang).toBe('fr');
-    expect(JSON.parse(localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? 'null')).toMatchObject({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.Language) ?? 'null')).toMatchObject({
       language: 'fr',
     });
   });
@@ -149,10 +149,10 @@ describe('LocaleService', () => {
     const { locale } = setup();
     await locale.init();
     localStorage.setItem(
-      LANGUAGE_STORAGE_KEY,
+      STORAGE_KEY.Language,
       JSON.stringify(settings({ language: INTERFACE_LANGUAGE.Es })),
     );
-    window.dispatchEvent(new StorageEvent('storage', { key: LANGUAGE_STORAGE_KEY }));
+    window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY.Language }));
     expect(locale.settings().language).toBe('es');
   });
 
@@ -231,7 +231,7 @@ describe('LocaleService', () => {
     expect(locale.settings()).toEqual(settings({ language: INTERFACE_LANGUAGE.It }));
     expect(locale.hasStoredLanguage()).toBe(true);
     locale.apply(locale.settings());
-    expect(JSON.parse(localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? 'null')).not.toHaveProperty(
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.Language) ?? 'null')).not.toHaveProperty(
       'spellcheck',
     );
   });

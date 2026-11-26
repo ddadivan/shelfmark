@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { ElementRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
@@ -18,7 +19,6 @@ import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { LinkDragService } from '../../links/services/link-drag.service';
 import { LINK_DROP_HALF_ATTRIBUTE } from '../../links/models/link-drop-half-attribute.const';
 import { DROP_MOTION_CLASS } from '../models/drop-motion-class.const';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryDragService } from './library-drag.service';
 import { LibraryFilterService } from './library-filter.service';
 import { LibrarySelectionService } from './library-selection.service';
@@ -121,8 +121,8 @@ function release(slot: HTMLElement): CdkDragRelease<unknown> {
 }
 
 describe('LibraryDragService', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('dims the cards left behind only while a selection of several links travels', async () => {
     const { dnd, dragging, carriedIds } = await setup();

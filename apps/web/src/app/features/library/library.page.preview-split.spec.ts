@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -17,7 +18,6 @@ import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import { LinkPreviewRoute } from '../link-preview/services/link-preview-route.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { LibraryFilterService } from './services/library-filter.service';
 import LibraryPage from './library.page';
 
@@ -101,8 +101,8 @@ const toolLabels = (element: HTMLElement) =>
   );
 
 describe('LibraryPage beside the link preview', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('shows the feed as List rows with pictures while the preview is open, without changing the saved view', async () => {
     const { fixture, element, route } = await setup();
@@ -190,7 +190,7 @@ describe('LibraryPage beside the link preview', () => {
 });
 
 describe('LibraryPage with an empty result', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('keeps Filter, Save view, View and the view switch, and the empty state with Clear filters', async () => {
     const { fixture, element } = await setup([], 'video');

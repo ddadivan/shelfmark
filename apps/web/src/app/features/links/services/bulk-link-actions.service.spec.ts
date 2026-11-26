@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { TRASH_ITEM_KIND, type LinkResponse } from '@shelfmark/contracts';
@@ -11,7 +12,6 @@ import {
 } from '@shelfmark/ui';
 import { of, Subject, throwError } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
-import { RECENT_FOLDERS_STORAGE_KEY } from '../../../core/auth/models/recent-folders-storage-key.const';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
@@ -156,7 +156,7 @@ async function setup(options: Options = {}) {
 const byId = (store: InstanceType<typeof LinksStore>, id: string) => store.entityMap()[id];
 
 describe('BulkLinkActionsService', () => {
-  beforeEach(() => localStorage.removeItem(RECENT_FOLDERS_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.RecentFolders));
   afterEach(() => vi.restoreAllMocks());
   describe('move', () => {
     it('asks for a folder with a multi-link title and moves all links in one request', async () => {

@@ -1,13 +1,10 @@
-import { Service, signal } from '@angular/core';
-import { ASK_WIDTH_STORAGE_KEY } from '../models/ask-width-storage-key.const';
+import { inject, Service, signal } from '@angular/core';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 
-function readWidth(): number | null {
-  try {
-    const value = Number(localStorage.getItem(ASK_WIDTH_STORAGE_KEY));
-    return Number.isInteger(value) && value > 0 ? value : null;
-  } catch {
-    return null;
-  }
+function readWidth(storage: SafeStorage): number | null {
+  const value = storage.getNumber(STORAGE_KEY.AskWidth);
+  return value !== null && Number.isInteger(value) && value > 0 ? value : null;
 }
 
 /**
@@ -17,19 +14,17 @@ function readWidth(): number | null {
  */
 @Service()
 export class AskPanelWidth {
-  private readonly value = signal<number | null>(readWidth());
+  private readonly storage = inject(SafeStorage);
+  private readonly value = signal<number | null>(readWidth(this.storage));
   readonly width = this.value.asReadonly();
 
   set(width: number | null): void {
     this.value.set(width);
-    try {
-      if (width === null) {
-        localStorage.removeItem(ASK_WIDTH_STORAGE_KEY);
-      } else {
-        localStorage.setItem(ASK_WIDTH_STORAGE_KEY, String(width));
-      }
-    } catch {
-      // Storage blocked: the width lasts for this page only.
+    // Storage blocked: the width lasts for this page only.
+    if (width === null) {
+      this.storage.remove(STORAGE_KEY.AskWidth);
+    } else {
+      this.storage.set(STORAGE_KEY.AskWidth, String(width));
     }
   }
 }

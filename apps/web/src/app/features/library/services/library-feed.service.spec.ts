@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
@@ -9,7 +10,6 @@ import type { LinksApi } from '../../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import type { LinksScope } from '../../links/models/links-scope.type';
 import { LAND_STAGGER_MS } from '../models/land-stagger-ms.const';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { provideTranslocoForTest, loadEnglish } from '../../../testing/transloco-testing';
 import { LibraryFeedService } from './library-feed.service';
 import { LibraryFilterService } from './library-filter.service';
@@ -53,8 +53,8 @@ async function setup(items: LinkResponse[], list?: LinksApi['list']) {
 }
 
 describe('LibraryFeedService', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('shows the loaded links of the filter', async () => {
     const { feed } = await setup([link(1), link(2)]);

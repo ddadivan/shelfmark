@@ -3,12 +3,11 @@
  * resize handle keeps it from `Min` up to the room left once the panel and the handle together
  * are `PanelMin` wide (#555;
  * `Max` only caps a stored value). The width is a device preference in `localStorage`
- * (`StorageKey`, not in `USER_STORAGE_KEYS`).
+ * (`STORAGE_KEY.PreviewWidth`).
  */
 export const PREVIEW_LIST_WIDTH = {
   Default: 400,
   Min: 300,
   Max: 2400,
   PanelMin: 480,
-  StorageKey: 'sm-preview-width',
 } as const;

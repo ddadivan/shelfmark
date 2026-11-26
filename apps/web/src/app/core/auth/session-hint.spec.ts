@@ -1,7 +1,7 @@
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { describe, expect, it } from 'vitest';
 import { clearSessionHint, hasSessionHint, markSessionHint } from './session-hint';
 import { SESSION_HINT_KIND } from './models/session-hint-kind.const';
-import { SESSION_HINT_STORAGE_KEY } from './models/session-hint-storage-key.const';
 
 function fakeStorage(): Storage {
   const data = new Map<string, string>();
@@ -16,18 +16,18 @@ describe('session hint', () => {
   it('is written and cleared', () => {
     const storage = fakeStorage();
     markSessionHint(storage);
-    expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('1');
+    expect(storage.getItem(STORAGE_KEY.SessionHint)).toBe('1');
     clearSessionHint(storage);
-    expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBeNull();
+    expect(storage.getItem(STORAGE_KEY.SessionHint)).toBeNull();
   });
 
   it('says whether the session is a demo (#440)', () => {
     const storage = fakeStorage();
     markSessionHint(storage, SESSION_HINT_KIND.Demo);
-    expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('demo');
+    expect(storage.getItem(STORAGE_KEY.SessionHint)).toBe('demo');
     expect(hasSessionHint(storage)).toBe(true);
     markSessionHint(storage);
-    expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('1');
+    expect(storage.getItem(STORAGE_KEY.SessionHint)).toBe('1');
   });
 
   it('is read back', () => {

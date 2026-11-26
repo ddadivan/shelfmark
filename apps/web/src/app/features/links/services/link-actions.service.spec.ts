@@ -1,5 +1,5 @@
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
-import { RECENT_FOLDERS_STORAGE_KEY } from '../../../core/auth/models/recent-folders-storage-key.const';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
@@ -106,7 +106,7 @@ const ids = (store: InstanceType<typeof LinksStore>) => store.entities().map((it
 
 describe('LinkActionsService', () => {
   beforeEach(() => {
-    localStorage.removeItem(RECENT_FOLDERS_STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY.RecentFolders);
     vi.useFakeTimers();
   });
   afterEach(() => vi.useRealTimers());

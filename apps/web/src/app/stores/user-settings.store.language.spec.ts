@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import {
   DATE_FORMAT,
@@ -12,7 +13,6 @@ import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { of, Subject, throwError } from 'rxjs';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { LocaleService } from '../core/i18n/locale.service';
-import { LANGUAGE_STORAGE_KEY } from '../core/i18n/models/language-storage-key.const';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import type { UserSettingsApi } from '../features/settings/models/user-settings-api.interface';
 import { TRASH_API } from '../features/trash/models/trash-api.const';
@@ -72,7 +72,7 @@ describe('UserSettingsStore language', () => {
 
   it('keeps a language chosen in this browser while the account never stored one, and saves it once', async () => {
     const local = { ...LANGUAGE_SETTINGS_DEFAULT, language: INTERFACE_LANGUAGE.Es };
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, JSON.stringify(local));
+    localStorage.setItem(STORAGE_KEY.Language, JSON.stringify(local));
     const { store, locale, api } = setup();
     await locale.init();
 
@@ -90,7 +90,7 @@ describe('UserSettingsStore language', () => {
 
     expect(locale.settings()).toEqual(LANGUAGE_SETTINGS_DEFAULT);
     expect(api.update).not.toHaveBeenCalled();
-    expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.Language)).toBeNull();
   });
 
   it('changes the language at once and saves only the change', async () => {

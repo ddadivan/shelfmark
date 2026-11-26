@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../core/storage/models/storage-key.const';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -14,7 +15,6 @@ import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
-import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { LinksStore } from '../../stores/links.store';
 import { SavedViewsStore } from '../../stores/saved-views.store';
@@ -69,8 +69,8 @@ const text = (fixture: ComponentFixture<LibraryPage>) =>
   (fixture.nativeElement as HTMLElement).textContent ?? '';
 
 describe('LibraryPage', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.FeedMemory));
 
   it('shows a skeleton and no cards while the first page loads, but only after 300 ms', async () => {
     const { element, fixture } = await setup(new Subject<ListLinksResponse>());
@@ -143,7 +143,7 @@ describe('LibraryPage', () => {
 
   it('shows rows when the list view is chosen', async () => {
     localStorage.setItem(
-      FEED_MEMORY_STORAGE_KEY,
+      STORAGE_KEY.FeedMemory,
       JSON.stringify({ ['all']: { view: UI_VIEW.List } }),
     );
     const { element } = await setup();
@@ -647,7 +647,7 @@ describe('LibraryPage of a folder', () => {
         queryParams: { sort: 'title' },
         queryParamsHandling: 'merge',
       });
-      localStorage.removeItem(FEED_MEMORY_STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY.FeedMemory);
     });
 
     it('asks for the search text, normalized', async () => {

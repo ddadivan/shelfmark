@@ -2,7 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { inject, Injector, Service } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { firstValueFrom } from 'rxjs';
-import { PUSH_DEVICE_STORAGE_KEY } from '../../../core/auth/models/push-device-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { NOTIFICATIONS_API } from '../models/notifications-api.const';
 import { toDeviceRequest } from '../utils/to-device-request';
@@ -13,7 +14,7 @@ import { NotificationSettingsStore } from './notification-settings.store';
  * receives the pushes and shows them by itself (`notification` payloads with `onActionClick`),
  * so the app only subscribes through `SwPush` with the server's VAPID key and hands the
  * subscription to the API (`NOTIFICATIONS_API.addDevice`). The device id is kept per user
- * (`PUSH_DEVICE_STORAGE_KEY`). Nothing happens without a service worker (dev and mock builds)
+ * (`STORAGE_KEY.NotificationsPushDevice`). Nothing happens without a service worker (dev and mock builds)
  * or while the server cannot push. On sign-out the device is removed while the session is still
  * valid, and on every session end the browser's subscription is dropped, so the next person on
  * this browser never gets the previous user's reminders.
@@ -26,6 +27,7 @@ export class PushSubscriptionService {
   private readonly injector = inject(Injector);
   private readonly session = inject(SessionScope);
   private readonly window = inject(DOCUMENT).defaultView;
+  private readonly storage = inject(SafeStorage);
   private started = false;
 
   private get api() {
@@ -53,11 +55,7 @@ export class PushSubscriptionService {
 
   /** The device id of this browser on the account, when it subscribed. */
   deviceId(): string | null {
-    try {
-      return this.window?.localStorage.getItem(PUSH_DEVICE_STORAGE_KEY) ?? null;
-    } catch {
-      return null;
-    }
+    return this.storage.getString(STORAGE_KEY.NotificationsPushDevice);
   }
 
   /**
@@ -134,14 +132,11 @@ export class PushSubscriptionService {
   }
 
   private writeDeviceId(id: string | null): void {
-    try {
-      if (id === null) {
-        this.window?.localStorage.removeItem(PUSH_DEVICE_STORAGE_KEY);
-      } else {
-        this.window?.localStorage.setItem(PUSH_DEVICE_STORAGE_KEY, id);
-      }
-    } catch {
-      // Storage blocked: turning off here then cannot name the device; the list still can.
+    // Storage blocked: turning off here then cannot name the device; the list still can.
+    if (id === null) {
+      this.storage.remove(STORAGE_KEY.NotificationsPushDevice);
+    } else {
+      this.storage.set(STORAGE_KEY.NotificationsPushDevice, id);
     }
   }
 

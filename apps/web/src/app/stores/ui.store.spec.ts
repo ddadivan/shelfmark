@@ -1,5 +1,5 @@
+import { STORAGE_KEY } from '../core/storage/models/storage-key.const';
 import { TestBed } from '@angular/core/testing';
-import { UI_STORAGE_KEY } from './models/ui-storage-key.const';
 import { UiStore } from './ui.store';
 
 function create(): InstanceType<typeof UiStore> {
@@ -8,11 +8,11 @@ function create(): InstanceType<typeof UiStore> {
 }
 
 describe('UiStore', () => {
-  beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.Ui));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.Ui));
 
   it('survives corrupt storage', () => {
-    localStorage.setItem(UI_STORAGE_KEY, '{nope');
+    localStorage.setItem(STORAGE_KEY.Ui, '{nope');
 
     expect(create().singleKeyShortcuts()).toBe(true);
   });
@@ -34,7 +34,7 @@ describe('UiStore', () => {
 
   it('ignores the feed view an older version kept here', () => {
     localStorage.setItem(
-      UI_STORAGE_KEY,
+      STORAGE_KEY.Ui,
       JSON.stringify({ view: 'list', singleKeyShortcuts: false }),
     );
 
@@ -46,7 +46,7 @@ describe('UiStore', () => {
 
   it('keeps single-key shortcuts on when the stored value is not a boolean', () => {
     localStorage.setItem(
-      UI_STORAGE_KEY,
+      STORAGE_KEY.Ui,
       JSON.stringify({ view: 'list', singleKeyShortcuts: 'no' }),
     );
 

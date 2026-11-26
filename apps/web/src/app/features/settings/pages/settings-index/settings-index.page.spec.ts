@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -8,7 +9,6 @@ import { adminApiStub } from '../../../../../testing/admin-api-stub';
 import { AUTH_API } from '../../../../core/auth/auth-api.token';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { THEME_STORAGE_KEY } from '../../../../core/theme/models/theme-storage-key.const';
 import { ACCOUNT_DELETION_API } from '../../../account-deletion/models/account-deletion-api.const';
 import { ONBOARDING_API } from '../../../onboarding/models/onboarding-api.const';
 import { SETTINGS_TEST_USER } from '../../../../../testing/settings-page-testbed';
@@ -21,7 +21,7 @@ import { SETTINGS_TEST_STATS } from '../../../../../testing/settings-test-stats.
 import { APP_VERSION } from '../../../../models/app-version.const';
 
 async function setup(phone: boolean) {
-  localStorage.removeItem(THEME_STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY.Theme);
   const phoneSignal = signal(phone);
   const api = {
     getSession: () => Promise.resolve(SETTINGS_TEST_USER),
@@ -53,7 +53,7 @@ async function setup(phone: boolean) {
 }
 
 describe('the You list (/settings)', () => {
-  afterEach(() => localStorage.removeItem(THEME_STORAGE_KEY));
+  afterEach(() => localStorage.removeItem(STORAGE_KEY.Theme));
 
   it('on a phone lists the account, the sections that touch a phone, help and Sign out', async () => {
     const { harness, router } = await setup(true);

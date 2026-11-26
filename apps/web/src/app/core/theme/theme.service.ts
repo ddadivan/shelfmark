@@ -36,10 +36,8 @@ import {
   type Theme,
 } from '@shelfmark/ui';
 import type { Appearance } from './models/appearance.type';
-import { CUSTOM_THEME_STORAGE_KEY } from './models/custom-theme-storage-key.const';
-import { LAYOUT_STORAGE_KEY } from './models/layout-storage-key.const';
-import { MOTION_STORAGE_KEY } from './models/motion-storage-key.const';
-import { THEME_STORAGE_KEY } from './models/theme-storage-key.const';
+import { SafeStorage } from '../storage/safe-storage.service';
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { wholeLayout } from './whole-layout';
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
@@ -70,6 +68,7 @@ const STORAGE_EVENT = 'storage';
 @Service()
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
+  private readonly storage = inject(SafeStorage);
   private readonly destroyRef = inject(DestroyRef);
   private readonly reducedMotion = inject(ReducedMotion);
 
@@ -206,10 +205,10 @@ export class ThemeService {
 
     if (view) {
       const keys: (string | null)[] = [
-        THEME_STORAGE_KEY,
-        CUSTOM_THEME_STORAGE_KEY,
-        MOTION_STORAGE_KEY,
-        LAYOUT_STORAGE_KEY,
+        STORAGE_KEY.Theme,
+        STORAGE_KEY.CustomTheme,
+        STORAGE_KEY.Motion,
+        STORAGE_KEY.Layout,
         null, // `localStorage.clear()` in another tab
       ];
       const onStorage = (event: StorageEvent): void => {
@@ -224,24 +223,24 @@ export class ThemeService {
 
   setPreference(preference: ThemePreference): void {
     this.preferenceState.set(preference);
-    this.store(THEME_STORAGE_KEY, preference);
+    this.store(STORAGE_KEY.Theme, preference);
   }
 
   setCustomTheme(theme: CustomTheme): void {
     this.customThemeState.set({ ...theme });
-    this.store(CUSTOM_THEME_STORAGE_KEY, JSON.stringify(theme));
+    this.store(STORAGE_KEY.CustomTheme, JSON.stringify(theme));
   }
 
   setMotion(motion: MotionPreference): void {
     this.motionState.set(motion);
-    this.store(MOTION_STORAGE_KEY, motion);
+    this.store(STORAGE_KEY.Motion, motion);
   }
 
   /** Text size, font, density and the card options, always whole. */
   setLayout(layout: LayoutSettings): void {
     const next = wholeLayout(layout);
     this.layoutState.set(next);
-    this.store(LAYOUT_STORAGE_KEY, JSON.stringify(next));
+    this.store(STORAGE_KEY.Layout, JSON.stringify(next));
   }
 
   /** Applies (and remembers) the given appearance; the account settings call this when they load. */
@@ -253,12 +252,9 @@ export class ThemeService {
   }
 
   private store(key: string, value: string): void {
-    try {
-      if (this.document.defaultView?.localStorage.getItem(key) !== value) {
-        this.document.defaultView?.localStorage.setItem(key, value);
-      }
-    } catch {
-      // Storage can be unavailable (private mode, blocked); the choice then lasts for the session.
+    // Storage can be unavailable (private mode, blocked); the choice then lasts for the session.
+    if (this.storage.getString(key) !== value) {
+      this.storage.set(key, value);
     }
   }
 
@@ -268,24 +264,19 @@ export class ThemeService {
    */
   hasStoredAppearance(): boolean {
     if (
-      isThemePreference(this.read(THEME_STORAGE_KEY)) ||
-      isMotionPreference(this.read(MOTION_STORAGE_KEY))
+      isThemePreference(this.read(STORAGE_KEY.Theme)) ||
+      isMotionPreference(this.read(STORAGE_KEY.Motion))
     ) {
       return true;
     }
     return (
-      this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme) !== null || this.readLayout() !== null
+      this.parse(STORAGE_KEY.CustomTheme, isCustomTheme) !== null || this.readLayout() !== null
     );
   }
 
   /** The stored JSON under `key` when it passes `guard`; `null` when missing, broken or invalid. */
   private parse<T>(key: string, guard: (value: unknown) => value is T): T | null {
-    try {
-      const parsed: unknown = JSON.parse(this.read(key) ?? 'null');
-      return guard(parsed) ? parsed : null;
-    } catch {
-      return null;
-    }
+    return this.storage.getJson(key, guard, null);
   }
 
   /**
@@ -293,21 +284,21 @@ export class ThemeService {
    * it: the key is ignored, the rest of the layout stays.
    */
   private readLayout(): LayoutSettings | null {
-    const stored = this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings);
+    const stored = this.parse(STORAGE_KEY.Layout, isLayoutSettings);
     return stored && wholeLayout(stored);
   }
 
   /** Takes every valid stored value; a missing or broken one keeps the current value. */
   private readStored(): void {
-    const preference = this.read(THEME_STORAGE_KEY);
+    const preference = this.read(STORAGE_KEY.Theme);
     if (isThemePreference(preference)) {
       this.preferenceState.set(preference);
     }
-    const motion = this.read(MOTION_STORAGE_KEY);
+    const motion = this.read(STORAGE_KEY.Motion);
     if (isMotionPreference(motion)) {
       this.motionState.set(motion);
     }
-    const custom = this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme);
+    const custom = this.parse(STORAGE_KEY.CustomTheme, isCustomTheme);
     if (custom !== null) {
       this.customThemeState.set(custom);
     }
@@ -318,10 +309,6 @@ export class ThemeService {
   }
 
   private read(key: string): string | null {
-    try {
-      return this.document.defaultView?.localStorage.getItem(key) ?? null;
-    } catch {
-      return null;
-    }
+    return this.storage.getString(key);
   }
 }

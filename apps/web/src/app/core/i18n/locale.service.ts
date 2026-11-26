@@ -13,7 +13,8 @@ import { firstValueFrom } from 'rxjs';
 import { activeLang, setActiveLang } from './active-lang';
 import { APP_LANG } from './models/app-lang.const';
 import type { AppLang } from './models/app-lang.type';
-import { LANGUAGE_STORAGE_KEY } from './models/language-storage-key.const';
+import { SafeStorage } from '../storage/safe-storage.service';
+import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { relativeTime, relativeTimeFormat } from './relative-time';
 import { resolveAppLang, resolveFirstDay, resolveIntlLocale } from './resolve-locale';
 
@@ -44,6 +45,7 @@ const SAVED_RELATIVE_DAYS = 14;
 @Service()
 export class LocaleService {
   private readonly document = inject(DOCUMENT);
+  private readonly storage = inject(SafeStorage);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
   /** Resolved on the first switch only: code that just reads the settings needs no Transloco. */
@@ -112,7 +114,7 @@ export class LocaleService {
     const view = this.document.defaultView;
     if (view) {
       // `null`: `localStorage.clear()` in another tab.
-      const keys: (string | null)[] = [LANGUAGE_STORAGE_KEY, null];
+      const keys: (string | null)[] = [STORAGE_KEY.Language, null];
       const onStorage = (event: StorageEvent): void => {
         if (keys.includes(event.key)) {
           this.readStored();
@@ -140,11 +142,8 @@ export class LocaleService {
       weekStart: settings.weekStart,
     };
     this.settingsState.set(next);
-    try {
-      this.document.defaultView?.localStorage.setItem(LANGUAGE_STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // Storage unavailable (private mode, blocked): the choice lasts for the session.
-    }
+    // Storage unavailable (private mode, blocked): the choice lasts for the session.
+    this.storage.setJson(STORAGE_KEY.Language, next);
   }
 
   /** This browser holds valid language settings (chosen before the account kept them, or as a guest). */
@@ -273,14 +272,7 @@ export class LocaleService {
   }
 
   private readStorage(): unknown {
-    let stored: unknown;
-    try {
-      stored = JSON.parse(
-        this.document.defaultView?.localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? 'null',
-      );
-    } catch {
-      return null;
-    }
+    const stored = this.storage.getJsonValue(STORAGE_KEY.Language) ?? null;
     if (typeof stored !== 'object' || stored === null || Array.isArray(stored)) {
       return stored;
     }

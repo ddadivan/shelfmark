@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../core/storage/models/storage-key.const';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { signal, type Provider } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
@@ -33,7 +34,6 @@ import { ExtensionBannerService } from '../../core/browser-extension/extension-b
 import { REDISCOVER_API } from '../../features/rediscover/models/rediscover-api.const';
 import { of } from 'rxjs';
 import { SidebarComponent } from './sidebar.component';
-import { SIDEBAR_COLLAPSED_STORAGE_KEY } from './models/sidebar-collapsed-storage-key.const';
 
 async function setup(url = '/links', waitForFolders = true, extra: Provider[] = []) {
   TestBed.configureTestingModule({
@@ -114,7 +114,7 @@ async function foldersToggle(fixture: ComponentFixture<unknown>): Promise<UiButt
 describe('SidebarComponent', () => {
   afterEach(() => {
     localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY);
-    localStorage.removeItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY.SidebarCollapsed);
   });
 
   it('shows "N forgotten" on the Recently opened row while some wait (#512)', async () => {
@@ -527,7 +527,7 @@ describe('SidebarComponent', () => {
     expect(await toggle.isExpanded()).toBe(false);
     expect(body?.classList).toContain('is-collapsed');
     // Tags start folded (Shelf), so they stay in the list.
-    expect(JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]')).toEqual([
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.SidebarCollapsed) ?? '[]')).toEqual([
       'tags',
       'folders',
     ]);
@@ -536,13 +536,13 @@ describe('SidebarComponent', () => {
 
     await toggle.click();
     expect(await toggle.isExpanded()).toBe(true);
-    expect(JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]')).toEqual([
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.SidebarCollapsed) ?? '[]')).toEqual([
       'tags',
     ]);
   });
 
   it('starts folded from the stored choice and "New folder" opens it again (#556)', async () => {
-    localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify(['folders', 'tags']));
+    localStorage.setItem(STORAGE_KEY.SidebarCollapsed, JSON.stringify(['folders', 'tags']));
     const { element, fixture } = await setup();
     expect(await (await foldersToggle(fixture)).isExpanded()).toBe(false);
     expect(element.querySelector('#sidebar-folders-body')?.classList).toContain('is-collapsed');
@@ -553,7 +553,7 @@ describe('SidebarComponent', () => {
       )
     ).click();
     expect(await (await foldersToggle(fixture)).isExpanded()).toBe(true);
-    expect(JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]')).toEqual([
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.SidebarCollapsed) ?? '[]')).toEqual([
       'tags',
     ]);
   });

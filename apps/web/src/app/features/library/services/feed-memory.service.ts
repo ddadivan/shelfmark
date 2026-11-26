@@ -1,4 +1,4 @@
-import { Service, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import {
   isLibrarySort,
   isLibraryView,
@@ -6,7 +6,8 @@ import {
   type LibraryView,
 } from '@shelfmark/contracts';
 import { FEED_MEMORY_LIMIT } from '../models/feed-memory-limit.const';
-import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import type { FeedMemoryEntry } from '../models/feed-memory-entry.interface';
 import { CARD_FIELD } from '../models/card-field.const';
 import type { CardField } from '../models/card-field.type';
@@ -14,14 +15,6 @@ import type { CardFields } from '../models/card-fields.type';
 import { GRID_COLUMNS } from '../models/grid-columns.const';
 
 type FeedMemoryMap = Readonly<Record<string, FeedMemoryEntry>>;
-
-function storage(): Storage | undefined {
-  try {
-    return globalThis.localStorage;
-  } catch {
-    return undefined;
-  }
-}
 
 const FIELDS: readonly CardField[] = Object.values(CARD_FIELD);
 
@@ -46,33 +39,30 @@ function readFields(value: unknown): CardFields | undefined {
 }
 
 /** Reads the stored map; anything unexpected is dropped entry by entry. */
-function read(): FeedMemoryMap {
-  try {
-    const parsed: unknown = JSON.parse(storage()?.getItem(FEED_MEMORY_STORAGE_KEY) ?? '{}');
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      return {};
+function isStoredMap(value: unknown): value is object {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function read(storage: SafeStorage): FeedMemoryMap {
+  const parsed = storage.getJson<object>(STORAGE_KEY.FeedMemory, isStoredMap, {});
+  const map: Record<string, FeedMemoryEntry> = {};
+  for (const [key, value] of Object.entries(parsed)) {
+    if (typeof value !== 'object' || value === null) {
+      continue;
     }
-    const map: Record<string, FeedMemoryEntry> = {};
-    for (const [key, value] of Object.entries(parsed)) {
-      if (typeof value !== 'object' || value === null) {
-        continue;
-      }
-      const { view, sort, grid, fields } = value as Record<string, unknown>;
-      const shownFields = readFields(fields);
-      const entry: FeedMemoryEntry = {
-        ...(isLibraryView(view) && { view }),
-        ...(isLibrarySort(sort) && { sort }),
-        ...(isGridStep(grid) && { grid }),
-        ...(shownFields && { fields: shownFields }),
-      };
-      if (Object.keys(entry).length > 0) {
-        map[key] = entry;
-      }
+    const { view, sort, grid, fields } = value as Record<string, unknown>;
+    const shownFields = readFields(fields);
+    const entry: FeedMemoryEntry = {
+      ...(isLibraryView(view) && { view }),
+      ...(isLibrarySort(sort) && { sort }),
+      ...(isGridStep(grid) && { grid }),
+      ...(shownFields && { fields: shownFields }),
+    };
+    if (Object.keys(entry).length > 0) {
+      map[key] = entry;
     }
-    return map;
-  } catch {
-    return {};
   }
+  return map;
 }
 
 /**
@@ -86,7 +76,8 @@ function read(): FeedMemoryMap {
  */
 @Service()
 export class FeedMemoryService {
-  private readonly map = signal<FeedMemoryMap>(read());
+  private readonly storage = inject(SafeStorage);
+  private readonly map = signal<FeedMemoryMap>(read(this.storage));
 
   /** The view the feed was last switched to; `undefined` while it has none. */
   view(feed: string): LibraryView | undefined {
@@ -118,10 +109,7 @@ export class FeedMemoryService {
       [feed]: { ...current, ...choice },
     };
     this.map.set(next);
-    try {
-      storage()?.setItem(FEED_MEMORY_STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // Storage can be blocked; the choice then lasts for this session only.
-    }
+    // Storage can be blocked; the choice then lasts for this session only.
+    this.storage.setJson(STORAGE_KEY.FeedMemory, next);
   }
 }

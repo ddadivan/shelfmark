@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -22,13 +23,9 @@ import {
   nearestAccessibleAccent,
   nearestReadableBackground,
 } from '@shelfmark/ui';
-import { LAYOUT_STORAGE_KEY } from '../../../../core/theme/models/layout-storage-key.const';
 import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { setupSettingsPage } from '../../../../../testing/settings-page-testbed';
-import { CUSTOM_THEME_STORAGE_KEY } from '../../../../core/theme/models/custom-theme-storage-key.const';
-import { MOTION_STORAGE_KEY } from '../../../../core/theme/models/motion-storage-key.const';
-import { THEME_STORAGE_KEY } from '../../../../core/theme/models/theme-storage-key.const';
 import { USER_SETTINGS_API } from '../../models/user-settings-api.const';
 import { AppearanceSettingsService } from '../../services/appearance-settings.service';
 import AppearancePage from './appearance.page';
@@ -112,10 +109,10 @@ describe('AppearancePage', () => {
 
   afterEach(() => {
     for (const key of [
-      THEME_STORAGE_KEY,
-      CUSTOM_THEME_STORAGE_KEY,
-      MOTION_STORAGE_KEY,
-      LAYOUT_STORAGE_KEY,
+      STORAGE_KEY.Theme,
+      STORAGE_KEY.CustomTheme,
+      STORAGE_KEY.Motion,
+      STORAGE_KEY.Layout,
     ]) {
       localStorage.removeItem(key);
     }
@@ -169,7 +166,7 @@ describe('AppearancePage', () => {
 
     expect(theme.preference()).toBe(THEME_PREFERENCE.Dark);
     expect(settingsApi.update).toHaveBeenCalledWith({ theme: THEME_PREFERENCE.Dark });
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe(THEME_PREFERENCE.Dark);
+    expect(localStorage.getItem(STORAGE_KEY.Theme)).toBe(THEME_PREFERENCE.Dark);
     expect(radioIn(page, 'Theme', 'Dark').checked).toBe(true);
   });
 

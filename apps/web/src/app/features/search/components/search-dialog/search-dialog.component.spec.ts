@@ -1,4 +1,4 @@
-import { RECENT_SEARCHES_STORAGE_KEY } from '../../../../core/auth/models/recent-searches-storage-key.const';
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
@@ -115,7 +115,7 @@ async function advance(fixture: ComponentFixture<unknown>, ms: number): Promise<
 
 describe('SearchDialogComponent', () => {
   // Recent searches another spec left in this worker's storage would replace the empty hint.
-  beforeEach(() => localStorage.removeItem(RECENT_SEARCHES_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.RecentSearches));
 
   it('shows the hint and asks nothing for an empty query', async () => {
     const { api, element } = await setup();

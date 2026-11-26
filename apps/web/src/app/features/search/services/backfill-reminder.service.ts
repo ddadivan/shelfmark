@@ -1,6 +1,6 @@
-import { DOCUMENT } from '@angular/common';
 import { computed, inject, Service, signal } from '@angular/core';
-import { BACKFILL_REMINDER_DISMISSED_STORAGE_KEY } from '../../../core/auth/models/backfill-reminder-dismissed-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { AiSettingsActions } from '../../ai/services/ai-settings-actions.service';
 import { AiSettingsStore } from '../../ai/services/ai-settings.store';
@@ -20,7 +20,7 @@ const DISMISSED = '1';
 export class BackfillReminderService {
   private readonly store = inject(AiSettingsStore);
   private readonly actions = inject(AiSettingsActions);
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
+  private readonly storage = inject(SafeStorage);
   private readonly dismissed = signal(this.readDismissed());
   private timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -61,18 +61,11 @@ export class BackfillReminderService {
   /** Hides the reminder for good on this device. */
   dismiss(): void {
     this.dismissed.set(true);
-    try {
-      this.storage?.setItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY, DISMISSED);
-    } catch {
-      // Blocked storage: hidden for this visit only.
-    }
+    // Blocked storage: hidden for this visit only.
+    this.storage.set(STORAGE_KEY.BackfillReminderDismissed, DISMISSED);
   }
 
   private readDismissed(): boolean {
-    try {
-      return this.storage?.getItem(BACKFILL_REMINDER_DISMISSED_STORAGE_KEY) === DISMISSED;
-    } catch {
-      return false;
-    }
+    return this.storage.getString(STORAGE_KEY.BackfillReminderDismissed) === DISMISSED;
   }
 }

@@ -1,3 +1,4 @@
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -6,7 +7,6 @@ import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark
 import { UiButtonHarness, UiDialogHarness } from '@shelfmark/ui/testing';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
-import { LAST_EXPORT_STORAGE_KEY } from '../../../../core/auth/models/last-export-storage-key.const';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { EXPORT_API } from '../../models/export-api.const';
@@ -70,7 +70,7 @@ async function setup(
 }
 
 afterEach(() => {
-  localStorage.removeItem(LAST_EXPORT_STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY.LastExport);
   document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
     el.replaceChildren();
   });
@@ -144,7 +144,7 @@ describe('ExportDialogComponent', () => {
 
   it('shows the last whole-library export of this browser', async () => {
     localStorage.setItem(
-      LAST_EXPORT_STORAGE_KEY,
+      STORAGE_KEY.LastExport,
       JSON.stringify({ format: 'html', at: new Date(Date.now() - 3 * 86_400_000).toISOString() }),
     );
     const { body } = await setup();
@@ -165,7 +165,7 @@ describe('ExportDialogComponent', () => {
     expect(show).toHaveBeenCalledWith(
       expect.objectContaining({ kind: TOAST_KIND.Success, title: 'File saved' }),
     );
-    expect(JSON.parse(localStorage.getItem(LAST_EXPORT_STORAGE_KEY) ?? '{}')).toMatchObject({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY.LastExport) ?? '{}')).toMatchObject({
       format: 'html',
     });
   });
@@ -210,7 +210,7 @@ describe('ExportDialogComponent', () => {
     });
     expect(unsubscribed).toBe(true);
     expect(show).not.toHaveBeenCalled();
-    expect(localStorage.getItem(LAST_EXPORT_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.LastExport)).toBeNull();
   });
 
   it('keeps the dialog open after a failure, with the error toast and Download usable again', async () => {

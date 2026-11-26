@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import { computed, inject, Service, signal } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { isFolderEmoji } from '@shelfmark/contracts';
@@ -16,7 +15,8 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FOLDER_EMOJI_CATALOG } from '../models/folder-emoji-catalog.const';
 import type { FolderEmojiCategory } from '../models/folder-emoji-category.type';
 import type { FolderEmojiNames } from '../models/folder-emoji-names.type';
-import { EMOJI_RECENT_STORAGE_KEY } from '../../../core/auth/models/emoji-recent-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { FOLDER_EMOJI_RECENT_MAX } from '../models/folder-emoji-recent-max.const';
 import { loadFolderEmojiNames } from './folder-emoji-names.loader';
@@ -38,7 +38,7 @@ export class FolderEmojiService {
   private readonly settings = inject(UserSettingsStore);
   private readonly folders = inject(FoldersStore);
   private readonly toasts = inject(ToastService);
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
+  private readonly storage = inject(SafeStorage);
 
   private readonly names = signal<{ lang: string; names: FolderEmojiNames } | null>(null);
   private loading: { lang: string; done: Promise<void> } | null = null;
@@ -153,24 +153,15 @@ export class FolderEmojiService {
   }
 
   private readRecent(): string[] {
-    try {
-      const parsed: unknown = JSON.parse(this.storage?.getItem(EMOJI_RECENT_STORAGE_KEY) ?? '[]');
-      return Array.isArray(parsed)
-        ? parsed
-            .filter((item): item is string => isFolderEmoji(item))
-            .slice(0, FOLDER_EMOJI_RECENT_MAX)
-        : [];
-    } catch {
-      return [];
-    }
+    return this.storage
+      .getJson<unknown[]>(STORAGE_KEY.EmojiRecent, Array.isArray, [])
+      .filter((item): item is string => isFolderEmoji(item))
+      .slice(0, FOLDER_EMOJI_RECENT_MAX);
   }
 
   private writeRecent(list: readonly string[]): void {
-    try {
-      this.storage?.setItem(EMOJI_RECENT_STORAGE_KEY, JSON.stringify(list));
-    } catch {
-      // Storage full or blocked (private mode): "Recent" lives until the page reloads.
-    }
+    // Storage full or blocked (private mode): "Recent" lives until the page reloads.
+    this.storage.setJson(STORAGE_KEY.EmojiRecent, list);
   }
 
   private t(key: string, params?: Record<string, string>): string {

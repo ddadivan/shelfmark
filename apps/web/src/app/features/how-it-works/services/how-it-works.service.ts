@@ -1,12 +1,10 @@
-import { DOCUMENT } from '@angular/common';
 import { computed, inject, Service, signal } from '@angular/core';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { HowItWorksDialogComponent } from '../components/how-it-works-dialog/how-it-works-dialog.component';
-import {
-  HOW_IT_WORKS_CARD_DAYS,
-  HOW_IT_WORKS_STORAGE_PREFIX,
-} from '../models/how-it-works-card.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
+import { HOW_IT_WORKS_CARD_DAYS } from '../models/how-it-works-card.const';
 import type { HowItWorksState } from '../models/how-it-works-state.interface';
 
 const MS_PER_DAY = 86_400_000;
@@ -31,7 +29,7 @@ function isState(value: unknown): value is HowItWorksState {
 export class HowItWorksService {
   private readonly auth = inject(AuthStore);
   private readonly dialogs = inject(DialogService);
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
+  private readonly storage = inject(SafeStorage);
   /** Bumped on writes, so `cardVisible` re-reads storage. */
   private readonly version = signal(0);
 
@@ -70,14 +68,10 @@ export class HowItWorksService {
 
   /** The stored state, created (first seen now) when there is none. */
   private read(userId: string): HowItWorksState {
-    try {
-      const raw = this.storage?.getItem(HOW_IT_WORKS_STORAGE_PREFIX + userId);
-      const parsed: unknown = raw ? JSON.parse(raw) : null;
-      if (isState(parsed)) {
-        return parsed;
-      }
-    } catch {
-      // Unreadable or blocked storage: treat as first seen now.
+    // Unreadable or blocked storage: treat as first seen now.
+    const stored = this.storage.getJson(STORAGE_KEY.HowItWorksPrefix + userId, isState, null);
+    if (stored !== null) {
+      return stored;
     }
     const fresh: HowItWorksState = { firstSeen: new Date().toISOString(), done: false };
     this.save(userId, fresh, false);
@@ -85,11 +79,8 @@ export class HowItWorksService {
   }
 
   private save(userId: string, state: HowItWorksState, notify = true): void {
-    try {
-      this.storage?.setItem(HOW_IT_WORKS_STORAGE_PREFIX + userId, JSON.stringify(state));
-    } catch {
-      // Blocked storage: the card simply shows again next time.
-    }
+    // Blocked storage: the card simply shows again next time.
+    this.storage.setJson(STORAGE_KEY.HowItWorksPrefix + userId, state);
     if (notify) {
       this.version.update((value) => value + 1);
     }

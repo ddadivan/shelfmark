@@ -1,10 +1,10 @@
-import { DOCUMENT } from '@angular/common';
 import { inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { NOTIFICATION_LIMIT } from '../models/notification-limit.const';
 import { NOTIFICATION_PERMISSION } from '../models/notification-permission.const';
-import { NOTIFICATION_STORAGE_KEY } from '../models/notification-storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { DeviceNotificationsService } from './device-notifications.service';
 
 /**
@@ -18,7 +18,7 @@ export class NotificationPromptService {
   private readonly device = inject(DeviceNotificationsService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage;
+  private readonly storage = inject(SafeStorage);
 
   /** Shows the question in place of the "Reminder set" toast; false when it should not ask. */
   offer(title: string, detail?: string): boolean {
@@ -48,19 +48,12 @@ export class NotificationPromptService {
   }
 
   private recentlyDeclined(): boolean {
-    try {
-      const at = Number(this.storage?.getItem(NOTIFICATION_STORAGE_KEY.Asked) ?? '');
-      return Number.isFinite(at) && at > 0 && Date.now() - at < NOTIFICATION_LIMIT.AskAgainAfterMs;
-    } catch {
-      return false;
-    }
+    const at = this.storage.getNumber(STORAGE_KEY.NotificationsAsked);
+    return at !== null && at > 0 && Date.now() - at < NOTIFICATION_LIMIT.AskAgainAfterMs;
   }
 
   private decline(): void {
-    try {
-      this.storage?.setItem(NOTIFICATION_STORAGE_KEY.Asked, String(Date.now()));
-    } catch {
-      // Storage blocked: the question may come back after the next reminder.
-    }
+    // Storage blocked: the question may come back after the next reminder.
+    this.storage.set(STORAGE_KEY.NotificationsAsked, String(Date.now()));
   }
 }
