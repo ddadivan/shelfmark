@@ -87,7 +87,6 @@ import { FolderCoverComponent } from './components/folder-cover/folder-cover.com
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
 import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
-import { SplitRelatedService } from './services/split-related.service';
 import { SplitViewService } from './services/split-view.service';
 import { ElementWidthDirective } from './directives/element-width.directive';
 import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
@@ -214,8 +213,6 @@ export default class LibraryPage {
   protected readonly preview = inject(LinkPreviewService);
   /** The left feed shares the width with a right half or the preview: the compact toolbar. */
   protected readonly narrow = computed(() => this.splitView.open() || this.preview.split());
-  /** "Show related" in the card and row menus (AI-3). */
-  protected readonly splitRelated = inject(SplitRelatedService);
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
   protected readonly folderChips = inject(FolderChipsService);
   /** Cards and rows name their folder in mixed feeds, not in a folder's own feed or Unsorted (#418). */

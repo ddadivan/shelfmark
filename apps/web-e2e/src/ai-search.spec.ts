@@ -223,20 +223,6 @@ test.describe('search by meaning (AI-3, mock API)', () => {
     await expect(dialog.getByText('Related on your shelf')).toHaveCount(0);
   });
 
-  test('"Show related" fills the side-by-side picker with related folders', async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) < 1280, 'side by side opens from 80em');
-    await openLibrary(page);
-    await page
-      .locator('ui-card')
-      .filter({ hasText: 'Nano Puff jacket' })
-      .getByRole('button', { name: /^Actions for / })
-      .click();
-    await page.getByRole('menuitem', { name: 'Show related' }).click();
-    await expect(page).toHaveURL(/[?&]split=(&|$)/);
-    await expect(page).toHaveURL(/[?&]related=/);
-    await expect(page.getByText('Related folders', { exact: true })).toBeVisible();
-  });
-
   test('reminds about older links AI has not read; Process starts it', async ({ page }) => {
     await openLibrary(page);
     await search(page, 'signals');

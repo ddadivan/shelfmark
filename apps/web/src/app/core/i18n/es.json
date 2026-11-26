@@ -4136,7 +4136,6 @@
       "title": "Relacionados en tu estantería",
       "button": "Similares · {{count}}",
       "why": "Cerca de: {{reasons}}",
-      "show": "Mostrar relacionados",
       "folders": "Carpetas relacionadas"
     },
     "ask": {

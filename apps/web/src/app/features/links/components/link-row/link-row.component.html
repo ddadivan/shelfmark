@@ -162,11 +162,6 @@
       <ui-menu-item icon="folder-move" (activated)="moveRequested.emit()">
         {{ 'links.item.move' | transloco }}
       </ui-menu-item>
-      @if (relatable()) {
-        <ui-menu-item icon="columns" (activated)="relatedRequested.emit()">
-          {{ 'ai.related.show' | transloco }}
-        </ui-menu-item>
-      }
       @if (ruleDomain(); as domain) {
         <ui-menu-item icon="globe" (activated)="ruleRequested.emit()">
           {{ 'links.item.createRule' | transloco: { domain } }}

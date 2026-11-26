@@ -4035,7 +4035,6 @@
       "title": "Related on your shelf",
       "button": "Related · {{count}}",
       "why": "Close to: {{reasons}}",
-      "show": "Show related",
       "folders": "Related folders"
     },
     "ask": {
