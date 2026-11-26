@@ -1,11 +1,8 @@
 @use '../../../styles/ui' as *;
 
-// A plain open folder row has a hairline in the text colour (author, round 9: it was hard to tell
-// apart). A highlighted open row has none: its stronger fill marks it (author, round 13).
-.ui-tree__row--folder[aria-current]:not(
-    :focus-visible,
-    [data-ui-folder-colour][data-ui-folder-highlight]
-  ) {
+// The open folder row also has the hairline of a highlighted one (author, round 9: a plain open
+// folder was hard to tell apart), in the text colour; a highlight colour replaces it below.
+.ui-tree__row--folder[aria-current]:not(:focus-visible) {
   outline: 1px solid color-mix(in srgb, var(--text) 25%, transparent);
   outline-offset: -1px;
 }

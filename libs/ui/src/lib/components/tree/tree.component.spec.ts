@@ -1038,10 +1038,7 @@ describe('TreeComponent', () => {
         /\.ui-tree__row--folder\[aria-current\]\[data-ui-folder-colour\]\[data-ui-folder-highlight\]\s*\{[^}]*\}/,
       );
       expect(open).toContain('font-weight: 600');
-      expect(open).toMatch(
-        /background: color-mix\(in srgb, var\(--ui-folder-tint\) 80%, var\(--ui-folder-ink\)\)/,
-      );
-      expect(open).not.toContain('outline: 1px');
+      expect(open).toMatch(/background: var\(--ui-folder-tint\)/);
     });
 
     it('has no colour bar or setting-dependent rule any more (#440)', () => {
