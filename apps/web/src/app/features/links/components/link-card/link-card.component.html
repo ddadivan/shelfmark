@@ -27,18 +27,8 @@
       (click)="onCheckboxClick($event)"
     />
   }
-  <!-- Glass buttons over the preview (Shelf LinkCard): play for videos, the star, the ⋯ menu. -->
-  @if (isVideo() && previewable() && href() && !readOnly()) {
-    <ui-button
-      slot="play"
-      variant="glass"
-      iconOnly
-      iconLeft="play-filled"
-      [ariaLabel]="'links.item.preview' | transloco: { title: link().title }"
-      [uiTooltip]="'links.item.previewHere' | transloco"
-      (click)="previewRequested.emit()"
-    />
-  }
+  <!-- Glass buttons over the preview (Shelf LinkCard): the star and the ⋯ menu. No play mark on
+       videos (author, Nov 26): "Preview here" in the ⋯ menu opens the player. -->
   @if (!readOnly()) {
     <ui-button
       slot="favorite"

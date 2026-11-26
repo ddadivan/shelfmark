@@ -47,7 +47,7 @@ test.describe('link preview (mock API)', () => {
     page,
   }) => {
     await openLibrary(page);
-    // Shelf card: no eye button; "Preview here" is the first item of the ⋯ menu (videos also get a play button).
+    // Shelf card: no eye button; "Preview here" is the first item of the ⋯ menu.
     await previewFromMenu(page, FIRST);
 
     const panel = page.getByRole('region', { name: `Preview: ${FIRST}` });

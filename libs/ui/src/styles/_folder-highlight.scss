@@ -30,7 +30,7 @@
     // The open row must stand out from the other highlighted rows (author, Nov 26: with several
     // tinted rows it was unclear which one is open): a hairline in the folder's own colour.
     // Half see-through (author, Nov 26: the full ink was too strong).
-    outline: 1px solid color-mix(in srgb, var(--ui-folder-ink) 45%, transparent);
+    outline: 1px solid color-mix(in srgb, var(--ui-folder-ink) 25%, transparent);
     outline-offset: -1px;
 
     @include hover {

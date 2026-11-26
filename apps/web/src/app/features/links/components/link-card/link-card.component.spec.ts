@@ -618,12 +618,9 @@ describe('LinkCardComponent reminder (#275)', () => {
       expect(eye(element)).toBeNull();
     });
 
-    it('emits previewRequested from the glass play button of a video', async () => {
-      const { element, requested, opened } = await previewSetup(false, VIDEO);
-      expect(eye(element)?.closest('ui-button')?.getAttribute('slot')).toBe('play');
-      eye(element)?.click();
-      expect(requested).toHaveBeenCalledTimes(1);
-      expect(opened).not.toHaveBeenCalled();
+    it('draws no play mark on a video (author, Nov 26): Preview here in the menu opens it', async () => {
+      const { element } = await previewSetup(false, VIDEO);
+      expect(element.querySelector('[slot="play"]')).toBeNull();
     });
 
     it('offers "Preview here" first in the menu and emits previewRequested', async () => {

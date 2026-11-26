@@ -124,7 +124,6 @@ export class LinkCardComponent {
   protected readonly cardMedia = computed<CardMedia>(() =>
     this.link().kind === LINK_KIND.Shopping ? CARD_MEDIA.Contain : this.media(),
   );
-  protected readonly isVideo = computed(() => this.link().kind === LINK_KIND.Video);
   /** The site's brand colour for the favicon square, where known. */
   protected readonly colour = computed(() => siteColour(this.link().url, SITE_COLOURS));
 
