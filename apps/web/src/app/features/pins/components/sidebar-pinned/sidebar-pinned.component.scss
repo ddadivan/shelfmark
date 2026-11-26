@@ -77,8 +77,19 @@
   line-height: rem(20px);
   padding-block: 0;
   padding-inline: rem(10px) rem(40px);
-  color: var(--text);
+
+  // Like the tree rows: `text-muted` at rest, `text` on hover and when open (author, round 10).
+  color: var(--text-muted);
   text-decoration: none;
+
+  @include hover {
+    color: var(--text);
+  }
+
+  &.is-active {
+    color: var(--text);
+  }
+
   border-radius: var(--radius-sm);
 
   &:focus-visible {
