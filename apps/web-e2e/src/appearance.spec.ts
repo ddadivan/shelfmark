@@ -393,13 +393,10 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     );
     await expect(guest.locator('html')).toHaveAttribute('data-motion', 'reduced');
     // The app preview shows its first frame with the toast and never moves.
-    await expect(guest.locator('app-landing-hero-preview .preview__toast')).toHaveClass(
-      /preview__toast--shown/,
+    await expect(guest.locator('app-landing-hero-preview .stage__toast')).toHaveClass(
+      /stage__toast--shown/,
     );
-    await expect(guest.locator('app-landing-hero-preview .preview__toast')).toHaveCSS(
-      'opacity',
-      '1',
-    );
+    await expect(guest.locator('app-landing-hero-preview .stage__toast')).toHaveCSS('opacity', '1');
     expect(
       await guest
         .locator('app-landing-hero-preview')

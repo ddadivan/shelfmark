@@ -46,7 +46,10 @@ test.describe('folder style and pins (mock API)', () => {
   // From a folder page or Settings back to a place with the folder tree (the Library tab on a phone).
   async function backToTree(page: Page): Promise<void> {
     if (isCompact(page)) {
-      await tabBar(page).getByRole('link', { name: 'Library' }).click();
+      // The Library tab leads back to the last folder when it is pressed on /library itself.
+      if (new URL(page.url()).pathname !== '/library') {
+        await tabBar(page).getByRole('link', { name: 'Library' }).click();
+      }
       await expect(page).toHaveURL('/library');
       await expect(page.locator('app-library-tile').first()).toBeVisible();
     } else if (/\/settings\//.test(page.url())) {
@@ -64,6 +67,8 @@ test.describe('folder style and pins (mock API)', () => {
     await dialog.getByLabel('Name').fill(NOTES);
     await dialog.getByRole('button', { name: 'Create folder' }).click();
     await expect(dialog).toHaveCount(0);
+    // Creating a folder opens it: wait for that before going back to the tree.
+    await expect(page).toHaveURL(/\/folders\//);
     await backToTree(page);
     await expect(page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) })).toBeVisible();
   }

@@ -68,6 +68,9 @@ test.describe('card tags (Shelf hashtags, mock API)', () => {
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await openCards(page);
+      // The showcase library has a due reminder: its toast covers the card on a phone.
+      await page.locator('ui-toast').getByRole('button', { name: 'Dismiss' }).first().click();
+      await expect(page.locator('ui-toast')).toHaveCount(0);
       const tags = card(page).locator('app-link-card-tags');
       await expect(tags.getByRole('button')).toHaveText(TAGS.map((tag) => `#${tag}`));
       // The "#" is for the eye: the accessible name is the tag itself.
