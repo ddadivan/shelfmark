@@ -35,7 +35,9 @@
   cursor: pointer;
   user-select: none;
   border-radius: var(--radius-sm);
-  transition: background-color var(--duration-fast) var(--ease-out);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 
   &:focus-visible {
     @include focus-ring(-2px);
