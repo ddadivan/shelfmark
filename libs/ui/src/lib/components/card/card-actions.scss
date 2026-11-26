@@ -148,12 +148,12 @@
 // the Select button, X, a long press), on a picked card and on keyboard focus; not on touch, where
 // a long press starts the selection.
 .ui-card__select {
-  // Shelf `lc-sel` (08-select-move): a 22px rounded square on `surface` with a 1.5px `control`
-  // edge, so an unchecked box reads as a checkbox (the glass circle read as an empty disc, author
-  // Nov 26); checked: the accent fill with the tick. The hit area stays 28px.
-  --ui-checkbox-size: #{rem(22px)};
+  // A round box as large as the glass star (28px, author round 10), on `surface` with the
+  // `border-control` edge so an unchecked box still reads as a checkbox; checked: the accent fill
+  // with the tick.
+  --ui-checkbox-size: #{rem(28px)};
   --ui-checkbox-hit: #{rem(28px)};
-  --ui-checkbox-radius: var(--radius-tile-sm);
+  --ui-checkbox-radius: var(--radius-full);
   --ui-checkbox-tick: #{rem(18px)};
   --ui-checkbox-fill: var(--accent);
   --ui-checkbox-bg: var(--surface);
@@ -161,9 +161,9 @@
   --ui-checkbox-hover-bg: var(--surface);
   --ui-checkbox-pressed-bg: var(--surface);
 
-  // Centred on the 28px marks' line: 10px + (28 - 22) / 2.
-  inset-block-start: rem(13px);
-  inset-inline-start: rem(13px);
+  // On the marks' line, 10px in like the star.
+  inset-block-start: rem(10px);
+  inset-inline-start: rem(10px);
   display: flex;
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
@@ -200,9 +200,9 @@
 // Touch: the checkbox and the buttons grow to 40px.
 @include coarse {
   .ui-card__select {
-    --ui-checkbox-size: #{rem(28px)};
+    --ui-checkbox-size: #{rem(40px)};
     --ui-checkbox-hit: #{rem(40px)};
-    --ui-checkbox-tick: #{rem(22px)};
+    --ui-checkbox-tick: #{rem(24px)};
   }
 
   .ui-card__actions {
