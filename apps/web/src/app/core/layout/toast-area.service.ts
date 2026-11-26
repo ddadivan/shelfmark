@@ -117,6 +117,12 @@ export class ToastAreaService {
 
   /** The client box of the area (without its scrollbar) is what a centred child centres on. */
   private apply(area: HTMLElement): void {
+    // A hidden area (the list of a full screen preview) has no box: centre on the window.
+    if (area.clientWidth === 0) {
+      this.root.style.removeProperty(INSET_START);
+      this.root.style.removeProperty(INSET_END);
+      return;
+    }
     const left = area.getBoundingClientRect().left + area.clientLeft;
     const right = this.root.clientWidth - (left + area.clientWidth);
     this.root.style.setProperty(INSET_START, `${Math.max(0, left)}px`);

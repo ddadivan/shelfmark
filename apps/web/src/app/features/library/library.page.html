@@ -805,8 +805,9 @@
   <app-preview-page />
   } @if (selection.selecting() && splitView.open()) {
   <div class="library__bulk-split"><ng-container *ngTemplateOutlet="bulkBar" /></div>
-  } @if (splitView.open()) {
-  <!-- Registered after the left scroll area, so the toasts centre on both halves, like the bulk bar. -->
+  } @if (splitView.open() || preview.split()) {
+  <!-- Registered after the left scroll area, so the toasts centre on both halves (side by side,
+       the link preview, its full screen), like the bulk bar. -->
   <span class="library__toast-area" aria-hidden="true" appToastArea></span>
   }
   <!-- "Filter…" of the ⋯ menu (Shelf): opened under the menu's button. -->
