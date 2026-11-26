@@ -5186,11 +5186,11 @@
         "sections": {
           "s1": {
             "title": "Attivala",
-            "b0": "Apri Impostazioni, poi IA, e attivala. Scegli separatamente per le cartelle e per i tag."
+            "b0": "Apri **Impostazioni** › **IA** e attiva **Usa l’IA in Shelfmark**."
           },
           "s2": {
             "title": "Disattivala di nuovo",
-            "b0": "Disattivare l’IA ferma subito tutti i suggerimenti. Puoi anche eliminare i tuoi dati IA in Privacy e dati."
+            "b0": "Disattivare l’IA ferma tutti i suggerimenti in una volta. Puoi anche eliminare i tuoi dati IA in **I tuoi dati**."
           }
         },
         "images": {
@@ -5262,15 +5262,15 @@
         "sections": {
           "s1": {
             "title": "Cambia tema",
-            "b0": "Usa la riga Tema nella barra laterale, oppure scegli Chiaro, Scuro o Sistema nelle impostazioni."
+            "b0": "In **Impostazioni** › **Aspetto** scegli **Sistema**, **Chiaro**, **Scuro** o **Personalizzato**."
           },
           "s2": {
             "title": "Personalizzalo",
-            "b0": "Nelle impostazioni puoi anche scegliere un colore d’accento e quanto arrotondare gli angoli."
+            "b0": "**Personalizzato** parte da chiaro o scuro e ti fa scegliere il colore d’accento, lo sfondo della pagina e quanto sono arrotondati gli angoli."
           }
         },
         "images": {
-          "settings-appearance": "Impostazioni, Aspetto: la scelta del tema (chiaro, scuro, sistema) e il colore di accento."
+          "settings-appearance": "Impostazioni, Aspetto: la scelta del tema con Sistema, Chiaro, Scuro e Personalizzato, e il colore d’accento."
         }
       },
       "keyboard-shortcuts": {

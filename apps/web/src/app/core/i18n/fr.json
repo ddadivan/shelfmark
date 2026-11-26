@@ -5186,11 +5186,11 @@
         "sections": {
           "s1": {
             "title": "L’activer",
-            "b0": "Ouvrez Paramètres, puis IA, et activez-la. Vous choisissez séparément pour les dossiers et pour les tags."
+            "b0": "Ouvrez **Paramètres** › **IA** et activez **Utiliser l’IA dans Shelfmark**."
           },
           "s2": {
             "title": "La désactiver à nouveau",
-            "b0": "Désactiver l’IA arrête toutes les suggestions d’un coup. Vous pouvez aussi supprimer vos données d’IA dans Confidentialité et données."
+            "b0": "Désactiver l’IA arrête toutes les suggestions d’un coup. Vous pouvez aussi supprimer vos données d’IA dans **Vos données**."
           }
         },
         "images": {
@@ -5262,15 +5262,15 @@
         "sections": {
           "s1": {
             "title": "Changer de thème",
-            "b0": "Utilisez la ligne Thème de la barre latérale, ou choisissez Clair, Sombre ou Système dans les paramètres."
+            "b0": "Dans **Paramètres** › **Apparence**, choisissez **Système**, **Clair**, **Sombre** ou **Personnalisé**."
           },
           "s2": {
             "title": "Personnaliser",
-            "b0": "Les paramètres permettent aussi de choisir une couleur d’accent et l’arrondi des coins."
+            "b0": "**Personnalisé** part du clair ou du sombre et vous laisse choisir la couleur d’accent, le fond de page et l’arrondi des coins."
           }
         },
         "images": {
-          "settings-appearance": "Réglages, Apparence : le choix du thème (clair, sombre, système) et la couleur d’accent."
+          "settings-appearance": "Paramètres, Apparence : le choix du thème avec Système, Clair, Sombre et Personnalisé, et la couleur d’accent."
         }
       },
       "keyboard-shortcuts": {

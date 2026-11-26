@@ -5186,11 +5186,11 @@
         "sections": {
           "s1": {
             "title": "Actívala",
-            "b0": "Abre Ajustes, luego IA, y actívala. Eliges por separado para carpetas y para etiquetas."
+            "b0": "Abre **Ajustes** › **IA** y activa **Usar IA en Shelfmark**."
           },
           "s2": {
             "title": "Desactívala otra vez",
-            "b0": "Desactivar la IA detiene todas las sugerencias al instante. También puedes eliminar tus datos de IA en Privacidad y datos."
+            "b0": "Al desactivar la IA se detienen todas las sugerencias a la vez. También puedes borrar tus datos de IA en **Tus datos**."
           }
         },
         "images": {
@@ -5262,15 +5262,15 @@
         "sections": {
           "s1": {
             "title": "Cambia de tema",
-            "b0": "Usa la fila Tema de la barra lateral, o elige Claro, Oscuro o Sistema en Ajustes."
+            "b0": "En **Ajustes** › **Apariencia** elige **Sistema**, **Claro**, **Oscuro** o **Personalizado**."
           },
           "s2": {
             "title": "Hazlo tuyo",
-            "b0": "En Ajustes también puedes elegir un color de acento y lo redondeadas que son las esquinas."
+            "b0": "**Personalizado** parte del claro o del oscuro y te deja elegir el color de acento, el fondo de la página y lo redondeadas que se ven las esquinas."
           }
         },
         "images": {
-          "settings-appearance": "Ajustes, Apariencia: la elección del tema (claro, oscuro, sistema) y el color de acento."
+          "settings-appearance": "Ajustes, Apariencia: la elección de tema con Sistema, Claro, Oscuro y Personalizado, y el color de acento."
         }
       },
       "keyboard-shortcuts": {

@@ -5067,11 +5067,11 @@
         "sections": {
           "s1": {
             "title": "Einschalten",
-            "b0": "Öffne Einstellungen, dann KI, und schalte sie ein. Für Ordner und Tags entscheidest du getrennt."
+            "b0": "Öffne **Einstellungen** › **KI** und schalte **KI in Shelfmark nutzen** ein."
           },
           "s2": {
             "title": "Wieder ausschalten",
-            "b0": "Das Ausschalten der KI beendet sofort alle Vorschläge. Deine KI-Daten kannst du auch unter Datenschutz und Daten löschen."
+            "b0": "Wenn du KI ausschaltest, enden alle Vorschläge auf einmal. Deine KI-Daten kannst du auch unter **Deine Daten** löschen."
           }
         },
         "images": {
@@ -5143,15 +5143,15 @@
         "sections": {
           "s1": {
             "title": "Design wechseln",
-            "b0": "Nutze die Zeile Design in der Seitenleiste oder wähle in den Einstellungen Hell, Dunkel oder System."
+            "b0": "Wähle unter **Einstellungen** › **Darstellung** **System**, **Hell**, **Dunkel** oder **Eigenes**."
           },
           "s2": {
             "title": "Nach deinem Geschmack",
-            "b0": "In den Einstellungen kannst du außerdem eine Akzentfarbe und die Rundung der Ecken wählen."
+            "b0": "**Eigenes** startet von Hell oder Dunkel und lässt dich Akzentfarbe, Seitenhintergrund und die Rundung der Ecken wählen."
           }
         },
         "images": {
-          "settings-appearance": "Einstellungen, Darstellung: die Wahl des Designs (hell, dunkel, System) und die Akzentfarbe."
+          "settings-appearance": "Einstellungen, Darstellung: die Theme-Auswahl mit System, Hell, Dunkel und Eigenes sowie die Akzentfarbe."
         }
       },
       "keyboard-shortcuts": {

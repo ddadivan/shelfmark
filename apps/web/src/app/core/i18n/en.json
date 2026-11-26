@@ -5067,11 +5067,11 @@
         "sections": {
           "s1": {
             "title": "Switch it on",
-            "b0": "Open Settings, then AI, and turn it on. You choose separately for folders and for tags."
+            "b0": "Open **Settings** › **AI** and switch on **Use AI in Shelfmark**."
           },
           "s2": {
             "title": "Switch it off again",
-            "b0": "Turning AI off stops all suggestions at once. You can also delete your AI data under Privacy and data."
+            "b0": "Turning AI off stops all suggestions at once. You can also delete your AI data under **Your data**."
           }
         },
         "images": {
@@ -5143,15 +5143,15 @@
         "sections": {
           "s1": {
             "title": "Switch theme",
-            "b0": "Use the Theme row in the sidebar, or choose Light, Dark or System in Settings."
+            "b0": "In **Settings** › **Appearance** choose **System**, **Light**, **Dark** or **Custom**."
           },
           "s2": {
             "title": "Make it yours",
-            "b0": "Settings also lets you pick an accent colour and how rounded the corners look."
+            "b0": "**Custom** starts from light or dark and lets you pick the accent colour, the page background and how rounded the corners look."
           }
         },
         "images": {
-          "settings-appearance": "Settings, Appearance: the Theme choice with Light, Dark and System, and the accent colour."
+          "settings-appearance": "Settings, Appearance: the Theme choice with System, Light, Dark and Custom, and the accent colour."
         }
       },
       "keyboard-shortcuts": {

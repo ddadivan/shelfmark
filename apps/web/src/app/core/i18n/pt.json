@@ -5186,11 +5186,11 @@
         "sections": {
           "s1": {
             "title": "Ative",
-            "b0": "Abra Configurações, depois IA, e ative. Você escolhe separadamente para pastas e para tags."
+            "b0": "Abra **Configurações** › **IA** e ative **Usar IA no Shelfmark**."
           },
           "s2": {
             "title": "Desligue de novo",
-            "b0": "Desligar a IA interrompe todas as sugestões na hora. Você também pode excluir seus dados de IA em Privacidade e dados."
+            "b0": "Desativar a IA para todas as sugestões de uma vez. Você também pode apagar seus dados de IA em **Seus dados**."
           }
         },
         "images": {
@@ -5262,15 +5262,15 @@
         "sections": {
           "s1": {
             "title": "Troque o tema",
-            "b0": "Use a linha Tema na barra lateral, ou escolha Claro, Escuro ou Sistema nas configurações."
+            "b0": "Em **Configurações** › **Aparência**, escolha **Sistema**, **Claro**, **Escuro** ou **Personalizado**."
           },
           "s2": {
             "title": "Deixe com a sua cara",
-            "b0": "Nas configurações você também escolhe uma cor de destaque e o arredondamento dos cantos."
+            "b0": "**Personalizado** parte do claro ou do escuro e deixa você escolher a cor de destaque, o fundo da página e o arredondamento dos cantos."
           }
         },
         "images": {
-          "settings-appearance": "Configurações, Aparência: a escolha do tema (claro, escuro, sistema) e a cor de destaque."
+          "settings-appearance": "Configurações, Aparência: a escolha de tema com Sistema, Claro, Escuro e Personalizado, e a cor de destaque."
         }
       },
       "keyboard-shortcuts": {
