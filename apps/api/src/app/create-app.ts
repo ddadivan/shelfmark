@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express';
 import { readAppConfig } from '../config/app-config';
+import { apiDocsEnabled } from './api-docs-enabled';
 import { initMonitoring } from '../monitoring/init-monitoring';
 import { readMonitoringSettings } from '../monitoring/read-monitoring-settings';
 import { AppModule } from './app.module';
@@ -8,7 +9,10 @@ import { configureApp } from './configure-app';
 import type { ConfigureAppOptions } from './configure-app-options.interface';
 
 export async function createApp(
-  options: ConfigureAppOptions = { isProduction: readAppConfig().isProduction },
+  options: ConfigureAppOptions = {
+    isProduction: readAppConfig().isProduction,
+    apiDocs: apiDocsEnabled(),
+  },
 ): Promise<NestExpressApplication> {
   // No-op without SENTRY_DSN.
   initMonitoring(readMonitoringSettings());

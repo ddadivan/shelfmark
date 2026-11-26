@@ -84,7 +84,11 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
   );
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Public in every environment on purpose (portfolio project, no secrets in the API).
+  // Swagger only where a developer uses it: development, tests and preview deployments, never the
+  // production site (author, Nov 26).
+  if (!(options.apiDocs ?? !options.isProduction)) {
+    return;
+  }
   const config = new DocumentBuilder()
     .setTitle('Shelfmark API')
     .setDescription('REST API of Shelfmark, mounted under /api.')

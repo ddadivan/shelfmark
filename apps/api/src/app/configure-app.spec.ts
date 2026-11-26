@@ -31,12 +31,13 @@ class EchoController {
 describe('configureApp', () => {
   describe.each([
     { isProduction: false, label: NODE_ENV.Development },
+    // A preview deployment: production settings with the docs on.
     { isProduction: true, label: NODE_ENV.Production },
   ])('real app in $label', ({ isProduction }) => {
     let app: NestExpressApplication;
 
     beforeAll(async () => {
-      app = await createApp({ isProduction });
+      app = await createApp({ isProduction, apiDocs: true });
       await app.init();
     });
 
@@ -85,6 +86,32 @@ describe('configureApp', () => {
       expect(json.status).toBe(200);
       expect(Object.keys((json.body as { paths: object }).paths)).toContain('/api/health');
     });
+  });
+
+  describe('the production site', () => {
+    let app: NestExpressApplication;
+
+    beforeAll(async () => {
+      app = await createApp({ isProduction: true, apiDocs: false });
+      await app.init();
+    });
+
+    afterAll(async () => {
+      await app.close();
+    });
+
+    it('does not serve Swagger UI or the OpenAPI document', async () => {
+      expect((await request(app.getHttpServer()).get('/api/docs').redirects(1)).status).toBe(404);
+      expect((await request(app.getHttpServer()).get('/api/docs-json')).status).toBe(404);
+      expect((await request(app.getHttpServer()).get('/api/health')).status).toBe(200);
+    });
+  });
+
+  it('leaves Swagger out in production by default', async () => {
+    const app = await createApp({ isProduction: true });
+    await app.init();
+    expect((await request(app.getHttpServer()).get('/api/docs-json')).status).toBe(404);
+    await app.close();
   });
 
   describe('validation', () => {
