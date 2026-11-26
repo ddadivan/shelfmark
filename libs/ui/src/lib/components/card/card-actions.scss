@@ -212,9 +212,13 @@
   .ui-card__select {
     --ui-checkbox-size: #{rem(40px)};
     --ui-checkbox-hit: #{rem(40px)};
+
+    // 40px drawn, 44px touch target: an invisible 2px reach on every side.
+    --ui-checkbox-hit-outset: #{rem(2px)};
     --ui-checkbox-tick: #{rem(24px)};
   }
 
+  // The star and ⋯ are glass buttons whose invisible hit area already reaches 10px out on touch.
   .ui-card__actions {
     --ui-card-action: #{rem(40px)};
   }

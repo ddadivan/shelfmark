@@ -32,6 +32,12 @@
   @include visually-hidden;
 }
 
+.ui-checkbox__box::after {
+  position: absolute;
+  inset: calc(-1 * var(--ui-checkbox-hit-outset, #{rem(0px)}));
+  content: '';
+}
+
 .ui-checkbox__box {
   display: grid;
   flex: none;
@@ -43,6 +49,10 @@
   backdrop-filter: var(--ui-checkbox-filter, none);
   border: 1.5px solid var(--ui-checkbox-border, var(--border-control));
   border-radius: var(--ui-checkbox-radius, var(--radius-tile-sm));
+
+  // A feature may grow the touch target past the drawn box: `--ui-checkbox-hit-outset` (default 0)
+  // is how far an invisible `::after` reaches out on every side (the card's 40px box, 44px hit).
+  position: relative;
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out);

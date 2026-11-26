@@ -19,6 +19,13 @@
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
 
+  // Invisible 24px hit area (18px padding box + 3px each side; WCAG 2.5.8); the disc stays absolute.
+  &::after {
+    position: absolute;
+    inset: rem(-3px);
+    content: '';
+  }
+
   .ui-theme-picker__option:hover &,
   .ui-theme-picker__option:focus-within &,
   &:focus-visible {

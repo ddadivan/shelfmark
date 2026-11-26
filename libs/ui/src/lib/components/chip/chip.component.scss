@@ -138,7 +138,7 @@ button.ui-chip__body {
   background: transparent;
   border: 0;
   border-radius: var(--radius-full);
-  opacity: 0.7;
+  opacity: 0.8;
   transition: opacity var(--duration-fast) var(--ease-out);
 
   // Invisible hit area (28px chip, 16px glyph). Its inline-end side stops 3px out so it never
