@@ -779,6 +779,6 @@ describe('Shelf tokens (ADR 0061)', () => {
     expect(out).toContain('--radius-md: 0.75rem');
     expect(out).toContain('--radius-card: 1rem');
     expect(out).toContain('--sidebar-width: 15rem');
-    expect(out).toMatch(/--font-sans:\s*'Hanken Grotesk Variable'/);
+    expect(out).toMatch(/--font-sans:\s*'Hanken Grotesk'/);
   });
 });

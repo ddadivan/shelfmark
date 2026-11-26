@@ -1,4 +1,4 @@
-import '@fontsource-variable/hanken-grotesk/wght.css';
+import '../src/styles/fonts/hanken-grotesk.css';
 import '@fontsource-variable/onest/wght.css';
 import '@fontsource/atkinson-hyperlegible/400.css';
 import '@fontsource/atkinson-hyperlegible/700.css';

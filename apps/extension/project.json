@@ -24,7 +24,7 @@
           { "glob": "icons/sprite.svg", "input": "libs/ui/src/assets", "output": "assets/ui" }
         ],
         "styles": [
-          "node_modules/@fontsource-variable/hanken-grotesk/wght.css",
+          "libs/ui/src/styles/fonts/hanken-grotesk.css",
           "node_modules/@fontsource-variable/onest/wght.css",
           "libs/ui/src/styles/global.scss",
           "apps/extension/src/styles.scss"
