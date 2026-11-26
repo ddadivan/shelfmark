@@ -79,6 +79,11 @@
   }
 }
 
+// A read-only card (Today's All links) projects neither: no empty glass circle (author, round 11).
+.ui-card__actions:has(> .ui-card__favorite:empty):has(> .ui-card__more:empty) {
+  display: none;
+}
+
 .ui-card__favorite,
 .ui-card__more {
   position: relative;
