@@ -21,22 +21,6 @@
     },
     "preview": {
       "label": "L’app Shelfmark: una cartella di link salvati con anteprime, note e l’avviso «Salvato in Da guardare»",
-      "add": "+ Aggiungi link",
-      "folders": "Cartelle",
-      "search": "Cerca link, cartelle e tag",
-      "toast": "Salvato in Da guardare",
-      "undo": "Annulla",
-      "rows": {
-        "all": "Tutti i link",
-        "unsorted": "Da ordinare",
-        "favorites": "Preferiti",
-        "today": "Oggi"
-      },
-      "tabs": {
-        "all": "Tutti",
-        "video": "Video",
-        "shop": "Negozi"
-      },
       "items": {
         "nihilism": {
           "title": "Optimistic Nihilism",

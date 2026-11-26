@@ -11,13 +11,13 @@ import {
 } from '../../../../../testing/mock-intersection-observer';
 import { LandingHeroPreviewComponent } from './landing-hero-preview.component';
 
-const titleOf = (root: HTMLElement) => root.querySelector('.preview__title')?.textContent?.trim();
+const titleOf = (root: HTMLElement) => root.querySelector('.stage__title')?.textContent?.trim();
 const shown = (root: HTMLElement) =>
-  Array.from(
-    root.querySelectorAll('.preview__card:not(.preview__card--hidden) .preview__name'),
-  ).map((name) => name.textContent?.trim());
+  Array.from(root.querySelectorAll('.stage__item:not(.stage__item--hidden) [slot=title]')).map(
+    (name) => name.textContent?.trim(),
+  );
 const toastShown = (root: HTMLElement) =>
-  root.querySelector('.preview__toast')?.classList.contains('preview__toast--shown');
+  root.querySelector('.stage__toast')?.classList.contains('stage__toast--shown');
 
 describe('LandingHeroPreviewComponent', () => {
   beforeEach(() => stubReducedMotion(false));
@@ -51,20 +51,24 @@ describe('LandingHeroPreviewComponent', () => {
     return { fixture, root, advance, see };
   }
 
-  it('is one named picture of the app: sidebar, All links with its tabs, six cards and a toast', async () => {
+  it('is one named picture of the app: sidebar, All links with its views, six cards and a toast', async () => {
     const { root } = await create();
     const picture = root.querySelector('.preview');
+    const stage = root.querySelector('.stage');
 
     expect(picture?.getAttribute('role')).toBe('img');
     expect(picture?.getAttribute('aria-label')).toContain('Saved to Watch later');
-    expect(root.textContent).toContain('+ Add link');
+    expect(stage?.getAttribute('aria-hidden')).toBe('true');
+    expect(stage?.hasAttribute('inert')).toBe(true);
+    expect(root.querySelector('ui-tree')).not.toBeNull();
+    expect(root.textContent).toContain('Add link');
     expect(titleOf(root)).toBe('All links');
-    expect(root.querySelectorAll('.preview__tab')).toHaveLength(3);
+    expect(root.querySelectorAll('ui-saved-views')).toHaveLength(1);
     expect(shown(root)).toHaveLength(6);
-    expect(root.querySelector('.preview__toast')?.textContent).toContain('Undo');
-    expect(root.querySelector('a[href], button')).toBeNull();
+    expect(root.querySelector('.stage__toast')?.textContent).toContain('Undo');
     for (const image of Array.from(root.querySelectorAll('img'))) {
-      expect(image.getAttribute('src')).toMatch(/^\/media\/landing\/.+\.webp$/);
+      const src = image.getAttribute('src') ?? '';
+      expect(src.startsWith('data:') || /^\/media\/landing\/.+\.webp$/.test(src)).toBe(true);
       expect(image.getAttribute('alt')).toBe('');
     }
   });
@@ -96,7 +100,7 @@ describe('LandingHeroPreviewComponent', () => {
     advance(3600);
     expect(titleOf(root)).toBe('Shopping');
     expect(shown(root)).toEqual(['Tree Runners', 'The Ojai Jacket']);
-    expect(root.querySelector('.preview__tabs--off')).not.toBeNull();
+    expect(root.querySelector('.stage__views--off')).not.toBeNull();
 
     advance(3600);
     expect(titleOf(root)).toBe('Favorites');
@@ -127,34 +131,11 @@ describe('LandingHeroPreviewComponent', () => {
     document.dispatchEvent(new Event('visibilitychange'));
   });
 
-  it('picks the frame of a clicked row or tab and resumes the cycle 6 s later', async () => {
-    const { root, advance, see } = await create();
-    see();
-    const rows = Array.from(root.querySelectorAll<HTMLElement>('.preview__row'));
-    rows.find((row) => row.textContent?.includes('Favorites'))?.click();
-    advance(260);
-
-    expect(titleOf(root)).toBe('Favorites');
-    advance(5000);
-    expect(titleOf(root)).toBe('Favorites');
-
-    // Resumed at 6 s; the next frame is one step (and the fade) later.
-    advance(1000);
-    advance(3600 + 260);
-    expect(titleOf(root)).toBe('Watch later');
-
-    root.querySelectorAll<HTMLElement>('.preview__tab')[1]?.click();
-    advance(260);
-    expect(titleOf(root)).toBe('All links');
-    expect(shown(root)).toHaveLength(3);
-  });
-
   it('stands still on All links with its toast under reduced motion', async () => {
     const { root, advance, see } = await create(true);
     see();
 
     expect(toastShown(root)).toBe(true);
-    root.querySelectorAll<HTMLElement>('.preview__tab')[1]?.click();
     advance(20_000);
     expect(shown(root)).toHaveLength(6);
   });

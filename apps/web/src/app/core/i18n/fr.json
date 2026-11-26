@@ -21,22 +21,6 @@
     },
     "preview": {
       "label": "L’app Shelfmark : un dossier de liens enregistrés avec aperçus, notes et un message « Enregistré dans À regarder »",
-      "add": "+ Ajouter un lien",
-      "folders": "Dossiers",
-      "search": "Chercher des liens, dossiers et tags",
-      "toast": "Enregistré dans À regarder",
-      "undo": "Annuler",
-      "rows": {
-        "all": "Tous les liens",
-        "unsorted": "Non classés",
-        "favorites": "Favoris",
-        "today": "Aujourd’hui"
-      },
-      "tabs": {
-        "all": "Tous",
-        "video": "Vidéos",
-        "shop": "Boutiques"
-      },
       "items": {
         "nihilism": {
           "title": "Optimistic Nihilism",

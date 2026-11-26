@@ -21,22 +21,6 @@
     },
     "preview": {
       "label": "La app Shelfmark: una carpeta de enlaces guardados con vistas previas, notas y el aviso «Guardado en Ver más tarde»",
-      "add": "+ Añadir enlace",
-      "folders": "Carpetas",
-      "search": "Buscar enlaces, carpetas y etiquetas",
-      "toast": "Guardado en Ver más tarde",
-      "undo": "Deshacer",
-      "rows": {
-        "all": "Todos los enlaces",
-        "unsorted": "Sin ordenar",
-        "favorites": "Favoritos",
-        "today": "Hoy"
-      },
-      "tabs": {
-        "all": "Todos",
-        "video": "Vídeos",
-        "shop": "Tiendas"
-      },
       "items": {
         "nihilism": {
           "title": "Optimistic Nihilism",
