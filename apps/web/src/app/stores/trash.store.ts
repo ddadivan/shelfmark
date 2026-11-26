@@ -3,13 +3,13 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import {
   TRASH_ITEM_KIND,
   TRASH_LIMIT,
+  type ListTrashResponse,
   type TrashActionResponse,
   type TrashItem,
   type TrashItemRef,
 } from '@shelfmark/contracts';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { isConflictError } from '../core/api/is-conflict-error';
-import { SessionScope } from '../core/auth/session-scope.service';
 import { TRASH_API } from '../features/trash/models/trash-api.const';
 import { TRASH_OUTCOME } from '../features/trash/models/trash-outcome.const';
 import type { TrashOutcome } from '../features/trash/models/trash-outcome.type';
@@ -17,6 +17,7 @@ import { toRef, trashKey } from '../features/trash/utils/trash-key';
 import { FoldersStore } from './folders.store';
 import { LibraryRefreshService } from './library-refresh.service';
 import { LinksStore } from './links.store';
+import { withRemoteLoad } from './features/with-remote-load';
 import type { TrashState } from './models/trash-state.interface';
 import { UserSettingsStore } from './user-settings.store';
 
@@ -52,6 +53,7 @@ function chunks<T>(list: readonly T[], size: number): T[][] {
 export const TrashStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
+  withRemoteLoad(initialState),
   withComputed(({ items }) => ({
     /** Link entries in the list. */
     linkItems: computed(() => items().filter((item) => item.kind === TRASH_ITEM_KIND.Link)),
@@ -62,65 +64,18 @@ export const TrashStore = signalStore(
     // Resolved on use: the sign-out path injects stores without a `TRASH_API` in specs.
     const injector = inject(Injector);
     const api = () => injector.get(TRASH_API);
-    const scope = inject(SessionScope);
-    let epoch = 0;
-    let requestSeq = 0;
-    let firstLoad: Promise<void> | null = null;
-    let version = 0;
-    let inFlight = 0;
-    let refetchWanted = false;
-
-    function begin(): number {
-      inFlight++;
-      version++;
-      return epoch;
-    }
-
-    function finish(token: number): void {
-      if (token !== epoch) {
-        return;
-      }
-      inFlight--;
-      version++;
-      if (inFlight === 0 && refetchWanted) {
-        refetchWanted = false;
-        void fetchAll();
-      }
-    }
-
-    async function fetchAll(): Promise<void> {
-      const started = epoch;
-      const startedVersion = version;
-      const seq = ++requestSeq;
-      if (!store.loaded()) {
-        patchState(store, { loading: true, error: false });
-      }
-      try {
-        const response = await firstValueFrom(api().list());
-        if (started !== epoch || seq !== requestSeq) {
-          return;
-        }
-        if (version !== startedVersion || inFlight > 0) {
-          if (inFlight > 0) {
-            refetchWanted = true;
-            return;
-          }
-          return fetchAll();
-        }
-        patchState(store, {
-          items: response.items,
-          total: response.total,
-          loaded: true,
-          loading: false,
-          error: false,
-        });
-        injector.get(UserSettingsStore).noteRetention(response.retentionDays);
-      } catch {
-        if (started === epoch && seq === requestSeq) {
-          patchState(store, { loading: false, error: !store.loaded() });
-        }
-      }
-    }
+    const read = () => firstValueFrom(api().list());
+    const apply = (response: ListTrashResponse): void => {
+      patchState(store, {
+        items: response.items,
+        total: response.total,
+        loaded: true,
+        loading: false,
+        error: false,
+      });
+      injector.get(UserSettingsStore).noteRetention(response.retentionDays);
+    };
+    const fetchAll = (): Promise<void> => store._fetchAll(read, apply);
 
     /** The library after a restore: the feed, the counts, the reminders the links carry. */
     function refreshLibrary(): void {
@@ -141,7 +96,7 @@ export const TrashStore = signalStore(
       }
       const wanted = new Set(refs.map(trashKey));
       const removed = store.items().filter((item) => wanted.has(trashKey(item)));
-      const token = begin();
+      const token = store._begin();
       patchState(store, {
         items: store.items().filter((item) => !wanted.has(trashKey(item))),
         total: Math.max(0, store.total() - refs.length),
@@ -153,7 +108,7 @@ export const TrashStore = signalStore(
           done += batch.length;
         }
       } catch (error) {
-        if (token === epoch) {
+        if (store._isCurrent(token)) {
           const failedKeys = new Set(refs.slice(done).map(trashKey));
           const back = removed.filter((item) => failedKeys.has(trashKey(item)));
           patchState(store, {
@@ -164,34 +119,18 @@ export const TrashStore = signalStore(
             onDone?.();
           }
         }
-        finish(token);
+        store._finish(token);
         return isConflictError(error) ? TRASH_OUTCOME.Conflict : TRASH_OUTCOME.Failed;
       }
-      finish(token);
-      if (token === epoch) {
+      store._finish(token);
+      if (store._isCurrent(token)) {
         onDone?.();
         void fetchAll();
       }
       return TRASH_OUTCOME.Done;
     }
 
-    scope.onEnd(() => {
-      epoch++;
-      requestSeq++;
-      version++;
-      inFlight = 0;
-      refetchWanted = false;
-      firstLoad = null;
-      patchState(store, initialState);
-    });
-
-    function load(): Promise<void> {
-      if (store.loaded()) {
-        return Promise.resolve();
-      }
-      firstLoad ??= fetchAll().finally(() => (firstLoad = null));
-      return firstLoad;
-    }
+    const load = (): Promise<void> => store._ensureLoaded(read, apply);
 
     return {
       /** Loads the list once; later calls reuse the first request. A failure can be retried. */
@@ -224,20 +163,20 @@ export const TrashStore = signalStore(
 
       /** Deletes everything in Trash for good. */
       async empty(): Promise<TrashOutcome> {
-        const token = begin();
+        const token = store._begin();
         const before = { items: store.items(), total: store.total() };
         patchState(store, { items: [], total: 0 });
         try {
           await firstValueFrom(api().empty());
         } catch (error) {
-          if (token === epoch) {
+          if (store._isCurrent(token)) {
             patchState(store, before);
           }
-          finish(token);
+          store._finish(token);
           return isConflictError(error) ? TRASH_OUTCOME.Conflict : TRASH_OUTCOME.Failed;
         }
-        finish(token);
-        if (token === epoch) {
+        store._finish(token);
+        if (store._isCurrent(token)) {
           void fetchAll();
         }
         return TRASH_OUTCOME.Done;

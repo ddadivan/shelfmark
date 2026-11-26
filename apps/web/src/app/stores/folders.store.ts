@@ -8,7 +8,12 @@ import {
   withState,
 } from '@ngrx/signals';
 import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
-import { FOLDER_LIMIT, type FolderDeleteMode, type FolderResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_LIMIT,
+  type FolderDeleteMode,
+  type FolderResponse,
+  type ListFoldersResponse,
+} from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { FOLDERS_API } from '../features/links/models/folders-api.const';
 import {
@@ -23,6 +28,7 @@ import { LinksStore } from './links.store';
 import { PinsStore } from './pins.store';
 import type { FoldersState } from './models/folders-state.interface';
 import { SessionScope } from '../core/auth/session-scope.service';
+import { withRemoteLoad } from './features/with-remote-load';
 import { FOLDER_STYLE_KEYS } from './models/folder-style-keys.const';
 import type { FolderStyleChange } from './models/folder-style-change.type';
 import { pickStyle } from './folder-style';
@@ -43,7 +49,8 @@ const initialState: FoldersState = {
 export const FoldersStore = signalStore(
   { providedIn: 'root' },
   withEntities<FolderResponse>(),
-  withState(initialState),
+  withState<FoldersState>(initialState),
+  withRemoteLoad(initialState, { manualEnd: true }),
   withComputed(({ entities }) => ({
     /** The nested tree, siblings in list order (manual position, then name). */
     tree: computed(() => buildFolderTree(entities())),
@@ -55,68 +62,17 @@ export const FoldersStore = signalStore(
     // Resolved on use: the sign-out path injects this store without a `FOLDERS_API` in specs.
     const injector = inject(Injector);
     const api = () => injector.get(FOLDERS_API);
-    // Bumped only by `reset()`: a response that started before it belongs to the previous user.
-    let epoch = 0;
-    // Only the newest list request may write (a refresh can overtake an older one).
-    let requestSeq = 0;
-    let firstLoad: Promise<void> | null = null;
-    // A list that was requested before a create / rename / move / remove must not overwrite it
-    // on arrival: `version` changes at the start and the end of every mutation, `inFlight` counts
-    // the running ones. Such a list is dropped and asked for again once nothing is running.
-    let version = 0;
-    let inFlight = 0;
-    let refetchWanted = false;
-
-    function begin(): number {
-      inFlight++;
-      version++;
-      return epoch;
-    }
-
-    function finish(token: number): void {
-      if (token !== epoch) {
-        return;
-      }
-      inFlight--;
-      version++;
-      if (inFlight === 0 && refetchWanted) {
-        refetchWanted = false;
-        void fetchAll();
-      }
-    }
-
-    async function fetchAll(): Promise<void> {
-      const started = epoch;
-      const startedVersion = version;
-      const seq = ++requestSeq;
-      if (!store.loaded()) {
-        patchState(store, { loading: true, error: false });
-      }
-      try {
-        const response = await firstValueFrom(api().list());
-        if (started !== epoch || seq !== requestSeq) {
-          return;
-        }
-        if (version !== startedVersion || inFlight > 0) {
-          // Stale against a mutation: ask again now, or when the last mutation ends.
-          if (inFlight > 0) {
-            refetchWanted = true;
-            return;
-          }
-          return fetchAll();
-        }
-        patchState(store, setAllEntities(byName(response.items)), {
-          counts: response.counts,
-          loaded: true,
-          loading: false,
-          error: false,
-        });
-      } catch {
-        if (started === epoch && seq === requestSeq) {
-          patchState(store, { loading: false, error: !store.loaded() });
-        }
-      }
-    }
+    const read = () => firstValueFrom(api().list());
+    const apply = (response: ListFoldersResponse): void => {
+      patchState(store, setAllEntities(byName(response.items)), {
+        counts: response.counts,
+        loaded: true,
+        loading: false,
+        error: false,
+      });
+    };
+    const fetchAll = (): Promise<void> => store._fetchAll(read, apply);
+    store._onSessionEnd(() => patchState(store, removeAllEntities()));
 
     function replace(id: string, changes: Partial<FolderResponse>): void {
       patchState(
@@ -148,11 +104,7 @@ export const FoldersStore = signalStore(
     return {
       /** Loads the list once; later calls reuse the first request. A failure can be retried. */
       load(): Promise<void> {
-        if (store.loaded()) {
-          return Promise.resolve();
-        }
-        firstLoad ??= fetchAll().finally(() => (firstLoad = null));
-        return firstLoad;
+        return store._ensureLoaded(read, apply);
       },
 
       /** Reloads folders and counts after something changed them (a link was saved or deleted). Only once loaded. */
@@ -177,12 +129,12 @@ export const FoldersStore = signalStore(
 
       /** Creates a folder; resolves with it, or `null` when the request failed. */
       async create(name: string, parentId: string | null): Promise<FolderResponse | null> {
-        const token = begin();
+        const token = store._begin();
         try {
           const folder = await firstValueFrom(
             api().create(parentId === null ? { name } : { name, parentId }),
           );
-          if (token !== epoch) {
+          if (!store._isCurrent(token)) {
             return null;
           }
           patchState(store, setAllEntities(byName([...store.entities(), folder])));
@@ -190,7 +142,7 @@ export const FoldersStore = signalStore(
         } catch {
           return null;
         } finally {
-          finish(token);
+          store._finish(token);
         }
       },
 
@@ -200,22 +152,22 @@ export const FoldersStore = signalStore(
         if (!previous) {
           return false;
         }
-        const token = begin();
+        const token = store._begin();
         replace(id, { name });
         try {
           const saved = await firstValueFrom(api().update(id, { name }));
-          if (token === epoch) {
+          if (store._isCurrent(token)) {
             replace(id, { updatedAt: saved.updatedAt });
           }
           return true;
         } catch {
           // Only while the name is still the optimistic one: a later edit must not be undone.
-          if (token === epoch && store.entityMap()[id]?.name === name) {
+          if (store._isCurrent(token) && store.entityMap()[id]?.name === name) {
             replace(id, { name: previous.name });
           }
           return false;
         } finally {
-          finish(token);
+          store._finish(token);
         }
       },
 
@@ -236,11 +188,11 @@ export const FoldersStore = signalStore(
         const keys = FOLDER_STYLE_KEYS.filter((key) => style[key] !== undefined);
         const withCover = (cover: Partial<FolderResponse>): Partial<FolderResponse> =>
           style.coverLinkId === undefined ? {} : cover;
-        const token = begin();
+        const token = store._begin();
         replace(id, { ...pickStyle(style, keys), ...withCover({ coverUrl }) });
         try {
           const saved = await firstValueFrom(api().update(id, style));
-          if (token === epoch) {
+          if (store._isCurrent(token)) {
             // The server's values (a trimmed description, the cover path) win over the optimistic
             // ones, but only where this edit is still shown: a late answer must not undo a newer one.
             const current = store.entityMap()[id];
@@ -254,7 +206,7 @@ export const FoldersStore = signalStore(
           return true;
         } catch {
           // Only what is still the optimistic value goes back: a later edit must not be undone.
-          if (token === epoch) {
+          if (store._isCurrent(token)) {
             const current = store.entityMap()[id];
             const undo = keys.filter((key) => current?.[key] === style[key]);
             replace(id, {
@@ -264,7 +216,7 @@ export const FoldersStore = signalStore(
           }
           return false;
         } finally {
-          finish(token);
+          store._finish(token);
         }
       },
 
@@ -281,7 +233,7 @@ export const FoldersStore = signalStore(
         ) {
           return false;
         }
-        const token = begin();
+        const token = store._begin();
         // A move goes to the end of the new parent (the API does the same).
         const position =
           parentId === previous.parentId
@@ -290,18 +242,18 @@ export const FoldersStore = signalStore(
         replace(id, { parentId, position });
         try {
           const saved = await firstValueFrom(api().update(id, { parentId }));
-          if (token === epoch) {
+          if (store._isCurrent(token)) {
             replace(id, { updatedAt: saved.updatedAt, position: saved.position });
           }
           return true;
         } catch {
           // Only while the parent is still the optimistic one: a later move must not be undone.
-          if (token === epoch && store.entityMap()[id]?.parentId === parentId) {
+          if (store._isCurrent(token) && store.entityMap()[id]?.parentId === parentId) {
             replace(id, { parentId: previous.parentId, position: previous.position });
           }
           return false;
         } finally {
-          finish(token);
+          store._finish(token);
         }
       },
 
@@ -329,7 +281,7 @@ export const FoldersStore = signalStore(
         const next = reorderedSiblings(siblings, from, to);
         const before = new Map(siblings.map((other) => [other.id, other.position]));
         const wanted = new Map(next.map((other, position) => [other.id, position]));
-        const token = begin();
+        const token = store._begin();
         setPositions(wanted);
         try {
           await firstValueFrom(
@@ -339,14 +291,14 @@ export const FoldersStore = signalStore(
         } catch {
           // Only while the order is still the optimistic one: a later change must not be undone.
           if (
-            token === epoch &&
+            store._isCurrent(token) &&
             [...wanted].every(([key, position]) => store.entityMap()[key]?.position === position)
           ) {
             setPositions(before);
           }
           return false;
         } finally {
-          finish(token);
+          store._finish(token);
         }
       },
 
@@ -363,15 +315,15 @@ export const FoldersStore = signalStore(
         if (!store.entityMap()[id]) {
           return false;
         }
-        const token = begin();
+        const token = store._begin();
         const doomed = new Set([id, ...descendantIds(store.entities(), id)]);
         try {
           await firstValueFrom(api().remove(id, mode));
         } catch {
-          finish(token);
+          store._finish(token);
           return false;
         }
-        if (token !== epoch) {
+        if (!store._isCurrent(token)) {
           return true;
         }
         // The tree may have changed while the request ran (a subfolder created or moved in).
@@ -384,14 +336,14 @@ export const FoldersStore = signalStore(
           // The server already deleted the folders: a failing hook (leaving the page) must not
           // keep them in the sidebar.
         } finally {
-          if (token === epoch) {
+          if (store._isCurrent(token)) {
             patchState(
               store,
               setAllEntities(store.entities().filter((folder) => !doomed.has(folder.id))),
             );
             injector.get(LinksStore).applyFolderRemoval([...doomed], mode);
             injector.get(PinsStore).dropFolders([...doomed]);
-            finish(token);
+            store._finish(token);
             void fetchAll();
           }
         }
@@ -399,15 +351,7 @@ export const FoldersStore = signalStore(
       },
 
       /** Sign-out: forgets everything of this user and drops responses still in flight. */
-      reset(): void {
-        epoch++;
-        requestSeq++;
-        version++;
-        inFlight = 0;
-        refetchWanted = false;
-        firstLoad = null;
-        patchState(store, initialState, removeAllEntities());
-      },
+      reset: (): void => store._endSession(),
     };
   }),
   withHooks({
