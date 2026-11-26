@@ -17,11 +17,15 @@ describe('ShortcutsPage', () => {
     );
 
     open?.click();
-    await vi.waitFor(() => {
-      expect(document.querySelector('.cdk-dialog-container h2')?.textContent).toContain(
-        'Keyboard shortcuts',
-      );
-    });
+    await vi.waitFor(
+      () => {
+        expect(document.querySelector('.cdk-dialog-container h2')?.textContent).toContain(
+          'Keyboard shortcuts',
+        );
+        // The dialog component loads lazily: a busy parallel run needs more than the default second.
+      },
+      { timeout: 5000 },
+    );
     document.querySelectorAll('.cdk-overlay-container').forEach((e) => e.replaceChildren());
   });
 
