@@ -360,6 +360,7 @@
       "favorite": "Favorito: {{title}}",
       "addFavorite": "Añadir a favoritos",
       "removeFavorite": "Quitar de favoritos",
+      "unstarred": "Quitado de favoritos",
       "actions": "Acciones para {{title}}",
       "moreActions": "Más acciones",
       "delete": "Eliminar",

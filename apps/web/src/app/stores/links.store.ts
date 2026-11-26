@@ -88,6 +88,9 @@ export const LinksStore = signalStore(
     const favoriteBusy = new Set<string>();
     // Feed slots of links a move took out of the open scope, so moving them back restores the slot.
     const movedFrom = new Map<string, number>();
+    // Links an unstar took out of the open feed (Favorites, an "only favorites" view) and their
+    // slots, so starring them again (the toast's Undo) puts them back where they were.
+    const unstarred = new Map<string, { link: LinkResponse; index: number }>();
     // Bumped when the filter changes or the store resets: late responses are dropped.
     let generation = 0;
     // Bumped only by `reset()`: a response that started before it belongs to the previous user.
@@ -231,6 +234,7 @@ export const LinksStore = signalStore(
         tap((filter) => {
           generation++;
           movedFrom.clear();
+          unstarred.clear();
           const changed = !sameFilter(filter, store.filter());
           patchState(
             store,
@@ -335,30 +339,60 @@ export const LinksStore = signalStore(
       },
 
       /** Flips the favorite flag at once; resolves false (and rolls back) when the request fails. */
+      /**
+       * Stars or unstars a link at once. A link the change takes out of the open feed (unstarred
+       * in Favorites or an "only favorites" view) leaves it, remembering its slot; starring it
+       * again (Undo) puts it back there. A failure puts everything back.
+       */
       async toggleFavorite(id: string): Promise<boolean> {
-        const link = store.entityMap()[id];
+        const away = unstarred.get(id);
+        const link = store.entityMap()[id] ?? away?.link;
         if (!link || favoriteBusy.has(id)) {
           return true;
         }
         favoriteBusy.add(id);
         const next = !link.isFavorite;
-        patchState(store, updateEntity({ id, changes: { isFavorite: next } }), {
-          recent: mapRecent(id, { isFavorite: next }),
-        });
-        publish({ upserted: [{ ...link, isFavorite: next }] });
+        const changed: LinkResponse = { ...link, isFavorite: next };
+        const index = store.ids().indexOf(id);
+        const leaves = index >= 0 && store.loaded() && !inFilter(store.filter(), changed);
+        if (away && next) {
+          unstarred.delete(id);
+          patchState(store, setAllEntities(insertAt(store.entities(), away.index, changed)));
+        } else if (leaves) {
+          unstarred.set(id, { link: changed, index });
+          patchState(store, removeEntity(id));
+        } else {
+          patchState(store, updateEntity({ id, changes: { isFavorite: next } }));
+        }
+        patchState(store, { recent: mapRecent(id, { isFavorite: next }) });
+        publish({ upserted: [changed] });
         try {
           const saved = await firstValueFrom(api().update(id, { isFavorite: next }));
-          patchState(store, updateEntity({ id, changes: { updatedAt: saved.updatedAt } }));
+          if (store.entityMap()[id]) {
+            patchState(store, updateEntity({ id, changes: { updatedAt: saved.updatedAt } }));
+          }
           return true;
         } catch {
-          patchState(store, updateEntity({ id, changes: { isFavorite: link.isFavorite } }), {
-            recent: mapRecent(id, { isFavorite: link.isFavorite }),
-          });
+          if (leaves) {
+            unstarred.delete(id);
+            patchState(store, setAllEntities(insertAt(store.entities(), index, link)));
+          } else if (away && next) {
+            unstarred.set(id, away);
+            patchState(store, removeEntity(id));
+          } else {
+            patchState(store, updateEntity({ id, changes: { isFavorite: link.isFavorite } }));
+          }
+          patchState(store, { recent: mapRecent(id, { isFavorite: link.isFavorite }) });
           publish({ upserted: [link] });
           return false;
         } finally {
           favoriteBusy.delete(id);
         }
+      },
+
+      /** Whether the last unstar took this link out of the open feed (its toast offers Undo). */
+      leftByUnstar(id: string): boolean {
+        return unstarred.has(id);
       },
 
       /**
@@ -755,6 +789,7 @@ export const LinksStore = signalStore(
         movedFrom.clear();
         generation++;
         epoch++;
+        unstarred.clear();
         patchState(store, initialState, removeAllEntities());
       },
     };

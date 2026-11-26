@@ -89,6 +89,21 @@ export class LinkActionsService {
   async toggleFavorite(link: LinkResponse): Promise<void> {
     if (await this.store.toggleFavorite(link.id)) {
       void this.folders.refresh();
+      if (this.store.leftByUnstar(link.id)) {
+        // Unstarred in Favorites (or an "only favorites" view): the card left, Undo stars it back.
+        const undo = this.t('links.item.undo');
+        this.toasts.show({
+          kind: TOAST_KIND.Info,
+          title: this.t('links.item.unstarred'),
+          detail: link.title,
+          duration: TOAST_DURATION_MS.Undo,
+          actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
+          action: {
+            label: undo,
+            run: () => void this.toggleFavorite({ ...link, isFavorite: false }),
+          },
+        });
+      }
       return;
     }
     this.toasts.show({

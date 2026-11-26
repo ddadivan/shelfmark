@@ -203,15 +203,33 @@ describe('LinksStore', () => {
       expect(store.entityMap()['id-1']?.isFavorite).toBe(false);
     });
 
-    it('keeps an unfavorited link in the favorites feed until the next load', async () => {
+    it('takes an unfavorited link out of the favorites feed and puts it back on Undo', async () => {
       const { api, store } = setup();
-      api.list.mockReturnValueOnce(of(page([link(1, { isFavorite: true })])));
+      api.list.mockReturnValueOnce(
+        of(page([link(1, { isFavorite: true }), link(2, { isFavorite: true })])),
+      );
       store.setFilter({ scope: LINKS_SCOPE.Favorites });
 
       await store.toggleFavorite('id-1');
+      expect(ids(store)).toEqual(['id-2']);
+      expect(store.leftByUnstar('id-1')).toBe(true);
 
+      await store.toggleFavorite('id-1');
+      expect(ids(store)).toEqual(['id-1', 'id-2']);
+      expect(store.entityMap()['id-1']?.isFavorite).toBe(true);
+      expect(store.leftByUnstar('id-1')).toBe(false);
+    });
+
+    it('puts an unfavorited link back in Favorites when the request fails', async () => {
+      const { api, store } = setup();
+      api.list.mockReturnValueOnce(of(page([link(1, { isFavorite: true })])));
+      store.setFilter({ scope: LINKS_SCOPE.Favorites });
+      api.update.mockReturnValueOnce(throwError(() => new Error('down')));
+
+      expect(await store.toggleFavorite('id-1')).toBe(false);
       expect(ids(store)).toEqual(['id-1']);
-      expect(store.entityMap()['id-1']?.isFavorite).toBe(false);
+      expect(store.entityMap()['id-1']?.isFavorite).toBe(true);
+      expect(store.leftByUnstar('id-1')).toBe(false);
     });
   });
 

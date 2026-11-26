@@ -359,6 +359,7 @@
       "favorite": "Favorit: {{title}}",
       "addFavorite": "Zu Favoriten hinzufügen",
       "removeFavorite": "Aus Favoriten entfernen",
+      "unstarred": "Aus Favoriten entfernt",
       "actions": "Aktionen für {{title}}",
       "moreActions": "Weitere Aktionen",
       "delete": "Löschen",

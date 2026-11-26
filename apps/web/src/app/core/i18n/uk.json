@@ -361,6 +361,7 @@
       "favorite": "Обране: {{title}}",
       "addFavorite": "Додати в обране",
       "removeFavorite": "Прибрати з обраного",
+      "unstarred": "Прибрано з обраного",
       "actions": "Дії для {{title}}",
       "moreActions": "Більше дій",
       "delete": "Видалити",
