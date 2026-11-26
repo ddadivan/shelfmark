@@ -265,6 +265,63 @@ describe('LinkActionsService', () => {
     });
   });
 
+  describe('favorite of a link outside the feed and Undo of an unstar', () => {
+    it('stars a link the feed does not hold, from the link the card shows', async () => {
+      const { actions, api, store, toasts } = await setup();
+
+      await actions.toggleFavorite(link(9));
+
+      expect(api.update).toHaveBeenCalledWith('id-9', { isFavorite: true });
+      expect(ids(store)).toEqual(['id-1', 'id-2']);
+      expect(toasts).toEqual([]);
+    });
+
+    it('Undo stars the link again once, also after the feed was refreshed, without a second Unstarred toast', async () => {
+      const { actions, api, store, toasts } = await setup();
+      const starred = { ...link(1), isFavorite: true };
+      api.list.mockReturnValue(of({ items: [starred, link(2)], nextCursor: null, pinned: [] }));
+      store.setFilter({ scope: LINKS_SCOPE.Favorites });
+      await actions.toggleFavorite(starred);
+      expect(toasts[0].title).toBe('Removed from favorites');
+      expect(ids(store)).toEqual(['id-2']);
+      // The feed is loaded again: the store forgot the slot of the unstarred link.
+      api.list.mockReturnValue(of({ items: [link(2)], nextCursor: null, pinned: [] }));
+      store.setFilter({ scope: LINKS_SCOPE.Favorites });
+
+      toasts[0].action?.run();
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(api.update).toHaveBeenLastCalledWith('id-1', { isFavorite: true });
+      expect(ids(store)).toEqual(['id-1', 'id-2']);
+      expect(toasts).toHaveLength(1);
+    });
+  });
+
+  describe('delete of a link outside the feed', () => {
+    it('hides it, offers Undo and sends the delete when the window ends', async () => {
+      const { actions, api, store, toasts } = await setup();
+
+      await actions.delete(link(9));
+
+      expect(toasts[0].title).toBe('Moved to Trash');
+      expect(store.isPending('id-9')).toBe(true);
+      await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
+
+      expect(api.remove).toHaveBeenCalledWith('id-9');
+    });
+
+    it('Undo cancels it without a request', async () => {
+      const { actions, api, store, toasts } = await setup();
+      await actions.delete(link(9));
+
+      toasts[0].action?.run();
+      await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
+
+      expect(store.isPending('id-9')).toBe(false);
+      expect(api.remove).not.toHaveBeenCalled();
+    });
+  });
+
   it('records an open', async () => {
     const { actions, api } = await setup();
 

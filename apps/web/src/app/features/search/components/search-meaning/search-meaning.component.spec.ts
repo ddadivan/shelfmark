@@ -9,7 +9,7 @@ import {
 } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { UiAskButtonHarness, UiButtonHarness } from '@shelfmark/ui/testing';
-import { of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
@@ -103,6 +103,7 @@ async function setup(options: Options = {}) {
       {
         provide: LinksStore,
         useValue: {
+          linkChanges: EMPTY,
           loading: signal(false),
           filter: signal({ scope: LINKS_SCOPE.All, q: query }),
           entities: signal(options.words ?? [WORD]),

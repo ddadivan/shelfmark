@@ -87,7 +87,7 @@ export class LinkActionsService {
   }
 
   async toggleFavorite(link: LinkResponse): Promise<void> {
-    if (await this.store.toggleFavorite(link.id)) {
+    if (await this.store.toggleFavorite(link.id, link)) {
       void this.folders.refresh();
       if (this.store.leftByUnstar(link.id)) {
         // Unstarred in Favorites (or an "only favorites" view): the card left, Undo stars it back.
@@ -100,7 +100,7 @@ export class LinkActionsService {
           actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
           action: {
             label: undo,
-            run: () => void this.toggleFavorite({ ...link, isFavorite: false }),
+            run: () => void this.undoUnstar(link),
           },
         });
       }
@@ -111,6 +111,23 @@ export class LinkActionsService {
       title: this.t('links.item.favoriteFailed'),
       detail: link.title,
       action: { label: this.t('links.item.retry'), run: () => void this.toggleFavorite(link) },
+    });
+  }
+
+  /**
+   * Undo of an unstar: stars the link again to an explicit value, so it neither flips the wrong
+   * way when the link was starred elsewhere meanwhile nor does nothing after the feed changed.
+   */
+  private async undoUnstar(link: LinkResponse): Promise<void> {
+    const gone: LinkResponse = { ...link, isFavorite: false };
+    if (await this.store.setFavorite(link.id, true, gone, { rejoin: true })) {
+      void this.folders.refresh();
+      return;
+    }
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.t('links.item.favoriteFailed'),
+      detail: link.title,
     });
   }
 
@@ -145,7 +162,11 @@ export class LinkActionsService {
       closeLabel: this.t('links.item.confirm.close'),
       destructive: true,
     });
-    if (!confirmed || !this.store.remove(link.id)) {
+    if (!confirmed) {
+      return;
+    }
+    if (!this.store.remove(link.id, link)) {
+      // Already on its way out (a second delete of the same link): nothing more to do.
       return;
     }
     const toast = this.undoToast.show({

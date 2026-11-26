@@ -13,6 +13,9 @@ import { aiSettingsResponse, fakeAiApi } from '../../../../testing/fake-ai-api';
 import { AI_API } from '../../ai/models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../../ai/models/ai-settings-default.const';
 import { AiSettingsStore } from '../../ai/services/ai-settings.store';
+import { LINKS_API } from '../../links/models/links-api.const';
+import { LinksStore } from '../../../stores/links.store';
+import { PinsStore } from '../../../stores/pins.store';
 import { MEANING_DEBOUNCE_MS } from '../models/meaning-debounce-ms.const';
 import type { SearchState } from '../models/search-state.interface';
 import { MeaningSearch } from './meaning-search';
@@ -44,7 +47,18 @@ async function setup(meaningSearch = true, enabled = true) {
   );
   api.searchMeaning.mockImplementation(() => of(answer(['m1', 'w1'])));
   TestBed.configureTestingModule({
-    providers: [MeaningSearch, { provide: AI_API, useValue: api }],
+    providers: [
+      MeaningSearch,
+      { provide: AI_API, useValue: api },
+      {
+        provide: LINKS_API,
+        useValue: { update: vi.fn(() => of({ ...link('m1'), isFavorite: true })) },
+      },
+      {
+        provide: PinsStore,
+        useValue: { dropLink: vi.fn(), refresh: vi.fn(() => Promise.resolve()) },
+      },
+    ],
   });
   await TestBed.inject(AiSettingsStore).load();
   const text = signal('');
@@ -81,6 +95,23 @@ describe('MeaningSearch', () => {
     expect(meaning.rows().map((row) => row.link.id)).toEqual(['m1']);
     expect(meaning.rows()[0]?.why).toEqual({ key: 'ai.search.why', reasons: 'angular' });
     expect(meaning.hint()).toBeNull();
+  });
+
+  it('follows the links store: a starred card changes, a deleted one leaves and Undo brings it back', async () => {
+    const { meaning, settle } = await setup();
+    const links = TestBed.inject(LinksStore);
+    settle('signals', ['w1']);
+    await wait(MEANING_DEBOUNCE_MS + 10);
+    expect(meaning.rows().map((row) => row.link.id)).toEqual(['m1']);
+
+    // Not in the library feed: the store takes the link from the card and tells the others.
+    await links.toggleFavorite('m1', { ...link('m1'), isFavorite: false });
+    expect(meaning.rows()[0]?.link.isFavorite).toBe(true);
+
+    links.remove('m1', link('m1'));
+    expect(meaning.rows()).toEqual([]);
+    links.undoRemove('m1');
+    expect(meaning.rows().map((row) => row.link.id)).toEqual(['m1']);
   });
 
   it('waits while the text runs ahead of the word answer and restarts the pause', async () => {

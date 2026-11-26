@@ -85,7 +85,7 @@ export const LinksStore = signalStore(
     const injector = inject(Injector);
     const api = () => injector.get(LINKS_API);
     const pending = new Map<string, PendingRemoval>();
-    const favoriteBusy = new Set<string>();
+    const favoriteBusy = new Map<string, Promise<void>>();
     // Feed slots of links a move took out of the open scope, so moving them back restores the slot.
     const movedFrom = new Map<string, number>();
     // Links an unstar took out of the open feed (Favorites, an "only favorites" view) and their
@@ -186,11 +186,24 @@ export const LinksStore = signalStore(
         return;
       }
       pending.delete(id);
-      patchState(store, setAllEntities(insertAt(store.entities(), removal.index, removal.link)));
-      publish({ upserted: [removal.link], moved: true });
-      if (removal.recentIndex >= 0) {
+      const { link } = removal;
+      // The slot only means something in the feed it was taken from: after another feed was
+      // opened the link is put back there only when it belongs, through a reload.
+      const sameFeed = removal.generation === generation;
+      if (sameFeed && removal.index >= 0 && !store.entityMap()[id]) {
+        patchState(store, setAllEntities(insertAt(store.entities(), removal.index, link)));
+      } else if (
+        !sameFeed &&
+        store.loaded() &&
+        !store.entityMap()[id] &&
+        inFilter(store.filter(), link)
+      ) {
+        setFilter(store.filter());
+      }
+      publish({ upserted: [link], moved: true });
+      if (removal.recentIndex >= 0 && !store.recent().some((item) => item.id === id)) {
         patchState(store, {
-          recent: insertAt(store.recent(), removal.recentIndex, removal.link),
+          recent: insertAt(store.recent(), removal.recentIndex, link),
         });
       }
     }
@@ -226,6 +239,96 @@ export const LinksStore = signalStore(
         if (started === epoch) {
           patchState(store, { recentLoaded: true });
         }
+      }
+    }
+
+    /** The link as the store knows it (feed, left by an unstar, recent), else the caller's. */
+    function knownLink(id: string, hint?: LinkResponse): LinkResponse | undefined {
+      return store.entityMap()[id] ?? unstarred.get(id)?.link ?? loaded(id) ?? hint;
+    }
+
+    /** Resolves once no favorite request of the link is running (new ones may queue meanwhile). */
+    async function favoriteIdle(id: string): Promise<void> {
+      for (let busy = favoriteBusy.get(id); busy; busy = favoriteBusy.get(id)) {
+        await busy;
+      }
+    }
+
+    /** Runs `change` at once when no favorite request of the link runs, else after it. */
+    function afterFavorite(id: string, change: () => Promise<boolean>): Promise<boolean> {
+      return favoriteBusy.has(id) ? favoriteIdle(id).then(change) : change();
+    }
+
+    function applyFavorite(
+      id: string,
+      next: boolean,
+      hint: LinkResponse | undefined,
+      rejoin: boolean,
+    ): Promise<boolean> {
+      const request = runFavorite(id, next, hint, rejoin);
+      const busy = request.then(() => {
+        if (favoriteBusy.get(id) === busy) {
+          favoriteBusy.delete(id);
+        }
+      });
+      favoriteBusy.set(id, busy);
+      return request;
+    }
+
+    async function runFavorite(
+      id: string,
+      next: boolean,
+      hint: LinkResponse | undefined,
+      rejoin: boolean,
+    ): Promise<boolean> {
+      const away = unstarred.get(id);
+      const held = store.entityMap()[id] ?? away?.link ?? loaded(id);
+      const link = held ?? hint;
+      // Nothing known, or the link already has the value (a link known only from the caller's
+      // copy may be out of date, so that one is sent anyway).
+      if (!link || (held && held.isFavorite === next)) {
+        return true;
+      }
+      const changed: LinkResponse = { ...link, isFavorite: next };
+      const index = store.ids().indexOf(id);
+      const inFeed = index >= 0;
+      const leaves = inFeed && store.loaded() && !inFilter(store.filter(), changed);
+      const rejoins =
+        !inFeed && !away && rejoin && next && store.loaded() && inFilter(store.filter(), changed);
+      const slot = away && next ? away.index : rejoins ? 0 : -1;
+      const returns = slot >= 0 && !inFeed;
+      if (returns) {
+        unstarred.delete(id);
+        patchState(store, setAllEntities(insertAt(store.entities(), slot, changed)));
+      } else if (leaves) {
+        unstarred.set(id, { link: changed, index });
+        patchState(store, removeEntity(id));
+      } else {
+        patchState(store, updateEntity({ id, changes: { isFavorite: next } }));
+      }
+      patchState(store, { recent: mapRecent(id, { isFavorite: next }) });
+      publish({ upserted: [changed] });
+      try {
+        const saved = await firstValueFrom(api().update(id, { isFavorite: next }));
+        if (store.entityMap()[id]) {
+          patchState(store, updateEntity({ id, changes: { updatedAt: saved.updatedAt } }));
+        }
+        return true;
+      } catch {
+        if (returns) {
+          if (away) {
+            unstarred.set(id, away);
+          }
+          patchState(store, removeEntity(id));
+        } else if (leaves) {
+          unstarred.delete(id);
+          patchState(store, setAllEntities(insertAt(store.entities(), index, link)));
+        } else {
+          patchState(store, updateEntity({ id, changes: { isFavorite: link.isFavorite } }));
+        }
+        patchState(store, { recent: mapRecent(id, { isFavorite: link.isFavorite }) });
+        publish({ upserted: [link] });
+        return false;
       }
     }
 
@@ -338,56 +441,35 @@ export const LinksStore = signalStore(
         }
       },
 
-      /** Flips the favorite flag at once; resolves false (and rolls back) when the request fails. */
       /**
-       * Stars or unstars a link at once. A link the change takes out of the open feed (unstarred
-       * in Favorites or an "only favorites" view) leaves it, remembering its slot; starring it
-       * again (Undo) puts it back there. A failure puts everything back.
+       * Flips the favorite flag at once; resolves false (and rolls back) when the request fails.
+       * `hint` is the link as the caller shows it, for a link the feed and the recent list do not
+       * hold. A request still running for the link is awaited first.
        */
-      async toggleFavorite(id: string): Promise<boolean> {
-        const away = unstarred.get(id);
-        const link = store.entityMap()[id] ?? away?.link;
-        if (!link || favoriteBusy.has(id)) {
-          return true;
-        }
-        favoriteBusy.add(id);
-        const next = !link.isFavorite;
-        const changed: LinkResponse = { ...link, isFavorite: next };
-        const index = store.ids().indexOf(id);
-        const leaves = index >= 0 && store.loaded() && !inFilter(store.filter(), changed);
-        if (away && next) {
-          unstarred.delete(id);
-          patchState(store, setAllEntities(insertAt(store.entities(), away.index, changed)));
-        } else if (leaves) {
-          unstarred.set(id, { link: changed, index });
-          patchState(store, removeEntity(id));
-        } else {
-          patchState(store, updateEntity({ id, changes: { isFavorite: next } }));
-        }
-        patchState(store, { recent: mapRecent(id, { isFavorite: next }) });
-        publish({ upserted: [changed] });
-        try {
-          const saved = await firstValueFrom(api().update(id, { isFavorite: next }));
-          if (store.entityMap()[id]) {
-            patchState(store, updateEntity({ id, changes: { updatedAt: saved.updatedAt } }));
-          }
-          return true;
-        } catch {
-          if (leaves) {
-            unstarred.delete(id);
-            patchState(store, setAllEntities(insertAt(store.entities(), index, link)));
-          } else if (away && next) {
-            unstarred.set(id, away);
-            patchState(store, removeEntity(id));
-          } else {
-            patchState(store, updateEntity({ id, changes: { isFavorite: link.isFavorite } }));
-          }
-          patchState(store, { recent: mapRecent(id, { isFavorite: link.isFavorite }) });
-          publish({ upserted: [link] });
-          return false;
-        } finally {
-          favoriteBusy.delete(id);
-        }
+      toggleFavorite(id: string, hint?: LinkResponse): Promise<boolean> {
+        return afterFavorite(id, async () => {
+          const link = knownLink(id, hint);
+          return link ? applyFavorite(id, !link.isFavorite, hint, false) : true;
+        });
+      },
+
+      /**
+       * Stars or unstars a link at once, to an explicit value (idempotent: a link that already
+       * has it is left alone). A link the change takes out of
+       * the open feed (unstarred in Favorites or an "only favorites" view) leaves it, remembering
+       * its slot; starring it again puts it back there. With `rejoin` (Undo of an unstar) a link
+       * the feed no longer holds and that belongs to it goes back in at the top. A failure puts
+       * everything back. A request still running for the link is awaited first.
+       */
+      setFavorite(
+        id: string,
+        value: boolean,
+        hint?: LinkResponse,
+        options: { readonly rejoin?: boolean } = {},
+      ): Promise<boolean> {
+        return afterFavorite(id, async () =>
+          applyFavorite(id, value, hint, options.rejoin === true),
+        );
       },
 
       /** Whether the last unstar took this link out of the open feed (its toast offers Undo). */
@@ -538,7 +620,12 @@ export const LinksStore = signalStore(
        */
       async move(link: LinkResponse, folderId: string | null): Promise<boolean> {
         const current = store.entityMap()[link.id] ?? link;
-        if (current.folderId === folderId || pending.has(link.id)) {
+        if (pending.has(link.id)) {
+          // The link is being deleted: moving it now would change a link the user just removed,
+          // and a success would be a lie. The caller says it could not move.
+          return false;
+        }
+        if (current.folderId === folderId) {
           return true;
         }
         const startedEpoch = epoch;
@@ -571,19 +658,47 @@ export const LinksStore = signalStore(
       },
 
       /**
-       * Rolls a failed bulk change back, unless the view or the user changed meanwhile. `originals`
-       * are the links before the change: the other feed gets them back too (it holds no snapshot).
+       * Rolls a failed bulk change back, unless the view or the user changed meanwhile. Only the
+       * `originals` (the links before the change that failed) are touched, each by id: one that is
+       * still shown gets its old self back, one that left is put back at its old slot. Pages
+       * loaded since and changes to other links stay. The other feed gets the originals too (it
+       * holds no snapshot).
        */
       restoreSnapshot(snapshot: LinksSnapshot, originals: readonly LinkResponse[] = []): void {
         // The other feed has no generation: it takes the originals whatever happened here.
         if (originals.length > 0) {
           publish({ upserted: originals });
         }
-        if (snapshot.epoch !== epoch || snapshot.generation !== generation) {
+        if (snapshot.epoch !== epoch || originals.length === 0) {
           return;
         }
-        patchState(store, setAllEntities([...snapshot.entities]), {
-          recent: [...snapshot.recent],
+        const back = new Map(originals.map((link) => [link.id, link]));
+        const rollBack = (
+          current: readonly LinkResponse[],
+          before: readonly LinkResponse[],
+          keep: (link: LinkResponse) => boolean,
+        ): LinkResponse[] => {
+          const held = new Set(current.map((link) => link.id));
+          const next = current.map((link) => back.get(link.id) ?? link);
+          // Links that left come back from the first slot onwards, so each lands where it was.
+          before.forEach((link, at) => {
+            const original = back.get(link.id);
+            if (original && !held.has(link.id) && keep(original)) {
+              next.splice(Math.min(at, next.length), 0, original);
+            }
+          });
+          return next;
+        };
+        if (snapshot.generation === generation) {
+          patchState(
+            store,
+            setAllEntities(
+              rollBack(store.entities(), snapshot.entities, (link) => !pending.has(link.id)),
+            ),
+          );
+        }
+        patchState(store, {
+          recent: rollBack(store.recent(), snapshot.recent, (link) => !pending.has(link.id)),
         });
       },
 
@@ -626,15 +741,19 @@ export const LinksStore = signalStore(
         return pending.has(id);
       },
 
-      /** Hides a link while its Undo window is open. Returns false when it is not in the feed. */
-      remove(id: string): boolean {
+      /**
+       * Hides a link while its Undo window is open. The link need not be in the open feed (a
+       * search match, a Today or Recently opened card, a preview): `hint` is the one the caller
+       * shows. Returns false when the link is unknown or already hidden.
+       */
+      remove(id: string, hint?: LinkResponse): boolean {
         const index = store.entities().findIndex((link) => link.id === id);
-        const link = store.entities()[index];
+        const link = store.entities()[index] ?? loaded(id) ?? hint;
         if (!link || pending.has(id)) {
           return false;
         }
         const recentIndex = store.recent().findIndex((item) => item.id === id);
-        pending.set(id, { link, index, recentIndex, committing: false });
+        pending.set(id, { link, index, generation, recentIndex, committing: false });
         injector.get(PinsStore).dropLink(id);
         publish({ removed: [id] });
         patchState(store, removeEntity(id), {
