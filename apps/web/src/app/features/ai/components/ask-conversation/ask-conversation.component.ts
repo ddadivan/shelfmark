@@ -29,6 +29,9 @@ import {
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { pluralKey } from '../../../../core/i18n/plural-key';
+import { findScrollArea } from '../../../../core/layout/find-scroll-area';
+import { isUserScrollInput } from '../../../../core/layout/is-user-scroll-input';
+import { USER_SCROLL_EVENTS } from '../../../../core/layout/models/user-scroll-events.const';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
@@ -155,23 +158,40 @@ export class AskConversationComponent {
       }
       streaming = now;
     });
-    const scrolled = (): void => {
-      this.userScrolled = true;
-    };
-    const root = this.host.nativeElement.ownerDocument;
-    for (const type of ['wheel', 'touchmove', 'keydown']) {
-      root.addEventListener(type, scrolled, { passive: true });
-    }
-    inject(DestroyRef).onDestroy(() => {
-      this.inbox.clear();
-      for (const type of ['wheel', 'touchmove', 'keydown']) {
-        root.removeEventListener(type, scrolled);
-      }
-    });
+    this.watchUserScroll();
   }
 
   /** The person scrolled (or used the keyboard) since the newest question was sent. */
   private userScrolled = false;
+
+  /**
+   * Notes that the person scrolled, on whatever scrolls the chat (the panel body, the shell's main
+   * area or the page) and only for real scroll input (`isUserScrollInput`): typing in the composer
+   * is not scrolling. The area is found once the chat is in the DOM.
+   */
+  private watchUserScroll(): void {
+    const scrolled = (event: Event): void => {
+      if (isUserScrollInput(event)) {
+        this.userScrolled = true;
+      }
+    };
+    let area: HTMLElement | Document | null = null;
+    afterNextRender(
+      () => {
+        area = findScrollArea(this.host.nativeElement);
+        for (const type of USER_SCROLL_EVENTS) {
+          area.addEventListener(type, scrolled, { passive: true });
+        }
+      },
+      { injector: this.injector },
+    );
+    inject(DestroyRef).onDestroy(() => {
+      this.inbox.clear();
+      for (const type of USER_SCROLL_EVENTS) {
+        area?.removeEventListener(type, scrolled);
+      }
+    });
+  }
 
   /** Scrolls the newest question to the top of whatever scrolls the chat. */
   private revealLatest(): void {
