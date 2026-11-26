@@ -33,6 +33,7 @@
           [thumb]="thumb(link)"
           (activated)="opened(link)"
         >
+          <ui-favicon slot="thumb-fallback" [src]="favicon(link)" [letter]="siteLetter(link.url)" />
           <span slot="title">{{ link.title }}</span>
           <span slot="meta" class="revisit__meta">
             <ui-favicon [src]="favicon(link)" [letter]="siteLetter(link.url)" />
@@ -94,6 +95,11 @@
           [thumb]="thumb(item.link)"
           (activated)="opened(item.link)"
         >
+          <ui-favicon
+            slot="thumb-fallback"
+            [src]="favicon(item.link)"
+            [letter]="siteLetter(item.link.url)"
+          />
           <span slot="title">{{ item.link.title }}</span>
           <span slot="meta" class="revisit__meta">
             <ui-favicon [src]="favicon(item.link)" [letter]="siteLetter(item.link.url)" />
@@ -197,6 +203,7 @@
           [thumb]="thumb(link)"
           (activated)="opened(link)"
         >
+          <ui-favicon slot="thumb-fallback" [src]="favicon(link)" [letter]="siteLetter(link.url)" />
           <span slot="title">{{ link.title }}</span>
           <span slot="meta" class="revisit__meta">
             <ui-favicon [src]="favicon(link)" [letter]="siteLetter(link.url)" />

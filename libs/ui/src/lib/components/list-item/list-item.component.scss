@@ -128,6 +128,22 @@
   border-radius: var(--radius-sm);
 }
 
+// A link without a picture shows the feature's `thumb-fallback` (the site's mark at 28px) in the
+// tile instead of a generic picture icon, so the rows stay apart (author, Nov 26).
+.ui-list-item__thumb-fallback {
+  --ui-favicon-scale: 1.75;
+
+  display: contents;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-list-item__thumb-fallback:not(:empty) + .ui-list-item__thumb-icon {
+  display: none;
+}
+
 .ui-list-item__image {
   width: 100%;
   height: 100%;
