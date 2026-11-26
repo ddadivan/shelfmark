@@ -1,6 +1,6 @@
 // The implementation lives in the contracts library (shared with the web app), which has no test
 // runner of its own: its regression tests run here.
-import { normalizeUrl } from '@shelfmark/contracts';
+import { normalizeUrl, stripTrackingParams, TRACKING_QUERY_PARAMS } from '@shelfmark/contracts';
 
 describe('normalizeUrl', () => {
   it.each([
@@ -17,6 +17,9 @@ describe('normalizeUrl', () => {
     ['https://example.com/a?&&b=1', 'https://example.com/a?b=1'],
     ['  https://example.com/a  ', 'https://example.com/a'],
     ['https://example.com/a?utm_x=1#frag', 'https://example.com/a'],
+    ['https://example.com/a?gclid=1&id=7', 'https://example.com/a?id=7'],
+    ['https://example.com/a?FBCLID=1&mc_eid=2&q=x', 'https://example.com/a?q=x'],
+    ['https://example.com/a?%67clid=1', 'https://example.com/a'],
   ])('%s -> %s', (input, expected) => {
     expect(normalizeUrl(input)).toBe(expected);
   });
@@ -48,5 +51,13 @@ describe('normalizeUrl', () => {
     expect(normalizeUrl('https://example.com/a?%E0%A4%A=1')).toBe(
       'https://example.com/a?%E0%A4%A=1',
     );
+  });
+
+  it('drops every parameter stripTrackingParams drops', () => {
+    for (const name of TRACKING_QUERY_PARAMS) {
+      const url = `https://example.com/a?${name}=1&id=7`;
+      expect(normalizeUrl(url)).toBe(normalizeUrl(stripTrackingParams(url)));
+      expect(normalizeUrl(url)).toBe('https://example.com/a?id=7');
+    }
   });
 });

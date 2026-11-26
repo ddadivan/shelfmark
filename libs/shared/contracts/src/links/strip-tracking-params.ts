@@ -1,23 +1,5 @@
-import { TRACKING_QUERY_PARAM_PREFIXES } from './tracking-query-param-prefixes.const';
-import { TRACKING_QUERY_PARAMS } from './tracking-query-params.const';
-
-function paramName(segment: string): string {
-  const raw = segment.split('=')[0] ?? '';
-  try {
-    return decodeURIComponent(raw.replace(/\+/g, ' ')).toLowerCase();
-  } catch {
-    return raw.toLowerCase();
-  }
-}
-
-/** True for a query parameter name that only tracks (`TRACKING_QUERY_PARAMS`, `utm_*`). */
-export function isTrackingParam(name: string): boolean {
-  const lower = name.toLowerCase();
-  return (
-    TRACKING_QUERY_PARAMS.includes(lower) ||
-    TRACKING_QUERY_PARAM_PREFIXES.some((prefix) => lower.startsWith(prefix))
-  );
-}
+import { isTrackingParam } from './is-tracking-param';
+import { queryParamName } from './query-param-name';
 
 /**
  * The URL without its tracking query parameters (#284, "Keep the query part of links" off). The
@@ -35,7 +17,9 @@ export function stripTrackingParams(input: string): string {
     return input;
   }
   const segments = beforeHash.slice(queryAt + 1).split('&');
-  const kept = segments.filter((segment) => segment === '' || !isTrackingParam(paramName(segment)));
+  const kept = segments.filter(
+    (segment) => segment === '' || !isTrackingParam(queryParamName(segment)),
+  );
   if (kept.length === segments.length) {
     return input;
   }

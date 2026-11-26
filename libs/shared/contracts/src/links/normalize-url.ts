@@ -1,18 +1,11 @@
-const TRACKING_PARAM_PREFIX = 'utm_';
+import { isTrackingParam } from './is-tracking-param';
+import { queryParamName } from './query-param-name';
+
 const WEB_PROTOCOLS: readonly string[] = ['http:', 'https:'];
 
-function paramName(segment: string): string {
-  const raw = segment.split('=')[0] ?? '';
-  try {
-    return decodeURIComponent(raw.replace(/\+/g, ' ')).toLowerCase();
-  } catch {
-    return raw.toLowerCase();
-  }
-}
-
 /**
- * URL used for duplicate detection (PROJECT.md 6.1): lower-case host, no `#fragment`, no `utm_*`
- * query parameters, no trailing `/`. Pure; input that is not a URL is returned trimmed. Shared by the
+ * URL used for duplicate detection (PROJECT.md 6.1): lower-case host, no `#fragment`, no tracking
+ * query parameters (`isTrackingParam`: `utm_*`, `gclid`, `fbclid`, …), no trailing `/`. Pure; input that is not a URL is returned trimmed. Shared by the
  * API (stored as `normalizedUrl`) and the web app.
  *
  * Not a sanitizer: it runs after scheme validation and says nothing about whether a URL is safe.
@@ -35,7 +28,7 @@ export function normalizeUrl(input: string): string {
   const kept = url.search
     .slice(1)
     .split('&')
-    .filter((segment) => segment !== '' && !paramName(segment).startsWith(TRACKING_PARAM_PREFIX));
+    .filter((segment) => segment !== '' && !isTrackingParam(queryParamName(segment)));
   const query = kept.length > 0 ? `?${kept.join('&')}` : '';
   return `${url.protocol}//${url.host}${path}${query}`;
 }

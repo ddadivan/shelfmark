@@ -242,7 +242,8 @@ export {
 } from './users/is-layout-settings';
 export { TRACKING_QUERY_PARAMS } from './links/tracking-query-params.const';
 export { TRACKING_QUERY_PARAM_PREFIXES } from './links/tracking-query-param-prefixes.const';
-export { isTrackingParam, stripTrackingParams } from './links/strip-tracking-params';
+export { isTrackingParam } from './links/is-tracking-param';
+export { stripTrackingParams } from './links/strip-tracking-params';
 export {
   isBackgroundOfBase,
   isCustomTheme,
