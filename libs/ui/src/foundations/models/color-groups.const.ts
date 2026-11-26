@@ -39,6 +39,6 @@ export const COLOR_GROUPS: readonly ColorGroup[] = [
   { title: 'Other', tokens: ['overlay', 'logo-bookmark'] },
   {
     title: 'Cards and skeletons',
-    tokens: ['card-hover-bg', 'card-hover-border', 'skeleton-shimmer'],
+    tokens: ['card-hover-bg', 'skeleton-shimmer'],
   },
 ];

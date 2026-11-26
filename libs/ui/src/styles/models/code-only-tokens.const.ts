@@ -12,7 +12,6 @@ export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
   accent: 'Old name of the primary action colour, same value as --primary (Shelf accent).',
   scrim: 'Alias of --overlay under the Shelf name (scrim maps to overlay).',
   'glass-line': 'Alias of --line-strong for the edge of floating layers.',
-  'card-hover-border': 'Alias of --line-strong for the hovered card ring.',
   'highlight-bg': 'Search highlight background: the Shelf ai-bg, a separate name for ui-highlight.',
   'highlight-text': 'Search highlight text: the Shelf text, a separate name for ui-highlight.',
   'shadow-float': 'Alias of --shadow-l2 for floating layers (menus, popovers, toasts).',
@@ -41,14 +40,11 @@ export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
   'shadow-card':
     'Resting card ring: line as a 1px ring in light, none in dark (Shelf shadow-l1 usage).',
   'shadow-card-hover': 'Hovered card: the ring plus shadow-hover.',
-  'shadow-card-spread': 'Hovered card spread shadow of the pointer effect (uiPointerShadow).',
-  'shadow-card-pointer': 'Colour of the pointer-following card shadow (uiPointerShadow).',
   'shadow-card-press': 'Pressed card shadow (80 ms press feedback).',
   'toast-muted': 'Muted text of the inverted toast: 72% bg over text.',
   'toast-tile': 'Button and icon tiles of the inverted toast: bg at 16%.',
   'toast-tile-hover': 'Hovered toast button tile: bg at 26%.',
   'tooltip-kbd': 'Key cap text in the tooltip: 70% on-primary over primary.',
   'card-overlay': 'Translucent bar over a card preview: surface at 88%.',
-  'status-text': 'Resting text of the Ask status pill: 75% text over text-muted.',
   'shadow-thumb': 'Soft lift under the range slider thumb.',
 };

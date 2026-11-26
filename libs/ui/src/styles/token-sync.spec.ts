@@ -182,7 +182,7 @@ function codeTokens(category: Expected['category']): string[] {
     radius: (name) => name.startsWith('radius-'),
     type: (name) => name.startsWith('font-size-') || name.startsWith('line-height-'),
     shadow: (name) => !inScale(name) && name.startsWith('shadow-'),
-    spacing: (name) => /^space-\d+$/.test(name),
+    spacing: (name) => /^space-\d+(-\d+)?$/.test(name),
   };
   return [...names].filter(pick[category]);
 }

@@ -17,7 +17,9 @@ export const TOKEN_RENAMES: Readonly<Record<string, string>> = {
   highlight: 'shadow-highlight',
   // Spacing: Shelf names the pixels, libs/ui counts 4px steps.
   'space-4': 'space-1',
+  'space-6': 'space-1-5',
   'space-8': 'space-2',
+  'space-10': 'space-2-5',
   'space-12': 'space-3',
   'space-16': 'space-4',
   'space-24': 'space-6',

@@ -87,11 +87,8 @@
   --shadow-float: var(--shadow-l2);
   --shadow-popover: var(--shadow-l2);
   --shadow-card-hover: none;
-  --shadow-card-spread: 0 16px 44px -14px rgb(0 0 0 / 60%);
-  --shadow-card-pointer: rgb(255 255 255 / 5%);
   --shadow-card-press: 0 5px 14px -6px rgb(0 0 0 / 50%);
   --card-hover-bg: color-mix(in srgb, var(--surface) 96%, #fff);
-  --card-hover-border: var(--line-strong);
 
   // Code-only (token-sync.spec.ts): the neutral hairline of the search fields (prototypes draw
   // `inset 0 0 0 1px rgba(127,127,127,.25)` in both themes) and the soft lift under the slider
@@ -108,5 +105,4 @@
   --toast-tile-hover: color-mix(in srgb, var(--bg) 26%, transparent);
   --tooltip-kbd: color-mix(in srgb, var(--on-primary) 70%, var(--primary));
   --card-overlay: color-mix(in srgb, var(--surface) 88%, transparent);
-  --status-text: color-mix(in srgb, var(--text) 75%, var(--text-muted));
 }

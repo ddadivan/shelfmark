@@ -3,7 +3,9 @@
 // Theme-independent tokens: spacing, radii, motion, font stacks.
 @mixin scale {
   --space-1: #{rem(4px)};
+  --space-1-5: #{rem(6px)};
   --space-2: #{rem(8px)};
+  --space-2-5: #{rem(10px)};
   --space-3: #{rem(12px)};
   --space-4: #{rem(16px)};
   --space-6: #{rem(24px)};
@@ -52,8 +54,6 @@
   --line-height-title-s: #{rem(24px)};
   --font-size-body: #{rem(16px)};
   --line-height-body: #{rem(24px)};
-  --font-size-body-strong: #{rem(16px)};
-  --line-height-body-strong: #{rem(24px)};
   --font-size-secondary: #{rem(14px)};
   --line-height-secondary: #{rem(22px)};
   --font-size-label: #{rem(14px)};
@@ -65,7 +65,7 @@
   --font-size-reader-heading: #{rem(22px)};
   --line-height-reader-heading: #{rem(28px)};
   --font-size-mono: #{rem(12px)};
-  --line-height-mono: 1.4;
+  --line-height-mono: #{rem(16px)};
 
   // Code-only type sizes (not in tokens.json; listed with their reason in
   // token-sync.spec.ts): the 18/22 section title the prototypes draw (05-settings `.sec-t`, menu
@@ -74,7 +74,8 @@
   --line-height-section: #{rem(22px)};
   --font-size-micro: #{rem(10px)};
 
-  // Sizes (Shelf): controls 32 / 40 / 48, sidebar rows 36, the sidebar 240.
+  // Sizes (Shelf): controls 28 / 32 / 40 / 48, sidebar rows 36, the sidebar 240.
+  --control-xs: #{rem(28px)};
   --control-sm: #{rem(32px)};
   --control-md: #{rem(40px)};
   --control-lg: #{rem(48px)};
