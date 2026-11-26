@@ -20,6 +20,11 @@ Segmented controls fill the width with equal segments.
 
 **Head controls:** the Site / Reader switch and the segments in Reading settings are the standard SegmentedControl (track radius 10, 2px padding, items 28px with radius 8). The full screen button matches the switch track: 32px square, `surface-hover` fill, `radius-sm` (10), hover and pressed `surface-pressed`.
 
+**Split toolbar** (the preview head beside the list) folds with the panel width:
+- Below 56rem the tools, full screen and × move to a second line, spread with `space-between`.
+- Below 42rem Open and Related show icons only (Related keeps its count).
+- Below 35rem Wider, Details and the star move into ⋯.
+
 **Phone head:** two rows. Row 1: title and site, ⋯, close. Row 2: Site / Reader, Aa, Open (icon), then previous / next on the right. Star and details move into ⋯.
 
 ## Rules

@@ -4,6 +4,7 @@ Buttons are pills: one filled primary per view (Add link), quiet fills for the r
 - **Primary** (`sm-btn--primary`): `accent` fill, `on-accent` text: near-black in light, near-white in dark. Add link in the sidebar is the full-width primary, 40px.
 - **Secondary** (`sm-btn--secondary`): `surface-hover` fill, `text`. Cancel, Not now, the View button.
 - **Ghost** (`sm-btn`): no fill until hover (`fill`). Row actions, toolbar items.
+- **Library toolbar buttons** are ghost buttons in `text-muted` at rest and `text` on hover, weight 400, with labels only from 100em (icons with tooltips below).
 - **Danger** (`sm-btn--danger`): `danger` fill, only for the final step of a delete.
 
 ## Sizes

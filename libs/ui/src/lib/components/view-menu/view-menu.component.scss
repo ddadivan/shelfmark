@@ -76,14 +76,14 @@
   margin-block-start: var(--space-1);
 }
 
-// The floating panel (Shelf reference: at least 240px, `surface`, `shadow-l2`, 12px corners).
+// The floating panel (Shelf reference: at least 260px, `surface`, `shadow-l2`, 12px corners).
 .ui-view-menu__surface {
   @include float-surface;
 
   display: flex;
   flex-direction: column;
   gap: rem(2px);
-  min-inline-size: rem(240px);
+  min-inline-size: rem(260px);
   max-inline-size: calc(100vw - #{rem(16px)});
   padding: var(--space-2);
   margin: var(--space-1) 0;

@@ -12,3 +12,6 @@ A text field with a visible label above it, an optional hint and an error below.
 
 ## In code
 `ui-input`, `ui-textarea` (Signal Forms `[formField]`).
+
+## Dense form variant
+The New view dialog uses a dense form: 32px controls, 14px `secondary` text, 12px 500 row labels in a 96px column.

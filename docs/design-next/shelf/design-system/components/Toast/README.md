@@ -1,3 +1,5 @@
 Short confirmations with an optional action (Undo, Show, Try again).
 
 `text` fill with `canvas` text, radius 12, 14px; bottom centre, above the tab bar on small screens. Errors carry a `danger` mark and stay until handled; others leave after 4–8 s.
+
+Centred on the content column (also beside the link preview and in its full screen). An Undo toast shows a countdown. Unstarring a card in Favorites removes it with an Undo toast.
