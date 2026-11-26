@@ -17,6 +17,7 @@
   class="ui-view-menu__panel"
   role="dialog"
   [class.ui-view-menu__panel--shown]="inline() || attached()"
+  [class.ui-view-menu__panel--sheet]="sheet()"
   [attr.id]="id"
   [attr.aria-label]="label()"
   (keydown)="onKeydown($event)"
@@ -25,9 +26,13 @@
   @if (isOpen()) {
     <div
       class="ui-view-menu__surface"
-      animate.enter="ui-view-menu--enter"
-      animate.leave="ui-view-menu--leave"
+      [class.ui-view-menu__surface--sheet]="sheet()"
+      [animate.enter]="sheet() ? 'ui-view-menu--sheet-enter' : 'ui-view-menu--enter'"
+      [animate.leave]="sheet() ? 'ui-view-menu--sheet-leave' : 'ui-view-menu--leave'"
     >
+      @if (sheet()) {
+        <div class="ui-view-menu__grip" aria-hidden="true"></div>
+      }
       <!-- Slot above the slider: the page's own control (the phone's view switch). -->
       <div class="ui-view-menu__slot">
         <ng-content />

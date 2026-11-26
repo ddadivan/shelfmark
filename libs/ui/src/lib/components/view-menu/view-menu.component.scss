@@ -169,3 +169,40 @@
   @include leave(pop);
   @include origin(top right);
 }
+
+// Below 64em (Shelf): a bottom sheet, like every `ui-menu` there (`menu.component.scss`): full
+// width with 20px top corners on a phone, centred and at most 560px on a tablet, the grip, the
+// home-indicator room; the scrim, Esc and a press outside close it.
+.ui-view-menu__panel--sheet {
+  inline-size: 100%;
+}
+
+.ui-view-menu__surface--sheet {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: rem(560px);
+  max-block-size: 85dvh;
+  padding: var(--space-2) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom, 0rem));
+  margin: 0 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-block-end: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.ui-view-menu__grip {
+  inline-size: rem(36px);
+  block-size: rem(4px);
+  margin: 0 auto var(--space-2);
+  background: var(--line-strong);
+  border-radius: var(--radius-full);
+}
+
+.ui-view-menu--sheet-enter {
+  @include enter(sheet);
+}
+
+.ui-view-menu--sheet-leave {
+  @include leave(sheet);
+}

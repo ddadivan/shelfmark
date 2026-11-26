@@ -84,10 +84,11 @@
   }
 }
 
-// In the bottom sheet of a menu (below 64em, Shelf): 48px rows in the body size, no shortcut hints.
+// In the bottom sheet of a menu (below 64em, Shelf): 48px rows at 14px (author, Nov 26: the body
+// size was too big), no shortcut hints.
 :host-context(.ui-menu__surface--sheet) {
   .ui-menu-item {
-    @include type(body);
+    @include type(secondary);
 
     min-height: rem(48px);
   }

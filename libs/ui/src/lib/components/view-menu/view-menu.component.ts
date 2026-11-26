@@ -29,6 +29,8 @@ import type { ViewMenuFieldChange } from './models/view-menu-field-change.interf
 import type { ViewMenuField } from './models/view-menu-field.interface';
 import type { ViewMenuStepText } from './models/view-menu-step-text.type';
 import { viewMenuPositions } from './view-menu-positions';
+import { mediaMatch } from '../../utils/media/media-match';
+import { COMPACT_MEDIA_QUERY } from '../../utils/media/models/compact-media-query.const';
 
 let nextId = 0;
 
@@ -114,6 +116,10 @@ export class ViewMenuComponent {
   /** Whether the panel is shown. */
   readonly isOpen = computed(() => this.inline() || this.open());
   protected readonly expanded = this.open.asReadonly();
+  /** Below 64em the open panel is a bottom sheet, like every `ui-menu` there (set when it opens). */
+  protected readonly sheet = signal(false);
+  private readonly compact = mediaMatch(COMPACT_MEDIA_QUERY);
+  private overlaySheet = false;
 
   protected readonly stepLabel = computed(() => {
     const text = this.stepText();
@@ -145,13 +151,15 @@ export class ViewMenuComponent {
       return;
     }
     const wasOpen = this.open();
-    if (this.overlay?.isAttached) {
+    const sheet = this.compact();
+    if (this.overlay?.isAttached && sheet === this.overlaySheet) {
       // Reopened while the leave animation runs.
       this.overlay.cancelRelease();
     } else {
       this.disposeOverlay();
-      this.createOverlay();
+      this.createOverlay(sheet);
     }
+    this.sheet.set(sheet);
     this.attached.set(true);
     this.open.set(true);
     this.arm();
@@ -209,16 +217,19 @@ export class ViewMenuComponent {
     this.fieldChange.emit({ id: field.id, checked });
   }
 
-  private createOverlay(): void {
-    const overlay = this.overlays.connect(
-      {
-        origin: this.trigger().nativeElement,
-        positions: viewMenuPositions(),
-        layer: OVERLAY_LAYER.Menu,
-      },
-      { injector: this.injector },
-    );
+  private createOverlay(sheet: boolean): void {
+    const overlay = sheet
+      ? this.overlays.sheet({ layer: OVERLAY_LAYER.Menu }, { injector: this.injector })
+      : this.overlays.connect(
+          {
+            origin: this.trigger().nativeElement,
+            positions: viewMenuPositions(),
+            layer: OVERLAY_LAYER.Menu,
+          },
+          { injector: this.injector },
+        );
     this.overlay = overlay;
+    this.overlaySheet = sheet;
     overlay.attachElement(this.panel().nativeElement);
     this.detachSubscription = overlay.detachments().subscribe(() => {
       if (this.overlay === overlay) {
