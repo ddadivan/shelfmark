@@ -39,6 +39,7 @@ import { chunks } from '../utils/chunks';
 import { RemindersStore } from '../../../stores/reminders.store';
 import { RuleOfferService } from '../../rules/services/rule-offer.service';
 import { BULK_OPEN_CONFIRM_ABOVE } from '../models/bulk-open-confirm-above.const';
+import type { BulkUpdateOutcome } from '../models/bulk-update-outcome.interface';
 import type { BulkTagsChange } from '../models/bulk-tags-change.interface';
 import type { BulkTagsDialogData } from '../models/bulk-tags-dialog-data.interface';
 
@@ -107,12 +108,16 @@ export class BulkLinkActionsService {
     if (moving.length === 0) {
       return true;
     }
-    const ok = await this.update(moving, { folderId }, (link) => ({
+    const outcome = await this.update(moving, { folderId }, (link) => ({
       ...link,
       folderId,
       pinnedInFolderAt: null,
     }));
-    if (!ok) {
+    if (!outcome.ok) {
+      if (outcome.done > 0) {
+        this.partial(outcome.done, moving.length);
+        return false;
+      }
       this.failed(
         'bulk.move.failed',
         'bulk.move.failedDetail',
@@ -187,13 +192,18 @@ export class BulkLinkActionsService {
       ...(change.remove.length > 0 ? { removeTags: [...change.remove] } : {}),
     };
     let error: unknown;
-    const ok = await this.update(
+    const outcome = await this.update(
       links,
       request,
       (link) => withTagsChanged(link, change),
       (cause) => (error = cause),
     );
-    if (!ok) {
+    if (!outcome.ok) {
+      if (outcome.done > 0) {
+        void this.tags.noteLinkSaved();
+        this.partial(outcome.done, links.length);
+        return false;
+      }
       const tooMany =
         error instanceof HttpErrorResponse && error.status === HttpStatusCode.Conflict;
       this.toasts.show({
@@ -219,8 +229,12 @@ export class BulkLinkActionsService {
       return false;
     }
     const isFavorite = links.some((link) => !link.isFavorite);
-    const ok = await this.update(links, { isFavorite }, (link) => ({ ...link, isFavorite }));
-    if (!ok) {
+    const outcome = await this.update(links, { isFavorite }, (link) => ({ ...link, isFavorite }));
+    if (!outcome.ok) {
+      if (outcome.done > 0) {
+        this.partial(outcome.done, links.length);
+        return false;
+      }
       this.failed(
         'bulk.favorite.failed',
         'bulk.favorite.failedDetail',
@@ -329,23 +343,37 @@ export class BulkLinkActionsService {
     if (!confirmed) {
       return false;
     }
-    const ids = links.map((link) => link.id);
     const snapshot = this.store.snapshot();
-    this.store.removeLinks(ids);
+    this.store.removeLinks(links.map((link) => link.id));
+    // Batches the server confirmed stay deleted; only the failed and the unsent ones come back.
+    let done = 0;
     try {
-      for (const batch of chunks(ids, LINK_LIMIT.BatchMax)) {
-        await firstValueFrom(this.api().removeBatch(batch));
+      for (const batch of chunks(links, LINK_LIMIT.BatchMax)) {
+        await firstValueFrom(this.api().removeBatch(batch.map((link) => link.id)));
+        done += batch.length;
       }
     } catch {
-      this.store.restoreSnapshot(snapshot, links);
+      this.store.restoreSnapshot(snapshot, links.slice(done));
       this.refreshCounts();
+      if (done === 0) {
+        this.toasts.show({
+          kind: TOAST_KIND.Danger,
+          title: this.t('bulk.delete.failed'),
+          detail: this.t('bulk.delete.failedDetail'),
+        });
+        return false;
+      }
       this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.t('bulk.delete.failed'),
-        detail: this.t('bulk.delete.failedDetail'),
+        kind: TOAST_KIND.Warn,
+        title: this.t('bulk.delete.partial'),
+        detail: this.t('bulk.delete.partialDetail', {
+          done: String(done),
+          total: String(links.length),
+        }),
       });
-      return false;
     }
+    const deleted = links.slice(0, done);
+    const ids = deleted.map((link) => link.id);
     for (const id of ids) {
       this.pins.dropLink(id);
     }
@@ -353,13 +381,13 @@ export class BulkLinkActionsService {
     void this.trash.refresh();
     void this.injector.get(RemindersStore).refresh();
     this.undoToast.show({
-      title: this.plural('bulk.delete.done', links.length),
-      detail: this.titles(links),
+      title: this.plural('bulk.delete.done', deleted.length),
+      detail: this.titles(deleted),
       actionLabel: this.t('links.item.undo'),
       onUndo: () => void this.restore(ids),
       onExpire: () => undefined,
     });
-    return true;
+    return done === links.length;
   }
 
   /** Undo of a bulk delete: Trash restore (it refreshes the feed, folders and tags). */
@@ -377,7 +405,7 @@ export class BulkLinkActionsService {
   private async moveBack(moved: readonly LinkResponse[], to: string | null): Promise<void> {
     const groups = groupedByFolder(moved, to);
     for (const [folderId, group] of groups) {
-      const ok = await this.update(group, { folderId }, (link) => ({ ...link, folderId }));
+      const { ok } = await this.update(group, { folderId }, (link) => ({ ...link, folderId }));
       if (!ok) {
         this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('bulk.move.undoFailed') });
         return;
@@ -389,32 +417,44 @@ export class BulkLinkActionsService {
 
   /**
    * One optimistic batch update: the feed shows `apply` at once, then the server's links replace
-   * them; a failure restores the feed. Counts refresh either way.
+   * them (one request per `LINK_LIMIT.BatchMax`). A failure rolls back only the links whose batch
+   * was not confirmed; `done` says how many were. Counts refresh either way.
    */
   private async update(
     links: readonly LinkResponse[],
     change: Omit<UpdateLinksBatchRequest, 'ids'>,
     apply: (link: LinkResponse) => LinkResponse,
     onError?: (error: unknown) => void,
-  ): Promise<boolean> {
+  ): Promise<BulkUpdateOutcome> {
     const snapshot = this.store.snapshot();
     const moved = change.folderId !== undefined;
     this.store.patchLinks(links.map(apply), moved);
+    let done = 0;
     try {
       for (const batch of chunks(links, LINK_LIMIT.BatchMax)) {
         const response = await firstValueFrom(
           this.api().updateBatch({ ...change, ids: batch.map((link) => link.id) }),
         );
         this.store.patchLinks(response.links, moved);
+        done += batch.length;
       }
       this.refreshCounts();
-      return true;
+      return { ok: true, done };
     } catch (error) {
-      this.store.restoreSnapshot(snapshot, links);
+      this.store.restoreSnapshot(snapshot, links.slice(done));
       this.refreshCounts();
       onError?.(error);
-      return false;
+      return { ok: false, done };
     }
+  }
+
+  /** "Only some links were changed": a bulk change in which some batches went through. */
+  private partial(done: number, total: number): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Warn,
+      title: this.t('bulk.partial.title'),
+      detail: this.t('bulk.partial.detail', { done: String(done), total: String(total) }),
+    });
   }
 
   /** Folder, tag and saved view counts after the library changed. */

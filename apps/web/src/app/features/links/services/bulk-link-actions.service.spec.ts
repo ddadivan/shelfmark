@@ -9,7 +9,7 @@ import {
   ToastService,
   type ToastOptions,
 } from '@shelfmark/ui';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
 import { RECENT_FOLDERS_STORAGE_KEY } from '../../../core/auth/models/recent-folders-storage-key.const';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
@@ -417,6 +417,73 @@ describe('BulkLinkActionsService', () => {
       expect(api.removeBatch).toHaveBeenCalledTimes(2);
       expect(api.removeBatch.mock.calls[0]?.[0]).toHaveLength(100);
       expect(api.removeBatch.mock.calls[1]?.[0]).toHaveLength(50);
+    });
+
+    it('keeps the links of confirmed batches deleted when a later batch fails', async () => {
+      const { bulk, api, store, toasts } = await setup();
+      const many = Array.from({ length: 150 }, (_, i) => link(i + 10));
+      api.removeBatch
+        .mockReturnValueOnce(of({ deleted: 100 }))
+        .mockReturnValueOnce(throwError(() => new Error('down')));
+
+      expect(await bulk.delete([link(1), ...many])).toBe(false);
+
+      // Only the second batch (51 links) comes back; the first 100 are gone for good.
+      expect(store.entities().map((item) => item.id)).toEqual(['id-2', 'id-3']);
+      expect(toasts.map((toast) => toast.title)).toEqual([
+        'Only some links were moved to Trash',
+        expect.stringContaining('moved to Trash'),
+      ]);
+      expect(toasts[0].detail).toBe('100 of 151 are in Trash. The rest are back in the list.');
+      // Undo covers the ones that went through.
+      expect(toasts[1].action?.label).toBe('Undo');
+    });
+
+    it('keeps the pages loaded since when it rolls back', async () => {
+      const { bulk, api, store } = await setup();
+      api.list.mockReturnValueOnce(
+        of({ items: [link(1), link(2), link(3)], nextCursor: 'next', pinned: [] }),
+      );
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() => expect(store.hasMore()).toBe(true));
+      const failing = new Subject<{ deleted: number }>();
+      api.removeBatch.mockReturnValueOnce(failing);
+      const deleting = bulk.delete([link(2)]);
+      await vi.waitFor(() => expect(api.removeBatch).toHaveBeenCalled());
+      api.list.mockReturnValueOnce(of({ items: [link(4), link(5)], nextCursor: null, pinned: [] }));
+      await store.loadMore();
+
+      failing.error(new Error('down'));
+      await deleting;
+
+      expect(store.entities().map((item) => item.id)).toEqual([
+        'id-1',
+        'id-2',
+        'id-3',
+        'id-4',
+        'id-5',
+      ]);
+    });
+  });
+
+  describe('update in batches', () => {
+    it('rolls back only the failed batch and says it was partial', async () => {
+      const { bulk, api, toasts } = await setup();
+      const many = Array.from({ length: 150 }, (_, i) => link(i + 10));
+      api.updateBatch.mockImplementationOnce((request) =>
+        of({
+          updated: request.ids.length,
+          links: request.ids.map((id) => ({ ...link(Number(id.slice(3))), isFavorite: true })),
+        }),
+      );
+      api.updateBatch.mockReturnValueOnce(throwError(() => new Error('down')));
+
+      expect(await bulk.toggleFavorite(many)).toBe(false);
+
+      expect(toasts.at(-1)?.title).toBe('Only some links were changed');
+      expect(toasts.at(-1)?.detail).toBe(
+        '100 of 150 were updated. The rest are back as they were.',
+      );
     });
   });
 });
