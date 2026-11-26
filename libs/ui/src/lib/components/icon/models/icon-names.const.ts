@@ -98,6 +98,7 @@ export const ICON_NAMES = [
   'pin-off',
   'plane',
   'play',
+  'play-filled',
   'refresh',
   'rocket',
   'saved-link',

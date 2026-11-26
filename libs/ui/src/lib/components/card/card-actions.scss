@@ -12,8 +12,9 @@
   --ui-button-sm-size: #{rem(28px)};
   --ui-button-radius: var(--radius-full);
 
-  // Shelf reference: the glass marks carry a 12px glyph, 10px in from the preview's edges.
-  --ui-button-icon-size: #{rem(12px)};
+  // The glass marks carry a 16px glyph (the 16px grid drawings; the reference's 12px only scaled
+  // them down and blurred them, author Nov 26), 10px in from the preview's edges.
+  --ui-button-icon-size: #{rem(16px)};
 
   inset-block-start: rem(10px);
   z-index: 2;
@@ -147,20 +148,22 @@
 // the Select button, X, a long press), on a picked card and on keyboard focus; not on touch, where
 // a long press starts the selection.
 .ui-card__select {
-  --ui-checkbox-size: #{rem(28px)};
+  // Shelf `lc-sel` (08-select-move): a 22px rounded square on `surface` with a 1.5px `control`
+  // edge, so an unchecked box reads as a checkbox (the glass circle read as an empty disc, author
+  // Nov 26); checked: the accent fill with the tick. The hit area stays 28px.
+  --ui-checkbox-size: #{rem(22px)};
   --ui-checkbox-hit: #{rem(28px)};
-  --ui-checkbox-radius: var(--radius-full);
-  --ui-checkbox-tick: #{rem(24px)};
+  --ui-checkbox-radius: var(--radius-tile-sm);
+  --ui-checkbox-tick: #{rem(18px)};
   --ui-checkbox-fill: var(--accent);
+  --ui-checkbox-bg: var(--surface);
+  --ui-checkbox-border: var(--border-control);
+  --ui-checkbox-hover-bg: var(--surface);
+  --ui-checkbox-pressed-bg: var(--surface);
 
-  // Unchecked: the same glass as the star pill; checked: the accent fill of `ui-checkbox`.
-  --ui-checkbox-bg: var(--glass);
-  --ui-checkbox-border: var(--glass-line);
-  --ui-checkbox-filter: blur(#{rem(10px)});
-  --ui-checkbox-hover-bg: var(--glass);
-  --ui-checkbox-pressed-bg: var(--glass);
-
-  inset-inline-start: rem(10px);
+  // Centred on the 28px marks' line: 10px + (28 - 22) / 2.
+  inset-block-start: rem(13px);
+  inset-inline-start: rem(13px);
   display: flex;
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
@@ -197,9 +200,9 @@
 // Touch: the checkbox and the buttons grow to 40px.
 @include coarse {
   .ui-card__select {
-    --ui-checkbox-size: #{rem(40px)};
+    --ui-checkbox-size: #{rem(28px)};
     --ui-checkbox-hit: #{rem(40px)};
-    --ui-checkbox-tick: #{rem(34px)};
+    --ui-checkbox-tick: #{rem(22px)};
   }
 
   .ui-card__actions {

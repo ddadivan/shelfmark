@@ -9,6 +9,7 @@ import {
   isDevMode,
   output,
 } from '@angular/core';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { IconComponent } from '../icon/icon.component';
 import { TAB_BAR_MAX_SLOTS } from './models/tab-bar-max-items.const';
 import type { TabBarItem } from './models/tab-bar-item.interface';
@@ -33,6 +34,8 @@ import type { TabBarSelection } from './models/tab-bar-selection.interface';
   styleUrl: './tab-bar.component.scss',
 })
 export class TabBarComponent {
+  /** Shelf tab bar: 20px tab glyphs, the 24px plus on Add. */
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** The destinations, left to right; the Add button is inserted in the middle. */
   readonly items = input.required<readonly TabBarItem[]>();
   /** Id of the current destination. */

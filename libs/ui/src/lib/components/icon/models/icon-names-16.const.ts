@@ -96,6 +96,7 @@ export const ICON_NAMES_16 = [
   'pin-off',
   'plane',
   'play',
+  'play-filled',
   'refresh',
   'rocket',
   'saved-link',

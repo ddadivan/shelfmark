@@ -91,6 +91,8 @@ const APP_ICONS = [
   'pin',
   'pin-off',
   'play',
+  // The video mark over a card preview: a plain triangle (the circled play read as a checkbox).
+  'play-filled',
   'shirt',
   'swap',
   // The AI mark (#476).

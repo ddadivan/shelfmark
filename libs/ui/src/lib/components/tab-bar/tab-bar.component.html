@@ -12,7 +12,7 @@
         [attr.aria-label]="addLabel()"
         (click)="add.emit()"
       >
-        <ui-icon name="add" />
+        <ui-icon name="add" [size]="ICON_SIZE.Lg" />
       </button>
     </li>
     @for (item of after(); track item.id) {
@@ -32,7 +32,7 @@
       [attr.aria-current]="item.id === active() ? 'page' : null"
       (click)="onClick($event, item)"
     >
-      <ui-icon [name]="item.icon" />
+      <ui-icon [name]="item.icon" [size]="ICON_SIZE.Md" />
       <span class="ui-tab-bar__label">{{ item.label }}</span>
     </a>
   } @else {
@@ -43,7 +43,7 @@
       [attr.aria-current]="item.id === active() ? 'page' : null"
       (click)="onClick($event, item)"
     >
-      <ui-icon [name]="item.icon" />
+      <ui-icon [name]="item.icon" [size]="ICON_SIZE.Md" />
       <span class="ui-tab-bar__label">{{ item.label }}</span>
     </button>
   }
