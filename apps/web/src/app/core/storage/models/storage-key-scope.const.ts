@@ -4,7 +4,9 @@ import type { StorageScope } from './storage-scope.type';
 
 /**
  * The scope of every `STORAGE_KEY`; a new key does not compile without one. `User` keys are
- * removed when the session ends (`USER_STORAGE_KEYS`).
+ * removed when the session ends (`USER_STORAGE_KEYS`). Settings stay `Device` even when they look
+ * personal (author, Nov 27: someone who signs out and back in returns to the same view): feed
+ * memory, the notifications prompt answer and switch, reader settings, how-it-works.
  */
 export const STORAGE_KEY_SCOPE: Readonly<Record<StorageKeyName, StorageScope>> = {
   Ui: STORAGE_SCOPE.Device,
