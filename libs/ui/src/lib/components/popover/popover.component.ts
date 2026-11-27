@@ -18,6 +18,8 @@ import type { ConnectedOverlay } from '../../services/overlay/connected-overlay'
 import { UiOverlay } from '../../services/overlay/overlay.service';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { KEYBOARD_KEY } from '../../models/keyboard';
+import { Dismissable } from '../../directives/dismissable/dismissable';
+import { DISMISS_REASON } from '../../directives/dismissable/models/dismiss-reason.const';
 import type { PopoverCloseOptions } from './models/popover-close-options.interface';
 import type { PopoverOpenOptions } from './models/popover-open-options.interface';
 import { popoverPositions } from './popover-positions';
@@ -102,11 +104,17 @@ export class PopoverComponent {
   private overlay: ConnectedOverlay | null = null;
   private overlayOrigin: HTMLElement | null = null;
   private detachSubscription: Subscription | null = null;
-  private listening = false;
+  /** Esc closes from the trigger too (a popover opened by hover or focus has no focus inside). */
+  private readonly dismissable = new Dismissable({
+    inside: () => [this.host, this.anchorElement()],
+    dismissed: ({ reason, focusInside }) => {
+      this.close({ restoreFocus: reason === DISMISS_REASON.Escape && focusInside });
+    },
+  });
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {
-      this.disarm();
+      this.dismissable.disarm();
       this.attached.set(false);
       this.disposeOverlay();
       // Angular may have detached the host before this runs; the CDK dispose can put it back.
@@ -136,7 +144,7 @@ export class PopoverComponent {
     this.anchorElement.set(origin);
     this.attached.set(true);
     this.open.set(true);
-    this.arm();
+    this.dismissable.arm();
     if (!wasOpen) {
       this.opened.emit();
     }
@@ -175,7 +183,7 @@ export class PopoverComponent {
     this.open.set(false);
     this.hoveredState.set(false);
     this.anchorElement.set(null);
-    this.disarm();
+    this.dismissable.disarm();
     this.overlay?.release();
     if (restore && target?.isConnected) {
       target.focus();
@@ -194,7 +202,7 @@ export class PopoverComponent {
     this.detachSubscription = overlay.detachments().subscribe(() => {
       if (this.overlay === overlay) {
         this.disposeOverlay();
-        this.disarm();
+        this.dismissable.disarm();
         this.attached.set(false);
         if (this.open()) {
           // Detached from outside (not through `close()`): no listener may outlive the pane.
@@ -243,49 +251,6 @@ export class PopoverComponent {
     }
     if (!this.host.contains(next) && !this.anchorElement()?.contains(next)) {
       this.close({ restoreFocus: false });
-    }
-  }
-
-  /** Esc closes from the trigger too (a popover opened by hover or focus has no focus inside). */
-  private readonly onDocumentKeydown = (event: KeyboardEvent): void => {
-    if (event.key !== KEYBOARD_KEY.Escape || !this.open()) {
-      return;
-    }
-    const active = this.document.activeElement;
-    const anchor = this.anchorElement();
-    const ours = active !== null && (this.host.contains(active) || !!anchor?.contains(active));
-    if (ours) {
-      // A dialog around the trigger keeps its own Esc.
-      event.stopPropagation();
-    }
-    this.close({ restoreFocus: ours });
-  };
-
-  private readonly onPointerDown = (event: PointerEvent): void => {
-    const target = event.target;
-    if (!(target instanceof Node)) {
-      return;
-    }
-    // A press on the trigger is its own click: it toggles the popover.
-    if (this.host.contains(target) || this.anchorElement()?.contains(target)) {
-      return;
-    }
-    this.close({ restoreFocus: false });
-  };
-
-  private arm(): void {
-    if (!this.listening) {
-      this.listening = true;
-      this.document.addEventListener('pointerdown', this.onPointerDown, true);
-      this.document.addEventListener('keydown', this.onDocumentKeydown, true);
-    }
-  }
-
-  private disarm(): void {
-    if (this.listening) {
-      this.listening = false;
-      this.document.removeEventListener('pointerdown', this.onPointerDown, true);
-      this.document.removeEventListener('keydown', this.onDocumentKeydown, true);
     }
   }
 }

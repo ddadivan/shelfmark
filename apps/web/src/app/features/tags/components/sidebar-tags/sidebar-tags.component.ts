@@ -26,6 +26,7 @@ import {
   ICON_SIZE,
   CHIP_VARIANT,
   ChipComponent,
+  Dismissable,
   EmptyStateComponent,
   InputComponent,
   KEYBOARD_KEY,
@@ -98,6 +99,27 @@ export class SidebarTagsComponent {
   private readonly addButton = viewChild('addButton', { read: ElementRef });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly injector = inject(Injector);
+  /** A press outside the open field closes it without saving, like Esc. The "+" button is left out: its own click toggles the field. */
+  private readonly dismissable = new Dismissable({
+    inside: () => [this.addButton()?.nativeElement],
+    ignore: '.tags__editor',
+    escape: false,
+    dismissed: () => {
+      const doc = this.host.ownerDocument;
+      const renamedId = this.editor.renamingId();
+      this.addByPointer = true;
+      this.cancel(false);
+      // Once the press has settled: when it left focus nowhere (a click on empty space), the
+      // "+" button (or the renamed chip) takes it; a control that took focus keeps it.
+      setTimeout(() => {
+        const active = doc.activeElement;
+        // Nowhere, or on a container around the sidebar (the drawer panel): nothing took it.
+        if (!active || active === doc.body || active.contains(this.host)) {
+          this.restoreFocus(renamedId);
+        }
+      });
+    },
+  });
 
   protected readonly expanded = signal(false);
   /** The "+" was clicked (not pressed with a key): focus goes back to it without a ring. */
@@ -118,37 +140,12 @@ export class SidebarTagsComponent {
         ?.nativeElement.querySelector('.ui-chip__body')
         ?.setAttribute('aria-expanded', String(this.expanded()));
     });
-    // A press outside the open field closes it without saving, like Esc. The "+" button is left
-    // out: its own click toggles the field, so a press on it must not also close it here.
-    effect((onCleanup) => {
-      if (!this.editor.editing()) {
-        return;
+    effect(() => {
+      if (this.editor.editing()) {
+        this.dismissable.arm();
+      } else {
+        this.dismissable.disarm();
       }
-      const doc = this.host.ownerDocument;
-      const onPress = (event: Event): void => {
-        const target = event.target;
-        if (
-          !(target instanceof Element) ||
-          target.closest('.tags__editor') ||
-          this.addButton()?.nativeElement.contains(target)
-        ) {
-          return;
-        }
-        const renamedId = this.editor.renamingId();
-        this.addByPointer = true;
-        this.cancel(false);
-        // Once the press has settled: when it left focus nowhere (a click on empty space), the
-        // "+" button (or the renamed chip) takes it; a control that took focus keeps it.
-        setTimeout(() => {
-          const active = doc.activeElement;
-          // Nowhere, or on a container around the sidebar (the drawer panel): nothing took it.
-          if (!active || active === doc.body || active.contains(this.host)) {
-            this.restoreFocus(renamedId);
-          }
-        });
-      };
-      doc.addEventListener('pointerdown', onPress, true);
-      onCleanup(() => doc.removeEventListener('pointerdown', onPress, true));
     });
     // The field takes focus when it opens (an `afterRenderEffect`: the input exists only after render).
     afterRenderEffect(() => {

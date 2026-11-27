@@ -18,6 +18,8 @@ import {
 } from '@angular/core';
 import type { Subscription } from 'rxjs';
 import { KEYBOARD_KEY } from '../../models/keyboard';
+import { Dismissable } from '../../directives/dismissable/dismissable';
+import { DISMISS_REASON } from '../../directives/dismissable/models/dismiss-reason.const';
 import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { UiOverlay } from '../../services/overlay/overlay.service';
@@ -133,11 +135,16 @@ export class ViewMenuComponent {
 
   private overlay: ConnectedOverlay | null = null;
   private detachSubscription: Subscription | null = null;
-  private listening = false;
+  private readonly dismissable = new Dismissable({
+    inside: () => [this.panel().nativeElement, this.host],
+    dismissed: ({ reason, focusInside }) => {
+      this.close({ restoreFocus: reason === DISMISS_REASON.Escape && focusInside });
+    },
+  });
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {
-      this.disarm();
+      this.dismissable.disarm();
       this.attached.set(false);
       this.disposeOverlay();
       // Angular may have detached the panel before this runs; the CDK dispose can put it back.
@@ -162,7 +169,7 @@ export class ViewMenuComponent {
     this.sheet.set(sheet);
     this.attached.set(true);
     this.open.set(true);
-    this.arm();
+    this.dismissable.arm();
     if (!wasOpen) {
       this.opened.emit();
     }
@@ -183,7 +190,7 @@ export class ViewMenuComponent {
     }
     const restore = options.restoreFocus ?? this.containsFocus();
     this.open.set(false);
-    this.disarm();
+    this.dismissable.disarm();
     this.overlay?.release();
     const trigger = this.trigger().nativeElement;
     if (restore && trigger.isConnected) {
@@ -234,7 +241,7 @@ export class ViewMenuComponent {
     this.detachSubscription = overlay.detachments().subscribe(() => {
       if (this.overlay === overlay) {
         this.disposeOverlay();
-        this.disarm();
+        this.dismissable.disarm();
         this.attached.set(false);
         // Detached from outside (not through `close()`): no listener may outlive the pane.
         this.open.set(false);
@@ -281,52 +288,6 @@ export class ViewMenuComponent {
     }
     if (!this.panel().nativeElement.contains(next) && !this.host.contains(next)) {
       this.close({ restoreFocus: false });
-    }
-  }
-
-  private readonly onDocumentKeydown = (event: KeyboardEvent): void => {
-    if (event.key !== KEYBOARD_KEY.Escape || !this.open()) {
-      return;
-    }
-    const active = this.document.activeElement;
-    const ours =
-      active !== null &&
-      (this.panel().nativeElement.contains(active) || this.host.contains(active));
-    if (ours) {
-      // A dialog around the trigger keeps its own Esc.
-      event.stopPropagation();
-    }
-    this.close({ restoreFocus: ours });
-  };
-
-  private readonly onPointerDown = (event: PointerEvent): void => {
-    const target = event.target;
-    if (!(target instanceof Node)) {
-      return;
-    }
-    // A press on the trigger is its own click: it toggles the panel.
-    if (
-      this.panel().nativeElement.contains(target) ||
-      this.trigger().nativeElement.contains(target)
-    ) {
-      return;
-    }
-    this.close({ restoreFocus: false });
-  };
-
-  private arm(): void {
-    if (!this.listening) {
-      this.listening = true;
-      this.document.addEventListener('pointerdown', this.onPointerDown, true);
-      this.document.addEventListener('keydown', this.onDocumentKeydown, true);
-    }
-  }
-
-  private disarm(): void {
-    if (this.listening) {
-      this.listening = false;
-      this.document.removeEventListener('pointerdown', this.onPointerDown, true);
-      this.document.removeEventListener('keydown', this.onDocumentKeydown, true);
     }
   }
 }

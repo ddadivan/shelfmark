@@ -1,8 +1,6 @@
-import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   ElementRef,
   inject,
   input,
@@ -10,6 +8,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { Dismissable } from '../../directives/dismissable/dismissable';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import {
@@ -85,7 +84,6 @@ export class PickerMenuComponent {
   protected readonly open = signal(false);
   protected readonly panelId = nextFieldId();
 
-  private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
   private readonly popupEl = viewChild.required<ElementRef<HTMLElement>>('popupRef');
@@ -96,21 +94,20 @@ export class PickerMenuComponent {
     onDetached: () => {
       // The overlay went away by itself (a scroll, a resize): no outside press to wait for.
       this.open.set(false);
-      this.document.removeEventListener('pointerdown', this.outsidePress, true);
+      this.dismissable.disarm();
     },
   });
   private openedByPointer = false;
-  private readonly outsidePress = (event: Event): void => {
-    if (event.target instanceof Node && !this.owns(event.target)) {
+  private readonly dismissable = new Dismissable({
+    inside: () => [this.host.nativeElement, this.popupEl().nativeElement],
+    escape: false,
+    dismissed: () => {
       this.close(false);
-    }
-  };
+    },
+  });
 
   constructor() {
     trackInputModality();
-    inject(DestroyRef).onDestroy(() =>
-      this.document.removeEventListener('pointerdown', this.outsidePress, true),
-    );
   }
 
   protected toggle(): void {
@@ -121,7 +118,7 @@ export class PickerMenuComponent {
     this.openedByPointer = lastInputWasPointer();
     this.popup.show();
     this.open.set(true);
-    this.document.addEventListener('pointerdown', this.outsidePress, true);
+    this.dismissable.arm();
   }
 
   protected onKeydown(event: KeyboardEvent): void {
@@ -135,7 +132,7 @@ export class PickerMenuComponent {
 
   protected onFocusOut(event: FocusEvent): void {
     const next = event.relatedTarget;
-    if (next instanceof Node && !this.owns(next)) {
+    if (next instanceof Node && !this.dismissable.contains(next)) {
       this.close(false);
     }
   }
@@ -152,14 +149,10 @@ export class PickerMenuComponent {
       return;
     }
     this.open.set(false);
-    this.document.removeEventListener('pointerdown', this.outsidePress, true);
+    this.dismissable.disarm();
     if (restoreFocus) {
       returnFocus(this.trigger().nativeElement, this.openedByPointer);
     }
     this.popup.hide();
-  }
-
-  private owns(node: Node): boolean {
-    return this.host.nativeElement.contains(node) || this.popupEl().nativeElement.contains(node);
   }
 }

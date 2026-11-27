@@ -78,6 +78,7 @@ export * from './lib/components/view-menu';
 
 export * from './lib/directives/focus-target';
 export * from './lib/directives/drag-wobble';
+export * from './lib/directives/dismissable';
 export * from './lib/directives/fluid-hover';
 export * from './lib/directives/folder-colour';
 export * from './lib/directives/long-press';

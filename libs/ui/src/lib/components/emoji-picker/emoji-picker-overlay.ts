@@ -1,6 +1,6 @@
-import { DOCUMENT } from '@angular/common';
 import { afterNextRender, DestroyRef, inject, Injector, signal } from '@angular/core';
 import type { Subscription } from 'rxjs';
+import { Dismissable } from '../../directives/dismissable/dismissable';
 import { menuPositions } from '../menu/menu-positions';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { MENU_ALIGN } from '../menu/models/menu-align.const';
@@ -44,7 +44,6 @@ export class EmojiPickerOverlay {
 
   private readonly overlays = inject(UiOverlay);
   private readonly injector = inject(Injector);
-  private readonly document = inject(DOCUMENT);
   private readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
   private readonly drag = new SheetDragTracker();
   private overlay: ConnectedOverlay | null = null;
@@ -53,16 +52,19 @@ export class EmojiPickerOverlay {
   private openedByPointer = false;
   /** Keeps the panel as wide as the field box while the desktop panel is open. */
   private resizeObserver: ResizeObserver | null = null;
-  private readonly outsidePress = (event: Event): void => {
-    if (event.target instanceof Node && !this.ownsOrIgnores(event.target)) {
+  /** The field, the panel, or a toast: a toast (the Undo after removing an own emoji) belongs to what the person is doing here. */
+  private readonly dismissable = new Dismissable({
+    inside: () => [this.host.element, this.host.popup()],
+    ignore: `.${overlayLayerClass(OVERLAY_LAYER.Toast)}`,
+    escape: false,
+    dismissed: () => {
       this.hide(false);
-    }
-  };
+    },
+  });
 
   constructor(private readonly host: EmojiPickerOverlayHost) {
     trackInputModality();
     inject(DestroyRef).onDestroy(() => {
-      this.document.removeEventListener('pointerdown', this.outsidePress, true);
       this.stopWidthSync();
       this.detachSubscription?.unsubscribe();
       this.overlay?.dispose();
@@ -91,7 +93,7 @@ export class EmojiPickerOverlay {
       this.syncWidth();
       this.watchWidth();
     }
-    this.document.addEventListener('pointerdown', this.outsidePress, true);
+    this.dismissable.arm();
     afterNextRender(
       () => {
         this.overlay?.updatePosition();
@@ -111,7 +113,7 @@ export class EmojiPickerOverlay {
       return;
     }
     this.open.set(false);
-    this.document.removeEventListener('pointerdown', this.outsidePress, true);
+    this.dismissable.disarm();
     this.stopWidthSync();
     if (restoreFocus) {
       returnFocus(this.host.field(), this.openedByPointer);
@@ -131,7 +133,7 @@ export class EmojiPickerOverlay {
   /** Focus left the panel: closes unless it went to the field, the panel or a toast. */
   focusOut(event: FocusEvent): void {
     const next = event.relatedTarget;
-    if (next instanceof Node && !this.ownsOrIgnores(next)) {
+    if (next instanceof Node && !this.dismissable.contains(next)) {
       this.hide(false);
     }
   }
@@ -257,18 +259,5 @@ export class EmojiPickerOverlay {
   private stopWidthSync(): void {
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
-  }
-
-  /**
-   * The node is the field, the panel, or a toast: a toast (the Undo after removing an own emoji)
-   * belongs to what the person is doing here, so pressing it or focusing it keeps the panel open.
-   */
-  private ownsOrIgnores(node: Node): boolean {
-    const element = node instanceof Element ? node : node.parentElement;
-    return (
-      this.host.element.contains(node) ||
-      this.host.popup().contains(node) ||
-      !!element?.closest(`.${overlayLayerClass(OVERLAY_LAYER.Toast)}`)
-    );
   }
 }
