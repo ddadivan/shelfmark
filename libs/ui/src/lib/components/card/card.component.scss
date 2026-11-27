@@ -12,7 +12,11 @@
   overflow: hidden;
   color: var(--text);
   cursor: pointer;
-  background: var(--card-bg);
+
+  // The current fill of the card; the preview area takes one step off it in every state.
+  --ui-card-fill: var(--card-bg);
+
+  background: var(--ui-card-fill);
   border-radius: var(--radius-card);
   transition:
     box-shadow var(--duration-base) var(--ease-out),
@@ -34,13 +38,17 @@
 // in dark. No lift, no image zoom, nothing appears over the preview.
 :host {
   @include hover {
-    background: var(--card-hover-bg);
+    --ui-card-fill: var(--card-hover-bg);
+
+    background: var(--ui-card-fill);
   }
 }
 
 // Press: the hover fill at once (no shadow), the overlay bar darkens.
 :host(:has(.ui-card__link:active)) {
-  background: var(--card-hover-bg);
+  --ui-card-fill: var(--card-hover-bg);
+
+  background: var(--ui-card-fill);
   transition-duration: var(--duration-instant);
 
   .ui-card__overlay {
@@ -50,10 +58,14 @@
 
 // Open in the preview pane: the `--card-pick` fill (also while hovered).
 :host(.ui-card--selected) {
-  background: var(--card-pick);
+  --ui-card-fill: var(--card-pick);
+
+  background: var(--ui-card-fill);
 
   @include hover {
-    background: var(--card-pick);
+    --ui-card-fill: var(--card-pick);
+
+    background: var(--ui-card-fill);
   }
 }
 
@@ -61,12 +73,15 @@
 :host(.ui-card--checked) {
   // Chips are tinted too: on the picked card they sit on `surface`, so they stay visible.
   --ui-chip-bg: var(--surface);
+  --ui-card-fill: var(--card-pick);
 
-  background: var(--card-pick);
+  background: var(--ui-card-fill);
   box-shadow: 0 0 0 2px var(--card-checked-ring);
 
   @include hover {
-    background: var(--card-pick);
+    --ui-card-fill: var(--card-pick);
+
+    background: var(--ui-card-fill);
     box-shadow: 0 0 0 2px var(--card-checked-ring-hover);
   }
 }
@@ -81,7 +96,8 @@
   place-items: center;
   overflow: hidden;
   color: var(--text-muted);
-  background: var(--card-media-bg);
+  background: color-mix(in srgb, var(--ui-card-fill) 97%, var(--card-media-mix));
+  transition: background-color var(--duration-base) var(--ease-out);
   aspect-ratio: var(--ui-card-media-ratio, 4 / 3);
 }
 
@@ -120,7 +136,7 @@
   --ui-card-image-height: 100%;
 }
 
-// Shops: the whole product on `--card-media-bg`.
+// Shops: the whole product on the preview fill.
 :host(.ui-card--contain) .ui-card__image {
   object-fit: contain;
 }
@@ -131,7 +147,7 @@
 .ui-card__placeholder {
   position: absolute;
   inset: 0;
-  background: var(--card-media-bg);
+  background: color-mix(in srgb, var(--ui-card-fill) 97%, var(--card-media-mix));
 
   &[data-tone='0'] {
     background: var(--accent-bg);

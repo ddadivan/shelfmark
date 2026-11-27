@@ -26,8 +26,8 @@ export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
   'card-hover-bg': 'Hovered card fill: the card fill, 4% darker in light and 4% lighter in dark.',
   'card-pick':
     'Card open in the preview or picked: pick, 2% darker in light and 3% lighter in dark, so it differs from the hover fill (author, Nov 27).',
-  'card-media-bg':
-    'Preview area of a card: one step off the card fill (surface-pressed / surface-hover).',
+  'card-media-mix':
+    'Colour the preview area of a card mixes 3% of into the current card fill: black in light, white in dark.',
   'card-checked-ring': 'Ring of a card picked for a bulk action: accent at 50% (author, Nov 27).',
   'card-checked-ring-hover':
     'The same ring while the picked card is hovered: accent at 75% (author, Nov 27).',

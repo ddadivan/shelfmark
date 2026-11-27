@@ -357,7 +357,9 @@ describe('CardComponent', () => {
       expect(withoutMedia(css, /hover:\s*hover/)).not.toContain(':hover');
       const hover = mediaBlocks(css, HOVER_ONLY).join('\n');
       // Only the fill changes on hover, in both themes (author, Nov 27): no shadow.
-      expect(hover).toMatch(/:host:hover \{\s*background: var\(--card-hover-bg\);\s*\}/);
+      expect(hover).toMatch(
+        /:host:hover \{\s*--ui-card-fill: var\(--card-hover-bg\);\s*background: var\(--ui-card-fill\);\s*\}/,
+      );
       expect(hover).toContain('var(--card-hover-bg)');
       expect(hover).toContain('var(--card-checked-ring-hover)');
       expect(hover).toContain('.ui-card__more');
@@ -365,12 +367,16 @@ describe('CardComponent', () => {
 
     it('draws the card: its own fill with no ring or shadow, 16px corners, pick and the 4:3 preview', () => {
       expect(css).toContain('border-radius: var(--radius-card)');
-      expect(css).toMatch(/:host\s*\{[^}]*background: var\(--card-bg\)/);
+      expect(css).toMatch(
+        /:host\s*\{[^}]*--ui-card-fill: var\(--card-bg\);[^}]*background: var\(--ui-card-fill\)/,
+      );
       expect(css).not.toContain('var(--shadow-card');
-      expect(css).toMatch(/:host\(\.ui-card--selected\)\s*\{\s*background: var\(--card-pick\)/);
+      expect(css).toMatch(/:host\(\.ui-card--selected\)\s*\{\s*--ui-card-fill: var\(--card-pick\)/);
       expect(css).toMatch(
         /:host\(\.ui-card--checked\)\s*\{[^}]*box-shadow: 0 0 0 2px var\(--card-checked-ring\)/,
       );
+      // The preview area stays one step off the current fill in every state.
+      expect(css).toContain('color-mix(in srgb, var(--ui-card-fill) 97%, var(--card-media-mix))');
       expect(css).toMatch(/aspect-ratio: var\(--ui-card-media-ratio, 4 ?\/ ?3\)/);
       expect(css).toContain('object-fit: contain');
       expect(css).toContain('--ui-card-image-position: static');
