@@ -9,6 +9,7 @@ import {
   type TrashItemRef,
 } from '@shelfmark/contracts';
 import { firstValueFrom, type Observable } from 'rxjs';
+import { chunks } from '../core/utils/chunks';
 import { isConflictError } from '../core/api/is-conflict-error';
 import { TRASH_API } from '../features/trash/models/trash-api.const';
 import { TRASH_OUTCOME } from '../features/trash/models/trash-outcome.const';
@@ -32,14 +33,6 @@ const initialState: TrashState = {
 /** Newest first: the order of the API list. */
 function newestFirst(items: readonly TrashItem[]): TrashItem[] {
   return [...items].sort((a, b) => b.deletedAt.localeCompare(a.deletedAt));
-}
-
-function chunks<T>(list: readonly T[], size: number): T[][] {
-  const out: T[][] = [];
-  for (let i = 0; i < list.length; i += size) {
-    out.push(list.slice(i, i + size));
-  }
-  return out;
 }
 
 /**

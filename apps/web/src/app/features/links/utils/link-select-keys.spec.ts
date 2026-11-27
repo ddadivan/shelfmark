@@ -1,4 +1,3 @@
-import { chunks } from './chunks';
 import { isLetter, linkKeyIntent } from './link-select-keys';
 import { LINK_KEY_INTENT } from '../models/link-key-intent.const';
 
@@ -45,12 +44,5 @@ describe('isLetter', () => {
     expect(isLetter(new KeyboardEvent('keydown', { key: 'ф', code: 'KeyA' }), 'a', 'KeyA')).toBe(
       true,
     );
-  });
-});
-
-describe('chunks', () => {
-  it('cuts a list into slices of at most the size', () => {
-    expect(chunks([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
-    expect(chunks([], 2)).toEqual([]);
   });
 });
