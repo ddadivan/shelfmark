@@ -51,6 +51,13 @@
   <p class="account__muted">{{ 'settings.account.connected.none' | transloco }}</p>
   }
 </ui-settings-section>
+} @else {
+<!-- Holds the place of the connected accounts while the stats load, so the sections below stay. -->
+<ui-settings-section [title]="'settings.account.connected.title' | transloco">
+  <div class="account__sk-row" aria-hidden="true">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+  </div>
+</ui-settings-section>
 }
 
 <ui-settings-section [title]="'settings.account.signOut.title' | transloco">

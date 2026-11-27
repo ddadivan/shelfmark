@@ -189,3 +189,13 @@ $tidy-bar-offset: rem(20px) - $shell-tab-bar-room;
   margin: 0;
   color: var(--text-muted);
 }
+
+// The loading list: a bar in the line of the section heading, then rows in the list's card.
+.tidy__sk-section {
+  --ui-skeleton-width: #{rem(160px)};
+  --ui-skeleton-height: #{rem(14px)};
+
+  display: flex;
+  align-items: center;
+  block-size: 1lh;
+}

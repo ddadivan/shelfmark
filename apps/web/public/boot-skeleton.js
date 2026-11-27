@@ -16,7 +16,7 @@
   const root = document.documentElement;
   const path = location.pathname.replace(/(.)\/$/, '$1');
   // Pages a guest can be on: the hint (a session that may have ended) is not trusted there.
-  const guestPage = /^\/(sign-in|about|privacy|changelog|help(\/.*)?|c\/.*)$/.test(path);
+  const guestPage = /^\/(sign-in|about|privacy|changelog|share|help(\/.*)?|c\/.*)$/.test(path);
   let show = path === '/demo';
   // The demo start and a stored demo session have the demo banner above the shell (#440).
   let demo = show;
@@ -53,6 +53,16 @@
     if (path === '/today') return 'today';
     if (path === '/recent') return 'recent';
     if (path === '/trash') return 'trash';
+    if (path === '/reminders') return 'reminders';
+    if (path === '/revisit') return 'revisit';
+    if (path === '/tags') return 'tags';
+    if (path === '/import') return 'import';
+    if (path === '/ask') return 'ask';
+    if (path === '/unsorted/tidy') return 'tidy';
+    // `/library` is the phone's Library tab; a desktop window is sent on to the feed.
+    if (path === '/library') return matchMedia(DESKTOP_QUERY).matches ? null : 'library-tab';
+    if (/^\/settings(\/.*)?$/.test(path)) return 'settings';
+    if (/^\/admin(\/.*)?$/.test(path)) return 'reminders';
     return null;
   }
 

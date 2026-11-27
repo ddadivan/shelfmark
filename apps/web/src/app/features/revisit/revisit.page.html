@@ -9,7 +9,25 @@
 
   @if (!revisit.loaded()) {
   <div class="revisit__skeleton" [attr.aria-label]="'revisit.loading' | transloco">
-    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="4" />
+    <!-- The loaded groups' own places: a heading line over a hairline panel of rows, then the cards. -->
+    @for (rows of SKELETON_GROUPS; track $index) {
+    <div class="revisit__group">
+      <div class="revisit__sk-heading">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+      </div>
+      <div class="revisit__panel">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="rows" />
+      </div>
+    </div>
+    }
+    <div class="revisit__group">
+      <div class="revisit__sk-heading">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+      </div>
+      <div class="revisit__cards">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="3" />
+      </div>
+    </div>
   </div>
   } @else if (revisit.empty()) {
   <ui-empty-state

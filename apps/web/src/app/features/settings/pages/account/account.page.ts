@@ -6,6 +6,8 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   NoticeComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
   SettingsRowComponent,
   SettingsSectionComponent,
   TOAST_KIND,
@@ -34,6 +36,7 @@ import { AccountStatsService } from '../../services/account-stats.service';
     AvatarComponent,
     ButtonComponent,
     NoticeComponent,
+    SkeletonComponent,
     SettingsPageHeaderComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
@@ -44,6 +47,7 @@ import { AccountStatsService } from '../../services/account-stats.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AccountPage {
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly auth = inject(AuthStore);
   protected readonly stats = inject(AccountStatsService);
   private readonly viewport = inject(ViewportService);

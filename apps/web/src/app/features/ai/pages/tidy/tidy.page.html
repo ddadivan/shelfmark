@@ -89,7 +89,19 @@
     }
     <ng-container *ngTemplateOutlet="actions" />
   </div>
-  } }
+  } } @else {
+  <!-- The loaded page's own places: the section heading over the list's card of rows. -->
+  <div class="tidy__section tidy__sk-section" aria-hidden="true">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+  </div>
+  <ul class="tidy__list" aria-hidden="true">
+    @for (row of SKELETON_ROWS; track row) {
+    <li class="tidy__item">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Row" />
+    </li>
+    }
+  </ul>
+  }
 </div>
 }
 

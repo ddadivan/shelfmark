@@ -164,3 +164,20 @@
   gap: var(--space-1);
   margin-block-start: var(--space-2);
 }
+
+// The loading page: the groups at the loaded page's own spacing.
+.revisit__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+// The group heading (18px, 1.25): a short bar centred in its line.
+.revisit__sk-heading {
+  --ui-skeleton-width: #{rem(96px)};
+  --ui-skeleton-height: #{rem(14px)};
+
+  display: flex;
+  align-items: center;
+  block-size: calc(var(--font-size-section) * 1.25);
+}

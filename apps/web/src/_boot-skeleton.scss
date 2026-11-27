@@ -686,6 +686,14 @@
   display: none;
 }
 
+:root[data-boot-page='reminders'] .boot__generic,
+:root[data-boot-page='revisit'] .boot__generic,
+:root[data-boot-page='tags'] .boot__generic,
+:root[data-boot-page='import'] .boot__generic,
+:root[data-boot-page='tidy'] .boot__generic,
+:root[data-boot-page='library-tab'] .boot__generic,
+:root[data-boot-page='settings'] .boot__generic,
+:root[data-boot-page='ask'] .boot__ask,
 :root[data-boot-page='today'] .boot__today,
 :root[data-boot-page='recent'] .boot__recent,
 :root[data-boot-page='trash'] .boot__trash {
@@ -1215,4 +1223,363 @@
       display: none;
     }
   }
+}
+
+// The other pages: a title and a lead, then what the page is made of (rows in a card, a cloud of
+// chips, a drop zone). They have no data to wait for or a longer list than a screen, so the shape
+// is the page's, not its rows. Each page keeps the column and the room above its title that the
+// loaded page has (reminders 960px, revisit and tidy 880px, import 720px, settings 840px).
+.boot__generic {
+  gap: var(--space-6);
+  max-inline-size: rem(960px);
+}
+
+:root[data-boot-page='revisit'] .boot__generic,
+:root[data-boot-page='tidy'] .boot__generic {
+  max-inline-size: rem(880px);
+}
+
+:root[data-boot-page='import'] .boot__generic {
+  max-inline-size: rem(720px);
+  padding-block-start: 0;
+}
+
+:root[data-boot-page='settings'] .boot__generic {
+  max-inline-size: rem(840px);
+}
+
+:root[data-boot-page='tags'] .boot__generic,
+:root[data-boot-page='library-tab'] .boot__generic {
+  max-inline-size: none;
+}
+
+// The room above the title (the page's own back row or tools).
+:root[data-boot-page='tidy'] .boot__generic {
+  padding-block-start: rem(44px);
+
+  @include desktop {
+    padding-block-start: rem(44px);
+  }
+}
+
+:root[data-boot-page='reminders'] .boot__generic {
+  @include compact {
+    padding-block-start: rem(60px);
+  }
+}
+
+:root[data-boot-page='tags'] .boot__generic {
+  padding-block-start: rem(24px);
+
+  @include compact {
+    padding-block-start: rem(16px);
+  }
+}
+
+// Tidy is a pushed page on the mobile shell: no top bar, no tab bar.
+:root[data-boot-page='tidy'],
+:root[data-boot-page='settings'] {
+  .boot__topbar {
+    display: none;
+  }
+}
+
+:root[data-boot-page='tidy'] .boot__tabbar {
+  display: none;
+}
+
+.boot__g-top {
+  display: none;
+}
+
+.boot__g-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.boot__g-title {
+  width: rem(160px);
+  height: rem(30px);
+
+  @include compact {
+    height: rem(28px);
+  }
+}
+
+.boot__g-lead {
+  width: 50%;
+  height: rem(10px);
+  margin-block: rem(3px);
+}
+
+.boot__g-body {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+:root[data-boot-page='tags'] .boot__g-body--chips,
+:root[data-boot-page='import'] .boot__g-body--drop {
+  display: flex;
+}
+
+:root[data-boot-page='reminders'] .boot__g-body--panels,
+:root[data-boot-page='revisit'] .boot__g-body--panels,
+:root[data-boot-page='tidy'] .boot__g-body--panels,
+:root[data-boot-page='library-tab'] .boot__g-body--panels,
+:root[data-boot-page='settings'] .boot__g-body--panels {
+  display: flex;
+}
+
+.boot__g-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.boot__g-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+// A row (`ui-list-item`, `ui-settings-row`): the 40px icon, two lines, a control at the end.
+.boot__g-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-block-size: rem(60px);
+  padding: var(--space-2-5) var(--space-3);
+
+  & + & {
+    border-block-start: 1px solid var(--sep);
+  }
+}
+
+.boot__g-icon {
+  flex: none;
+  width: rem(40px);
+  height: rem(40px);
+}
+
+.boot__g-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  min-width: 0;
+}
+
+.boot__g-line {
+  width: 40%;
+  height: rem(14px);
+}
+
+.boot__g-sub {
+  width: 25%;
+  height: rem(10px);
+}
+
+.boot__g-trail {
+  flex: none;
+  width: rem(72px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__g-body--chips {
+  flex-flow: row wrap;
+  gap: var(--space-2);
+}
+
+.boot__g-chip {
+  width: rem(96px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__g-steps {
+  width: 100%;
+  height: rem(20px);
+}
+
+.boot__g-drop {
+  width: 100%;
+  height: rem(280px);
+  border-radius: var(--radius-lg);
+}
+
+// Settings: no header, no sidebar of the app: its own navigation (nine rows) on a desktop, the chip
+// row on a tablet and the way back on a phone (settings-nav, settings-chips).
+.boot__sidebar--settings {
+  display: none;
+}
+
+:root[data-boot-page='settings'] {
+  .boot__header,
+  .boot__sidebar:not(.boot__sidebar--settings) {
+    display: none;
+  }
+
+  .boot__sidebar--settings {
+    @include desktop {
+      display: flex;
+    }
+  }
+
+  .boot__g-top {
+    @include compact {
+      display: flex;
+    }
+  }
+}
+
+.boot__sidebar--settings {
+  padding-block-start: var(--space-4);
+}
+
+.boot__nav-row--back {
+  flex: none;
+}
+
+.boot__settings-label {
+  display: flex;
+  align-items: center;
+  flex: none;
+  block-size: rem(28px);
+  padding-inline-start: var(--space-3);
+  margin-block-start: rem(16px);
+}
+
+.boot__settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+}
+
+.boot__g-chiprow {
+  display: none;
+  gap: var(--space-1-5);
+  align-items: center;
+  block-size: rem(36px);
+
+  @include tablet {
+    display: flex;
+  }
+}
+
+.boot__g-navchip {
+  width: rem(76px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__g-back {
+  display: none;
+  align-items: center;
+  block-size: rem(32px);
+
+  @include phone {
+    display: flex;
+  }
+}
+
+.boot__g-back-bar {
+  width: rem(64px);
+  height: rem(14px);
+}
+
+:root[data-boot-page='settings'] .boot__g-top {
+  flex-direction: column;
+  margin-block-end: calc(var(--space-6) * -1 + var(--space-4));
+}
+
+// Ask (ask.page): the conversations card and the conversation, the question box at the bottom.
+.boot__ask {
+  flex-direction: row;
+  gap: var(--space-6);
+  align-items: stretch;
+  max-inline-size: rem(1124px);
+  padding-block-start: 0;
+}
+
+.boot__ask-side {
+  display: none;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-self: flex-start;
+  box-sizing: border-box;
+  width: rem(240px);
+  padding: var(--space-3);
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+
+  @include desktop {
+    display: flex;
+  }
+}
+
+.boot__ask-new {
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__ask-row {
+  height: rem(32px);
+}
+
+.boot__ask-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-inline-size: 0;
+  max-inline-size: rem(820px);
+  margin-inline: auto;
+}
+
+.boot__ask-start {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+  padding-block-start: var(--space-4);
+}
+
+.boot__ask-tile {
+  width: rem(40px);
+  height: rem(40px);
+  border-radius: var(--radius-md);
+}
+
+.boot__ask-title {
+  width: rem(180px);
+  height: rem(28px);
+}
+
+.boot__ask-lead {
+  width: 60%;
+  height: rem(12px);
+}
+
+.boot__ask-cards {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.boot__ask-card {
+  height: rem(120px);
+  border-radius: var(--radius-card);
+}
+
+.boot__ask-composer {
+  height: rem(56px);
+  margin-block-start: auto;
+  border-radius: var(--radius-lg);
 }

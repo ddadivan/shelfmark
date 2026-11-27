@@ -47,3 +47,13 @@
 .account__deletion {
   display: block;
 }
+
+// The connected accounts' place while loading: one row high (the loaded row is 60px).
+.account__sk-row {
+  --ui-skeleton-width: 60%;
+  --ui-skeleton-height: #{rem(14px)};
+
+  display: flex;
+  align-items: center;
+  block-size: rem(60px);
+}

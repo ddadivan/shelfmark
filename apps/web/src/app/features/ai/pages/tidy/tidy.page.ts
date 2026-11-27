@@ -3,7 +3,14 @@ import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/cor
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, IconComponent, ICON_SIZE, ProgressBarComponent } from '@shelfmark/ui';
+import {
+  ButtonComponent,
+  IconComponent,
+  ICON_SIZE,
+  ProgressBarComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
+} from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { ToastAboveDirective } from '../../../../core/layout/toast-above.directive';
 import { ViewportService } from '../../../../core/layout/viewport.service';
@@ -32,6 +39,7 @@ import { TidyStore } from '../../services/tidy.store';
     ButtonComponent,
     IconComponent,
     ProgressBarComponent,
+    SkeletonComponent,
     ToastAboveDirective,
     TidyRowComponent,
   ],
@@ -49,6 +57,9 @@ export default class TidyPage {
   protected readonly unsortedHref = `/${APP_PATH.Unsorted}`;
   protected readonly pluralKey = pluralKey;
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
+  /** Rows of the loading list (the loaded page shows up to a screenful). */
+  protected readonly SKELETON_ROWS: readonly number[] = [0, 1, 2, 3, 4, 5, 6];
 
   constructor() {
     void inject(FoldersStore).load();
