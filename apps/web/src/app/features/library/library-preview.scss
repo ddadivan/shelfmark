@@ -19,7 +19,7 @@
 
   // The feed's scrollbar sits outside its column (#352); here the half keeps room for it, so it
   // never runs under the resize handle.
-  padding-inline: var(--space-2) calc(var(--space-1) + var(--scrollbar-size, 0rem));
+  padding-inline: var(--space-2) calc(var(--space-2) + var(--scrollbar-size, 0rem));
 }
 
 // The handle's 24px target reaches 5px past its strip: the gap keeps it clear of the list's

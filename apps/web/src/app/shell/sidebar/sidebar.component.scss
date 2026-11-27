@@ -76,6 +76,12 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
 
+  // The bar sits in the card's end padding, clear of the rows (author, Nov 27: it touched them):
+  // the gutter is always kept there, so rows never change width, and 6px stay between them and it.
+  margin-inline-end: calc(var(--scrollbar-size) * -1);
+  padding-inline-end: var(--space-1-5);
+  scrollbar-gutter: stable;
+
   // Soft edges when the tree scrolls (#352), in the sidebar card's colour.
   @include scroll-fade(var(--sidebar));
 
@@ -90,6 +96,8 @@
 // The phone Library page shows the folders in a card and lets the page scroll.
 .sidebar--folders .sidebar__scroll {
   flex: none;
+  padding-inline-end: 0;
+  margin-inline-end: 0;
   overflow: visible;
 }
 
