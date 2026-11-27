@@ -11,6 +11,7 @@ import { LANDING_LINKS } from '../../models/landing-links.const';
 import { LANDING_SCROLL_TARGET } from '../../models/landing-scroll-target.const';
 import type { LandingScrollTarget } from '../../models/landing-scroll-target.type';
 import { injectSignedIn } from '../../utils/inject-signed-in';
+import { isPlainLeftClick } from '../../../../core/layout/utils/is-plain-left-click';
 
 /**
  * Sticky top bar of the landing (Shelf 16-landing): logo; How it works, AI, What's new, Privacy;
@@ -43,7 +44,7 @@ export class LandingHeaderComponent {
 
   protected onSection(event: MouseEvent, target: LandingScrollTarget): void {
     // Open-in-new-tab gestures keep the plain link: `/#works` then loads the page with the hash.
-    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+    if (!isPlainLeftClick(event)) {
       return;
     }
     // The target may not be rendered yet (deferred); the page scrolls once it is.

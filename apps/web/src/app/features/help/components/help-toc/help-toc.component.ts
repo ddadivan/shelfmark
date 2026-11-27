@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { HelpSection } from '../../models/help-section.interface';
+import { isPlainLeftClick } from '../../../../core/layout/utils/is-plain-left-click';
 
 /** "On this page" (Shelf 17-help `.toc`): anchor links to the sections; the one in view is marked. */
 @Component({
@@ -20,7 +21,7 @@ export class HelpTocComponent {
 
   protected jump(event: MouseEvent, id: string): void {
     // Open-in-new-tab gestures keep the plain link.
-    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+    if (!isPlainLeftClick(event)) {
       return;
     }
     event.preventDefault();

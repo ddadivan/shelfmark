@@ -2,6 +2,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ICON_SIZE, IconComponent, type IconName } from '@shelfmark/ui';
+import { isPlainLeftClick } from '../../../../core/layout/utils/is-plain-left-click';
 
 /**
  * A tile of the phone Library page (MobileMenu): icon, name and a count line on a card. One link
@@ -32,7 +33,7 @@ export class LibraryTileComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
 
   protected open(event: MouseEvent): void {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    if (!isPlainLeftClick(event)) {
       return;
     }
     event.preventDefault();

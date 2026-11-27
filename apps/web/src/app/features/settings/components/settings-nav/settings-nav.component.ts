@@ -5,6 +5,7 @@ import { ICON_SIZE, IconComponent, RippleDirective } from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { APP_VERSION } from '../../../../models/app-version.const';
 import { SETTINGS_NAV_ENTRIES } from '../../models/settings-nav-entries.const';
+import { isPlainLeftClick } from '../../../../core/layout/utils/is-plain-left-click';
 
 /**
  * The settings nav of tablet and desktop (Shelf 05-settings): it takes the place of the sidebar
@@ -29,7 +30,7 @@ export class SettingsNavComponent {
 
   protected async back(event: MouseEvent): Promise<void> {
     // Modified clicks (new tab, new window) stay native.
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    if (!isPlainLeftClick(event)) {
       return;
     }
     event.preventDefault();
