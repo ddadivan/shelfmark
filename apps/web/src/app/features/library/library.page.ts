@@ -77,6 +77,7 @@ import { LibraryHeadService } from './services/library-head.service';
 import { LibraryFolderService } from './services/library-folder.service';
 import { BulkBarFitDirective } from './directives/bulk-bar-fit.directive';
 import { LibraryHotkeysDirective } from './directives/library-hotkeys.directive';
+import { RevealPreviewedDirective } from './directives/reveal-previewed.directive';
 import { ToastAboveDirective } from '../../core/layout/toast-above.directive';
 import { ToastAreaDirective } from '../../core/layout/toast-area.directive';
 import { LibraryDragService } from './services/library-drag.service';
@@ -139,6 +140,7 @@ const LABELLED_TOOLS_BELOW_QUERY = '(width < 100em)';
     ExtensionBannerComponent,
     UiInViewDirective,
     LibraryHotkeysDirective,
+    RevealPreviewedDirective,
     BulkBarFitDirective,
     ToastAboveDirective,
     ToastAreaDirective,

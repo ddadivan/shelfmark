@@ -466,7 +466,14 @@
         </ui-button>
       </div>
       } }
-      <div appLibraryHotkeys appToastArea class="library__scroll" uiScrollFade tabindex="-1">
+      <div
+        appLibraryHotkeys
+        appRevealPreviewed
+        appToastArea
+        class="library__scroll"
+        uiScrollFade
+        tabindex="-1"
+      >
         @if (store.error() && store.count() > 0 && !filters.folderMissing()) {
         <ui-notice kind="danger" class="library__notice">
           {{ 'library.refetchFailed' | transloco }}
