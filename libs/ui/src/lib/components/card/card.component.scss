@@ -48,12 +48,12 @@
   }
 }
 
-// Open in the preview pane: the `pick` fill (also while hovered).
+// Open in the preview pane: the `--card-pick` fill (also while hovered).
 :host(.ui-card--selected) {
-  background: var(--pick);
+  background: var(--card-pick);
 
   @include hover {
-    background: var(--pick);
+    background: var(--card-pick);
   }
 }
 
@@ -62,11 +62,11 @@
   // Chips are tinted too: on the picked card they sit on `surface`, so they stay visible.
   --ui-chip-bg: var(--surface);
 
-  background: var(--pick);
+  background: var(--card-pick);
   box-shadow: 0 0 0 2px var(--card-checked-ring);
 
   @include hover {
-    background: var(--pick);
+    background: var(--card-pick);
     box-shadow: 0 0 0 2px var(--card-checked-ring-hover);
   }
 }

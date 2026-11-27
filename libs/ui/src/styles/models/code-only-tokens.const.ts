@@ -24,6 +24,8 @@ export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
   'ai-fill-pressed': 'Pressed AI action button: 36% ai over surface.',
   'card-bg': 'Card fill: surface-hover on the white light page, surface in dark (author, Nov 27).',
   'card-hover-bg': 'Hovered card fill: the card fill, 4% darker in light and 4% lighter in dark.',
+  'card-pick':
+    'Card open in the preview or picked: pick, 2% darker in light so it differs from the hover fill (author, Nov 27).',
   'card-media-bg':
     'Preview area of a card: one step off the card fill (surface-pressed / surface-hover).',
   'card-checked-ring': 'Ring of a card picked for a bulk action: accent at 50% (author, Nov 27).',

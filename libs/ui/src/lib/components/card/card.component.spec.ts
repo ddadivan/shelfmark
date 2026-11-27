@@ -367,7 +367,7 @@ describe('CardComponent', () => {
       expect(css).toContain('border-radius: var(--radius-card)');
       expect(css).toMatch(/:host\s*\{[^}]*background: var\(--card-bg\)/);
       expect(css).not.toContain('var(--shadow-card');
-      expect(css).toMatch(/:host\(\.ui-card--selected\)\s*\{\s*background: var\(--pick\)/);
+      expect(css).toMatch(/:host\(\.ui-card--selected\)\s*\{\s*background: var\(--card-pick\)/);
       expect(css).toMatch(
         /:host\(\.ui-card--checked\)\s*\{[^}]*box-shadow: 0 0 0 2px var\(--card-checked-ring\)/,
       );
