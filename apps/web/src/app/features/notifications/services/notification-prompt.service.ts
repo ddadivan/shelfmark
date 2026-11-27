@@ -1,6 +1,6 @@
 import { inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { TOAST_DURATION_MS, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { NOTIFICATION_LIMIT } from '../models/notification-limit.const';
 import { NOTIFICATION_PERMISSION } from '../models/notification-permission.const';
 import { SafeStorage } from '../../../core/storage/safe-storage.service';
@@ -34,7 +34,7 @@ export class NotificationPromptService {
       kind: TOAST_KIND.Info,
       title,
       detail: detail ?? this.transloco.translate('notifications.prompt.question'),
-      duration: 0,
+      duration: TOAST_DURATION_MS.Sticky,
       action: {
         label: this.transloco.translate('notifications.prompt.turnOn'),
         run: () => void this.device.turnOn(),

@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { SwUpdate, type VersionEvent } from '@angular/service-worker';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_KIND, type ToastOptions } from '@shelfmark/ui';
+import { TOAST_DURATION_MS, TOAST_KIND, type ToastOptions } from '@shelfmark/ui';
 import { Subject } from 'rxjs';
 import { LazyToastService } from '../toast/lazy-toast.service';
 import { UpdatePromptService } from './update-prompt.service';
@@ -43,7 +43,7 @@ describe('UpdatePromptService', () => {
     expect(options).toMatchObject({
       kind: TOAST_KIND.Info,
       title: 'update.available',
-      duration: 0,
+      duration: TOAST_DURATION_MS.Sticky,
       action: { label: 'update.reload' },
       secondary: { label: 'update.later' },
     });

@@ -3,7 +3,7 @@ import { DestroyRef, inject, Service } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SwUpdate, type VersionReadyEvent } from '@angular/service-worker';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_KIND } from '@shelfmark/ui';
+import { TOAST_DURATION_MS, TOAST_KIND } from '@shelfmark/ui';
 import { filter } from 'rxjs';
 import { LazyToastService } from '../toast/lazy-toast.service';
 
@@ -49,7 +49,7 @@ export class UpdatePromptService {
     this.toasts.show({
       kind: TOAST_KIND.Info,
       title: this.transloco.translate('update.available'),
-      duration: 0,
+      duration: TOAST_DURATION_MS.Sticky,
       action: {
         label: this.transloco.translate('update.reload'),
         run: () => this.location.reload(),
