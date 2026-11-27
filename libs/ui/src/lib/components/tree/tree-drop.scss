@@ -13,6 +13,16 @@
   .ui-tree__twist {
     color: var(--accent-text);
   }
+
+  // The badge takes the "..." button's place (author, Nov 27): the button steps out while the
+  // row is a drop target, and the badge reaches the row's end edge where the button stood.
+  .ui-tree__more {
+    display: none;
+  }
+
+  .ui-tree__drop-badge {
+    margin-inline-end: calc(var(--space-1) - #{rem(14px)});
+  }
 }
 
 // A row that cannot take what is dragged: a no-drop cursor and a dimmed state (half opacity, no
