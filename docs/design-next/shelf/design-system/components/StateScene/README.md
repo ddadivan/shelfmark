@@ -1,4 +1,6 @@
 # StateScene
+> **Superseded for the scene look:** the square 240 / 160 scenes with endless subtle motion, the 70/20/10 colour rule and no disc are specified in [`Illustration`](../Illustration/README.md). This page stays as the list of states and their copy rules.
+
 An animated scene that shows what a state means: an empty space, nothing found, offline, an error, a site that can't be shown, a finished queue.
 
 **Source:** the scenes of the shipped Shelfmark (`ui-illustration` in `libs/ui`), redrawn in the v3 look: white cards with a faint edge, sage key parts (`ai`, `ai-bg`), graphite ink, the brand notch. The site, reader, error, revisit and saved scenes are Shelfmark Next additions in the same style.
