@@ -90,7 +90,7 @@
   --shadow-card-press: 0 5px 14px -6px rgb(0 0 0 / 50%);
   --card-bg: var(--surface);
   --card-hover-bg: color-mix(in srgb, var(--surface) 96%, #fff);
-  --card-pick: var(--pick);
+  --card-pick: color-mix(in srgb, var(--pick) 97%, #fff);
   --card-media-bg: var(--surface-hover);
   --card-checked-ring: color-mix(in srgb, var(--accent) 50%, transparent);
   --card-checked-ring-hover: color-mix(in srgb, var(--accent) 75%, transparent);
