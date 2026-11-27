@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CardComponent, ChipComponent, FaviconComponent } from '@shelfmark/ui';
 import { LocaleService } from '../../../../core/i18n/locale.service';
-
-const DAY_MS = 86_400_000;
+import { MS_PER_DAY } from '../../../../core/models/ms-per-day.const';
 
 /**
  * A saved link drawn exactly like a library card (`ui-card`: the drawing on the rotating soft
@@ -34,6 +33,9 @@ export class LinkPreviewCardComponent {
 
   protected readonly letter = computed(() => this.host().charAt(0).toUpperCase());
   protected readonly saved = computed(() =>
-    this.locale.formatSaved(new Date(this.now - this.daysAgo() * DAY_MS).toISOString(), this.now),
+    this.locale.formatSaved(
+      new Date(this.now - this.daysAgo() * MS_PER_DAY).toISOString(),
+      this.now,
+    ),
   );
 }

@@ -14,8 +14,7 @@ import { ACCOUNT_DELETION_API } from '../models/account-deletion-api.const';
 import { ACCOUNT_DELETION_OUTCOME } from '../models/account-deletion-outcome.const';
 import type { AccountDeletionOutcome } from '../models/account-deletion-outcome.type';
 import type { DeleteAccountDialogData } from '../models/delete-account-dialog-data.interface';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 
 /**
  * Settings, "Delete account": opens the typed-email confirmation, sends `DELETE /api/me` from
@@ -63,7 +62,7 @@ export class AccountDeletionService {
       // The server cleared the cookie; drop the user and the cached library without a sign-out call.
       this.auth.expireSession();
       await this.router.navigateByUrl(AUTH_ROUTE.Home);
-      const due = new Date(Date.now() + ACCOUNT_DELETION.GraceDays * DAY_MS);
+      const due = new Date(Date.now() + ACCOUNT_DELETION.GraceDays * MS_PER_DAY);
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.transloco.translate('settings.delete.done'),

@@ -2,6 +2,7 @@ import type { LinkResponse } from '@shelfmark/contracts';
 import { HISTORY_DAY_KIND } from '../models/history-day-kind.const';
 import type { HistoryDayKind } from '../models/history-day-kind.type';
 import type { HistoryDay } from '../models/history-day.interface';
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 
 /** Days back that still count as "earlier this week" when no week start is given (rolling week). */
 const WEEK_DAYS = 6;
@@ -51,7 +52,7 @@ export function groupByDay(
       continue;
     }
     const day = startOfDay(new Date(link.lastOpenedAt));
-    const kind = kindOf(Math.round((today - day.getTime()) / 86_400_000), weekDays);
+    const kind = kindOf(Math.round((today - day.getTime()) / MS_PER_DAY), weekDays);
     const key = kind === HISTORY_DAY_KIND.Week ? HISTORY_DAY_KIND.Week : dayKey(day);
     const last = days[days.length - 1];
     if (last?.key === key) {

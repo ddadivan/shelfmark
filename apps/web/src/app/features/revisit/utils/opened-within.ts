@@ -1,6 +1,5 @@
 import type { LinkResponse } from '@shelfmark/contracts';
-
-const MS_PER_DAY = 86_400_000;
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 
 /** The links opened in the last `days` days, in the order given (the history is newest first). */
 export function openedWithin(

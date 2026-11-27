@@ -6,8 +6,7 @@ import { SafeStorage } from '../../../core/storage/safe-storage.service';
 import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { HOW_IT_WORKS_CARD_DAYS } from '../models/how-it-works-card.const';
 import type { HowItWorksState } from '../models/how-it-works-state.interface';
-
-const MS_PER_DAY = 86_400_000;
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 
 function isState(value: unknown): value is HowItWorksState {
   return (

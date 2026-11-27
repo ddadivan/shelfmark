@@ -17,6 +17,7 @@ import { SafeStorage } from '../storage/safe-storage.service';
 import { STORAGE_KEY } from '../storage/models/storage-key.const';
 import { relativeTime, relativeTimeFormat } from './relative-time';
 import { resolveAppLang, resolveFirstDay, resolveIntlLocale } from './resolve-locale';
+import { MS_PER_DAY } from '../models/ms-per-day.const';
 
 const STORAGE_EVENT = 'storage';
 /** Keys a copy stored before they were retired may still hold (`spellcheck`, #326); dropped on read. */
@@ -218,7 +219,7 @@ export class LocaleService {
    */
   formatSaved(iso: string, now: number): string {
     const time = new Date(iso).getTime();
-    if (now - time < SAVED_RELATIVE_DAYS * 86_400_000) {
+    if (now - time < SAVED_RELATIVE_DAYS * MS_PER_DAY) {
       const text = this.formatRelative(iso, now);
       return text.charAt(0).toLocaleUpperCase(this.locale()) + text.slice(1);
     }
