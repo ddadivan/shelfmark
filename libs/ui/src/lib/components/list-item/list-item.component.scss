@@ -283,9 +283,12 @@
 }
 
 // The focus ring sits inside the row (author, Nov 27): headline rows touch each other, so a ring
-// outside was hidden by the neighbours above and below.
+// outside was hidden by the neighbours above and below. The rows are square so they join; the
+// focused one takes the DS row radius, so its ring is rounded like every other ring.
 :host(.ui-list-item--headline:has(.ui-list-item__link:focus-visible)) {
   @include focus-ring(-2px);
+
+  border-radius: var(--radius-sm);
 }
 
 :host(.ui-list-item--headline) .ui-list-item__link {

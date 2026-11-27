@@ -255,7 +255,7 @@ describe('ListItemComponent', () => {
 
     it('draws the headline row focus ring inside the row, so neighbours never hide it', () => {
       expect(css).toMatch(
-        /:host\(\.ui-list-item--headline:has\(\.ui-list-item__link:focus-visible\)\)\s*\{[^}]*outline-offset: -2px/,
+        /:host\(\.ui-list-item--headline:has\(\.ui-list-item__link:focus-visible\)\)\s*\{[^}]*outline-offset: -2px;[^}]*border-radius: var\(--radius-sm\)/,
       );
     });
 
