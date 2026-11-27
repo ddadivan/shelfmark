@@ -4,7 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import type { McpTokenSummary } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { CreateTokenDialogComponent } from '../components/create-token-dialog/create-token-dialog.component';
-import { copyText } from '../utils/copy-text';
+import { copyText } from '../../../../core/browser/copy-text';
 import { McpTokensStore } from './mcp-tokens.store';
 
 /**

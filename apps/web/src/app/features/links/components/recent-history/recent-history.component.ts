@@ -39,6 +39,7 @@ import {
   ToastService,
 } from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
+import { copyText } from '../../../../core/browser/copy-text';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinksStore } from '../../../../stores/links.store';
@@ -263,14 +264,9 @@ export class RecentHistoryComponent {
 
   /** Copies the address; a toast says it worked, or that the browser did not allow it. */
   protected async copyLink(link: LinkResponse): Promise<void> {
-    try {
-      const clipboard = this.doc.defaultView?.navigator.clipboard;
-      if (!clipboard) {
-        throw new Error('Clipboard API unavailable');
-      }
-      await clipboard.writeText(link.url);
+    if (await copyText(this.doc, link.url)) {
       this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('links.recent.linkCopied') });
-    } catch {
+    } else {
       // No Clipboard API (insecure context, old browser) or the permission was refused.
       this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.recent.copyFailed') });
     }

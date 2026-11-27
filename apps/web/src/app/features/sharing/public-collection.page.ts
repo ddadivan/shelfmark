@@ -28,6 +28,7 @@ import {
   ToastService,
 } from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
+import { copyText } from '../../core/browser/copy-text';
 import { OnlineService } from '../../core/network/online.service';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { APP_PATH } from '../../models/app-path.const';
@@ -141,15 +142,12 @@ export default class PublicCollectionPage {
 
   protected async copy(): Promise<void> {
     const url = publicCollectionUrl(this.publicOrigin, this.token());
-    try {
-      const clipboard = this.doc.defaultView?.navigator.clipboard;
-      if (!clipboard) throw new Error('No clipboard');
-      await clipboard.writeText(url);
+    if (await copyText(this.doc, url)) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.transloco.translate('publicCollection.copied'),
       });
-    } catch {
+    } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
         title: this.transloco.translate('publicCollection.copyFailed'),

@@ -47,7 +47,7 @@ import { MCP_NAME_ERROR } from '../../models/mcp-name-error.const';
 import { MCP_TOKEN_ERROR_KEY } from '../../models/mcp-token-error-key.const';
 import type { McpTokenError } from '../../models/mcp-token-error.type';
 import { McpTokensStore } from '../../services/mcp-tokens.store';
-import { copyText } from '../../utils/copy-text';
+import { copyText } from '../../../../../core/browser/copy-text';
 import { maskSecret } from '../../utils/mask-secret';
 
 /** The segmented value of "Never" in Expires. */

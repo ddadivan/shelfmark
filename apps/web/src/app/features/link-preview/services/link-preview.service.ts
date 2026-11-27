@@ -13,7 +13,7 @@ import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { LinksStore } from '../../../stores/links.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
-import { copyText } from '../../ai/connect/utils/copy-text';
+import { copyText } from '../../../core/browser/copy-text';
 import { LibraryFeedService } from '../../library/services/library-feed.service';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { LinkActionsService } from '../../links/services/link-actions.service';

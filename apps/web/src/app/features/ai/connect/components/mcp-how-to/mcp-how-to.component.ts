@@ -15,7 +15,7 @@ import { MCP_CLIENT } from '../../models/mcp-client.const';
 import type { McpClient } from '../../models/mcp-client.type';
 import { MCP_SERVER_URL } from '../../models/mcp-server-url.const';
 import { McpConnectActions } from '../../services/mcp-connect-actions.service';
-import { copyText } from '../../utils/copy-text';
+import { copyText } from '../../../../../core/browser/copy-text';
 import { mcpClientSetup } from '../../utils/mcp-client-setup';
 
 let nextId = 0;

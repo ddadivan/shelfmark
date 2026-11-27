@@ -24,6 +24,7 @@ import {
   TOAST_KIND,
   ToastService,
 } from '@shelfmark/ui';
+import { copyText } from '../../../../core/browser/copy-text';
 import { FolderShareStore } from '../../services/folder-share.store';
 import { SHARE_ERROR } from '../../models/share-error.const';
 import type { ShareFolderDialogData } from '../../models/share-folder-dialog-data.interface';
@@ -100,13 +101,10 @@ export class ShareFolderDialogComponent {
   protected async copy(): Promise<void> {
     const url = this.url();
     if (url === '') return;
-    try {
-      const clipboard = this.doc.defaultView?.navigator.clipboard;
-      if (!clipboard) throw new Error('No clipboard');
-      await clipboard.writeText(url);
+    if (await copyText(this.doc, url)) {
       this.copyFailed.set(false);
       this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('sharing.dialog.copied') });
-    } catch {
+    } else {
       this.copyFailed.set(true);
       this.linkField()?.select();
     }
