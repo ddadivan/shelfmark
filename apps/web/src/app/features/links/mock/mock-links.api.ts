@@ -26,6 +26,8 @@ import {
   type UpdateLinksBatchRequest,
   type UpdateLinksBatchResponse,
   linkSiteKey,
+  linkLimitMessage,
+  linkTitleSortKey,
   type CreateLinksBatchRequest,
   type CreateLinksBatchResponse,
   type LinkBatchItemError,
@@ -53,6 +55,14 @@ import type { LinksApi } from '../models/links-api.interface';
 import { linkFieldsProblems } from './link-fields-problems';
 import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLibraryData } from './mock-library-data';
+import {
+  decodeCursor,
+  encodeCursor,
+  linksAfter,
+  sortField,
+  sortLinks,
+  sortOrder,
+} from './mock-link-order';
 import { normalizeLinkTags } from './normalize-link-tags';
 
 const DAY_MS = 86_400_000;
@@ -163,6 +173,16 @@ export class MockLinksApi implements LinksApi {
       if (replay) {
         return of({ ...replay });
       }
+      if (this.data.linkRoom() < 1) {
+        return throwError(() =>
+          mockHttpError(
+            HttpStatusCode.Conflict,
+            this.data.isDemo
+              ? LINK_ERROR_MESSAGE.DemoLimitReached
+              : LINK_ERROR_MESSAGE.LimitReached,
+          ),
+        );
+      }
       const now = new Date().toISOString();
       const url = this.savedUrl(request.url);
       // Domain rules (#398), like the API: they fill what the save left open.
@@ -228,23 +248,27 @@ export class MockLinksApi implements LinksApi {
             .sort((a, b) => (a.pinnedInFolderAt ?? '').localeCompare(b.pinnedInFolderAt ?? ''))
         : [];
       const rest = inFolder ? matching.filter((link) => link.pinnedInFolderAt === null) : matching;
-      const sorted = sort(rest, query);
+      const all = sortLinks(rest, query);
       const limit = query.limit ?? PAGE_LIMIT.Default;
-      const offset = decodeCursor(query.cursor) ?? 0;
-      const first = sorted[0]?.id;
-      const items = sorted
-        .slice(offset, offset + limit)
-        .map((link) =>
-          this.withImages(
-            link,
-            this.pending.has(link.id) ||
-              (scenario === MOCK_LINKS_SCENARIO.PendingImages && link.id === first),
-          ),
-        );
-      const next = offset + limit;
+      const field = sortField(query);
+      const order = sortOrder(query);
+      // Keyset like the API: the page starts after the cursor's row, so a link saved while paging
+      // does not shift what follows.
+      const cursor = query.cursor === undefined ? null : decodeCursor(query.cursor, field, order);
+      const sorted = cursor ? linksAfter(all, cursor) : all;
+      const first = all[0]?.id;
+      const page = sorted.slice(0, limit);
+      const items = page.map((link) =>
+        this.withImages(
+          link,
+          this.pending.has(link.id) ||
+            (scenario === MOCK_LINKS_SCENARIO.PendingImages && link.id === first),
+        ),
+      );
+      const last = page.at(-1);
       return of<ListLinksResponse>({
         items,
-        nextCursor: next < sorted.length ? encodeCursor(next) : null,
+        nextCursor: last && sorted.length > limit ? encodeCursor(last, field, order) : null,
         pinned:
           query.cursor === undefined ? pinnedLinks.map((link) => this.withImages(link, false)) : [],
       });
@@ -457,6 +481,11 @@ export class MockLinksApi implements LinksApi {
       if (folderIds.some((id) => id !== undefined && !this.hasFolder(id))) {
         return throwError(() => folderNotFound());
       }
+      // Like the API: only links that will be created count, not replays or skipped items.
+      const room = this.data.linkRoom();
+      if (this.freshItemCount(request) > room) {
+        return throwError(() => mockHttpError(HttpStatusCode.Conflict, linkLimitMessage(room)));
+      }
       const links: LinkResponse[] = [];
       const errors: LinkBatchItemError[] = [];
       const seen = new Set<string>();
@@ -630,6 +659,19 @@ export class MockLinksApi implements LinksApi {
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
+  /** How many items of a batch would create a link: not too long, not repeated, not a replay. */
+  private freshItemCount(request: CreateLinksBatchRequest): number {
+    const seen = new Set<string>();
+    let count = 0;
+    for (const item of request.items) {
+      const normalized = normalizeUrl(item.url);
+      if (normalized.length > LINK_LIMIT.UrlMax || seen.has(normalized)) continue;
+      seen.add(normalized);
+      if (!this.created.has(item.idempotencyKey)) count += 1;
+    }
+    return count;
+  }
+
   private filter(query: ListLinksQuery): LinkResponse[] {
     return this.data.matching(query);
   }
@@ -655,7 +697,10 @@ function listProblem(query: ListLinksQuery): HttpErrorResponse | null {
   ) {
     return mockHttpError(HttpStatusCode.BadRequest, ['limit must be 1 to 100']);
   }
-  if (query.cursor !== undefined && decodeCursor(query.cursor) === null) {
+  if (
+    query.cursor !== undefined &&
+    decodeCursor(query.cursor, sortField(query), sortOrder(query)) === null
+  ) {
     return mockHttpError(HttpStatusCode.BadRequest, LINK_ERROR_MESSAGE.InvalidCursor);
   }
   if (query.folderId !== undefined && query.unsorted) {
@@ -668,62 +713,14 @@ function listProblem(query: ListLinksQuery): HttpErrorResponse | null {
 function batchProblems(request: CreateLinksBatchRequest): string[] {
   const problems: string[] = [];
   if (request.items.length < 1 || request.items.length > LINK_LIMIT.BatchMax) {
-    problems.push('items must hold 1 to 100 links');
+    problems.push(`items must hold 1 to ${LINK_LIMIT.BatchMax} links`);
   }
   if (request.items.some((item) => !isStorableUrl(item.url.trim()))) {
-    problems.push('every url must be an http(s) URL without credentials, at most 2048 characters');
+    problems.push(
+      `every url must be an http(s) URL without credentials, at most ${LINK_LIMIT.UrlMax} characters`,
+    );
   }
   return problems;
-}
-
-function sort(links: LinkResponse[], query: ListLinksQuery): LinkResponse[] {
-  const field = query.sort ?? LINK_SORT_FIELD.CreatedAt;
-  const direction = (query.order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc ? -1 : 1;
-  const text = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
-  const compare = (a: LinkResponse, b: LinkResponse): number => {
-    switch (field) {
-      case LINK_SORT_FIELD.Title:
-        return text(a.title.toLowerCase(), b.title.toLowerCase());
-      case LINK_SORT_FIELD.UpdatedAt:
-        return text(a.updatedAt, b.updatedAt);
-      case LINK_SORT_FIELD.Host:
-        return (
-          text(linkSiteKey(a.url), linkSiteKey(b.url)) ||
-          text(a.title.toLowerCase(), b.title.toLowerCase())
-        );
-      case LINK_SORT_FIELD.Favorite:
-        return Number(a.isFavorite) - Number(b.isFavorite) || text(a.createdAt, b.createdAt);
-      default:
-        return text(a.createdAt, b.createdAt);
-    }
-  };
-  if (field === LINK_SORT_FIELD.LastOpenedAt) {
-    // Like the API: links never opened come last in both directions.
-    return [...links].sort((a, b) => {
-      if (a.lastOpenedAt === null || b.lastOpenedAt === null) {
-        return Number(a.lastOpenedAt === null) - Number(b.lastOpenedAt === null);
-      }
-      return direction * text(a.lastOpenedAt, b.lastOpenedAt);
-    });
-  }
-  return [...links].sort((a, b) => direction * compare(a, b));
-}
-
-function encodeCursor(offset: number): string {
-  return globalThis.btoa(String(offset));
-}
-
-/** The offset a cursor stands for, or `null` when it is not one of ours. */
-function decodeCursor(cursor: string | undefined): number | null {
-  if (cursor === undefined) {
-    return 0;
-  }
-  try {
-    const offset = Number(globalThis.atob(cursor));
-    return Number.isInteger(offset) && offset >= 0 ? offset : null;
-  } catch {
-    return null;
-  }
 }
 
 function readScenario(): string | null {

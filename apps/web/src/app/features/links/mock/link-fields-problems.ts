@@ -19,23 +19,25 @@ export function linkFieldsProblems(fields: LinkFields): string[] {
   if (fields.url !== undefined) {
     const url = fields.url.trim();
     if (!isStorableUrl(url)) {
-      problems.push('url must be an http(s) URL without credentials, at most 2048 characters');
+      problems.push(
+        `url must be an http(s) URL without credentials, at most ${LINK_LIMIT.UrlMax} characters`,
+      );
     }
   }
   if (fields.title !== undefined) {
     const length = fields.title.trim().length;
     if (length < 1 || length > LINK_LIMIT.TitleMax) {
-      problems.push('title must be 1 to 300 characters');
+      problems.push(`title must be 1 to ${LINK_LIMIT.TitleMax} characters`);
     }
   }
   if (typeof fields.note === 'string' && fields.note.length > LINK_LIMIT.NoteMax) {
-    problems.push('note is too long');
+    problems.push(`note must be at most ${LINK_LIMIT.NoteMax} characters`);
   }
   if (typeof fields.summary === 'string' && fields.summary.trim().length > AI_LIMIT.SummaryMax) {
-    problems.push('summary is too long');
+    problems.push(`summary must be at most ${AI_LIMIT.SummaryMax} characters`);
   }
   if (fields.tags !== undefined && fields.tags.length > LINK_LIMIT.TagsMax) {
-    problems.push('too many tags');
+    problems.push(`tags must hold at most ${LINK_LIMIT.TagsMax} tags`);
   }
   return problems;
 }
