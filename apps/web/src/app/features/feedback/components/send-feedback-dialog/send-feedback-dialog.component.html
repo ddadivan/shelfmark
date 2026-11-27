@@ -143,7 +143,7 @@
     <div slot="footer" class="feedback-dialog__foot">
       @if (sent()) {
         <ui-button
-          #doneButton
+          appFocusWhen
           [variant]="BUTTON_VARIANT.Primary"
           [block]="phone()"
           (click)="close()"

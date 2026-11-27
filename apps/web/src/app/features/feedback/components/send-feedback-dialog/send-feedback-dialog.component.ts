@@ -56,6 +56,7 @@ import type { FeedbackScreenshotError } from '../../models/feedback-screenshot-e
 import { FeedbackScreenshots } from '../../services/feedback-screenshots.service';
 import { FEEDBACK_SEND_ERROR_REASON } from '../../models/feedback-send-error-reason.const';
 import type { FeedbackSendErrorReason } from '../../models/feedback-send-error-reason.type';
+import { FocusWhenDirective } from '../../../../core/layout/directives/focus-when.directive';
 
 const BYTES_PER_MB = 1024 * 1024;
 
@@ -85,6 +86,7 @@ const SEND_ERROR_KEY: Record<FeedbackSendErrorReason, string> = {
 @Component({
   selector: 'app-send-feedback-dialog',
   imports: [
+    FocusWhenDirective,
     TranslocoPipe,
     ButtonComponent,
     CheckboxComponent,
@@ -128,7 +130,6 @@ export class SendFeedbackDialogComponent {
   private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
   private readonly chooseButton = viewChild<ButtonComponent>('chooseButton');
   private readonly removeButtons = viewChildren<ButtonComponent>('removeButton');
-  private readonly doneButton = viewChild<ButtonComponent>('doneButton');
 
   private readonly model = signal<FeedbackFormModel>({
     kind: FEEDBACK_MESSAGE_KIND.Idea,
@@ -295,7 +296,6 @@ export class SendFeedbackDialogComponent {
     this.sending.set(false);
     this.ref.setLocked(false);
     this.sent.set(true);
-    afterNextRender(() => this.doneButton()?.focus(), { injector: this.injector });
   }
 
   private text(key: string, params?: Record<string, unknown>): string {

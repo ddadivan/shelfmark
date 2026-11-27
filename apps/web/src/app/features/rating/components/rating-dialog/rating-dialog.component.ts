@@ -1,11 +1,9 @@
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
   inject,
-  Injector,
   signal,
   viewChild,
 } from '@angular/core';
@@ -38,6 +36,7 @@ import type { RatingStep } from '../../models/rating-step.type';
 import { RATING_THANKS_FROM_SCORE } from '../../models/rating-thanks-from-score.const';
 import { isEditableTarget } from '../../utils/rating-blockers';
 import { scoreForKey } from '../../utils/score-for-key';
+import { FocusWhenDirective } from '../../../../core/layout/directives/focus-when.directive';
 
 /**
  * The rating dialog (opened by `RatingStore`), three steps in one window: the score, then
@@ -51,6 +50,7 @@ import { scoreForKey } from '../../utils/score-for-key';
 @Component({
   selector: 'app-rating-dialog',
   imports: [
+    FocusWhenDirective,
     TranslocoPipe,
     ButtonComponent,
     DialogComponent,
@@ -77,13 +77,10 @@ export class RatingDialogComponent {
   private readonly ref = inject<UiDialogRef<undefined>>(UiDialogRef);
   private readonly api = inject(RATING_API);
   private readonly data = injectDialogData<RatingDialogData>();
-  private readonly injector = inject(Injector);
   /** Phone: the footer buttons span the sheet. */
   protected readonly phone = inject(ViewportService).phone;
 
   private readonly scale = viewChild(RatingScaleComponent);
-  private readonly commentField = viewChild(TextareaComponent);
-  private readonly closeButton = viewChild<ButtonComponent>('closeButton');
 
   protected readonly step = signal<RatingStep>(RATING_STEP.Rate);
   protected readonly score = signal<FeedbackScore | null>(null);
@@ -162,7 +159,6 @@ export class RatingDialogComponent {
       this.goToThanks();
     } else {
       this.step.set(RATING_STEP.Feedback);
-      this.focusAfterRender(() => this.commentField()?.focus());
     }
   }
 
@@ -219,14 +215,8 @@ export class RatingDialogComponent {
 
   private goToThanks(): void {
     this.step.set(RATING_STEP.Thanks);
-    this.focusAfterRender(() => this.closeButton()?.focus());
     this.closeTimer = setTimeout(() => {
       this.ref.close();
     }, RATING_DELAY.ThanksClose);
-  }
-
-  /** The step that held focus left the DOM: the new step's control takes it. */
-  private focusAfterRender(focus: () => void): void {
-    afterNextRender(focus, { injector: this.injector });
   }
 }

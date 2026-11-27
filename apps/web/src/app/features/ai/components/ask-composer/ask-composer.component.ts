@@ -3,18 +3,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Injector,
-  afterNextRender,
   computed,
-  effect,
   inject,
   input,
   signal,
-  viewChild,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ASK_LIMIT } from '@shelfmark/contracts';
 import { ButtonComponent, TextareaComponent } from '@shelfmark/ui';
+import { FocusWhenDirective } from '../../../../core/layout/directives/focus-when.directive';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 import { AskStore } from '../../services/ask.store';
 import { askAllowanceLine } from '../../utils/ask-allowance-line';
@@ -30,7 +27,7 @@ import { askAllowanceLine } from '../../utils/ask-allowance-line';
  */
 @Component({
   selector: 'app-ask-composer',
-  imports: [TranslocoPipe, ButtonComponent, TextareaComponent],
+  imports: [TranslocoPipe, ButtonComponent, FocusWhenDirective, TextareaComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ask-composer.component.html',
   styleUrl: './ask-composer.component.scss',
@@ -42,9 +39,6 @@ export class AskComposerComponent {
   protected readonly store = inject(AskStore);
   private readonly settings = inject(AiSettingsStore);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly injector = inject(Injector);
-  /** The field; gone while the limit is reached (the composer steps aside). */
-  private readonly field = viewChild(TextareaComponent);
   /** The composer had focus when the streaming question was sent. */
   private readonly refocus = signal(false);
 
@@ -63,20 +57,12 @@ export class AskComposerComponent {
       this.text().trim().length >= ASK_LIMIT.QuestionMin,
   );
 
-  constructor() {
-    effect(() => {
-      if (this.store.streaming() || !this.refocus()) {
-        return;
-      }
-      this.refocus.set(false);
-      // After the render that enables the field again: a disabled field cannot take focus.
-      // The answer may have reached the limit, which removes the field.
-      // Without scrolling: the chat's own reveal of the answer must not be cut short.
-      afterNextRender(() => this.field()?.focus({ preventScroll: true }), {
-        injector: this.injector,
-      });
-    });
-  }
+  /**
+   * The streaming question was sent with focus in the composer and the answer has ended: the field
+   * is enabled again, so `appFocusWhen` puts focus back (the answer may have reached the limit,
+   * which removes the field).
+   */
+  protected readonly refocusNow = computed(() => this.refocus() && !this.store.streaming());
 
   /** Enter asks; Shift+Enter (and Enter while an input method composes) adds a line. */
   protected onEnter(event: Event): void {

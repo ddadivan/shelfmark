@@ -15,7 +15,7 @@
         </span>
         <!-- Focused when the step opens (the pressed button is gone); the dialog title stays the
              accessible name, so the visible copy is not read twice. -->
-        <p #offerHeading class="ai-intro__heading" tabindex="-1">
+        <p class="ai-intro__heading" tabindex="-1" appFocusWhen>
           {{ pluralKey('ai.backfillOffer.title', count) | transloco: { count } }}
         </p>
         <ui-button

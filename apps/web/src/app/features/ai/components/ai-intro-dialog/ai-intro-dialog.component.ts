@@ -1,14 +1,4 @@
-import {
-  afterNextRender,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  ElementRef,
-  inject,
-  Injector,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -24,6 +14,7 @@ import {
 } from '@shelfmark/ui';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { pluralKey } from '../../../../core/i18n/plural-key';
+import { FocusWhenDirective } from '../../../../core/layout/directives/focus-when.directive';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { PRIVACY_AI_FRAGMENT } from '../../../privacy/models/privacy-ai-fragment.const';
@@ -54,6 +45,7 @@ import { AI_INTRO_POINTS } from './models/ai-intro-points.const';
     RouterLink,
     ButtonComponent,
     DialogComponent,
+    FocusWhenDirective,
     IconComponent,
     NoticeComponent,
   ],
@@ -77,8 +69,6 @@ export class AiIntroDialogComponent {
   private readonly store = inject(AiSettingsStore);
   private readonly actions = inject(AiSettingsActions);
   private readonly locale = inject(LocaleService);
-  private readonly injector = inject(Injector);
-  private readonly offerHeading = viewChild<ElementRef<HTMLElement>>('offerHeading');
   /** Phone: the shorter title and full-width stacked buttons. */
   protected readonly phone = inject(ViewportService).phone;
 
@@ -121,10 +111,6 @@ export class AiIntroDialogComponent {
     const offer = saved ? this.store.backfillOffer() : 0;
     if (offer > 0) {
       this.offer.set(offer);
-      // The pressed button is gone: focus the new step's heading, so it is read out.
-      afterNextRender(() => this.offerHeading()?.nativeElement.focus(), {
-        injector: this.injector,
-      });
     } else if (saved) {
       this.ref.close(true);
     } else {

@@ -2,6 +2,8 @@
   <form class="ask-composer__form" (submit)="send($event)">
     <ui-textarea
       class="ask-composer__field"
+      [appFocusWhen]="refocusNow()"
+      appFocusWhenPreventScroll
       labelHidden
       [rows]="1"
       [maxRows]="5"

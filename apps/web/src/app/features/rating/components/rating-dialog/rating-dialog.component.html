@@ -16,6 +16,7 @@
         <div class="rating__step">
           <ui-rating-scale readonly [score]="score()" [readonlyLabel]="yourScoreLabel()" />
           <ui-textarea
+            appFocusWhen
             [label]="'rating.feedback.label' | transloco"
             [placeholder]="'rating.feedback.placeholder' | transloco"
             [counterLabel]="'rating.feedback.counter' | transloco"
@@ -69,7 +70,7 @@
         }
         @case (RATING_STEP.Thanks) {
           <ui-button
-            #closeButton
+            appFocusWhen
             [variant]="BUTTON_VARIANT.Primary"
             [block]="phone()"
             (click)="close()"

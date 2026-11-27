@@ -62,6 +62,7 @@ import type { BatchSaveError } from './models/batch-save-error.interface';
 import type { ParsedPaste } from './models/parsed-paste.interface';
 import type { PasteManyFormModel } from './models/paste-many-form-model.interface';
 import type { PasteRow } from './models/paste-row.interface';
+import { FocusWhenDirective } from '../../../../core/layout/directives/focus-when.directive';
 
 /**
  * The add-link dialog after a paste with several links (screen `PasteMany`): one row per link,
@@ -78,6 +79,7 @@ import type { PasteRow } from './models/paste-row.interface';
 @Component({
   selector: 'app-paste-many-list',
   imports: [
+    FocusWhenDirective,
     BadgeComponent,
     ButtonComponent,
     CheckboxComponent,
@@ -235,10 +237,6 @@ export class PasteManyListComponent {
       if (normalized !== tags) {
         untracked(() => field.value.set([...normalized]));
       }
-    });
-    // The list replaced the address field, which had focus: focus moves to "Select all".
-    afterNextRender(() => {
-      this.allBox().focus();
     });
   }
 
