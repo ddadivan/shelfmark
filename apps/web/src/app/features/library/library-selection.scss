@@ -176,6 +176,7 @@
 
 .library__rows > .library__item--selected + .library__item--selected {
   --ui-list-item-radius: 0 0 var(--radius-md) var(--radius-md);
+  --ui-list-item-checked-radius: 0 0 var(--radius-sm) var(--radius-sm);
   --ui-list-item-ring-top: 0rem;
 
   &::before {
@@ -185,6 +186,7 @@
 
 .library__rows > .library__item--selected:has(+ .library__item--selected) {
   --ui-list-item-radius: var(--radius-md) var(--radius-md) 0 0;
+  --ui-list-item-checked-radius: var(--radius-sm) var(--radius-sm) 0 0;
   --ui-list-item-ring-bottom: 0rem;
 }
 
@@ -192,4 +194,11 @@
   > .library__item--selected:has(+ .library__item--selected)
   + .library__item--selected:has(+ .library__item--selected) {
   --ui-list-item-radius: 0;
+  --ui-list-item-checked-radius: 0;
+}
+
+// Headline rows touch (no gap), so the bridge has nothing to fill and would draw the side edges a
+// second time over the row above.
+.library__rows--headlines > .library__item::before {
+  display: none;
 }

@@ -263,6 +263,12 @@ describe('ListItemComponent', () => {
       expect(mediaBlocks(css, HOVER_ONLY).join('\n')).toContain('var(--card-checked-ring-hover)');
     });
 
+    it('rounds a checked headline row (radius-sm, mergeable corners)', () => {
+      expect(css).toMatch(
+        /:host\(\.ui-list-item--headline\.ui-list-item--checked\)\s*\{\s*border-radius: var\(--ui-list-item-checked-radius, var\(--radius-sm\)\)/,
+      );
+    });
+
     it('draws the headline row focus ring inside the row, so neighbours never hide it', () => {
       expect(css).toMatch(
         /:host\(\.ui-list-item--headline:has\(\.ui-list-item__link:focus-visible\)\)\s*\{[^}]*outline-offset: -2px;[^}]*border-radius: var\(--radius-sm\)/,

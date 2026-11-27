@@ -298,6 +298,13 @@
   }
 }
 
+// A checked headline row is rounded like every ring (author, Nov 27): `radius-sm` on its own;
+// a page that merges neighbouring checked rows squares the shared corners through
+// `--ui-list-item-checked-radius`.
+:host(.ui-list-item--headline.ui-list-item--checked) {
+  border-radius: var(--ui-list-item-checked-radius, var(--radius-sm));
+}
+
 // The focus ring sits inside the row (author, Nov 27): headline rows touch each other, so a ring
 // outside was hidden by the neighbours above and below. The rows are square so they join; the
 // focused one takes the DS row radius, so its ring is rounded like every other ring.
