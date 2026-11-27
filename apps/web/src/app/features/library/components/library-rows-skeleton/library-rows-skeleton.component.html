@@ -1,0 +1,24 @@
+@for (row of rows(); track row) {
+  @if (headlines()) {
+    <div class="rows-sk__headline">
+      <ui-skeleton class="rows-sk__favicon" [shape]="SKELETON_SHAPE.Block" />
+      <ui-skeleton class="rows-sk__headline-title" [shape]="SKELETON_SHAPE.Block" />
+      <ui-skeleton class="rows-sk__col rows-sk__col--domain" [shape]="SKELETON_SHAPE.Block" />
+      <ui-skeleton class="rows-sk__col rows-sk__col--folder" [shape]="SKELETON_SHAPE.Block" />
+      <ui-skeleton class="rows-sk__col rows-sk__col--date" [shape]="SKELETON_SHAPE.Block" />
+    </div>
+  } @else {
+    <div class="rows-sk__row">
+      <span class="rows-sk__select"></span>
+      <ui-skeleton class="rows-sk__thumb" [shape]="SKELETON_SHAPE.Block" />
+      <div class="rows-sk__text">
+        <div class="rows-sk__line rows-sk__line--title">
+          <ui-skeleton class="rows-sk__title" [shape]="SKELETON_SHAPE.Block" />
+        </div>
+        <div class="rows-sk__line rows-sk__line--meta">
+          <ui-skeleton class="rows-sk__meta" [shape]="SKELETON_SHAPE.Block" />
+        </div>
+      </div>
+    </div>
+  }
+}

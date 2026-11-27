@@ -87,6 +87,7 @@ import { LibraryFilterService } from './services/library-filter.service';
 import { provideLibraryPage } from './services/provide-library-page';
 import { FolderCoverComponent } from './components/folder-cover/folder-cover.component';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
+import { LibraryRowsSkeletonComponent } from './components/library-rows-skeleton/library-rows-skeleton.component';
 import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
 import { SplitViewService } from './services/split-view.service';
@@ -141,6 +142,7 @@ const LABELLED_TOOLS_BELOW_QUERY = '(width < 100em)';
     FolderCoverComponent,
     FolderIconComponent,
     FolderTileComponent,
+    LibraryRowsSkeletonComponent,
     ExtensionBannerComponent,
     UiInViewDirective,
     LibraryHotkeysDirective,

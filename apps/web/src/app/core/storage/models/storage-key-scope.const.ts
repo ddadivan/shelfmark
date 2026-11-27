@@ -12,6 +12,7 @@ export const STORAGE_KEY_SCOPE: Readonly<Record<StorageKeyName, StorageScope>> =
   Ui: STORAGE_SCOPE.Device,
   AskWidth: STORAGE_SCOPE.Device,
   FeedMemory: STORAGE_SCOPE.Device,
+  LibraryDefaultView: STORAGE_SCOPE.Device,
   ReaderSettings: STORAGE_SCOPE.Device,
   NotificationsDevice: STORAGE_SCOPE.Device,
   NotificationsAsked: STORAGE_SCOPE.Device,

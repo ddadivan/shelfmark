@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use 'ui' as *;
 
 // The app skeleton of index.html (#410): what the screen shows between the first paint of a
@@ -506,9 +507,9 @@
 
   // The loaded masonry's own columns (`--library-column`, 13.75rem) and gaps (a tenth of the
   // column, 12 to 28px: 22px), so the cards stand where the loaded ones do.
-  gap: clamp(0.75rem, calc(13.75rem * 0.1), 1.75rem);
+  gap: clamp(0.75rem, calc(var(--boot-column, 13.75rem) * 0.1), 1.75rem);
   overflow: hidden;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--boot-column, 13.75rem)), 1fr));
   container: boot-feed / inline-size;
 
   @include phone {
@@ -519,9 +520,10 @@
 
 // Only the cards of the four visible rows are rendered: every card sweeps, and 48 sweeping cards
 // kept a slow machine busy before the app could render. The columns follow the grid's own width
-// (column minimum plus the 1.375rem gap per column).
-@mixin boot-visible-cards($column-em, $gap-em) {
-  @for $columns from 1 through 12 {
+// (column minimum plus the gap per column); `--boot-column` and `data-boot-grid` come from the
+// feed's Grid size (`public/boot-skeleton.js`), the default is step 4 (13.75rem).
+@mixin boot-visible-cards($column-em, $gap-em, $scope) {
+  @for $columns from 1 through 20 {
     $from: 0;
 
     @if $columns > 1 {
@@ -531,7 +533,7 @@
     $to: ($columns + 1) * ($column-em + $gap-em) - $gap-em;
 
     @container boot-feed (width >= #{$from}em) and (width < #{$to}em) {
-      .boot__card:nth-child(n + #{4 * $columns + 1}) {
+      #{$scope} .boot__card:nth-child(n + #{4 * $columns + 1}) {
         display: none;
       }
     }
@@ -540,7 +542,25 @@
 
 // Two columns on a phone: eight cards are the four rows.
 @media (width >= 40em) {
-  @include boot-visible-cards(13.75, 1.375);
+  $steps: (
+    1: 8.125,
+    2: 10,
+    3: 11.875,
+    4: 13.75,
+    5: 16.25,
+    6: 18.75,
+  );
+
+  @each $step, $column in $steps {
+    $gap: math.min(1.75, math.max(0.75, $column * 0.1));
+    $scope: ':root[data-boot-grid="#{$step}"]';
+
+    @if $step == 4 {
+      $scope: ':root:not([data-boot-grid])';
+    }
+
+    @include boot-visible-cards($column, $gap, $scope);
+  }
 }
 
 @include phone {
@@ -666,6 +686,164 @@
 .boot__tab--add {
   width: rem(52px);
   height: rem(52px);
+}
+
+// The List and Headlines views (`html[data-boot-view]`): the rows of `app-library-rows-skeleton`.
+// List: the density's row padding, the 32px select slot, a 72 x 48 picture (48px square on a
+// phone), a 24px title line and a 16px meta line 2px under it, rows 4px apart (68px high).
+// Headlines: one surface panel, 40px rows (48px on a phone) with a 1px divider, 16px side padding,
+// the favicon, the title and the columns of 184 / 128 / 64px (the 56px date alone on a phone).
+.boot__rows {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-1);
+  overflow: hidden;
+}
+
+:root[data-boot-view='list'] .boot__rows--list,
+:root[data-boot-view='headlines'] .boot__rows--headlines {
+  display: flex;
+}
+
+:root[data-boot-view='list'] .boot__grid,
+:root[data-boot-view='headlines'] .boot__grid {
+  display: none;
+}
+
+.boot__row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--density-row-padding);
+}
+
+.boot__row-select {
+  flex: none;
+  inline-size: rem(32px);
+}
+
+.boot__row-thumb {
+  flex: none;
+  width: rem(72px);
+  height: rem(48px);
+  border-radius: var(--radius-sm);
+
+  @include phone {
+    width: rem(48px);
+  }
+}
+
+.boot__row-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2px);
+  min-inline-size: 0;
+}
+
+.boot__row-line {
+  display: flex;
+  align-items: center;
+}
+
+.boot__row-line--title {
+  block-size: rem(24px);
+}
+
+.boot__row-line--meta {
+  block-size: rem(16px);
+}
+
+.boot__row-title {
+  width: 55%;
+  height: rem(14px);
+}
+
+.boot__row-meta {
+  width: 28%;
+  height: rem(10px);
+}
+
+.boot__rows--headlines {
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.boot__hl {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: rem(40px);
+  padding: 0 var(--space-4);
+
+  & + & {
+    border-block-start: 1px solid var(--line);
+  }
+
+  @include phone {
+    min-block-size: rem(48px);
+  }
+}
+
+.boot__hl-favicon {
+  flex: none;
+  width: rem(16px);
+  height: rem(16px);
+  border-radius: var(--radius-full);
+}
+
+.boot__hl-title {
+  flex: 1;
+  min-inline-size: 0;
+  width: 45%;
+  height: rem(12px);
+}
+
+.boot__hl-col {
+  display: flex;
+  flex: none;
+}
+
+.boot__hl-col--domain {
+  inline-size: rem(184px);
+}
+
+.boot__hl-col--folder {
+  inline-size: rem(128px);
+}
+
+.boot__hl-col--date {
+  inline-size: rem(64px);
+
+  @include phone {
+    inline-size: rem(56px);
+  }
+}
+
+.boot__hl-bar {
+  height: rem(10px);
+}
+
+.boot__hl-bar--domain {
+  width: rem(120px);
+}
+
+.boot__hl-bar--folder {
+  width: rem(80px);
+}
+
+.boot__hl-bar--date {
+  width: rem(40px);
+}
+
+@include phone {
+  .boot__hl-col--domain,
+  .boot__hl-col--folder {
+    display: none;
+  }
 }
 
 // Pages ---------------------------------------------------------------------------------------
@@ -1495,6 +1673,210 @@
 :root[data-boot-page='settings'] .boot__g-top {
   flex-direction: column;
   margin-block-end: calc(var(--space-6) * -1 + var(--space-4));
+}
+
+// Share Target (`html[data-boot-page='share']`, features/share/share.page.scss): outside the shell, so
+// no banner, sidebar or tab bar. The page is the scrim over the background with the 440px sheet in
+// the middle (a tablet and up, 48px around it) or at the bottom of a phone (20px sides, 8px above
+// the grip), 14px between its parts: the 40px header, the 108px preview (88 x 82 thumb), the 42px
+// "Goes to" row (44px on a phone), the 40px note field (44px), the 48px buttons and the 16px footnote.
+.boot__share {
+  display: none;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  min-block-size: 100dvh;
+  background: linear-gradient(var(--overlay), var(--overlay)), var(--bg);
+
+  @include tablet-up {
+    align-items: center;
+    padding: var(--space-12);
+  }
+}
+
+:root[data-boot-page='share'] {
+  .boot__banner,
+  .boot__body,
+  .boot__tabbar {
+    display: none;
+  }
+
+  .boot__share {
+    display: flex;
+  }
+}
+
+.boot__share-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: rem(14px);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: rem(440px);
+  padding: var(--space-2) rem(20px) rem(28px);
+  background: var(--surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-float);
+
+  @include tablet-up {
+    padding: rem(28px);
+    border-radius: var(--radius-xl);
+  }
+}
+
+.boot__share-grip {
+  align-self: center;
+  width: rem(40px);
+  height: rem(5px);
+  background: var(--border-control);
+  border-radius: var(--radius-full);
+
+  @include tablet-up {
+    display: none;
+  }
+}
+
+.boot__share-line {
+  display: flex;
+  align-items: center;
+}
+
+.boot__share-line--title {
+  block-size: rem(24px);
+}
+
+.boot__share-line--sub,
+.boot__share-line--meta,
+.boot__share-line--foot {
+  block-size: rem(16px);
+}
+
+.boot__share-line--link {
+  block-size: rem(22px);
+}
+
+.boot__share-line--meta {
+  gap: var(--space-2);
+}
+
+.boot__share-line--foot {
+  justify-content: center;
+}
+
+.boot__share-header {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  block-size: rem(40px);
+}
+
+.boot__share-logo {
+  flex: none;
+  width: rem(28px);
+  height: rem(28px);
+}
+
+.boot__share-heading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.boot__share-title {
+  width: 55%;
+  height: rem(14px);
+}
+
+.boot__share-sub {
+  width: 40%;
+  height: rem(10px);
+}
+
+.boot__share-preview {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.boot__share-thumb {
+  flex: none;
+  align-self: stretch;
+  width: rem(88px);
+  min-height: rem(66px);
+  border-radius: var(--radius-sm);
+}
+
+.boot__share-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.boot__share-favicon {
+  flex: none;
+  width: rem(16px);
+  height: rem(16px);
+  border-radius: var(--radius-full);
+}
+
+.boot__share-host {
+  width: rem(96px);
+  height: rem(10px);
+}
+
+.boot__share-link {
+  width: 70%;
+  height: rem(14px);
+}
+
+.boot__share-desc {
+  width: 55%;
+  height: rem(10px);
+}
+
+.boot__share-address {
+  width: 85%;
+  height: rem(10px);
+}
+
+.boot__share-row {
+  height: rem(42px);
+  border-radius: var(--radius-md);
+
+  @include phone {
+    height: rem(44px);
+  }
+}
+
+.boot__share-field {
+  height: rem(40px);
+  border-radius: var(--radius-md);
+
+  @include phone {
+    height: rem(44px);
+  }
+}
+
+.boot__share-buttons {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.boot__share-button {
+  height: rem(48px);
+  border-radius: var(--radius-full);
+}
+
+.boot__share-foot {
+  width: 45%;
+  height: rem(10px);
 }
 
 // Ask (ask.page): the conversations card and the conversation, the question box at the bottom.

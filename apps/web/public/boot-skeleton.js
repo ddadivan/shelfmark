@@ -13,10 +13,20 @@
   const OTHER_BRANDS = ['Opera', 'Opera GX', 'Samsung Internet']; // OTHER_CHROMIUM_BRAND
   const DESKTOP_QUERY = '(width >= 64em)'; // ViewportService.desktop
   const WIDE_QUERY = '(width >= 80em)'; // ViewportService.wide: the split view opens from here
+  // The library's view (`LibraryFilterService.view`, `FeedMemoryService`): the feed's own last choice,
+  // else the account's Default view (kept by `LibraryDefaultViewCache`), else masonry.
+  const FEED_MEMORY_KEY = 'sm-feed-memory'; // STORAGE_KEY.FeedMemory
+  const DEFAULT_VIEW_KEY = 'sm-library-default-view'; // STORAGE_KEY.LibraryDefaultView
+  const LIBRARY_VIEWS = ['masonry', 'cards', 'list', 'headlines']; // LIBRARY_VIEW
+  const GRID_COLUMNS = [130, 160, 190, 220, 260, 300]; // GRID_COLUMNS (px)
+  const GRID_STEP_DEFAULT = 4; // GRID_STEP_DEFAULT
+  // The text size, font and density of Settings › Appearance (`ThemeService`, `LAYOUT_ATTRIBUTE`) change
+  // every size of the skeleton, so they are copied to `html` as the app will set them.
+  const LAYOUT_KEY = 'sm-layout'; // STORAGE_KEY.Layout
   const root = document.documentElement;
   const path = location.pathname.replace(/(.)\/$/, '$1');
   // Pages a guest can be on: the hint (a session that may have ended) is not trusted there.
-  const guestPage = /^\/(sign-in|about|privacy|changelog|share|help(\/.*)?|c\/.*)$/.test(path);
+  const guestPage = /^\/(sign-in|about|privacy|changelog|help(\/.*)?|c\/.*)$/.test(path);
   let show = path === '/demo';
   // The demo start and a stored demo session have the demo banner above the shell (#440).
   let demo = show;
@@ -35,11 +45,13 @@
     return;
   }
   if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+  layout();
   if (demo) root.setAttribute('data-boot-demo', '');
   // The main area of the page the address leads to (styles in src/_boot-skeleton.scss); every other
   // address keeps the library's.
   const page = bootPage();
   if (page) root.setAttribute('data-boot-page', page);
+  if (!page) libraryView();
   if (extensionBanner()) root.setAttribute('data-boot-extension', '');
   if (extensionRow()) root.setAttribute('data-boot-extension-row', '');
   root.setAttribute('data-boot-skeleton', '');
@@ -47,6 +59,23 @@
     const left = document.querySelector('[data-app-skeleton]');
     if (left) left.remove();
   }, MAX_MS);
+
+  /** `data-text-size`, `data-font` and `data-density` from the stored layout (the defaults leave them out). */
+  function layout() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(LAYOUT_KEY) || 'null');
+      if (!stored || typeof stored !== 'object') return;
+      if (['s', 'l', 'xl'].indexOf(stored.textSize) !== -1) {
+        root.setAttribute('data-text-size', stored.textSize); // TEXT_SIZE
+      }
+      if (stored.font === 'system' || stored.font === 'readable') {
+        root.setAttribute('data-font', stored.font); // APP_FONT
+      }
+      if (stored.density === 'compact') root.setAttribute('data-density', 'compact'); // DENSITY
+    } catch {
+      // Storage blocked or broken JSON: the defaults.
+    }
+  }
 
   /** The page variant of the skeleton's main area, or null for the library (`APP_PATH`). */
   function bootPage() {
@@ -58,12 +87,61 @@
     if (path === '/tags') return 'tags';
     if (path === '/import') return 'import';
     if (path === '/ask') return 'ask';
+    // The Web Share Target (`/share?url=`) is signed in only: a guest is sent to sign-in, so the hint holds.
+    if (path === '/share') return 'share';
     if (path === '/unsorted/tidy') return 'tidy';
     // `/library` is the phone's Library tab; a desktop window is sent on to the feed.
     if (path === '/library') return matchMedia(DESKTOP_QUERY).matches ? null : 'library-tab';
     if (/^\/settings(\/.*)?$/.test(path)) return 'settings';
     if (/^\/admin(\/.*)?$/.test(path)) return 'reminders';
     return null;
+  }
+
+  /**
+   * The feed key of a library path (`LibraryFilterService.feedKey`): the fixed list (`LINKS_SCOPE`)
+   * or `folder:<id>`; null when the path is no feed.
+   */
+  function feedKey() {
+    if (path === '/' || path === '/demo' || path === '/links') return 'all';
+    if (path === '/unsorted' || path === '/favorites') return path.slice(1);
+    const folder = /^\/folders\/([^/]+)$/.exec(path);
+    return folder ? 'folder:' + decodeURIComponent(folder[1]) : null;
+  }
+
+  /**
+   * Sets `html[data-boot-view]` (`grid`, `list` or `headlines`) and, off the default Grid size,
+   * `--boot-column` (`data-boot-grid` is the step) for the library placeholder. A side by side
+   * preview (`?preview=`, from 80em) shows the feed as a list.
+   */
+  function libraryView() {
+    const key = feedKey();
+    if (key === null) return;
+    let view = null;
+    let step = GRID_STEP_DEFAULT;
+    try {
+      const memory = JSON.parse(localStorage.getItem(FEED_MEMORY_KEY) || '{}');
+      const entry = memory && typeof memory === 'object' ? memory[key] : null;
+      if (entry && typeof entry === 'object') {
+        if (LIBRARY_VIEWS.indexOf(entry.view) !== -1) view = entry.view;
+        if (Number.isInteger(entry.grid) && entry.grid >= 1 && entry.grid <= GRID_COLUMNS.length) {
+          step = entry.grid;
+        }
+      }
+      if (view === null) {
+        const fallback = localStorage.getItem(DEFAULT_VIEW_KEY);
+        view = LIBRARY_VIEWS.indexOf(fallback) !== -1 ? fallback : 'masonry';
+      }
+    } catch {
+      view = 'masonry';
+    }
+    if (new URLSearchParams(location.search).has('preview') && matchMedia(WIDE_QUERY).matches) {
+      view = 'list';
+    }
+    root.setAttribute('data-boot-view', view === 'list' || view === 'headlines' ? view : 'grid');
+    if (step !== GRID_STEP_DEFAULT) {
+      root.setAttribute('data-boot-grid', String(step));
+      root.style.setProperty('--boot-column', GRID_COLUMNS[step - 1] / 16 + 'rem');
+    }
   }
 
   /**

@@ -1,4 +1,5 @@
 import { STORAGE_KEY } from '../app/core/storage/models/storage-key.const';
+import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
 import { EXTENSION_BROWSER_BRAND } from '../app/core/browser-extension/models/extension-browser-brand.const';
 import { OTHER_CHROMIUM_BRAND } from '../app/core/browser-extension/models/other-chromium-brand.const';
@@ -16,6 +17,9 @@ describe('boot-skeleton.js and the extension banner', () => {
       STORAGE_KEY.SessionHint,
       STORAGE_KEY.Theme,
       STORAGE_KEY.ExtensionBannerDismissed,
+      STORAGE_KEY.FeedMemory,
+      STORAGE_KEY.LibraryDefaultView,
+      STORAGE_KEY.Layout,
     ]) {
       expect(script).toContain(`'${key}'`);
     }
@@ -57,6 +61,7 @@ describe('boot-skeleton.js and the page variants', () => {
     [`/${APP_PATH.Tidy}`, 'tidy'],
     [`/${APP_PATH.Library}`, 'library-tab'],
     [`/${APP_PATH.Settings}`, 'settings'],
+    [`/${APP_PATH.Share}`, 'share'],
   ];
 
   it.each(PATHS)('%s draws the %s page', (path, variant) => {
@@ -74,6 +79,9 @@ describe('boot-skeleton.js and the page variants', () => {
       'boot__trash',
       'boot__generic',
       'boot__ask',
+      'boot__share',
+      'boot__rows--list',
+      'boot__rows--headlines',
     ]) {
       expect(markup, area).toContain(area);
     }
@@ -84,5 +92,188 @@ describe('boot-skeleton.js and the page variants', () => {
     for (const row of ['meta', 'title', 'source', 'tags']) {
       expect(markup).toContain(`boot__card-row--${row}`);
     }
+  });
+});
+
+// Runs the script against a fake page: the attributes and custom properties it puts on `html`.
+interface BootRun {
+  readonly attributes: Record<string, string>;
+  readonly properties: Record<string, string>;
+}
+
+interface BootScenario {
+  readonly path: string;
+  readonly search?: string;
+  readonly storage?: Record<string, string>;
+  /** A desktop-wide (80em) window; the default is 1440px. */
+  readonly width?: number;
+}
+
+function runBootScript(scenario: BootScenario): BootRun {
+  const attributes: Record<string, string> = {};
+  const properties: Record<string, string> = {};
+  const storage = scenario.storage ?? {};
+  const width = scenario.width ?? 1440;
+  const root = {
+    setAttribute: (name: string, value: string): void => {
+      attributes[name] = value;
+    },
+    style: {
+      setProperty: (name: string, value: string): void => {
+        properties[name] = value;
+      },
+    },
+  };
+  const fake = {
+    document: { documentElement: root, querySelector: () => null },
+    location: { pathname: scenario.path, search: scenario.search ?? '' },
+    localStorage: { getItem: (key: string): string | null => storage[key] ?? null },
+    matchMedia: (query: string) => ({
+      matches:
+        query === '(width >= 64em)' ? width >= 1024 : query === '(width >= 80em)' && width >= 1280,
+    }),
+    navigator: { userAgent: 'Firefox', userAgentData: undefined },
+    URLSearchParams,
+    setTimeout: () => 0,
+  };
+  runInNewContext(script, fake);
+  return { attributes, properties };
+}
+
+const SIGNED_IN = { [STORAGE_KEY.SessionHint]: '1' };
+
+describe('boot-skeleton.js and the share page', () => {
+  it('draws the Share Target sheet for a signed-in hint', () => {
+    const { attributes } = runBootScript({
+      path: '/share',
+      search: '?url=https://a.dev',
+      storage: SIGNED_IN,
+    });
+    expect(attributes['data-boot-skeleton']).toBe('');
+    expect(attributes['data-boot-page']).toBe('share');
+    expect(attributes['data-boot-view']).toBeUndefined();
+  });
+
+  it('shows nothing without the hint (a guest is sent to sign-in)', () => {
+    expect(runBootScript({ path: '/share' }).attributes['data-boot-skeleton']).toBeUndefined();
+  });
+});
+
+describe('boot-skeleton.js and the library view', () => {
+  const memory = (value: unknown): Record<string, string> => ({
+    ...SIGNED_IN,
+    [STORAGE_KEY.FeedMemory]: JSON.stringify(value),
+  });
+
+  it('is the masonry grid without any memory or Default view', () => {
+    const { attributes, properties } = runBootScript({ path: '/links', storage: SIGNED_IN });
+    expect(attributes['data-boot-view']).toBe('grid');
+    expect(attributes['data-boot-grid']).toBeUndefined();
+    expect(properties['--boot-column']).toBeUndefined();
+  });
+
+  it.each([
+    ['/links', 'all'],
+    ['/unsorted', 'unsorted'],
+    ['/favorites', 'favorites'],
+    ['/folders/f1', 'folder:f1'],
+  ])('%s reads the memory of the feed %s', (path, key) => {
+    const rows = runBootScript({ path, storage: memory({ [key]: { view: 'list' } }) });
+    expect(rows.attributes['data-boot-view']).toBe('list');
+    const headlines = runBootScript({ path, storage: memory({ [key]: { view: 'headlines' } }) });
+    expect(headlines.attributes['data-boot-view']).toBe('headlines');
+    const other = runBootScript({ path, storage: memory({ elsewhere: { view: 'list' } }) });
+    expect(other.attributes['data-boot-view']).toBe('grid');
+  });
+
+  it('shows cards for both card views and ignores a view it does not know', () => {
+    expect(
+      runBootScript({ path: '/links', storage: memory({ all: { view: 'cards' } }) }).attributes[
+        'data-boot-view'
+      ],
+    ).toBe('grid');
+    expect(
+      runBootScript({ path: '/links', storage: memory({ all: { view: 'wall' } }) }).attributes[
+        'data-boot-view'
+      ],
+    ).toBe('grid');
+  });
+
+  it('falls back on the cached Default view of the account, the feed memory first', () => {
+    const storage = {
+      ...memory({ unsorted: { view: 'list' } }),
+      [STORAGE_KEY.LibraryDefaultView]: 'headlines',
+    };
+    expect(runBootScript({ path: '/links', storage }).attributes['data-boot-view']).toBe(
+      'headlines',
+    );
+    expect(runBootScript({ path: '/unsorted', storage }).attributes['data-boot-view']).toBe('list');
+  });
+
+  it('survives broken storage', () => {
+    const storage = { ...SIGNED_IN, [STORAGE_KEY.FeedMemory]: '{not json' };
+    expect(runBootScript({ path: '/links', storage }).attributes['data-boot-view']).toBe('grid');
+  });
+
+  it('follows the Grid size of the feed (the column in rem, the step for the visible cards)', () => {
+    const { attributes, properties } = runBootScript({
+      path: '/links',
+      storage: memory({ all: { view: 'masonry', grid: 1 } }),
+    });
+    expect(attributes['data-boot-grid']).toBe('1');
+    expect(properties['--boot-column']).toBe('8.125rem');
+    const large = runBootScript({ path: '/links', storage: memory({ all: { grid: 6 } }) });
+    expect(large.properties['--boot-column']).toBe('18.75rem');
+    const bad = runBootScript({ path: '/links', storage: memory({ all: { grid: 9 } }) });
+    expect(bad.attributes['data-boot-grid']).toBeUndefined();
+  });
+
+  it('shows a list beside an open preview from 80em', () => {
+    const storage = memory({ all: { view: 'masonry' } });
+    expect(
+      runBootScript({ path: '/links', search: '?preview=l1', storage }).attributes[
+        'data-boot-view'
+      ],
+    ).toBe('list');
+    expect(
+      runBootScript({ path: '/links', search: '?preview=l1', storage, width: 1100 }).attributes[
+        'data-boot-view'
+      ],
+    ).toBe('grid');
+  });
+
+  it('leaves the view to the library only, never to another page', () => {
+    expect(
+      runBootScript({ path: '/today', storage: SIGNED_IN }).attributes['data-boot-view'],
+    ).toBeUndefined();
+    expect(
+      runBootScript({ path: '/tags', storage: SIGNED_IN }).attributes['data-boot-view'],
+    ).toBeUndefined();
+  });
+
+  it('copies text size, font and density of the stored layout', () => {
+    const { attributes } = runBootScript({
+      path: '/links',
+      storage: {
+        ...SIGNED_IN,
+        [STORAGE_KEY.Layout]: JSON.stringify({ textSize: 'l', font: 'system', density: 'compact' }),
+      },
+    });
+    expect(attributes['data-text-size']).toBe('l');
+    expect(attributes['data-font']).toBe('system');
+    expect(attributes['data-density']).toBe('compact');
+    const defaults = runBootScript({
+      path: '/links',
+      storage: {
+        ...SIGNED_IN,
+        [STORAGE_KEY.Layout]: JSON.stringify({
+          textSize: 'm',
+          font: 'onest',
+          density: 'comfortable',
+        }),
+      },
+    });
+    expect(defaults.attributes['data-text-size']).toBeUndefined();
+    expect(defaults.attributes['data-density']).toBeUndefined();
   });
 });

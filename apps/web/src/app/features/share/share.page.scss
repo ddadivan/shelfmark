@@ -146,6 +146,31 @@
   overflow-wrap: anywhere;
 }
 
+// The title and description placeholders: a line box of the real text with a thinner bar centred in
+// it (the loaded link title is 22px high, the description and address 16px).
+.share__sk {
+  display: flex;
+  align-items: center;
+
+  --ui-skeleton-height: #{rem(12px)};
+}
+
+.share__sk--title {
+  block-size: rem(22px);
+
+  ui-skeleton {
+    inline-size: 70%;
+  }
+}
+
+.share__sk--text {
+  block-size: rem(16px);
+
+  ui-skeleton {
+    inline-size: 50%;
+  }
+}
+
 .share__description,
 .share__address {
   @include type(caption);

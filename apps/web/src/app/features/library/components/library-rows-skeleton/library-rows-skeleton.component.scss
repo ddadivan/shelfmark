@@ -1,0 +1,150 @@
+@use 'ui' as *;
+
+// The loaded List (`ui-list-item`): the density's row padding, the 32px select slot, the 72 x 48
+// picture (a 48px square on a phone), a 24px title line and a 16px meta line 2px under it; rows
+// 4px apart. Content-less blocks get the size of the line they stand for.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-block-size: 100dvh;
+  overflow: hidden;
+}
+
+.rows-sk__row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--density-row-padding);
+}
+
+.rows-sk__select {
+  flex: none;
+  inline-size: rem(32px);
+}
+
+.rows-sk__thumb {
+  --ui-skeleton-width: #{rem(72px)};
+  --ui-skeleton-height: #{rem(48px)};
+  --ui-skeleton-radius: var(--radius-sm);
+
+  flex: none;
+
+  @include phone {
+    --ui-skeleton-width: #{rem(48px)};
+  }
+}
+
+.rows-sk__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2px);
+  min-inline-size: 0;
+}
+
+.rows-sk__line {
+  display: flex;
+  align-items: center;
+}
+
+.rows-sk__line--title {
+  block-size: rem(24px);
+}
+
+.rows-sk__line--meta {
+  block-size: rem(16px);
+}
+
+.rows-sk__title {
+  --ui-skeleton-width: 55%;
+  --ui-skeleton-height: #{rem(14px)};
+
+  inline-size: 100%;
+}
+
+.rows-sk__meta {
+  --ui-skeleton-width: 28%;
+  --ui-skeleton-height: #{rem(10px)};
+
+  inline-size: 100%;
+}
+
+// Headlines (`ui-list-item` headline in the `library__rows--headlines` panel): one surface panel,
+// 40px rows (48px on a phone) with a 1px divider, 16px side padding, the favicon, the title and
+// the columns of 184 / 128 / 64px (the date alone, 56px, on a phone).
+:host(.rows-sk--headlines) {
+  flex-shrink: 0;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.rows-sk__headline {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: rem(40px);
+  padding: 0 var(--space-4);
+
+  & + & {
+    border-block-start: 1px solid var(--line);
+  }
+
+  @include phone {
+    min-block-size: rem(48px);
+  }
+}
+
+.rows-sk__favicon {
+  --ui-skeleton-width: #{rem(16px)};
+  --ui-skeleton-height: #{rem(16px)};
+  --ui-skeleton-radius: var(--radius-full);
+
+  flex: none;
+}
+
+.rows-sk__headline-title {
+  --ui-skeleton-width: 45%;
+  --ui-skeleton-height: #{rem(12px)};
+
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.rows-sk__col {
+  --ui-skeleton-height: #{rem(10px)};
+
+  flex: none;
+}
+
+.rows-sk__col--domain {
+  --ui-skeleton-width: #{rem(120px)};
+
+  inline-size: rem(184px);
+}
+
+.rows-sk__col--folder {
+  --ui-skeleton-width: #{rem(80px)};
+
+  inline-size: rem(128px);
+}
+
+.rows-sk__col--date {
+  --ui-skeleton-width: #{rem(40px)};
+
+  inline-size: rem(64px);
+
+  @include phone {
+    inline-size: rem(56px);
+  }
+}
+
+@include phone {
+  .rows-sk__col--domain,
+  .rows-sk__col--folder {
+    display: none;
+  }
+}

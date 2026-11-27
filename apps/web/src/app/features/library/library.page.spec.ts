@@ -85,6 +85,22 @@ describe('LibraryPage', () => {
     expect(element.querySelector('app-link-card')).toBeNull();
   });
 
+  it.each([
+    [UI_VIEW.Masonry, 'card grid', false, false],
+    [UI_VIEW.Cards, 'card grid', false, false],
+    [UI_VIEW.List, 'list rows', true, false],
+    [UI_VIEW.Headlines, 'headline panel', true, true],
+  ])('draws the skeleton of the selected view (%s: %s)', async (view, _name, rows, headlines) => {
+    localStorage.setItem(STORAGE_KEY.FeedMemory, JSON.stringify({ all: { view } }));
+    const { element, fixture } = await setup(new Subject<ListLinksResponse>());
+    await afterLoaderDelay(fixture);
+
+    const rowsSkeleton = element.querySelector('app-library-rows-skeleton');
+    expect(rowsSkeleton !== null).toBe(rows);
+    expect(element.querySelector('.library__grid--skeleton') !== null).toBe(!rows);
+    expect(rowsSkeleton?.classList.contains('rows-sk--headlines') ?? false).toBe(headlines);
+  });
+
   it('shows the heading, the count and the cards, with more to load', async () => {
     const { element, fixture } = await setup();
 

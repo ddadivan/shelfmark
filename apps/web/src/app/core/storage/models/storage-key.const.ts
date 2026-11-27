@@ -2,7 +2,7 @@
  * Every real `localStorage` key of the app, in one place. The strings are what browsers already
  * hold: renaming one drops the saved choice, so never do. Adding a key means adding its scope in
  * `STORAGE_KEY_SCOPE` too (the compiler asks). `public/boot-skeleton.js` repeats `SessionHint`,
- * `Theme` and `ExtensionBannerDismissed` (checked by `boot-skeleton-script.spec.ts`). Mock-only
+ * `Theme`, `ExtensionBannerDismissed`, `FeedMemory` and `LibraryDefaultView` (checked by `boot-skeleton-script.spec.ts`). Mock-only
  * keys stay next to their mocks.
  */
 export const STORAGE_KEY = {
@@ -12,6 +12,8 @@ export const STORAGE_KEY = {
   AskWidth: 'sm-ask-width',
   /** Per-feed view and sort. */
   FeedMemory: 'sm-feed-memory',
+  /** The account's Default view, kept for the first paint of the boot skeleton (`public/boot-skeleton.js`). */
+  LibraryDefaultView: 'sm-library-default-view',
   /** Reading settings, the first paint before the account answers. */
   ReaderSettings: 'sm-reader-settings',
   /** `off` once notifications were turned off on this device while the browser allows them. */

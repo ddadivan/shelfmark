@@ -33,6 +33,7 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
+import { LibraryDefaultViewCache } from '../features/library/services/library-default-view-cache.service';
 import { AiAnnouncementService } from '../features/ai/services/ai-announcement.service';
 import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
@@ -211,6 +212,8 @@ export default class AppShellComponent {
     inject(AiTickService);
     // The one-time AI announcement (#507) plans itself once the account's AI side is loaded.
     inject(AiAnnouncementService);
+    // The Default view for the next first paint (the boot skeleton follows the view).
+    inject(LibraryDefaultViewCache);
   }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */

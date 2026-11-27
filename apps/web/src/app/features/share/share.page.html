@@ -35,7 +35,9 @@
           <span class="share__host">{{ host() }}</span>
         </div>
         @if (previewState() === PREVIEW_STATE.Loading && title() === '') {
-        <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="2" />
+        <!-- The loaded title and description lines (22px and 16px), so the preview keeps its height. -->
+        <div class="share__sk share__sk--title"><ui-skeleton [shape]="SKELETON_SHAPE.Block" /></div>
+        <div class="share__sk share__sk--text"><ui-skeleton [shape]="SKELETON_SHAPE.Block" /></div>
         } @else {
         <div class="share__link-title">{{ title() }}</div>
         } @if (description(); as text) {

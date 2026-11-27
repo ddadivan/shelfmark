@@ -537,9 +537,7 @@
           </ui-button>
         </ui-empty-state>
         } @else if (feed.skeletonVisible()) { @if (rowsView()) {
-        <div class="library__rows">
-          <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
-        </div>
+        <app-library-rows-skeleton [headlines]="view() === UI_VIEW.Headlines" />
         } @else {
         <div class="library__grid library__grid--skeleton">
           <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
