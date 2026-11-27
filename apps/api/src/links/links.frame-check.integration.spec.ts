@@ -1,9 +1,4 @@
-import {
-  LINK_FRAMING,
-  USER_LIMIT,
-  type LinkFrameCheckResponse,
-  type UserSettingsResponse,
-} from '@shelfmark/contracts';
+import { LINK_FRAMING, type LinkFrameCheckResponse } from '@shelfmark/contracts';
 import { vi } from 'vitest';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
@@ -23,7 +18,6 @@ import { FRAME_CHECK_TTL_MS } from './frame-check/models/frame-check-ttl.const';
 
 const HOST = 'frames.test';
 const URL_ON_HOST = `https://${HOST}/article`;
-const SETTINGS = '/api/me/settings';
 const HOUR_MS = 60 * 60 * 1000;
 
 const page = (

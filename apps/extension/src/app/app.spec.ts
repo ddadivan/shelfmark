@@ -23,6 +23,7 @@ import {
 } from '../testing/fixtures';
 import { SHELFMARK_ORIGIN } from './core/config/shelfmark-origin.const';
 import { PopupStore } from './popup/popup.store';
+import { at } from '../testing/at';
 
 const http = (status: number, message?: string): HttpErrorResponse =>
   new HttpErrorResponse({ status, error: message === undefined ? null : { message } });
@@ -517,7 +518,7 @@ describe('App', () => {
     });
 
     it('hides the switch for a window with one tab', async () => {
-      const single = await createPopup({ windowTabs: [WINDOW[0]!], tabsPermission: true });
+      const single = await createPopup({ windowTabs: [at(WINDOW, 0)], tabsPermission: true });
       expect(single.fixture.nativeElement.querySelector('input[type="radio"]')).toBeNull();
       expect(single.fixture.nativeElement.textContent).toContain('Save to Shelfmark');
     });

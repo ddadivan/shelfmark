@@ -15,6 +15,7 @@ import { AI_POLL_INTERVAL_MS } from '../models/ai-poll-interval-ms.const';
 import { SAVE_MODE } from '../models/save-mode.const';
 import { TABS_AI_MAX } from '../models/tabs-ai-max.const';
 import { PopupStore } from '../popup.store';
+import { at } from '../../../testing/at';
 
 const ON = makeAiSettings({ settings: { enabled: true } });
 const FOLDERS = [
@@ -76,7 +77,7 @@ describe('PopupTabsAiService', () => {
 
   it('asks one draft per ticked tab, each with its own id, the address without fragment and the title', async () => {
     const { ai, list, api } = await setup();
-    list.toggle(list.entries()[2]!.key);
+    list.toggle(at(list.entries(), 2).key);
     await ai.sort();
     expect(api.createAiDraft).toHaveBeenCalledTimes(2);
     const bodies = api.createAiDraft.mock.calls.map(([body]) => body);
@@ -92,8 +93,10 @@ describe('PopupTabsAiService', () => {
     );
     api.createAiDraft.mockResolvedValueOnce(sorted('f-web', ['animation', true]));
     await ai.sort();
-    const [first, second] = list.entries();
-    expect(ai.row(first!.key)).toMatchObject({
+    const entries = list.entries();
+    const first = at(entries, 0);
+    const second = at(entries, 1);
+    expect(ai.row(first.key)).toMatchObject({
       status: 'done',
       folderId: 'f-ng',
       tags: [
@@ -101,18 +104,18 @@ describe('PopupTabsAiService', () => {
         { name: 'forms', isNew: false },
       ],
     });
-    expect(ai.row(second!.key)?.tags).toEqual([{ name: 'animation', isNew: true }]);
+    expect(ai.row(second.key)?.tags).toEqual([{ name: 'animation', isNew: true }]);
     expect(ai.state()).toBe(AI_FILL_STATE.Ready);
     expect(ai.buttonShown()).toBe(false);
     expect(ai.picksActive()).toBe(true);
-    expect(ai.shownFolder(first!.key)).toBe('f-ng');
+    expect(ai.shownFolder(first.key)).toBe('f-ng');
   });
 
   it('ignores a folder AI picked that is not one of the user’s', async () => {
     const { ai, list, api } = await setup(2);
     api.createAiDraft.mockResolvedValue(sorted('gone', ['x', false]));
     await ai.sort();
-    expect(ai.row(list.entries()[0]!.key)?.folderId).toBeNull();
+    expect(ai.row(at(list.entries(), 0).key)?.folderId).toBeNull();
     expect(ai.picksActive()).toBe(false);
   });
 
@@ -124,7 +127,7 @@ describe('PopupTabsAiService', () => {
     const run = ai.sort();
     await vi.advanceTimersByTimeAsync(0);
     expect(ai.busy()).toBe(true);
-    expect(ai.row(list.entries()[0]!.key)?.status).toBe('working');
+    expect(ai.row(at(list.entries(), 0).key)?.status).toBe('working');
     await vi.advanceTimersByTimeAsync(AI_POLL_INTERVAL_MS * 3);
     await run;
     expect(api.aiJob).toHaveBeenCalled();
@@ -139,7 +142,7 @@ describe('PopupTabsAiService', () => {
     const run = ai.sort();
     await vi.advanceTimersByTimeAsync(60_000);
     await run;
-    const entry = list.entries()[0]!;
+    const entry = at(list.entries(), 0);
     expect(ai.row(entry.key)?.status).toBe('none');
     expect(ai.pick(entry).draftId).toEqual(expect.any(String));
     expect(ai.state()).toBe(AI_FILL_STATE.Hidden);
@@ -168,10 +171,10 @@ describe('PopupTabsAiService', () => {
     expect(ai.state()).toBe(AI_FILL_STATE.Ready);
     expect(ai.line()).toMatchObject({ kind: AI_LINE_KIND.Limit, limit: 50 });
     const entries = list.entries();
-    expect(ai.row(entries[0]!.key)?.status).toBe('done');
-    expect(ai.row(entries[5]!.key)?.status).toBe('none');
-    expect(ai.pick(entries[5]!)).toEqual({ draftId: null, folderId: null, tags: [] });
-    expect(ai.ownFolder(entries[5]!.key)).toBeNull();
+    expect(ai.row(at(entries, 0).key)?.status).toBe('done');
+    expect(ai.row(at(entries, 5).key)?.status).toBe('none');
+    expect(ai.pick(at(entries, 5))).toEqual({ draftId: null, folderId: null, tags: [] });
+    expect(ai.ownFolder(at(entries, 5).key)).toBeNull();
     // Drafts after the quota answer are not even asked for.
     expect(api.createAiDraft.mock.calls.length).toBeLessThan(6);
   });
@@ -216,31 +219,35 @@ describe('PopupTabsAiService', () => {
 
     it('lets the user pick another folder for one link', async () => {
       const { ai, list } = await sortedSetup();
-      const [a, b] = list.entries();
-      ai.setFolder(a!.key, 'f-web');
-      expect(ai.ownFolder(a!.key)).toBe('f-web');
-      expect(ai.ownFolder(b!.key)).toBe('f-web');
-      expect(ai.pick(a!).folderId).toBe('f-web');
+      const entries = list.entries();
+      const a = at(entries, 0);
+      const b = at(entries, 1);
+      ai.setFolder(a.key, 'f-web');
+      expect(ai.ownFolder(a.key)).toBe('f-web');
+      expect(ai.ownFolder(b.key)).toBe('f-web');
+      expect(ai.pick(a).folderId).toBe('f-web');
     });
 
     it('puts every link in the folder chosen for all, keeping the AI tags, and Keep AI picks undoes it', async () => {
       const { store, ai, list } = await sortedSetup();
-      const [a, b] = list.entries();
-      ai.setFolder(a!.key, 'f-web');
+      const entries = list.entries();
+      const a = at(entries, 0);
+      const b = at(entries, 1);
+      ai.setFolder(a.key, 'f-web');
       store.chooseFolder('f-shared');
       expect(ai.picksActive()).toBe(false);
-      expect(ai.ownFolder(a!.key)).toBeNull();
-      expect(ai.shownFolder(a!.key)).toBe('f-shared');
-      expect(ai.pick(b!)).toMatchObject({ folderId: null, tags: ['b'] });
+      expect(ai.ownFolder(a.key)).toBeNull();
+      expect(ai.shownFolder(a.key)).toBe('f-shared');
+      expect(ai.pick(b)).toMatchObject({ folderId: null, tags: ['b'] });
       store.keepAiPicks();
       expect(ai.picksActive()).toBe(true);
-      expect(ai.shownFolder(a!.key)).toBe('f-ng');
-      expect(ai.pick(a!).folderId).toBe('f-ng');
+      expect(ai.shownFolder(a.key)).toBe('f-ng');
+      expect(ai.pick(a).folderId).toBe('f-ng');
     });
 
     it('opens the picker for one link and chooses into it, back to the form', async () => {
       const { store, ai, list } = await sortedSetup();
-      const a = list.entries()[0]!;
+      const a = at(list.entries(), 0);
       store.openPicker(a.key);
       expect(store.view()).toBe('picker');
       store.chooseFolder('f-shared');
@@ -252,13 +259,13 @@ describe('PopupTabsAiService', () => {
 
     it('New folder is not offered for one link, so the other AI picks stay', async () => {
       const { store, ai, list } = await sortedSetup();
-      const a = list.entries()[0]!;
+      const a = at(list.entries(), 0);
       store.openPicker(a.key);
       store.openNewFolder();
       expect(store.view()).toBe('picker');
       expect(ai.picksActive()).toBe(true);
       store.closePicker();
-      expect(ai.shownFolder(list.entries()[1]!.key)).toBe('f-web');
+      expect(ai.shownFolder(at(list.entries(), 1).key)).toBe('f-web');
     });
 
     it('a shared folder picked in This page keeps the AI picks of All tabs', async () => {
@@ -266,12 +273,12 @@ describe('PopupTabsAiService', () => {
       await store.setMode(SAVE_MODE.Page);
       store.chooseFolder('f-shared');
       expect(ai.picksActive()).toBe(true);
-      expect(ai.shownFolder(list.entries()[0]!.key)).toBe('f-ng');
+      expect(ai.shownFolder(at(list.entries(), 0).key)).toBe('f-ng');
     });
 
     it('gives a tab ticked after the sort no suggestions: it takes the shared folder', async () => {
       const { ai, list } = await setup(3);
-      const late = list.entries()[2]!;
+      const late = at(list.entries(), 2);
       list.toggle(late.key);
       await ai.sort();
       list.toggle(late.key);

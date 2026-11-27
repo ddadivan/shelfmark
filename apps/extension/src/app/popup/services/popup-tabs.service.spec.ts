@@ -5,6 +5,7 @@ import { makeLink, makeWindowTab } from '../../../testing/fixtures';
 import { SAVE_MODE } from '../models/save-mode.const';
 import { TABS_LOOKUP_MAX } from '../models/tabs-lookup-max.const';
 import { PopupStore } from '../popup.store';
+import { at } from '../../../testing/at';
 
 const WINDOW = [
   makeWindowTab(1, 'https://a.test/1', { active: true }),
@@ -42,7 +43,7 @@ describe('PopupTabsService', () => {
     });
 
     it('is hidden for a window with one tab', async () => {
-      const { list } = await setup({ windowTabs: [WINDOW[0]!] });
+      const { list } = await setup({ windowTabs: [at(WINDOW, 0)] });
       expect(list.switchShown()).toBe(false);
     });
 
@@ -78,7 +79,7 @@ describe('PopupTabsService', () => {
     });
 
     it('lists the tabs after a grant, asking only once', async () => {
-      const { list, tabs, api } = await setup({ tabsPermission: false });
+      const { list, tabs } = await setup({ tabsPermission: false });
       await list.setMode(SAVE_MODE.Tabs);
       await list.setMode(SAVE_MODE.Page);
       await list.setMode(SAVE_MODE.Tabs);
@@ -87,7 +88,7 @@ describe('PopupTabsService', () => {
     });
 
     it('does not ask when the permission is granted already', async () => {
-      const { list, tabs, api } = await setup();
+      const { list, tabs } = await setup();
       await list.setMode(SAVE_MODE.Tabs);
       expect(tabs.requestTabsPermission).not.toHaveBeenCalled();
     });
@@ -95,7 +96,7 @@ describe('PopupTabsService', () => {
     it('goes back to This page when fewer than two savable tabs are left', async () => {
       const { list } = await setup({
         tabsPermission: false,
-        windowTabs: [WINDOW[0]!, WINDOW[2]!],
+        windowTabs: [at(WINDOW, 0), at(WINDOW, 2)],
       });
       await list.setMode(SAVE_MODE.Tabs);
       expect(list.mode()).toBe(SAVE_MODE.Page);
@@ -193,7 +194,7 @@ describe('PopupTabsService', () => {
       const { list } = await setup();
       await list.setMode(SAVE_MODE.Tabs);
       expect(list.allTicked()).toBe(true);
-      list.toggle(list.entries()[0]!.key);
+      list.toggle(at(list.entries(), 0).key);
       expect(list.selectedCount()).toBe(2);
       expect(list.someTicked()).toBe(true);
       list.toggleAll();

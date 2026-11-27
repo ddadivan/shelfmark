@@ -29,7 +29,7 @@ const RAW_SESSION = {
 };
 
 function setup(options: { isPublic?: boolean; getSession?: () => Promise<unknown> } = {}) {
-  const getSession = vi.fn((_args: SessionArgs) =>
+  const getSession = vi.fn<(args: SessionArgs) => Promise<unknown>>(() =>
     (options.getSession ?? (() => Promise.resolve(RAW_SESSION)))(),
   );
   const authService = { api: { getSession } } as unknown as AuthService;

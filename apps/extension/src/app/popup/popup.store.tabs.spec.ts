@@ -13,6 +13,7 @@ import {
 import { SHELFMARK_ORIGIN } from '../core/config/shelfmark-origin.const';
 import { SAVE_MODE } from './models/save-mode.const';
 import { PopupStore } from './popup.store';
+import { at } from '../../testing/at';
 
 const FOLDERS = [
   makeFolder({ id: 'f1', name: 'Reading' }),
@@ -52,11 +53,11 @@ describe('PopupStore: All tabs', () => {
     const { store, api } = await setup();
     store.chooseFolder('f1');
     store.chosenTags.set(['read']);
-    store.tabList.toggle(store.tabList.entries()[2]!.key);
+    store.tabList.toggle(at(store.tabList.entries(), 2).key);
     await store.save();
     expect(api.createBatch).toHaveBeenCalledTimes(1);
     expect(api.create).not.toHaveBeenCalled();
-    const body = api.createBatch.mock.calls[0]![0];
+    const body = at(api.createBatch.mock.calls, 0)[0];
     expect(body.items.map((item) => item.url)).toEqual(['https://a.test/1', 'https://b.test/2']);
     expect(body.items.map((item) => item.title)).toEqual(['One', 'Two']);
     expect(body.items[0]?.faviconUrl).toBe('https://a.test/i.png');
@@ -101,7 +102,7 @@ describe('PopupStore: All tabs', () => {
     await store.tabsAi.sort();
     store.chosenTags.set(['all']);
     await store.save();
-    const body = api.createBatch.mock.calls[0]![0];
+    const body = at(api.createBatch.mock.calls, 0)[0];
     const draftIds = api.createAiDraft.mock.calls.map(([draft]) => draft.draftId);
     expect(body.items[0]).toMatchObject({
       folderId: 'f2',
