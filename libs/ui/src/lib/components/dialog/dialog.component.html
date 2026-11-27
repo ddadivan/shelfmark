@@ -44,7 +44,9 @@
   </div>
   <div
     #body
+    uiResize
     class="ui-dialog__body"
+    (resized)="measureBody()"
     [attr.tabindex]="scrollable() ? 0 : null"
     [attr.role]="scrollable() ? 'region' : null"
     [attr.aria-labelledby]="scrollable() ? titleId : null"

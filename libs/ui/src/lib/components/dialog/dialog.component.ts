@@ -1,10 +1,8 @@
 import {
   booleanAttribute,
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   ElementRef,
   inject,
   input,
@@ -15,11 +13,12 @@ import {
 import { ButtonComponent } from '../button/button.component';
 import { nextDialogId } from '../../services/dialog/dialog-id';
 import { UiDialogRef } from '../../services/dialog/dialog-ref';
-import { COMPACT_MEDIA_QUERY, PHONE_MEDIA_QUERY } from '../../utils/media';
+import { COMPACT_MEDIA_QUERY, mediaMatch, PHONE_MEDIA_QUERY } from '../../utils/media';
 import type { DialogSize } from './models/dialog-size.type';
 import { SHEET_HEIGHT } from '../sheet/models/sheet-height.const';
 import type { SheetHeight } from '../sheet/models/sheet-height.type';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
+import { UiResizeDirective } from '../../directives/resize/resize.directive';
 import { SheetDragDirective } from '../../directives/sheet-drag/sheet-drag.directive';
 import { DIALOG_SIZE } from './models/dialog-size.const';
 import { DIALOG_VARIANT } from './models/dialog-variant.const';
@@ -41,7 +40,7 @@ import { BUTTON_SIZE } from '../button/models/button-size.const';
  */
 @Component({
   selector: 'ui-dialog',
-  imports: [ButtonComponent, SheetDragDirective],
+  imports: [ButtonComponent, SheetDragDirective, UiResizeDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-dialog-host',
@@ -113,9 +112,9 @@ export class DialogComponent {
   protected readonly leaving = computed(() => this.context?.leaving() ?? false);
   /** The content holds the dialog open (`UiDialogRef.setLocked`): no close button, no drag. */
   protected readonly locked = computed(() => this.ref?.locked() ?? false);
-  protected readonly phone = signal(false);
+  protected readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
   /** Below 64em (#316): a `ui-sheet` stays a bottom sheet on a tablet too (centred, 560px). */
-  protected readonly compact = signal(false);
+  protected readonly compact = mediaMatch(COMPACT_MEDIA_QUERY);
   /** The panel is a bottom sheet you can drag down: every dialog on a phone, a sheet below 64em. */
   protected readonly sheetMode = computed(
     () => this.phone() || (this.sheetHeight() !== undefined && this.compact()),
@@ -127,36 +126,10 @@ export class DialogComponent {
   /** The body overflows: it becomes a focusable region so the keyboard can scroll it. */
   protected readonly scrollable = signal(false);
 
-  constructor() {
-    const destroyRef = inject(DestroyRef);
-    afterNextRender(() => {
-      for (const [media, state] of [
-        [PHONE_MEDIA_QUERY, this.phone],
-        [COMPACT_MEDIA_QUERY, this.compact],
-      ] as const) {
-        const query = globalThis.matchMedia?.(media);
-        if (query) {
-          state.set(query.matches);
-          const onChange = (event: MediaQueryListEvent): void => {
-            state.set(event.matches);
-          };
-          query.addEventListener('change', onChange);
-          destroyRef.onDestroy(() => {
-            query.removeEventListener('change', onChange);
-          });
-        }
-      }
-      if (typeof ResizeObserver !== 'undefined') {
-        const body = this.body().nativeElement;
-        const observer = new ResizeObserver(() => {
-          this.scrollable.set(body.scrollHeight > body.clientHeight + 1);
-        });
-        observer.observe(body);
-        destroyRef.onDestroy(() => {
-          observer.disconnect();
-        });
-      }
-    });
+  /** Reads whether the body overflows (on every resize of it). */
+  protected measureBody(): void {
+    const body = this.body().nativeElement;
+    this.scrollable.set(body.scrollHeight > body.clientHeight + 1);
   }
 
   protected requestClose(): void {

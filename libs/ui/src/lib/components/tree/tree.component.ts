@@ -1,3 +1,4 @@
+import { UiResizeDirective } from '../../directives/resize/resize.directive';
 import { OVERLAY_SIDE } from '../../services/overlay/models/overlay-side.const';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { NgTemplateOutlet } from '@angular/common';
@@ -10,7 +11,6 @@ import {
   afterRenderEffect,
   ElementRef,
   signal,
-  DestroyRef,
   effect,
   inject,
   input,
@@ -84,6 +84,8 @@ import { indexTreeNodes } from './tree-nodes';
     TreeReorderListDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // The heading row moves when the tree's width changes (a long label wraps).
+  hostDirectives: [UiResizeDirective],
   host: {
     '(focusin)': 'focus.onFocusin($event)',
     '(focusout)': 'focus.onFocusout($event)',
@@ -168,7 +170,7 @@ export class TreeComponent {
 
   private readonly tree = viewChild.required<Tree<string>>(Tree);
   private readonly items = viewChildren<TreeItem<string>>(TreeItem);
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly resize = inject(UiResizeDirective);
   private readonly section = viewChild<ElementRef<HTMLElement>>('section');
   /** Top of the heading row inside the host; the action button is placed there. */
   protected readonly actionTop = signal(0);
@@ -192,13 +194,9 @@ export class TreeComponent {
     afterRenderEffect(() => {
       this.heading();
       this.fixedNodes();
+      this.resize.size();
       this.measureHeading();
     });
-    if (typeof ResizeObserver !== 'undefined') {
-      const observer = new ResizeObserver(() => this.measureHeading());
-      observer.observe(this.host);
-      inject(DestroyRef).onDestroy(() => observer.disconnect());
-    }
     // Drag and drop: a closed folder under the drop target opens after a short rest.
     effect((onCleanup) => {
       const id = this.dropTargetId();
