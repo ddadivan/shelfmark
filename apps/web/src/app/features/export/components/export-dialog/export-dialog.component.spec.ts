@@ -36,6 +36,7 @@ async function setup(
           load: vi.fn(),
           loaded: () => true,
           counts: () => ({ all: links, unsorted: 0, favorites: 0 }),
+          empty: () => links === 0,
         },
       },
       { provide: ToastService, useValue: { show } },

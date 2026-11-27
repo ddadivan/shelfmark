@@ -83,9 +83,10 @@ export class FolderNameDialogComponent {
   protected readonly parentOptions = computed(() =>
     buildFolderOptions(this.folders.entities(), this.shownColour),
   );
-  protected readonly parentName = computed(
-    () => this.folders.entities().find((folder) => folder.id === this.model().parentId)?.name,
-  );
+  protected readonly parentName = computed(() => {
+    const id = this.model().parentId;
+    return id === null ? undefined : this.folders.entityMap()[id]?.name;
+  });
 
   protected readonly form = form(
     this.model,

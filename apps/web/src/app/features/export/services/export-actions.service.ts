@@ -103,7 +103,7 @@ export class ExportActionsService {
   private libraryEmpty(): boolean | Promise<boolean> {
     const folders = this.injector.get(FoldersStore);
     if (folders.loaded()) {
-      return folders.counts().all === 0;
+      return folders.empty();
     }
     return this.loadThenCheck(folders);
   }
@@ -114,6 +114,6 @@ export class ExportActionsService {
     } catch {
       return false;
     }
-    return folders.loaded() && folders.counts().all === 0;
+    return folders.loaded() && folders.empty();
   }
 }

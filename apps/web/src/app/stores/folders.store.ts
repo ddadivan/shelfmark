@@ -51,10 +51,12 @@ export const FoldersStore = signalStore(
   withEntities<FolderResponse>(),
   withState<FoldersState>(initialState),
   withRemoteLoad(initialState, { manualEnd: true }),
-  withComputed(({ entities }) => ({
+  withComputed(({ entities, counts }) => ({
     /** The nested tree, siblings in list order (manual position, then name). */
     tree: computed(() => buildFolderTree(entities())),
     count: computed(() => entities().length),
+    /** The library holds no link at all (the all-links count is 0; read it once `loaded`). */
+    empty: computed(() => counts().all === 0),
     /** The per-user folder limit is reached. */
     atLimit: computed(() => entities().length >= FOLDER_LIMIT.PerUserMax),
   })),
@@ -117,6 +119,14 @@ export const FoldersStore = signalStore(
 
       /** The folders from the top level down to `id`, `id` last. */
       pathTo: (id: string): FolderResponse[] => pathTo(store.entities(), id),
+
+      /** "Work / Angular": the names from the top level down to `id`; empty for no or an unknown folder. */
+      pathLabel: (id: string | null): string =>
+        id === null
+          ? ''
+          : pathTo(store.entities(), id)
+              .map((folder) => folder.name)
+              .join(' / '),
 
       /** Links in `id` and everything below it (the delete dialog). */
       subtreeLinkCount(id: string): number {

@@ -274,7 +274,7 @@ export default class LibraryPage {
       this.filters.scope() === LINKS_SCOPE.All &&
       !this.filters.filtered() &&
       this.libraryFolders.loaded() &&
-      this.libraryFolders.counts().all === 0,
+      this.libraryFolders.empty(),
   );
   protected readonly UI_VIEW = UI_VIEW;
   /**

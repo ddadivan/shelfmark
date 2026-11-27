@@ -74,6 +74,16 @@ describe('FoldersStore', () => {
       expect(store.tree()[0].children[0].children[0].folder.id).toBe('c');
     });
 
+    it('is empty while no link is counted and not once the list has some', async () => {
+      const { store } = setup();
+      expect(store.empty()).toBe(true);
+
+      await store.load();
+
+      expect(store.counts().all).toBeGreaterThan(0);
+      expect(store.empty()).toBe(false);
+    });
+
     it('asks once for concurrent and later calls', async () => {
       const { api, store } = setup();
 
@@ -131,6 +141,21 @@ describe('FoldersStore', () => {
       expect(store.pathTo('c').map((item) => item.id)).toEqual(['a', 'b', 'c']);
       expect(store.subtreeLinkCount('a')).toBe(6);
       expect(store.subtreeLinkCount('d')).toBe(4);
+    });
+
+    it('labels a folder by its path and gives nothing for none or an unknown one', async () => {
+      const { store } = setup();
+      await store.load();
+
+      expect(store.pathLabel('c')).toBe(
+        store
+          .pathTo('c')
+          .map((item) => item.name)
+          .join(' / '),
+      );
+      expect(store.pathLabel('c')).toContain(' / ');
+      expect(store.pathLabel(null)).toBe('');
+      expect(store.pathLabel('missing')).toBe('');
     });
 
     it('reports the per-user limit', async () => {

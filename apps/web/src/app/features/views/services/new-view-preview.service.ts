@@ -68,6 +68,6 @@ export class NewViewPreviewService {
   }
 
   private folderName(id: string): string | null {
-    return this.folders.entities().find((folder) => folder.id === id)?.name ?? null;
+    return this.folders.entityMap()[id]?.name ?? null;
   }
 }

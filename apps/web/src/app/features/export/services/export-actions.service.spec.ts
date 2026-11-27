@@ -17,7 +17,7 @@ function foldersWith(all: number | null) {
   return {
     load: vi.fn(() => (all === null ? Promise.reject(new Error('offline')) : Promise.resolve())),
     loaded: () => all !== null,
-    counts: () => ({ all: all ?? 0, unsorted: 0, favorites: 0 }),
+    empty: () => (all ?? 0) === 0,
   };
 }
 

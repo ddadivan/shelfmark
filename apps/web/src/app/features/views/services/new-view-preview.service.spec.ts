@@ -38,7 +38,7 @@ function setup(showPhrase = false) {
       NewViewPreviewService,
       { provide: NewViewFormService, useValue: { query } },
       { provide: NewViewPhraseService, useValue: { showPhrase: phrase } },
-      { provide: FoldersStore, useValue: { entities: () => [] } },
+      { provide: FoldersStore, useValue: { entities: () => [], entityMap: () => ({}) } },
       {
         provide: LINKS_API,
         useValue: {
