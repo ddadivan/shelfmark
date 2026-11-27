@@ -10,7 +10,10 @@
 .ui-checkbox__label {
   display: inline-flex;
   gap: var(--space-2-5);
-  align-items: flex-start;
+
+  // `--ui-checkbox-align`: a box without a visible label can sit in the middle of its hit area
+  // (the headline row's 18px box in a 24px target).
+  align-items: var(--ui-checkbox-align, flex-start);
   align-self: flex-start;
   min-height: rem(24px);
   cursor: pointer;

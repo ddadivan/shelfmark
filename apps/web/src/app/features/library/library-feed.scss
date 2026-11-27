@@ -132,6 +132,10 @@
   // area's height, cutting the rows below and leaving nothing to scroll: keep its own height.
   flex-shrink: 0;
   gap: 0;
+
+  // 4px inside the rounded panel, so the rounded ring of a focused or checked row never meets the
+  // panel's larger corners, which clipped it (author, Nov 27).
+  padding: var(--space-1);
   overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--line);

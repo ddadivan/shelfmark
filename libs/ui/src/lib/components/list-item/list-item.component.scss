@@ -379,8 +379,9 @@
     var(--ui-row-ground, var(--surface));
 }
 
-// The box stays clear of the inner focus ring of a keyboard-focused row (2px top and bottom).
-:host(.ui-list-item--headline:has(.ui-list-item__link:focus-visible)) .ui-list-item__trailing {
+// The box stays clear of the inner ring of a keyboard-focused or checked row (2px top and bottom).
+:host(.ui-list-item--headline:has(.ui-list-item__link:focus-visible)) .ui-list-item__trailing,
+:host(.ui-list-item--headline.ui-list-item--checked) .ui-list-item__trailing {
   inset-block: rem(2px);
 }
 
@@ -415,6 +416,7 @@
   --ui-checkbox-hit: #{rem(24px)};
   --ui-checkbox-radius: var(--radius-xs);
   --ui-checkbox-tick: #{rem(14px)};
+  --ui-checkbox-align: center;
 
   position: absolute;
   inset-block: 0;
