@@ -1,4 +1,4 @@
-import { linkHost } from '@shelfmark/contracts';
+import { linkHost, stripWww } from '@shelfmark/contracts';
 import { toLinkKind } from '../../../links/to-link-kind';
 import { ASK_TOOL_LIMIT } from '../../models/ask-tool-limit.const';
 import type { AskLinkRow } from '../../models/ask-link-row.type';
@@ -14,7 +14,7 @@ function cut(text: string, max: number): string {
 export function askSite(url: string): string {
   try {
     const parsed = new URL(url);
-    const host = parsed.hostname.replace(/^www\./u, '');
+    const host = stripWww(parsed.hostname);
     const path = parsed.pathname === '/' ? '' : parsed.pathname;
     return cut(`${host}${path}`, ASK_TOOL_LIMIT.SiteFieldMax);
   } catch {

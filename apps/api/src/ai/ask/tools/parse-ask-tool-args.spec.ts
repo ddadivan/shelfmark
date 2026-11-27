@@ -1,4 +1,5 @@
-import { parseCountLinksArgs, siteLabel, topGroups } from './count-links.ask-tool';
+import { linkSiteKey } from '@shelfmark/contracts';
+import { parseCountLinksArgs, topGroups } from './count-links.ask-tool';
 import { parseGetLinkArgs } from './get-link.ask-tool';
 import { parseListTagsArgs } from './list-tags.ask-tool';
 import { parseDay, parseSite } from './parse-ask-filters';
@@ -124,8 +125,8 @@ describe('Ask tool argument parsers', () => {
 
 describe('count_links groups', () => {
   it('labels sites without www and in lower case', () => {
-    expect(siteLabel('https://WWW.Example.com/a?b')).toBe('example.com');
-    expect(siteLabel('https://blog.example.com/')).toBe('blog.example.com');
+    expect(linkSiteKey('https://WWW.Example.com/a?b')).toBe('example.com');
+    expect(linkSiteKey('https://blog.example.com/')).toBe('blog.example.com');
   });
 
   it('keeps the top 20 and sums the rest', () => {

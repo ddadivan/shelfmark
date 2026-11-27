@@ -1,4 +1,5 @@
 import { linkHost } from './link-host';
+import { stripWww } from './strip-www';
 
 /**
  * The site a link is sorted by (Site A–Z): its host, lower case, a leading `www.` dropped;
@@ -6,5 +7,5 @@ import { linkHost } from './link-host';
  * order alike.
  */
 export function linkSiteKey(url: string): string {
-  return (linkHost(url) ?? '').replace(/^www\./, '');
+  return stripWww(linkHost(url) ?? '');
 }

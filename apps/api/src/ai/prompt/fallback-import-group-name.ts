@@ -1,4 +1,4 @@
-import { FOLDER_LIMIT } from '@shelfmark/contracts';
+import { FOLDER_LIMIT, stripWww } from '@shelfmark/contracts';
 
 /** Words of a title that never name a topic (URL pieces, filler). */
 const STOP_WORDS: ReadonlySet<string> = new Set([
@@ -43,8 +43,7 @@ function ranked(values: readonly string[]): { value: string; count: number }[] {
 
 /** `news.example.co.uk` → `example`; a bare host stays; at most the last two labels count. */
 function siteLabel(host: string): string {
-  const labels = host
-    .replace(/^www\./u, '')
+  const labels = stripWww(host)
     .split('.')
     .filter((label) => label !== '');
   return labels.length >= 2 ? (labels[labels.length - 2] ?? '') : (labels[0] ?? '');

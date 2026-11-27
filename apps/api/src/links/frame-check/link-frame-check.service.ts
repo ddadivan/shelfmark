@@ -5,6 +5,7 @@ import {
   linkHost,
   type LinkFrameCheckResponse,
   type LinkFraming,
+  stripWww,
 } from '@shelfmark/contracts';
 import { SafeFetcherService } from '../../fetcher/safe-fetcher.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -19,8 +20,7 @@ const HTTP_OK_MAX = 299;
 
 /** Two hosts of one site: equal once a leading `www.` is dropped. */
 function sameSite(a: string, b: string): boolean {
-  const bare = (host: string): string => host.replace(/^www\./, '');
-  return bare(a) === bare(b);
+  return stripWww(a) === stripWww(b);
 }
 
 /**

@@ -1,12 +1,17 @@
 import { computed, effect, inject, Service, untracked } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { LINK_LIMIT, type LinkDuplicate, type LinkPreview } from '@shelfmark/contracts';
+import {
+  LINK_LIMIT,
+  type LinkDuplicate,
+  type LinkPreview,
+  displayHost,
+} from '@shelfmark/contracts';
 import { switchMap, tap, timer } from 'rxjs';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LINKS_API } from '../models/links-api.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
 import type { PreviewState } from '../models/preview-state.type';
-import { displayHost, urlWithoutScheme } from '../utils/http-url';
+import { urlWithoutScheme } from '../utils/http-url';
 import { AddLinkFormService } from './add-link-form.service';
 
 /** Wait after the last keystroke before the preview is requested (a paste is instant to the eye). */

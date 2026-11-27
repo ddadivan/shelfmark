@@ -1,5 +1,9 @@
-import { ME_STATS_LIMIT, statsWeekStarts, type MeStatsResponse } from '@shelfmark/contracts';
-import { displayHost } from '../../links/utils/http-url';
+import {
+  ME_STATS_LIMIT,
+  statsWeekStarts,
+  type MeStatsResponse,
+  displayHost,
+} from '@shelfmark/contracts';
 import type { MockStatsInput } from './models/mock-stats-input.interface';
 
 /** Code-point order, like the API's `COLLATE "C"`. */

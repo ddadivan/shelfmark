@@ -1,7 +1,8 @@
 import type { AskSearchFilter } from '@shelfmark/contracts';
+import { searchTerms } from '@shelfmark/contracts';
 import { escapeLike } from '../../../common/util/escape-like';
 import type { Prisma } from '../../../generated/prisma/client';
-import { buildLinkWhere, searchTerms } from '../../../links/link-where';
+import { buildLinkWhere } from '../../../links/link-where';
 import { buildFolderTree, loadFolderRows } from '../../../mcp/tools/folder-tree';
 import type { PrismaService } from '../../../prisma/prisma.service';
 import type { AskFilters } from '../../models/ask-filters.interface';

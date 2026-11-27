@@ -1,6 +1,6 @@
-import { LINK_LIMIT } from '@shelfmark/contracts';
+import { LINK_LIMIT, searchTerms } from '@shelfmark/contracts';
 import { describe, expect, it } from 'vitest';
-import { buildLinkWhere, searchTerms } from './link-where';
+import { buildLinkWhere } from './link-where';
 
 const USER = '018f0000-0000-7000-8000-000000000001';
 const FOLDER = '018f0000-0000-7000-8000-000000000002';

@@ -1,4 +1,10 @@
-import { CLEANUP_LIMIT, linkHost, normalizeUrl, type LinkResponse } from '@shelfmark/contracts';
+import {
+  CLEANUP_LIMIT,
+  linkHost,
+  normalizeUrl,
+  type LinkResponse,
+  stripWww,
+} from '@shelfmark/contracts';
 
 /** Oldest save first (then the smaller id), like the API's `ORDER BY created_at, id`. */
 function oldestFirst(a: LinkResponse, b: LinkResponse): number {
@@ -24,7 +30,7 @@ export function exactDuplicateIds(links: readonly LinkResponse[]): string[][] {
 
 /** `www.` dropped: the same host, or one a subdomain of the other. */
 function sameHostFamily(a: string, b: string): boolean {
-  const [x, y] = [a, b].map((host) => host.replace(/^www\./, ''));
+  const [x, y] = [a, b].map(stripWww);
   return x === y || (x ?? '').endsWith(`.${y}`) || (y ?? '').endsWith(`.${x}`);
 }
 

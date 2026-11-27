@@ -1,5 +1,10 @@
-import { isHttpUrl, LINK_IMAGE_PENDING_VERSION, type LinkResponse } from '@shelfmark/contracts';
-import { displayHost } from './http-url';
+import {
+  isHttpUrl,
+  LINK_IMAGE_PENDING_VERSION,
+  type LinkResponse,
+  displayHost,
+  stripWww,
+} from '@shelfmark/contracts';
 
 /** The URL when it is safe to put in an `href` (http or https only), else `undefined`. */
 export function safeHref(url: string): string | undefined {
@@ -16,7 +21,7 @@ export function linkAddress(url: string): string {
   try {
     const { host, pathname, search } = new URL(url);
     const path = pathname === '/' ? '' : pathname;
-    return `${host.replace(/^www\./, '')}${path}${search}`;
+    return `${stripWww(host)}${path}${search}`;
   } catch {
     return url;
   }

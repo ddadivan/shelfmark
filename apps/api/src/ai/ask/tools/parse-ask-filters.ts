@@ -1,4 +1,4 @@
-import { LINK_KIND, type LinkKind } from '@shelfmark/contracts';
+import { LINK_KIND, type LinkKind, stripWww } from '@shelfmark/contracts';
 import { ASK_TOOL_LIMIT } from '../../models/ask-tool-limit.const';
 import type { AskFilters } from '../../models/ask-filters.interface';
 import type { AskParse } from '../../models/ask-parse.type';
@@ -30,11 +30,12 @@ export function parseDay(value: string): string | null {
 
 /** A host as the model may write it: scheme, `www.`, path and port dropped, lower case. */
 export function parseSite(value: string): string | null {
-  const host = value
-    .toLowerCase()
-    .replace(/^[a-z]+:\/\//u, '')
-    .replace(/[/?#:].*$/u, '')
-    .replace(/^www\./u, '');
+  const host = stripWww(
+    value
+      .toLowerCase()
+      .replace(/^[a-z]+:\/\//u, '')
+      .replace(/[/?#:].*$/u, ''),
+  );
   return HOST.test(host) ? host : null;
 }
 

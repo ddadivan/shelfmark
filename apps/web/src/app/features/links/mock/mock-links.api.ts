@@ -38,12 +38,12 @@ import {
   type RecentLinksQuery,
   type RecentLinksResponse,
   type UpdateLinkRequest,
+  displayHost,
 } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
-import { displayHost } from '../utils/http-url';
 import { MOCK_FRAME_BLOCKED_HOSTS } from '../models/mock-frame-blocked-hosts.const';
 import { MOCK_HOST } from '../models/mock-host.const';
 import { MOCK_LATENCY_MS } from '../models/mock-latency.const';

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import type { LinkResponse } from '@shelfmark/contracts';
+import { displayHost, type LinkResponse } from '@shelfmark/contracts';
 import { FaviconComponent, ListItemComponent } from '@shelfmark/ui';
 import { toAppAsset } from '../../utils/to-app-asset';
 
@@ -17,8 +17,6 @@ export class PopupLinkCardComponent {
 
   protected readonly image = computed(() => toAppAsset(this.link().imageUrl));
   protected readonly favicon = computed(() => toAppAsset(this.link().faviconUrl));
-  protected readonly host = computed(() =>
-    new URL(this.link().url).hostname.replace(/^www\./u, ''),
-  );
+  protected readonly host = computed(() => displayHost(this.link().url));
   protected readonly letter = computed(() => this.host().charAt(0).toUpperCase());
 }

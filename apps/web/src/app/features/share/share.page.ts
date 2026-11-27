@@ -3,7 +3,7 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot, maxLength } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { LINK_LIMIT } from '@shelfmark/contracts';
+import { LINK_LIMIT, displayHost } from '@shelfmark/contracts';
 import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
@@ -25,7 +25,7 @@ import { APP_PATH } from '../../models/app-path.const';
 import { FoldersStore } from '../../stores/folders.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { buildFolderOptions } from '../links/utils/folder-options';
-import { displayHost, urlWithoutScheme } from '../links/utils/http-url';
+import { urlWithoutScheme } from '../links/utils/http-url';
 import { LinkActionsService } from '../links/services/link-actions.service';
 import { LINKS_API } from '../links/models/links-api.const';
 import { PREVIEW_STATE } from '../links/models/preview-state.const';

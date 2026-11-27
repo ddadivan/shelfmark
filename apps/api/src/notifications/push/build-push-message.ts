@@ -1,4 +1,5 @@
 import type { PushMessage } from '../models/push-message.interface';
+import { linkSiteKey } from '@shelfmark/contracts';
 
 /** Where a click on a reminder lands: Today, whose Due list holds every due reminder. */
 const REMINDERS_URL = '/today';
@@ -24,21 +25,12 @@ function message(title: string, body: string, tag: string, url: string): PushMes
   };
 }
 
-/** The host of a saved URL without `www.`, or an empty string. */
-function siteOf(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return '';
-  }
-}
-
 /**
  * One due reminder: the link's title and its site (Shelf 12-notify "How a reminder arrives"). The
  * tag is per link, so a second push for the same link replaces the first on the device.
  */
 export function reminderMessage(link: { id: string; title: string; url: string }): PushMessage {
-  const site = siteOf(link.url);
+  const site = linkSiteKey(link.url);
   return message(
     link.title || site || 'Reminder',
     site ? `Reminder · ${site}` : 'Reminder',

@@ -1,15 +1,13 @@
-import { CLEANUP_LIMIT, linkHost } from '@shelfmark/contracts';
+import { CLEANUP_LIMIT, linkSiteKey } from '@shelfmark/contracts';
 import { wordStems } from '../ai/search/word-stems';
 import { NEAR_DUPLICATE_LIMIT } from './models/near-duplicate-limit.const';
 import type { NearDuplicateLink } from './models/near-duplicate-link.interface';
 
-const bareHost = (url: string): string | null => linkHost(url)?.replace(/^www\./, '') ?? null;
-
 /** Equal after dropping `www.`, or one a subdomain of the other. */
 export function sameHostFamily(a: string, b: string): boolean {
-  const first = bareHost(a);
-  const second = bareHost(b);
-  if (first === null || second === null || first === '' || second === '') return false;
+  const first = linkSiteKey(a);
+  const second = linkSiteKey(b);
+  if (first === '' || second === '') return false;
   return first === second || first.endsWith(`.${second}`) || second.endsWith(`.${first}`);
 }
 

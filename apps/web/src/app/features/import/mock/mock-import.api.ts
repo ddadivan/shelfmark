@@ -32,6 +32,7 @@ import {
   type StartImportRequest,
   type StartImportResponse,
   type UndoImportResponse,
+  displayHost,
 } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
@@ -40,7 +41,6 @@ import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { normalizeLinkTags } from '../../links/mock/normalize-link-tags';
 import { MOCK_HOST } from '../../links/models/mock-host.const';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
-import { displayHost } from '../../links/utils/http-url';
 import type { ImportApi } from '../models/import-api.interface';
 import { mockImportGroups } from './mock-import-groups';
 import type { MockImportRecord } from './models/mock-import-record.interface';

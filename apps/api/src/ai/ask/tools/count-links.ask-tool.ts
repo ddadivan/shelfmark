@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ASK_ACTIVITY, linkHost } from '@shelfmark/contracts';
+import { ASK_ACTIVITY, linkSiteKey } from '@shelfmark/contracts';
 import { toLinkKind } from '../../../links/to-link-kind';
 import { loadFolderPaths } from '../../../mcp/tools/folder-tree';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -39,11 +39,6 @@ export function parseCountLinksArgs(input: unknown): AskParse<AskCountArgs> {
     return refuse(`groupBy must be one of ${Object.values(ASK_GROUP_BY).join(', ')}`);
   }
   return accept({ filters: filters.value, groupBy: isGroupBy(groupBy) ? groupBy : null });
-}
-
-/** Host without `www.`, lower case (the same rule as the stats). */
-export function siteLabel(url: string): string {
-  return (linkHost(url) ?? '').toLowerCase().replace(/^www\./u, '');
 }
 
 /** Counts per label, most first (ties by label), the top `GroupsMax` and the rest as `otherCount`. */
@@ -173,7 +168,7 @@ export class CountLinksAskTool implements AskTool {
       }
       case ASK_GROUP_BY.Site: {
         const rows = await this.prisma.link.findMany({ where, select: { url: true } });
-        return topGroups(rows.map((row) => siteLabel(row.url)));
+        return topGroups(rows.map((row) => linkSiteKey(row.url)));
       }
       case ASK_GROUP_BY.Month: {
         const rows = await this.prisma.link.findMany({ where, select: { createdAt: true } });

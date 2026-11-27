@@ -1,4 +1,5 @@
 import type { ImportGroupLink } from '@shelfmark/contracts';
+import { stripWww } from '@shelfmark/contracts';
 import { IMPORT_GROUPING_LIMIT } from '../models/import-grouping-limit.const';
 
 /** Path segments of a URL that reach the embedding text. */
@@ -8,7 +9,7 @@ const PATH_SEGMENTS_MAX = 2;
 export function importUrlLocation(url: string): { host: string; path: string } {
   try {
     const parsed = new URL(url);
-    return { host: parsed.hostname.replace(/^www\./u, ''), path: parsed.pathname };
+    return { host: stripWww(parsed.hostname), path: parsed.pathname };
   } catch {
     return { host: '', path: '' };
   }

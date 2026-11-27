@@ -21,6 +21,7 @@ import {
   type CreateLinksBatchItem,
   type CreateLinksBatchRequest,
   type LinkPreviewResponse,
+  displayHost,
 } from '@shelfmark/contracts';
 import {
   BADGE_TONE,
@@ -48,7 +49,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { TagsStore } from '../../../../stores/tags.store';
 import { normalizeTagNames } from '../../../tags/utils/normalize-tag-names';
 import { buildFolderOptions } from '../../utils/folder-options';
-import { displayHost, urlWithoutScheme } from '../../utils/http-url';
+import { urlWithoutScheme } from '../../utils/http-url';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';
 import type { AddLinkDialogData } from '../../models/add-link-dialog-data.interface';
 import type { AddLinkResult } from '../../models/add-link-result.type';

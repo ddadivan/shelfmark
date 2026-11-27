@@ -25,7 +25,7 @@ import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
 import type { ViewDraftInput } from '../models/view-draft-input.interface';
 import type { ViewDraftModelOutcome } from '../models/view-draft-model-outcome.type';
-import { LINK_KIND, planMockViewDraft, type LinkKind } from '@shelfmark/contracts';
+import { LINK_KIND, planMockViewDraft, type LinkKind, linkSiteKey } from '@shelfmark/contracts';
 
 const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
 
@@ -101,14 +101,6 @@ function mockNewTags(
     newTags: names.slice(0, MOCK_AI.NewTagsMax),
     moreTags: names.slice(MOCK_AI.NewTagsMax, MOCK_AI.NewTagsMax + MOCK_AI.MoreTagsMax),
   };
-}
-
-function hostOf(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return '';
-  }
 }
 
 /**
@@ -247,7 +239,7 @@ export class MockAiProvider implements AiProvider {
   }
 
   private answer(input: LinkJobInput): Record<string, unknown> {
-    const host = hostOf(input.url);
+    const host = linkSiteKey(input.url);
     const haystack = new Set(words(`${input.title ?? ''} ${input.description ?? ''} ${input.url}`));
     const matches = (name: string): boolean => words(name).some((word) => haystack.has(word));
 

@@ -1,14 +1,8 @@
-import { LINK_LIMIT, SAVED_WITHIN_DAYS } from '@shelfmark/contracts';
+import { SAVED_WITHIN_DAYS, searchTerms } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { escapeLike } from '../common/util/escape-like';
 import type { LinkFilter } from './models/link-filter.interface';
 import type { LinkWhereOptions } from './models/link-where-options.interface';
-
-/** The words of a search text: split on whitespace, at most `LINK_LIMIT.QueryTermsMax` are used. */
-export function searchTerms(q: string | undefined): string[] {
-  if (q === undefined) return [];
-  return q.split(/\s+/).filter(Boolean).slice(0, LINK_LIMIT.QueryTermsMax);
-}
 
 function termCondition(term: string, searchNotes: boolean): Prisma.LinkWhereInput {
   const escaped = escapeLike(term);

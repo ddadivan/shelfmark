@@ -1,5 +1,5 @@
 import type { ListLinksQuery, ListLinksResponse, SavedViewQuery } from '@shelfmark/contracts';
-import { displayHost } from '../../links/utils/http-url';
+import { displayHost } from '@shelfmark/contracts';
 import { NEW_VIEW_PREVIEW } from '../models/new-view-preview.const';
 import type { ViewPreview } from '../models/view-preview.interface';
 import { listQueryOf } from './saved-view-query';

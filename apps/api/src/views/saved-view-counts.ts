@@ -1,7 +1,11 @@
-import { SAVED_VIEW_SCOPE, SAVED_WITHIN_DAYS, type SavedViewQuery } from '@shelfmark/contracts';
+import {
+  SAVED_VIEW_SCOPE,
+  SAVED_WITHIN_DAYS,
+  type SavedViewQuery,
+  searchTerms,
+} from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
 import { escapeLike } from '../common/util/escape-like';
-import { searchTerms } from '../links/link-where';
 import type { LinkDbClient } from '../links/models/link-db-client.type';
 import type { SavedViewCounts } from './models/saved-view-counts.interface';
 

@@ -43,7 +43,7 @@ import { LinkActionsService } from '../../../links/services/link-actions.service
 import { linkHost, safeHref, siteLetter } from '../../../links/utils/link-view';
 import { LINKS_API } from '../../../links/models/links-api.const';
 import { SEARCH_QUERY_PARAM } from '../../../links/models/search-query-param.const';
-import { parseSearchQuery, splitQuery } from '../../../links/utils/search-query';
+import { parseSearchQuery } from '../../../links/utils/search-query';
 import { TAG_QUERY_PARAM } from '../../../tags/models/tag-query-param.const';
 import { SEARCH_DEBOUNCE_MS } from '../../models/search-debounce-ms.const';
 import { SEARCH_LINK_LIMIT } from '../../models/search-link-limit.const';
@@ -56,7 +56,7 @@ import { matchFolders, matchTags } from '../../utils/search-match';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { ASK_LIMIT } from '@shelfmark/contracts';
+import { ASK_LIMIT, searchTerms } from '@shelfmark/contracts';
 import { RecentSearchesService } from '../../services/recent-searches.service';
 
 const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
@@ -198,7 +198,7 @@ export class SearchResultsComponent {
     if (link.note === null) {
       return null;
     }
-    const words = splitQuery(this.state().query).map((word) => word.toLowerCase());
+    const words = searchTerms(this.state().query).map((word) => word.toLowerCase());
     const title = link.title.toLowerCase();
     const note = link.note.toLowerCase();
     const titleHasAll = words.every((word) => title.includes(word));

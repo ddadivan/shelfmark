@@ -1,4 +1,5 @@
 import { linkHost } from '../links/link-host';
+import { stripWww } from '../links/strip-www';
 import { withDefaultScheme } from '../links/with-default-scheme';
 import { RULE_LIMIT } from './rule-limit.const';
 
@@ -23,7 +24,7 @@ export function ruleHost(url: string): string | null {
     return null;
   }
   const host = linkHost(url);
-  return host === null || host === '' ? null : host.replace(/^www\./, '');
+  return host === null || host === '' ? null : stripWww(host);
 }
 
 /**
