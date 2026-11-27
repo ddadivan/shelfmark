@@ -282,6 +282,12 @@
   }
 }
 
+// The focus ring sits inside the row (author, Nov 27): headline rows touch each other, so a ring
+// outside was hidden by the neighbours above and below.
+:host(.ui-list-item--headline:has(.ui-list-item__link:focus-visible)) {
+  @include focus-ring(-2px);
+}
+
 :host(.ui-list-item--headline) .ui-list-item__link {
   flex-direction: row;
   gap: var(--space-3);
@@ -332,6 +338,11 @@
 
 :host(.ui-list-item--headline:has(:focus-visible)) .ui-list-item__trailing {
   opacity: 1;
+}
+
+// The box stays clear of the inner focus ring of a keyboard-focused row (2px top and bottom).
+:host(.ui-list-item--headline:has(.ui-list-item__link:focus-visible)) .ui-list-item__trailing {
+  inset-block: rem(2px);
 }
 
 :host(.ui-list-item--headline.ui-list-item--pinned) .ui-list-item__trailing {

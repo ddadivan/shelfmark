@@ -253,6 +253,12 @@ describe('ListItemComponent', () => {
       expect(mediaBlocks(css, HOVER_ONLY).join('\n')).toContain('var(--fill)');
     });
 
+    it('draws the headline row focus ring inside the row, so neighbours never hide it', () => {
+      expect(css).toMatch(
+        /:host\(\.ui-list-item--headline:has\(\.ui-list-item__link:focus-visible\)\)\s*\{[^}]*outline-offset: -2px/,
+      );
+    });
+
     it('shows the pressed colour under reduced motion, where there is no ripple', () => {
       const reduced = mediaBlocks(css, /prefers-reduced-motion:\s*reduce/).join('\n');
       expect(reduced).toContain('var(--surface-pressed)');
