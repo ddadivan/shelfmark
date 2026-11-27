@@ -58,7 +58,33 @@
 }
 
 .story-fill {
-  --ui-illustration-width: 100%;
+  --ui-illustration-size: 100%;
+}
+
+// Illustration gallery: every scene at the desktop (240px) and the phone (160px) size.
+.story-ill-size {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+}
+
+.story-ill-size--lg {
+  grid-template-columns: repeat(auto-fill, minmax(rem(240px), 1fr));
+
+  --ui-illustration-size: #{rem(240px)};
+}
+
+.story-ill-size--sm {
+  grid-template-columns: repeat(auto-fill, minmax(rem(160px), 1fr));
+
+  --ui-illustration-size: #{rem(160px)};
+}
+
+.story-ill-figure {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  margin: 0;
 }
 
 .story-row {
