@@ -698,6 +698,34 @@ describe('CommandListComponent in popup mode with emptyPanel', { timeout: 30_000
 });
 
 @Component({
+  imports: [CommandListComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <ui-command-list inputLabel="Search" listLabel="Results">
+      <span slot="input-lead" class="lead">Work</span>
+      <kbd slot="input-end">Ctrl K</kbd>
+    </ui-command-list>
+  `,
+})
+class LeadHostComponent {}
+
+describe('CommandListComponent input-lead slot', () => {
+  it('puts the lead inside the field box, after the search icon and before the input', async () => {
+    const fixture = TestBed.createComponent(LeadHostComponent);
+    await settle(fixture);
+    const field = (fixture.nativeElement as HTMLElement).querySelector('.ui-command-list__field');
+    const children = Array.from(field?.children ?? []);
+
+    expect(children[0]?.classList.contains('ui-command-list__icon')).toBe(true);
+    expect(children[1]?.classList.contains('lead')).toBe(true);
+    expect(children[2]?.tagName).toBe('INPUT');
+    expect(compileScss('lib/components/command-list/command-list.component.scss')).toMatch(
+      /\[slot=['"]?input-lead['"]?\]\s*{[^}]*flex:\s*none/,
+    );
+  });
+});
+
+@Component({
   imports: [CommandListComponent, CommandItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { ChipComponent } from '../chip/chip.component';
 import { AiLineComponent } from '../ai-line/ai-line.component';
 import { ButtonComponent } from '../button/button.component';
 import { DialogComponent } from '../dialog/dialog.component';
@@ -282,6 +283,7 @@ const imports = [
   IconComponent,
   FaviconComponent,
   AiLineComponent,
+  ChipComponent,
 ];
 
 /** Type to filter; the matching part is marked. Enter or a click chooses, the demo ignores it. */
@@ -539,5 +541,18 @@ export const AllVariants: Story = {
           </div>
         }
       </div>`,
+  }),
+};
+
+/** `input-lead`: a scope chip inside the field box, right after the search icon (header search in a folder). */
+export const WithScopeChip: Story = {
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: box(`
+      <ui-command-list popup emptyPanel inputLabel="Search in Work" listLabel="Recent searches" placeholder="Search in Work">
+        <ui-chip slot="input-lead" truncate removable removeLabel="Search all links" icon="inbox">Work</ui-chip>
+        <kbd slot="input-end">Ctrl K</kbd>
+      </ui-command-list>`),
   }),
 };

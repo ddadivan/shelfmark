@@ -2,6 +2,7 @@
   <ng-content select="[slot=input-start]" />
   <div class="ui-command-list__field">
     <ui-icon class="ui-command-list__icon" name="search" [size]="ICON_SIZE.Md" />
+    <ng-content select="[slot=input-lead]" />
     <input
       #field
       ngCombobox

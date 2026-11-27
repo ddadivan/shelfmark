@@ -89,6 +89,10 @@
   color: var(--text-muted);
 }
 
+.ui-command-list__field > [slot='input-lead'] {
+  flex: none;
+}
+
 .ui-command-list__input {
   @include field-native;
 

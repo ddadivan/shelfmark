@@ -50,6 +50,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  * `aria-activedescendant`).
  *
  * Slots: `slot="input-start"` (before the field, for example the Back button of `screen`),
+ * `slot="input-lead"` (inside the field right after the search icon, for example a scope chip),
  * `slot="input-end"` (after the input, for example an `Esc` hint), `slot="empty"` (shown
  * in a status region while there are no items), `slot="footer"` (keyboard hints, `kbd` is
  * styled). All texts come in through inputs or projected content.
