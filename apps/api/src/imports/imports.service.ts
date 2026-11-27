@@ -5,9 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  DEMO_LIMIT,
   FOLDER_LIMIT,
-  LINK_LIMIT,
   IMPORT_AI_STATE,
   IMPORT_ERROR_MESSAGE,
   IMPORT_LIMIT,
@@ -39,6 +37,7 @@ import { assertImportFolderKeys } from './assert-import-folder-keys';
 import { clampAddedAt } from './clamp-added-at';
 import type { ImportRow } from './models/import-row.type';
 import { isImportOpen, isImportUndoable, undoCutoff } from './import-window';
+import { linkRoom } from '../links/link-quota';
 
 /**
  * Import of a bookmark file (#387, ADR 0056). The browser parses the file; this service records the
@@ -167,7 +166,7 @@ export class ImportsService {
 
   /**
    * Which of the URLs (by index) are already among the user's live links, and how many more links
-   * fit the cap that applies (counted like `LinksBatchService.assertFits`: every row, Trash too).
+   * fit the cap that applies (counted like `assertLinkQuotaFits`: every row, Trash too).
    * Read-only.
    */
   async check(
@@ -182,9 +181,7 @@ export class ImportsService {
     });
     const known = new Set(rows.map((row) => row.normalizedUrl));
     const saved = normalized.flatMap((url, index) => (known.has(url) ? [index] : []));
-    const max = isDemo ? DEMO_LIMIT.MaxLinks : LINK_LIMIT.PerUserMax;
-    const total = await this.prisma.link.count({ where: { userId } });
-    return { saved, room: Math.max(0, max - total) };
+    return { saved, room: Math.max(0, await linkRoom(this.prisma, userId, isDemo)) };
   }
 
   async start(userId: string, request: StartImportRequest): Promise<StartImportResponse> {

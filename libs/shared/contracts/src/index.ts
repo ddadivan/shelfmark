@@ -61,6 +61,7 @@ export { YOUTUBE_NOCOOKIE_EMBED_BASE } from './links/youtube-nocookie-embed-base
 export { toVideoEmbedUrl } from './links/to-video-embed-url';
 export { LINK_ERROR_MESSAGE } from './links/link-error-message.const';
 export { LINK_LIMIT } from './links/link-limit.const';
+export { linkCapFor } from './links/link-cap-for';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
 
 export type { FolderResponse } from './folders/folder-response.interface';

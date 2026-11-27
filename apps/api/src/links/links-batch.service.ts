@@ -1,14 +1,9 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import {
-  DEMO_LIMIT,
   LINK_BATCH_ERROR_CODE,
   LINK_ERROR_MESSAGE,
   LINK_LIMIT,
-  linkLimitMessage,
-  normalizeTagName,
   normalizeUrl,
-  TAG_ERROR_MESSAGE,
-  TAG_LIMIT,
   type LinkBatchItemError,
   type LinkResponse,
   deriveLinkKind,
@@ -35,6 +30,8 @@ import type { LinksBatchOptions } from './models/links-batch-options.interface';
 import type { PlannedBatchItem } from './models/planned-batch-item.interface';
 import { fallbackTitle } from './title-or-url';
 import { toLinkResponse } from './to-link-response';
+import { assertLinkQuotaFits } from './link-quota';
+import { assertTagNamesFit } from './validation/assert-tag-names-fit';
 
 /**
  * Several links at once (paste many, #265). One transaction under the lock order of ADR 0033
@@ -66,7 +63,7 @@ export class LinksBatchService {
     context: AiRequestContext = {},
     options: LinksBatchOptions = {},
   ): Promise<CreateLinksBatchResult> {
-    this.assertTagNames([
+    assertTagNamesFit([
       ...(request.tags ?? []),
       ...request.items.flatMap((item) => item.tags ?? []),
     ]);
@@ -100,7 +97,7 @@ export class LinksBatchService {
           for (const folderId of folderIds) {
             await this.folders.requireOwned(tx, userId, folderId);
           }
-          await this.assertFits(tx, userId, fresh.length, isDemo);
+          await assertLinkQuotaFits(tx, userId, fresh.length, isDemo, 'room');
           // Draft job rows are locked after `folders:` and before `tags:` (ADR 0049 point 4).
           const drafts =
             options.skipAi === true ? new Map() : await this.lockDrafts(tx, userId, fresh);
@@ -384,32 +381,11 @@ export class LinksBatchService {
     );
   }
 
-  /** 409 when the new links do not fit the cap; the message says how many still fit. */
-  private async assertFits(
-    db: LinkDbClient,
-    userId: string,
-    adding: number,
-    isDemo: boolean,
-  ): Promise<void> {
-    const max = isDemo ? DEMO_LIMIT.MaxLinks : LINK_LIMIT.PerUserMax;
-    const total = await db.link.count({ where: { userId } });
-    if (total + adding > max) {
-      throw new ConflictException(linkLimitMessage(max - total));
-    }
-  }
-
   /** Two items with one key would replay each other: the client must send one key per link. */
   private assertDistinctKeys(request: LinksBatchInput): void {
     const keys = request.items.map((item) => item.idempotencyKey.toLowerCase());
     if (new Set(keys).size !== keys.length) {
       throw new BadRequestException(LINK_ERROR_MESSAGE.DuplicateIdempotencyKey);
-    }
-  }
-
-  /** Rejects an over-long tag name before the transaction opens. */
-  private assertTagNames(names: readonly string[] | undefined): void {
-    if (names?.some((name) => normalizeTagName(name).length > TAG_LIMIT.NameMax)) {
-      throw new BadRequestException(TAG_ERROR_MESSAGE.NameTooLong);
     }
   }
 }

@@ -5,15 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  DEMO_LIMIT,
   LINK_LIMIT,
-  normalizeTagName,
   deriveLinkKind,
   linkSiteKey,
   normalizeUrl,
   LINK_ERROR_MESSAGE,
-  TAG_ERROR_MESSAGE,
-  TAG_LIMIT,
   type CreateLinkRequest,
   type LinkResponse,
   type OpenLinkResponse,
@@ -43,6 +39,8 @@ import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
 import { toLinkResponse } from './to-link-response';
 import { requireLiveLink } from './link-ownership';
+import { assertLinkQuotaFits } from './link-quota';
+import { assertTagNamesFit } from './validation/assert-tag-names-fit';
 
 /** Time of the request kept free for the response after a capture. */
 const CREATE_RESPONSE_MARGIN_MS = 1_000;
@@ -91,7 +89,7 @@ export class LinksWriteService {
   ): Promise<CreateLinkResult> {
     const startedAt = Date.now();
     this.normalize(request.url);
-    this.assertTagNames(request.tags);
+    assertTagNamesFit(request.tags);
     const key = request.idempotencyKey;
     if (key !== undefined) {
       // Cheap replay check first: a retry must not fetch the page again.
@@ -144,7 +142,7 @@ export class LinksWriteService {
         if (request.folderId !== undefined) {
           await this.requireFolder(tx, userId, request.folderId);
         }
-        await this.assertUnderLimit(tx, userId, isDemo);
+        await assertLinkQuotaFits(tx, userId, 1, isDemo, 'single');
         // Domain rules (#398) fill what the save left open; read under the folders lock, so the
         // rule's folder is live now. An explicit folder or tag list always wins.
         const rule =
@@ -248,7 +246,7 @@ export class LinksWriteService {
     const request: UpdateLinkRequest =
       sent.url === undefined ? sent : { ...sent, url: savedUrl(sent.url) };
     const data = this.updateData(request);
-    this.assertTagNames(request.tags);
+    assertTagNamesFit(request.tags);
     // `folders:` first whenever the job rows or tags may be touched: AI's apply takes `folders:` →
     // job row → `tags:`, so a tag or address edit queues behind it instead of deadlocking on the
     // link row and the tags lock in the opposite order (ADR 0049).
@@ -482,26 +480,7 @@ export class LinksWriteService {
     isDemo: boolean,
   ): Promise<void> {
     if (folderId !== undefined) await this.requireFolder(this.prisma, userId, folderId);
-    await this.assertUnderLimit(this.prisma, userId, isDemo);
-  }
-
-  private async assertUnderLimit(db: LinkDbClient, userId: string, isDemo: boolean): Promise<void> {
-    // Demo sandboxes are capped far lower (PROJECT.md 5.8).
-    const max = isDemo ? DEMO_LIMIT.MaxLinks : LINK_LIMIT.PerUserMax;
-    // Trash counts too (ADR 0036): delete-and-add cannot grow the table past the cap.
-    const total = await db.link.count({ where: { userId } });
-    if (total >= max) {
-      throw new ConflictException(
-        isDemo ? LINK_ERROR_MESSAGE.DemoLimitReached : LINK_ERROR_MESSAGE.LimitReached,
-      );
-    }
-  }
-
-  /** Rejects an over-long tag name before any page is fetched or transaction opened. */
-  private assertTagNames(names: readonly string[] | undefined): void {
-    if (names?.some((name) => normalizeTagName(name).length > TAG_LIMIT.NameMax)) {
-      throw new BadRequestException(TAG_ERROR_MESSAGE.NameTooLong);
-    }
+    await assertLinkQuotaFits(this.prisma, userId, 1, isDemo, 'single');
   }
 
   /**
