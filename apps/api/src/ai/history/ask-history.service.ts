@@ -18,6 +18,7 @@ import { ASK_HISTORY_LOCK_PREFIX } from '../models/ask-history-lock-prefix.const
 import type { AskTurnRecord } from '../models/ask-turn-record.interface';
 import { decodeAskHistoryCursor, encodeAskHistoryCursor } from './ask-history-cursor';
 import { readStoredCards, readStoredDepth, readStoredSteps } from './read-stored-ask-turn';
+import { paginate } from '../../common/pagination/paginate';
 
 const TURN_SELECT = {
   question: true,
@@ -79,20 +80,18 @@ export class AskHistoryService {
       orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
       take: take + 1,
     });
-    const page = rows.slice(0, take);
-    const last = page.at(-1);
+    const page = paginate(rows, take, (last) =>
+      encodeAskHistoryCursor({ updatedAt: last.updatedAt, id: last.id }),
+    );
     return {
-      items: page.map((row) => ({
+      items: page.items.map((row) => ({
         id: row.id,
         title: row.title,
         turns: row._count.turns,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
       })),
-      nextCursor:
-        rows.length > take && last !== undefined
-          ? encodeAskHistoryCursor({ updatedAt: last.updatedAt, id: last.id })
-          : null,
+      nextCursor: page.nextCursor,
     };
   }
 

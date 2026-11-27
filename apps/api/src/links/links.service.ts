@@ -27,6 +27,7 @@ import { LINK_CURSOR_VERSION } from './models/link-cursor-version.const';
 import { LINK_INCLUDE } from './models/link-include.const';
 import { toLinkResponse } from './to-link-response';
 import { requireLiveLink } from './link-ownership';
+import { paginate } from '../common/pagination/paginate';
 
 @Injectable()
 export class LinksService {
@@ -115,19 +116,20 @@ export class LinksService {
       orderBy: linkOrderBy(sort, order),
       take: limit + 1,
     });
-    const page = rows.slice(0, limit);
-    const last = page.at(-1);
-    const nextCursor =
-      rows.length > limit && last !== undefined
-        ? encodeCursor({
-            v: LINK_CURSOR_VERSION,
-            s: sort,
-            o: order,
-            ...cursorKeys(sort, last),
-            id: last.id,
-          })
-        : null;
-    return { items: page.map(toLinkResponse), nextCursor, pinned: pinned.map(toLinkResponse) };
+    const page = paginate(rows, limit, (last) =>
+      encodeCursor({
+        v: LINK_CURSOR_VERSION,
+        s: sort,
+        o: order,
+        ...cursorKeys(sort, last),
+        id: last.id,
+      }),
+    );
+    return {
+      items: page.items.map(toLinkResponse),
+      nextCursor: page.nextCursor,
+      pinned: pinned.map(toLinkResponse),
+    };
   }
 
   async recent(userId: string, query: RecentLinksQuery): Promise<RecentLinksResponse> {

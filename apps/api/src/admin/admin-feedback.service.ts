@@ -14,6 +14,7 @@ import { toFeedbackMessage } from '../feedback/to-feedback-message';
 import { PrismaService } from '../prisma/prisma.service';
 import { decodeAdminFeedbackCursor, encodeAdminFeedbackCursor } from './admin-feedback-cursor';
 import { ADMIN_FEEDBACK_SELECT } from './models/admin-feedback-select.const';
+import { paginate } from '../common/pagination/paginate';
 
 type AdminRow = Prisma.FeedbackGetPayload<{ select: typeof ADMIN_FEEDBACK_SELECT }>;
 
@@ -52,12 +53,8 @@ export class AdminFeedbackService {
       take: limit + 1,
       select: ADMIN_FEEDBACK_SELECT,
     });
-    const page = rows.slice(0, limit);
-    const last = page[page.length - 1];
-    return {
-      items: page.map(toItem),
-      nextCursor: rows.length > limit && last ? encodeAdminFeedbackCursor(last) : null,
-    };
+    const page = paginate(rows, limit, encodeAdminFeedbackCursor);
+    return { items: page.items.map(toItem), nextCursor: page.nextCursor };
   }
 
   async update(id: string, request: UpdateAdminFeedbackRequest): Promise<AdminFeedbackItem> {
