@@ -6,6 +6,13 @@ import { ReducedMotion } from '../../services/motion/reduced-motion.service';
 import { InputComponent } from './input.component';
 import { INPUT_TYPE } from './models/input-type.const';
 
+function must<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) {
+    throw new Error('Expected value to be present');
+  }
+  return value;
+}
+
 function setup(inputs: Record<string, unknown> = {}) {
   const fixture = TestBed.createComponent(InputComponent);
   fixture.componentRef.setInput('label', 'Link');
@@ -198,7 +205,7 @@ describe('InputComponent', () => {
     expect(spinner?.getAttribute('role')).toBe('status');
     expect(spinner?.textContent?.trim()).toBe('Loading preview');
     expect(
-      spinner!.compareDocumentPosition(clear!) & Node.DOCUMENT_POSITION_FOLLOWING,
+      must(spinner).compareDocumentPosition(must(clear)) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
 

@@ -6,6 +6,13 @@ import { ButtonComponent } from './button.component';
 import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
 import type { ButtonHitArea } from './models/button-hit-area.type';
 
+function must<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) {
+    throw new Error('Expected value to be present');
+  }
+  return value;
+}
+
 @Component({
   imports: [ButtonComponent],
   template: `<ui-button
@@ -28,7 +35,7 @@ class LabelledHostComponent {}
 async function setup() {
   const fixture = TestBed.createComponent(HostComponent);
   await fixture.whenStable();
-  const button = () => (fixture.nativeElement as HTMLElement).querySelector('button')!;
+  const button = () => must((fixture.nativeElement as HTMLElement).querySelector('button'));
   return { fixture, host: fixture.componentInstance, button };
 }
 
@@ -53,7 +60,7 @@ describe('ButtonComponent hitArea', () => {
   it('ignores overlay on a button with a label: no overlay class, ripple on', async () => {
     const fixture = TestBed.createComponent(LabelledHostComponent);
     await fixture.whenStable();
-    const button = (fixture.nativeElement as HTMLElement).querySelector('button')!;
+    const button = must((fixture.nativeElement as HTMLElement).querySelector('button'));
 
     expect(button.classList.contains('ui-button--hit-overlay')).toBe(false);
     expect(button.classList.contains('ui-ripple-host')).toBe(true);

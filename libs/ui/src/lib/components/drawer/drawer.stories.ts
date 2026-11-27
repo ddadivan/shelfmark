@@ -82,8 +82,6 @@ class StoryLongComponent {
   protected readonly rows = Array.from({ length: 40 }, (_value, index) => `Folder ${index + 1}`);
 }
 
-type DemoKind = 'menu' | 'long';
-
 @Component({
   selector: 'ui-drawer-story-demo',
   imports: [ButtonComponent],

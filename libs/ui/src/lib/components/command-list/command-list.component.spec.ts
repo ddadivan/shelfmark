@@ -10,6 +10,13 @@ import { CommandItemComponent } from './command-item/command-item.component';
 import { CommandListComponent } from './command-list.component';
 import type { CommandSelection } from './models/command-selection.interface';
 
+function must<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) {
+    throw new Error('Expected value to be present');
+  }
+  return value;
+}
+
 @Component({
   imports: [CommandListComponent, CommandGroupComponent, CommandItemComponent, HighlightComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -101,7 +108,7 @@ describe('CommandListComponent', () => {
     await settle(fixture);
   });
 
-  const input = (): HTMLInputElement => el.querySelector<HTMLInputElement>('input')!;
+  const input = (): HTMLInputElement => must(el.querySelector<HTMLInputElement>('input'));
   const options = (): HTMLElement[] => [...el.querySelectorAll<HTMLElement>('[role="option"]')];
   const activeValue = (): string | undefined => {
     const id = input().getAttribute('aria-activedescendant');
@@ -124,7 +131,7 @@ describe('CommandListComponent', () => {
     expect(input().getAttribute('role')).toBe('combobox');
     expect(input().getAttribute('aria-label')).toBe('Search links, folders and tags');
     expect(input().getAttribute('aria-expanded')).toBe('true');
-    const list = el.querySelector('[role="listbox"]')!;
+    const list = must(el.querySelector('[role="listbox"]'));
     expect(input().getAttribute('aria-controls')).toBe(list.id);
     expect(options()).toHaveLength(4);
     expect(options().map((o) => o.id)).toContain(input().getAttribute('aria-activedescendant'));
@@ -181,7 +188,7 @@ describe('CommandListComponent', () => {
   });
 
   it('keeps the status region rendered with the status slot, visible only when empty', async () => {
-    const status = (): HTMLElement => el.querySelector<HTMLElement>('[role="status"]')!;
+    const status = (): HTMLElement => must(el.querySelector<HTMLElement>('[role="status"]'));
     expect(status().textContent?.trim()).toBe('4 results');
     expect(status().classList.contains('ui-command-list__status--empty')).toBe(false);
     host.count.set(2);
@@ -370,7 +377,7 @@ describe('CommandListComponent', () => {
   });
 
   it('marks the list busy', async () => {
-    const list = el.querySelector('[role="listbox"]')!;
+    const list = must(el.querySelector('[role="listbox"]'));
     expect(list.hasAttribute('aria-busy')).toBe(false);
     host.busy.set(true);
     await settle(fixture);
@@ -381,7 +388,7 @@ describe('CommandListComponent', () => {
     host.showLinks.set(false);
     host.showFolders.set(false);
     await settle(fixture);
-    const status = el.querySelector('[role="status"]')!;
+    const status = must(el.querySelector('[role="status"]'));
     expect(status.textContent).toContain('Nothing found');
     expect(el.querySelector('[role="listbox"]')?.hasAttribute('hidden')).toBe(true);
     expect(await axeViolations(el)).toEqual([]);
@@ -488,7 +495,7 @@ describe('CommandListComponent in popup mode', { timeout: 30_000 }, () => {
     el.remove();
   });
 
-  const input = (): HTMLInputElement => el.querySelector<HTMLInputElement>('input')!;
+  const input = (): HTMLInputElement => must(el.querySelector<HTMLInputElement>('input'));
   /** Generous: a loaded CI runner is many times slower than a laptop. */
   const PANEL_GONE_TIMEOUT_MS = 15_000;
   const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
@@ -535,7 +542,7 @@ describe('CommandListComponent in popup mode', { timeout: 30_000 }, () => {
     expect(host.open()).toBe(true);
     expect(panel()).not.toBeNull();
     expect(input().getAttribute('aria-expanded')).toBe('true');
-    const list = document.querySelector('[role="listbox"]')!;
+    const list = must(document.querySelector('[role="listbox"]'));
     expect(input().getAttribute('aria-controls')).toBe(list.id);
     expect(options()).toHaveLength(2);
     expect(options().map((o) => o.id)).toContain(input().getAttribute('aria-activedescendant'));
@@ -590,7 +597,7 @@ describe('CommandListComponent in popup mode', { timeout: 30_000 }, () => {
 
   it('closes when focus leaves the field, keeping the text', async () => {
     await type('a');
-    el.querySelector<HTMLElement>('#outside')!.focus();
+    must(el.querySelector<HTMLElement>('#outside')).focus();
     await settle(fixture);
     expect(host.open()).toBe(false);
     expect(host.query()).toBe('a');

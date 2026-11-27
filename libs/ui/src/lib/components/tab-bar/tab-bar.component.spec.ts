@@ -7,6 +7,13 @@ import type { TabBarItem } from './models/tab-bar-item.interface';
 import type { TabBarSelection } from './models/tab-bar-selection.interface';
 import { TabBarComponent } from './tab-bar.component';
 
+function must<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) {
+    throw new Error('Expected value to be present');
+  }
+  return value;
+}
+
 const ITEMS: readonly TabBarItem[] = [
   { id: 'library', label: 'Library', icon: 'saved-link', href: '/links' },
   { id: 'search', label: 'Search', icon: 'search', href: '/search' },
@@ -42,7 +49,7 @@ function setup() {
     fixture,
     root,
     host: fixture.componentInstance,
-    bar: root.querySelector<HTMLElement>('ui-tab-bar')!,
+    bar: must(root.querySelector<HTMLElement>('ui-tab-bar')),
     tabs: () => Array.from(root.querySelectorAll<HTMLElement>('.ui-tab-bar__tab')),
   };
 }
