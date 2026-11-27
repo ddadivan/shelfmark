@@ -1,12 +1,5 @@
-import {
-  computed,
-  DestroyRef,
-  Directive,
-  DOCUMENT,
-  ElementRef,
-  inject,
-  signal,
-} from '@angular/core';
+import { computed, Directive, inject } from '@angular/core';
+import { UiInViewDirective } from '@shelfmark/ui';
 import { LandingMotionService } from '../services/landing-motion.service';
 
 /**
@@ -15,28 +8,14 @@ import { LandingMotionService } from '../services/landing-motion.service';
  */
 @Directive({
   selector: '[appLandingLoopGate]',
+  hostDirectives: [UiInViewDirective],
 })
 export class LandingLoopGateDirective {
   private readonly motion = inject(LandingMotionService);
-  private readonly inViewport = signal(false);
+  private readonly view = inject(UiInViewDirective);
 
   /** True while the loop should run. */
   readonly active = computed(
-    () => this.inViewport() && this.motion.tabVisible() && !this.motion.reducedMotion(),
+    () => this.view.inView() && this.motion.tabVisible() && !this.motion.reducedMotion(),
   );
-
-  constructor() {
-    const view = inject(DOCUMENT).defaultView;
-    if (!view || typeof view.IntersectionObserver !== 'function') {
-      return;
-    }
-    const observer = new view.IntersectionObserver((entries) => {
-      const latest = entries.at(-1);
-      if (latest) {
-        this.inViewport.set(latest.isIntersecting);
-      }
-    });
-    observer.observe(inject<ElementRef<Element>>(ElementRef).nativeElement);
-    inject(DestroyRef).onDestroy(() => observer.disconnect());
-  }
 }

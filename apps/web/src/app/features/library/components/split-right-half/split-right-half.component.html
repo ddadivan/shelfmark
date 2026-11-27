@@ -168,8 +168,10 @@
         @if (feed.hasMore()) {
           <div
             class="split-right__more"
-            appInView
-            [appInViewRecheck]="feed.count()"
+            uiInView
+            uiInViewRoot="scroll-parent"
+            uiInViewMargin="0px 0px 320px 0px"
+            [uiInViewRecheck]="feed.count()"
             (entered)="feed.loadMore()"
           >
             @if (feed.loadMoreFailed()) {

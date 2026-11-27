@@ -7,6 +7,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { InViewObserver } from '@shelfmark/ui';
 import { LandingMotionService } from '../services/landing-motion.service';
 import { LANDING_REVEAL } from '../models/landing-reveal.const';
 import { LANDING_REVEAL_STATE } from '../models/landing-reveal-state.const';
@@ -49,7 +50,7 @@ export class LandingRevealDirective {
   }
 
   private start(): void {
-    if (this.motion.reducedMotion() || typeof IntersectionObserver === 'undefined') {
+    if (this.motion.reducedMotion() || !InViewObserver.supported) {
       return;
     }
     // Nothing is read synchronously (no layout flush at startup): the observer's first report,
@@ -61,43 +62,40 @@ export class LandingRevealDirective {
       this.showNow = undefined;
       observer.disconnect();
     };
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.some(
-          (entry) =>
-            entry.isIntersecting &&
-            this.isVisibleEnough(
-              entry.intersectionRect.height,
-              entry.boundingClientRect.height,
-              entry.rootBounds?.height ?? this.viewportHeight(),
-            ),
-        );
-        if (!pendingSet) {
-          if (visible) {
-            // Already on screen at load: never hidden, nothing more to watch.
-            observer.disconnect();
-            return;
-          }
-          pendingSet = true;
-          Array.from(this.host.children).forEach((child, index) => {
-            if (child instanceof HTMLElement) {
-              child.style.setProperty(
-                DELAY_PROPERTY,
-                `${this.revealStartMs() + index * this.revealStepMs()}ms`,
-              );
-            }
-          });
-          this.showNow = reveal;
-          this.state.set(LANDING_REVEAL_STATE.Pending);
-        } else if (visible) {
-          reveal();
+    const observer = new InViewObserver(this.host, (entries) => {
+      const visible = entries.some(
+        (entry) =>
+          entry.isIntersecting &&
+          this.isVisibleEnough(
+            entry.intersectionRect.height,
+            entry.boundingClientRect.height,
+            entry.rootBounds?.height ?? this.viewportHeight(),
+          ),
+      );
+      if (!pendingSet) {
+        if (visible) {
+          // Already on screen at load: never hidden, nothing more to watch.
+          observer.disconnect();
+          return;
         }
-      },
-      // 0 reports the first overlap, so a section taller than five screens (it can never reach
-      // 20% visible) is still seen; the Threshold fires for the usual case.
-      { threshold: [0, LANDING_REVEAL.Threshold] },
-    );
-    observer.observe(this.host);
+        pendingSet = true;
+        Array.from(this.host.children).forEach((child, index) => {
+          if (child instanceof HTMLElement) {
+            child.style.setProperty(
+              DELAY_PROPERTY,
+              `${this.revealStartMs() + index * this.revealStepMs()}ms`,
+            );
+          }
+        });
+        this.showNow = reveal;
+        this.state.set(LANDING_REVEAL_STATE.Pending);
+      } else if (visible) {
+        reveal();
+      }
+    });
+    // 0 reports the first overlap, so a section taller than five screens (it can never reach
+    // 20% visible) is still seen; the Threshold fires for the usual case.
+    observer.start({ root: null, margin: '0px', threshold: [0, LANDING_REVEAL.Threshold] });
     this.destroyRef.onDestroy(() => observer.disconnect());
   }
 

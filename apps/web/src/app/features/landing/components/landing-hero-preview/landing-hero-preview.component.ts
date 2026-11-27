@@ -27,6 +27,7 @@ import {
   SavedViewsComponent,
   SAVED_VIEWS_LAYOUT,
   TOAST_KIND,
+  UiResizeDirective,
 } from '@shelfmark/ui';
 import {
   dataNodes,
@@ -35,7 +36,6 @@ import {
   trashNodes,
 } from '../../../../shell/sidebar/utils/sidebar-nodes';
 import { injectSidebarLabels } from '../../../../shell/sidebar/utils/inject-sidebar-labels';
-import { ElementWidthDirective } from '../../../library/directives/element-width.directive';
 import { LandingLoopGateDirective } from '../../directives/landing-loop-gate.directive';
 import { LANDING_IMAGES } from '../../models/landing-images.const';
 import type { LandingFolder } from '../../models/landing-folder.type';
@@ -70,7 +70,7 @@ const INITIAL_WIDTH = 720;
     ButtonComponent,
     CardComponent,
     ChipComponent,
-    ElementWidthDirective,
+    UiResizeDirective,
     FolderColourDirective,
     FaviconComponent,
     IconComponent,

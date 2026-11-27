@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { computed, DestroyRef, inject, Service, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Service } from '@angular/core';
+import { pageVisible } from '@shelfmark/ui';
 import { AI_TICK_INTERVAL_MS } from '../models/ai-tick-interval.const';
 import { AiSettingsStore } from './ai-settings.store';
 
@@ -18,8 +18,7 @@ import { AiSettingsStore } from './ai-settings.store';
 @Service()
 export class AiTickService {
   private readonly store = inject(AiSettingsStore);
-  private readonly doc = inject(DOCUMENT);
-  private readonly visible = signal(this.doc.visibilityState !== 'hidden');
+  private readonly visible = pageVisible();
   private inFlight = false;
 
   /** Whether the tick runs now. */
@@ -31,12 +30,9 @@ export class AiTickService {
   );
 
   constructor() {
-    const onVisibility = () => this.visible.set(this.doc.visibilityState !== 'hidden');
-    this.doc.addEventListener('visibilitychange', onVisibility);
     const timer = setInterval(() => void this.beat(), AI_TICK_INTERVAL_MS);
     inject(DestroyRef).onDestroy(() => {
       clearInterval(timer);
-      this.doc.removeEventListener('visibilitychange', onVisibility);
     });
   }
 

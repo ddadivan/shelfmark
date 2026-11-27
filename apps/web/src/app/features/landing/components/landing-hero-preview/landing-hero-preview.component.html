@@ -10,7 +10,8 @@
   [attr.aria-label]="'landing.preview.label' | transloco"
   [class.preview--phone]="phone()"
   [class.preview--intro]="cycle.intro()"
-  (appElementWidth)="measured($event)"
+  uiResize
+  (resized)="measured($event.width)"
 >
   <div
     class="stage"

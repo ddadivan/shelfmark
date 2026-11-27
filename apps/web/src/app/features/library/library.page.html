@@ -54,7 +54,8 @@
     [class.library__split--preview]="preview.split()"
     [class.library__split--wider]="preview.split() && (preview.listHidden() || preview.fullScreen())"
     [style.--library-preview-list]="preview.shownListWidth() / 16 + 'rem'"
-    (appElementWidth)="preview.setSplitWidth($event)"
+    uiResize
+    (resized)="preview.setSplitWidth($event.width)"
   >
     <div
       class="library__half"
@@ -754,8 +755,10 @@
         @if (store.hasMore() && !feed.stale()) {
         <div
           class="library__more"
-          appInView
-          [appInViewRecheck]="store.count()"
+          uiInView
+          uiInViewRoot="scroll-parent"
+          uiInViewMargin="0px 0px 320px 0px"
+          [uiInViewRecheck]="store.count()"
           (entered)="store.loadMore()"
         >
           @if (store.loadMoreFailed()) {

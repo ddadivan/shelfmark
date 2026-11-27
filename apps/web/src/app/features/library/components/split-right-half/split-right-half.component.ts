@@ -13,11 +13,11 @@ import {
   TooltipDirective,
   DragWobbleDirective,
   ScrollFadeDirective,
+  UiInViewDirective,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { DragSlotComponent } from '../../../links/components/drag-slot/drag-slot.component';
 import { LinkCardComponent } from '../../../links/components/link-card/link-card.component';
-import { InViewDirective } from '../../../links/directives/in-view.directive';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { LinkDragService } from '../../../links/services/link-drag.service';
 import { LibraryDragService } from '../../services/library-drag.service';
@@ -49,7 +49,7 @@ const SKELETON_COUNT = 4;
     BadgeComponent,
     ButtonComponent,
     DragSlotComponent,
-    InViewDirective,
+    UiInViewDirective,
     LinkCardComponent,
     LoadMoreComponent,
     PanelComponent,

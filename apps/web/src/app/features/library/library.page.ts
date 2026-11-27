@@ -46,6 +46,8 @@ import {
   DragWobbleDirective,
   ScrollFadeDirective,
   mediaMatch,
+  UiResizeDirective,
+  UiInViewDirective,
 } from '@shelfmark/ui';
 import { PIN_KIND } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
@@ -53,7 +55,6 @@ import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { ExportDialogService } from '../export/services/export-dialog.service';
 import { SavedViewChipsComponent } from '../views/components/saved-view-chips/saved-view-chips.component';
-import { InViewDirective } from '../links/directives/in-view.directive';
 import { LinkActionsService } from '../links/services/link-actions.service';
 import { DragSlotComponent } from '../links/components/drag-slot/drag-slot.component';
 import { LinkDragService } from '../links/services/link-drag.service';
@@ -88,7 +89,6 @@ import { FolderTileComponent } from './components/folder-tile/folder-tile.compon
 import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
 import { SplitViewService } from './services/split-view.service';
-import { ElementWidthDirective } from './directives/element-width.directive';
 import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_GROUPS } from './models/sort-groups.const';
@@ -137,7 +137,7 @@ const LABELLED_TOOLS_BELOW_QUERY = '(width < 100em)';
     FolderIconComponent,
     FolderTileComponent,
     ExtensionBannerComponent,
-    InViewDirective,
+    UiInViewDirective,
     LibraryHotkeysDirective,
     BulkBarFitDirective,
     ToastAboveDirective,
@@ -154,7 +154,7 @@ const LABELLED_TOOLS_BELOW_QUERY = '(width < 100em)';
     NoticeComponent,
     PickerMenuComponent,
     ProgressBarComponent,
-    ElementWidthDirective,
+    UiResizeDirective,
     PreviewPageComponent,
     PreviewPanelComponent,
     ResizeHandleComponent,
