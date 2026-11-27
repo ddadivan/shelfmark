@@ -12,9 +12,8 @@
   overflow: hidden;
   color: var(--text);
   cursor: pointer;
-  background: var(--surface);
+  background: var(--card-bg);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
   transition:
     box-shadow var(--duration-base) var(--ease-out),
     background-color var(--duration-base) var(--ease-out);
@@ -30,19 +29,18 @@
   @include enter(fade);
 }
 
-// Hover (Shelf reference `.card:hover`): pointer devices only (Motion principle 7); only a slight
-// colour change of the card (light: the soft hover shadow, dark: a 4% white overlay through
-// `--card-hover-bg`). No lift, no image zoom, nothing appears over the preview.
+// Hover: pointer devices only (Motion principle 7); only the fill changes, the same in both
+// themes (author, Nov 27: no ring, no shadow): `--card-hover-bg`, 4% darker in light, 4% lighter
+// in dark. No lift, no image zoom, nothing appears over the preview.
 :host {
   @include hover {
     background: var(--card-hover-bg);
-    box-shadow: var(--shadow-card-hover);
   }
 }
 
-// Press: the shadow tightens back (80 ms), the overlay bar darkens.
+// Press: the hover fill at once (no shadow), the overlay bar darkens.
 :host(:has(.ui-card__link:active)) {
-  box-shadow: var(--shadow-card-press);
+  background: var(--card-hover-bg);
   transition-duration: var(--duration-instant);
 
   .ui-card__overlay {
@@ -59,17 +57,17 @@
   }
 }
 
-// Picked for a bulk action: the `pick` fill and a thin 2px `accent` ring, also while hovered.
+// Picked for a bulk action: the `pick` fill and a 2px ring of `accent` at 50%, 75% while hovered.
 :host(.ui-card--checked) {
   // Chips are tinted too: on the picked card they sit on `surface`, so they stay visible.
   --ui-chip-bg: var(--surface);
 
   background: var(--pick);
-  box-shadow: 0 0 0 2px var(--accent);
+  box-shadow: 0 0 0 2px var(--card-checked-ring);
 
   @include hover {
     background: var(--pick);
-    box-shadow: 0 0 0 2px var(--accent);
+    box-shadow: 0 0 0 2px var(--card-checked-ring-hover);
   }
 }
 
@@ -83,7 +81,7 @@
   place-items: center;
   overflow: hidden;
   color: var(--text-muted);
-  background: var(--surface-hover);
+  background: var(--card-media-bg);
   aspect-ratio: var(--ui-card-media-ratio, 4 / 3);
 }
 
@@ -122,7 +120,7 @@
   --ui-card-image-height: 100%;
 }
 
-// Shops: the whole product on `surface-hover`.
+// Shops: the whole product on `--card-media-bg`.
 :host(.ui-card--contain) .ui-card__image {
   object-fit: contain;
 }
@@ -133,7 +131,7 @@
 .ui-card__placeholder {
   position: absolute;
   inset: 0;
-  background: var(--surface-hover);
+  background: var(--card-media-bg);
 
   &[data-tone='0'] {
     background: var(--accent-bg);

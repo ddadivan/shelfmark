@@ -356,17 +356,20 @@ describe('CardComponent', () => {
     it('applies hover only under (hover: hover)', () => {
       expect(withoutMedia(css, /hover:\s*hover/)).not.toContain(':hover');
       const hover = mediaBlocks(css, HOVER_ONLY).join('\n');
-      expect(hover).toContain('var(--shadow-card-hover)');
+      // Only the fill changes on hover, in both themes (author, Nov 27): no shadow.
+      expect(hover).toMatch(/:host:hover \{\s*background: var\(--card-hover-bg\);\s*\}/);
       expect(hover).toContain('var(--card-hover-bg)');
+      expect(hover).toContain('var(--card-checked-ring-hover)');
       expect(hover).toContain('.ui-card__more');
     });
 
-    it('draws the Shelf card: hairline, 16px corners, pick and the 4:3 preview', () => {
+    it('draws the card: its own fill with no ring or shadow, 16px corners, pick and the 4:3 preview', () => {
       expect(css).toContain('border-radius: var(--radius-card)');
-      expect(css).toContain('box-shadow: var(--shadow-card)');
+      expect(css).toMatch(/:host\s*\{[^}]*background: var\(--card-bg\)/);
+      expect(css).not.toContain('var(--shadow-card');
       expect(css).toMatch(/:host\(\.ui-card--selected\)\s*\{\s*background: var\(--pick\)/);
       expect(css).toMatch(
-        /:host\(\.ui-card--checked\)\s*\{[^}]*box-shadow: 0 0 0 2px var\(--accent\)/,
+        /:host\(\.ui-card--checked\)\s*\{[^}]*box-shadow: 0 0 0 2px var\(--card-checked-ring\)/,
       );
       expect(css).toMatch(/aspect-ratio: var\(--ui-card-media-ratio, 4 ?\/ ?3\)/);
       expect(css).toContain('object-fit: contain');

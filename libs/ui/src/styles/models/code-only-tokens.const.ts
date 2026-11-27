@@ -22,7 +22,13 @@ export const CODE_ONLY_TOKENS: Readonly<Record<string, string>> = {
   'ai-fill': 'Fill of the AI action button: 24% ai over surface.',
   'ai-fill-hover': 'Hover of the AI action button: 30% ai over surface.',
   'ai-fill-pressed': 'Pressed AI action button: 36% ai over surface.',
-  'card-hover-bg': 'Hovered card fill: the surface, 4% lighter in dark (Shelf shadow-hover usage).',
+  'card-bg': 'Card fill: surface-hover on the white light page, surface in dark (author, Nov 27).',
+  'card-hover-bg': 'Hovered card fill: the card fill, 4% darker in light and 4% lighter in dark.',
+  'card-media-bg':
+    'Preview area of a card: one step off the card fill (surface-pressed / surface-hover).',
+  'card-checked-ring': 'Ring of a card picked for a bulk action: accent at 50% (author, Nov 27).',
+  'card-checked-ring-hover':
+    'The same ring while the picked card is hovered: accent at 75% (author, Nov 27).',
   'skeleton-shimmer': 'Moving highlight of skeletons, mixed from surface or text.',
   // Values the prototypes draw that tokens.json does not name.
   'ai-line': 'Dashed edge of AI suggestion chips (sage between ai and ai-bg), from 04-organise.',

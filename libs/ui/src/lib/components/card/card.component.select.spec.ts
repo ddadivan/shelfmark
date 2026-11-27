@@ -56,7 +56,7 @@ describe('CardComponent select slot', () => {
     expect(touch).not.toContain('.ui-card__select');
     const base = css;
     expect(base).toContain('.ui-card--selecting');
-    expect(base).toMatch(/box-shadow: 0 0 0 2px var\(--accent\)/);
+    expect(base).toMatch(/box-shadow: 0 0 0 2px var\(--card-checked-ring\)/);
     // Unchecked it is the Shelf box: `surface` with the `control` edge, so it reads as a checkbox.
     expect(base).toContain('--ui-checkbox-bg: var(--surface)');
     expect(base).toContain('--ui-checkbox-border: var(--line-strong)');

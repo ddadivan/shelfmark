@@ -106,7 +106,14 @@
   --shadow-popover: var(--shadow-l2);
   --shadow-card-hover: 0 0 0 1px var(--line), var(--shadow-hover);
   --shadow-card-press: 0 0 0 1px var(--line), 0 4px 10px -6px rgb(0 0 0 / 20%);
-  --card-hover-bg: var(--surface);
+
+  // Cards (author, Nov 27): no ring, no shadow in either theme; a light grey card on the white
+  // page, 4% darker on hover, its preview area one step darker still.
+  --card-bg: var(--surface-hover);
+  --card-hover-bg: color-mix(in srgb, var(--surface-hover) 96%, #000);
+  --card-media-bg: var(--surface-pressed);
+  --card-checked-ring: color-mix(in srgb, var(--accent) 50%, transparent);
+  --card-checked-ring-hover: color-mix(in srgb, var(--accent) 75%, transparent);
 
   // Code-only (token-sync.spec.ts): the neutral hairline of the search fields (prototypes draw
   // `inset 0 0 0 1px rgba(127,127,127,.25)` in both themes) and the soft lift under the slider
