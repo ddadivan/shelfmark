@@ -9,7 +9,7 @@
   (selected)="choose($event)"
   (keydown)="onKeydown($event)"
 >
-  @if (scope(); as scope) {
+  @if (showScope() && scope(); as scope) {
     <ui-chip
       slot="input-lead"
       class="header-search__scope"

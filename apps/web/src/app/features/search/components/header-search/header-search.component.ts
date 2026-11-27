@@ -6,6 +6,7 @@ import {
   ElementRef,
   computed,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -50,7 +51,7 @@ import { SearchFieldService } from '../../services/search-field.service';
     FolderIconComponent,
     IconComponent,
   ],
-  host: { '(focusout)': 'onFocusout($event)' },
+  host: { '(focusin)': 'focused.set(true)', '(focusout)': 'onFocusout($event)' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header-search.component.html',
   styleUrl: './header-search.component.scss',
@@ -64,6 +65,15 @@ export class HeaderSearchComponent {
 
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly scope = this.search.scope;
+  /** Focus is somewhere in the field (its input, the chip, the list). */
+  protected readonly focused = signal(false);
+  /**
+   * The scope chip shows only while searching (author, Nov 27): with focus in the field or text in
+   * it. At rest the placeholder ("Search in Work") already says where a search would look.
+   */
+  protected readonly showScope = computed(
+    () => this.scope() !== null && (this.focused() || this.search.text() !== ''),
+  );
 
   private readonly transloco = inject(TranslocoService);
   // Re-reads the scope name when the language changes or its file arrives.
@@ -137,6 +147,7 @@ export class HeaderSearchComponent {
     if (next instanceof Node && this.host.contains(next)) {
       return;
     }
+    this.focused.set(false);
     this.recent.add(this.search.text());
   }
 }

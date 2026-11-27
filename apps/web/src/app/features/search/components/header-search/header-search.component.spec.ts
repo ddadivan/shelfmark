@@ -175,8 +175,33 @@ describe('HeaderSearchComponent (Shelf header search)', () => {
       expect(input.getAttribute('placeholder')).toBe('Search links, folders and tags');
     });
 
-    it('shows the folder tile and name, and names the field "Search in Work"', async () => {
+    it('hides the chip at rest, where the placeholder names the folder', async () => {
       const { element, input } = await setup({ scope: FOLDER_SCOPE });
+
+      expect(element.querySelector('ui-chip')).toBeNull();
+      expect(input.getAttribute('placeholder')).toBe('Search in Work');
+    });
+
+    it('shows the chip while the field holds text, even without focus', async () => {
+      const { element } = await setup({ scope: FOLDER_SCOPE, text: 'jacket' });
+
+      expect(element.querySelector('ui-chip')).not.toBeNull();
+    });
+
+    it('hides the chip again when focus leaves the empty field', async () => {
+      const { fixture, element, input } = await setup({ scope: FOLDER_SCOPE });
+      input.focus();
+      await fixture.whenStable();
+      input.blur();
+      await fixture.whenStable();
+
+      expect(element.querySelector('ui-chip')).toBeNull();
+    });
+
+    it('shows the folder tile and name, and names the field "Search in Work"', async () => {
+      const { fixture, element, input } = await setup({ scope: FOLDER_SCOPE });
+      input.focus();
+      await fixture.whenStable();
       const chip = element.querySelector('.ui-command-list__field > ui-chip');
 
       expect(chip?.textContent).toContain('Work');
@@ -186,9 +211,11 @@ describe('HeaderSearchComponent (Shelf header search)', () => {
     });
 
     it('shows the translated scope of Unsorted with its icon', async () => {
-      const { element, input } = await setup({
+      const { fixture, element, input } = await setup({
         scope: { labelKey: 'library.scope.unsorted', name: null, icon: 'inbox', colour: null },
       });
+      input.focus();
+      await fixture.whenStable();
       const chip = element.querySelector('ui-chip');
 
       expect(chip?.textContent).toContain('Unsorted');
