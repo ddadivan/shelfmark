@@ -132,10 +132,6 @@
   // area's height, cutting the rows below and leaving nothing to scroll: keep its own height.
   flex-shrink: 0;
   gap: 0;
-
-  // 4px inside the rounded panel, so the rounded ring of a focused or checked row never meets the
-  // panel's larger corners, which clipped it (author, Nov 27).
-  padding: var(--space-1);
   overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -147,5 +143,33 @@
 
   > .library__item {
     --ui-list-item-radius: 0;
+  }
+
+  // The rows fill the panel edge to edge (no padding, author, Nov 27), so the ring of a focused
+  // or checked first (last) row takes the panel's corners on top (bottom): the panel's clip then
+  // follows the ring instead of cutting it. Shared corners of a merged group stay square.
+  > .library__item:first-child {
+    --ui-list-item-focus-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-sm);
+    --ui-list-item-checked-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)
+      var(--radius-sm);
+  }
+
+  > .library__item:last-child {
+    --ui-list-item-focus-radius: var(--radius-sm) var(--radius-sm) var(--radius-lg) var(--radius-lg);
+    --ui-list-item-checked-radius: var(--radius-sm) var(--radius-sm) var(--radius-lg)
+      var(--radius-lg);
+  }
+
+  > .library__item:first-child:last-child {
+    --ui-list-item-focus-radius: var(--radius-lg);
+    --ui-list-item-checked-radius: var(--radius-lg);
+  }
+
+  > .library__item--selected:first-child:has(+ .library__item--selected) {
+    --ui-list-item-checked-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  > .library__item--selected + .library__item--selected:last-child {
+    --ui-list-item-checked-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
 }

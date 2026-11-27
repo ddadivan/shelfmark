@@ -67,6 +67,17 @@
 // In a short feed the auto margin pushes it to the bottom of the scroll area, so it sits there
 // whatever the length (#350); the padding keeps a gap to the last cards in a long one. Desktop:
 // the scroll area reaches the window edge, which is also the sidebar's bottom line (#352).
+// At the end of the feed the bar stands centred in the space under the last row (author, Nov 27):
+// as far above it as the bar's 16px offset plus the visible end padding of the scroll area
+// (`.library__scroll`) below it. The phone and tablet bar keep their own spacing.
+:has(+ .library__bulk) {
+  margin-block-end: calc(var(--space-4) + var(--space-6));
+
+  @include compact {
+    margin-block-end: 0;
+  }
+}
+
 .library__bulk {
   position: sticky;
   inset-block-end: var(--space-4);
@@ -197,8 +208,9 @@
   --ui-list-item-checked-radius: 0;
 }
 
-// Headline rows touch (no gap), so the bridge has nothing to fill and would draw the side edges a
-// second time over the row above.
+// Headline rows touch, only the 1px divider runs between them: the bridge covers just that line,
+// so the side edges of a merged group's ring run on unbroken.
 .library__rows--headlines > .library__item::before {
-  display: none;
+  inset-block-start: rem(-1px);
+  block-size: rem(1px);
 }
