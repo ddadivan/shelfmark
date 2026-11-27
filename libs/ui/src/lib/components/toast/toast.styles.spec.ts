@@ -49,6 +49,13 @@ describe('toast styles', () => {
     expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*white-space:\s*nowrap/);
   });
 
+  it('puts the actions on their own line under the text on a phone (author, Nov 27)', () => {
+    const phone = mediaBlocks(toast, /max-width|width\s*</).join('\n');
+    expect(phone).toMatch(/:host[^{]*\{[^}]*flex-wrap:\s*wrap/);
+    expect(phone).toMatch(/\.ui-toast__action[^{]*\{[^}]*order:\s*2/);
+    expect(phone).toMatch(/\.ui-toast__close[^{]*\{[^}]*order:\s*1/);
+  });
+
   it('tints the icon tile by kind', () => {
     expect(toast).toMatch(/ui-toast--success\)\s*\.ui-toast__icon\s*\{[^}]*var\(--ui-toast-tile\)/);
     expect(toast).toMatch(/ui-toast--danger\)\s*\.ui-toast__icon\s*\{[^}]*var\(--danger-bg\)/);

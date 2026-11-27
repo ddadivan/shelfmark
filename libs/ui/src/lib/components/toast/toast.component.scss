@@ -128,3 +128,28 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+// Phone (author, Nov 27): the actions go on their own line under the lead and the text, so a long
+// title keeps the width instead of wrapping into a narrow column beside them. The lead, the text
+// and the close button share the first line (the text takes all but the room of the lead, the
+// close button and their gaps; `close` is 44px under touch); the actions follow from the start.
+@include phone {
+  :host {
+    flex-wrap: wrap;
+    row-gap: var(--space-2-5);
+  }
+
+  .ui-toast__text {
+    flex: 1 1 calc(100% - #{rem(104px)});
+    margin-inline-end: 0;
+  }
+
+  .ui-toast__close {
+    order: 1;
+  }
+
+  .ui-toast__keys,
+  .ui-toast__action {
+    order: 2;
+  }
+}
