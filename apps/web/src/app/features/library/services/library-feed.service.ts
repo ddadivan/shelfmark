@@ -83,6 +83,8 @@ export class LibraryFeedService {
   readonly morphNames: ViewTransitionNames = {
     on: () => this.morphing.set(true),
     off: () => this.morphing.set(false),
+    // The feed's own scroll area: cards scrolled out of it stay out of the morph.
+    clip: () => this.doc.querySelector('.library__scroll'),
   };
   readonly shownLinks = computed(() => (this.stale() ? this.lastShown().items : this.ownLinks()));
   readonly shownCount = computed(() => this.shownLinks().length);

@@ -66,8 +66,9 @@
   --ui-chip-bg: var(--surface);
   --ui-list-item-ring-color: var(--card-checked-ring);
 
-  // The card's picked ring (author, Nov 27): 2px of `accent` at 50%, 75% while hovered, drawn
-  // inside so neighbouring rows never hide it. A page that merges neighbouring checked rows into
+  // The card's picked ring (author, Nov 27): 2px of `accent` at 50%, drawn inside so neighbouring
+  // rows never hide it; unlike the card it does not change on hover (one row of a merged group
+  // would stand out). A page that merges neighbouring checked rows into
   // one shape drops the shared edges with `--ui-list-item-ring-top` / `--ui-list-item-ring-bottom`
   // (0 instead of the default 2px).
   background: var(--pick);
@@ -78,10 +79,6 @@
     inset 0 var(--ui-list-item-ring-top, 2px) 0 var(--ui-list-item-ring-color),
     inset 0 calc(var(--ui-list-item-ring-bottom, 2px) * -1) 0 var(--ui-list-item-ring-color);
   /* stylelint-enable shelf/shadow-token */
-
-  @include hover {
-    --ui-list-item-ring-color: var(--card-checked-ring-hover);
-  }
 }
 
 // Bulk selection checkbox: above the stretched link, keeps its place (no shift on hover).

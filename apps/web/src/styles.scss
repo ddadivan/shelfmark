@@ -93,6 +93,15 @@ app-link-card ui-card {
   animation-timing-function: var(--ease-in-out);
 }
 
+// The feed's scroll area is the morph's clip (author, Nov 27): while a morph runs it carries the
+// name `vt-clip-area` and `view-transition-group: contain` (`runViewTransition`), the cards' groups
+// nest inside its group, and this rule cuts them at its edges, so a card scrolled half out never
+// glides over the toolbar or the rest of the page.
+/* stylelint-disable-next-line selector-pseudo-element-no-unknown -- nested view transition groups (Chromium 140+), not in stylelint's list yet */
+::view-transition-group-children(vt-clip-area) {
+  overflow: clip;
+}
+
 // Page cross-fade (router `withViewTransitions`): the root snapshot fades old into new. Short, so
 // navigation never feels slower; reduced motion skips the transition in code. Declared after the
 // `(*)` rule above, and `(root)` is more specific, so the cards <-> list morph keeps its timing.

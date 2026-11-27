@@ -253,14 +253,16 @@ describe('ListItemComponent', () => {
       expect(mediaBlocks(css, HOVER_ONLY).join('\n')).toContain('var(--fill)');
     });
 
-    it('rings a checked row like a picked card (50%, 75% on hover), inside, with mergeable edges', () => {
+    it('rings a checked row like a picked card (50%, unchanged on hover), inside, with mergeable edges', () => {
       expect(css).toMatch(
         /:host\(\.ui-list-item--checked\)\s*\{[^}]*--ui-list-item-ring-color: var\(--card-checked-ring\)/,
       );
       expect(css).toContain(
         'inset 0 var(--ui-list-item-ring-top, 2px) 0 var(--ui-list-item-ring-color)',
       );
-      expect(mediaBlocks(css, HOVER_ONLY).join('\n')).toContain('var(--card-checked-ring-hover)');
+      expect(mediaBlocks(css, HOVER_ONLY).join('\n')).not.toContain(
+        'var(--card-checked-ring-hover)',
+      );
     });
 
     it('rounds a checked headline row (radius-sm, mergeable corners)', () => {
