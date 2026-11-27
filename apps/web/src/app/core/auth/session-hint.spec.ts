@@ -35,6 +35,9 @@ describe('session hint', () => {
     expect(hasSessionHint(storage)).toBe(false);
     markSessionHint(storage);
     expect(hasSessionHint(storage)).toBe(true);
+    // Without a storage argument it reads the device storage, which another spec in the same
+    // worker may have written: clear it first so the answer does not depend on test order.
+    globalThis.localStorage.removeItem(STORAGE_KEY.SessionHint);
     expect(hasSessionHint(undefined)).toBe(false);
   });
 
