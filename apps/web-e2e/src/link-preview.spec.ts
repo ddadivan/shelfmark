@@ -110,7 +110,7 @@ test.describe('link preview (mock API)', () => {
     await expect(titles.first()).toBeVisible();
     await page.getByRole('treeitem', { name: /^Reading\b/ }).focus();
     // A preview opened while the tree has the focus: the arrows must still follow the list.
-    await titles.first().evaluate((link) => (link as HTMLElement).click());
+    await titles.first().dispatchEvent('click');
     const rows = page.locator('.library__scroll [data-link-id]');
     const current = page.locator('.library__scroll [data-link-id][aria-current="true"]');
     await expect(current).toHaveCount(1);
