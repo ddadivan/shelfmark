@@ -5,7 +5,7 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import type { AskConversationListResponse } from '@shelfmark/contracts';
 import { DialogService, ToastService, type ConfirmDialogConfig } from '@shelfmark/ui';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { firstValueFrom, NEVER, of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
 import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
@@ -32,9 +32,11 @@ const LIST: AskConversationListResponse = {
   nextCursor: 'b',
 };
 
-async function setup({ fails = false, askHistory = true, sheet = false } = {}) {
+async function setup({ fails = false, askHistory = true, sheet = false, pending = false } = {}) {
   const history = {
-    list: vi.fn(() => (fails ? throwError(() => new Error('offline')) : of(LIST))),
+    list: vi.fn(() =>
+      pending ? NEVER : fails ? throwError(() => new Error('offline')) : of(LIST),
+    ),
     get: vi.fn(),
     remove: vi.fn(() => of(undefined)),
     clear: vi.fn(() => of({ deleted: 2 })),
@@ -68,6 +70,18 @@ async function setup({ fails = false, askHistory = true, sheet = false } = {}) {
 }
 
 describe('AskHistoryListComponent', () => {
+  it('holds the room of the conversations while they load, so the foot does not jump', async () => {
+    const { host } = await setup({ pending: true });
+    expect(host.querySelectorAll('.ask-history__sk-section')).toHaveLength(2);
+    expect(host.querySelectorAll('.ask-history__sk-row')).toHaveLength(5);
+    expect(host.querySelector('.ask-history__foot')).not.toBeNull();
+  });
+
+  it('draws no placeholder rows in the phone sheet', async () => {
+    const { host } = await setup({ pending: true, sheet: true });
+    expect(host.querySelector('.ask-history__sk-row')).toBeNull();
+  });
+
   it('draws Shelf 11-ask: New conversation, Today and Earlier, the current row and the foot line', async () => {
     const { host } = await setup();
     const aside = host.querySelector('aside');

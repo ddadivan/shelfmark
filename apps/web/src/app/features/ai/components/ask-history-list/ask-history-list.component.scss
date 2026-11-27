@@ -44,6 +44,30 @@
   gap: rem(2px);
 }
 
+// The loading state: a 32px heading box and 38px rows with a thinner bar centred in each.
+.ask-history__sk-section,
+.ask-history__sk-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-inline: var(--space-2-5);
+}
+
+.ask-history__sk-section {
+  block-size: rem(32px);
+  padding-block-start: var(--space-2);
+
+  --ui-skeleton-width: 28%;
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+.ask-history__sk-row {
+  block-size: rem(38px);
+
+  --ui-skeleton-width: 65%;
+  --ui-skeleton-height: #{rem(14px)};
+}
+
 .ask-history__note {
   @include type(caption);
 

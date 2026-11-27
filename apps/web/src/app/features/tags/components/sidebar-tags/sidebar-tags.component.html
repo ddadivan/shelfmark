@@ -44,6 +44,11 @@
     <p class="tags__lead">
       {{ pluralKey('tags.page.lead', tags.count()) | transloco: { count: tags.count() } }}
     </p>
+  } @else if (asPage() && !tags.loaded()) {
+    <!-- The lead's own room (one line, two on a phone), so the chips do not move down when it arrives. -->
+    <div class="tags__lead tags__lead--loading" aria-hidden="true">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+    </div>
   }
 
   <div

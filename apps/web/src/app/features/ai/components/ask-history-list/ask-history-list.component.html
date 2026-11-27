@@ -11,6 +11,20 @@
       {{ 'ai.ask.newChat' | transloco }}
     </ui-button>
   }
+  @if (!store.loaded() && !store.failed() && !sheet()) {
+    <!-- Room for the conversations (two day groups, 32px headings and 38px rows), so the foot below does
+         not jump down when they arrive. -->
+    @for (rows of SKELETON_GROUPS; track $index) {
+      <div class="ask-history__sk-section" aria-hidden="true">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+      </div>
+      <div class="ask-history__rows" aria-hidden="true">
+        @for (row of rows; track row) {
+          <div class="ask-history__sk-row"><ui-skeleton [shape]="SKELETON_SHAPE.Block" /></div>
+        }
+      </div>
+    }
+  }
   @for (group of store.groups(); track group.labelKey; let index = $index) {
     <h2 class="ask-history__section" [id]="idBase + '-' + index">
       {{ group.labelKey | transloco }}

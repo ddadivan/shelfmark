@@ -5,7 +5,7 @@ import { MOCK_ID, MOCK_NAME, MOCK_TAGS } from '@shelfmark/contracts/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { TagsStore } from '../../../../stores/tags.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { LINKS_API } from '../../../links/models/links-api.const';
@@ -117,6 +117,34 @@ afterEach(() => {
 });
 
 describe('SidebarTagsComponent', () => {
+  it('holds the lead line of the Tags page while the tags load', async () => {
+    const list = new Subject<readonly TagResponse[]>();
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        provideRouter([{ path: 'links', children: [] }]),
+        { provide: LINKS_API, useClass: MockLinksApi },
+        { provide: TAGS_API, useValue: { list: () => list } },
+      ],
+    });
+    await loadEnglish();
+    const fixture = TestBed.createComponent(SidebarTagsComponent);
+    fixture.componentRef.setInput('asPage', true);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('.tags__lead--loading')).not.toBeNull();
+    expect(element.querySelector('p.tags__lead')).toBeNull();
+
+    list.next([tag('angular', 3)]);
+    list.complete();
+    await vi.waitFor(async () => {
+      TestBed.tick();
+      await fixture.whenStable();
+      expect(element.querySelector('.tags__lead--loading')).toBeNull();
+    });
+    expect(element.querySelector('p.tags__lead')).not.toBeNull();
+  });
+
   it('lists the tags as chips below a Tags heading', async () => {
     const { element } = await setup();
 

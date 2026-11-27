@@ -178,6 +178,22 @@ const titles = (element: HTMLElement) =>
   [...element.querySelectorAll('ui-history-group h2')].map((h) => h.textContent?.trim());
 
 describe('RecentPage', () => {
+  it('holds the room of the Pause and Clear buttons while the history loads', async () => {
+    const recent = new Subject<{ items: LinkResponse[] }>();
+    const { element, fixture } = await setup([], { recent });
+    // Pause history waits for the settings, Clear history for the list: one 40px box each.
+    expect(element.querySelector('.recent-page__sk-button--clear')).not.toBeNull();
+    expect(element.textContent).not.toContain('Clear history');
+
+    recent.next({ items: [opened(1, 0)] });
+    await vi.waitFor(async () => {
+      await fixture.whenStable();
+      expect(element.querySelector('.recent-page__sk-button')).toBeNull();
+    });
+    expect(button(element, 'Clear history')).toBeDefined();
+    expect(button(element, 'Pause history')).toBeDefined();
+  });
+
   it('has an Opened and Forgotten switch with the count and writes the choice into the URL', async () => {
     const { element, fixture } = await setup([opened(1, 0)], {
       forgotten: [opened(7, 90), opened(8, 95), opened(9, 99)],

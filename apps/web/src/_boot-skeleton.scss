@@ -1888,18 +1888,21 @@
   padding-block-start: 0;
 }
 
+// The history card (ask-history-list): 12px 8px of padding, 2px between its parts, "New conversation"
+// 32px (4px in from the sides, 8px under it), 32px day headings, 38px rows, the hairline and the
+// 64px foot (the "kept" line and "Clear all"). 415px with five conversations.
 .boot__ask-side {
   display: none;
   flex: none;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: rem(2px);
   align-self: flex-start;
   box-sizing: border-box;
   width: rem(240px);
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-2);
   background: var(--surface);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
 
   @include desktop {
     display: flex;
@@ -1908,11 +1911,60 @@
 
 .boot__ask-new {
   height: rem(32px);
+  margin: 0 var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
 }
 
-.boot__ask-row {
-  height: rem(32px);
+.boot__ask-sec,
+.boot__ask-hrow {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-2-5);
+}
+
+.boot__ask-sec {
+  block-size: rem(32px);
+  padding-block-start: var(--space-2);
+}
+
+.boot__ask-hrow {
+  block-size: rem(38px);
+}
+
+.boot__ask-sec-bar {
+  width: 28%;
+  height: rem(10px);
+}
+
+.boot__ask-hrow-bar {
+  width: 65%;
+  height: rem(14px);
+}
+
+.boot__ask-sep {
+  margin-block-start: var(--space-3);
+  border-block-start: 1px solid var(--sep);
+}
+
+.boot__ask-foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-2-5) 0;
+  block-size: rem(64px);
+  box-sizing: border-box;
+}
+
+.boot__ask-foot-line {
+  width: 70%;
+  height: rem(10px);
+  margin-block: rem(3px);
+}
+
+.boot__ask-foot-btn {
+  width: rem(64px);
+  height: rem(10px);
+  margin-block: rem(11px);
 }
 
 .boot__ask-main {

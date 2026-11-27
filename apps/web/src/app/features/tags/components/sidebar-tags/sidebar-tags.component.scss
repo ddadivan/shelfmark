@@ -140,6 +140,22 @@
   color: var(--text-muted);
 }
 
+// The lead's room while the tags load: its line box (22px) with a thinner bar centred in it, two
+// lines on a phone where the text wraps.
+.tags__lead--loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-block-size: rem(22px);
+
+  --ui-skeleton-width: 60%;
+  --ui-skeleton-height: #{rem(12px)};
+
+  @include phone {
+    min-block-size: rem(44px);
+  }
+}
+
 .tags__count {
   @include type(caption);
 

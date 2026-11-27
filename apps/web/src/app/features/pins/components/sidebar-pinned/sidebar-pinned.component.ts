@@ -18,6 +18,7 @@ import {
   input,
   model,
 } from '@angular/core';
+import { SidebarSkeletonComponent } from '../../../../shell/sidebar/sidebar-skeleton/sidebar-skeleton.component';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -81,6 +82,7 @@ import { PinActionsService } from '../../services/pin-actions.service';
     FolderIconComponent,
     IconComponent,
     RouterLink,
+    SidebarSkeletonComponent,
     TooltipDirective,
     TranslocoPipe,
   ],
@@ -92,7 +94,7 @@ import { PinActionsService } from '../../services/pin-actions.service';
     './sidebar-pinned-highlight.scss',
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.pinned--card]': 'card() && shown()' },
+  host: { '[class.pinned--card]': 'card() && (shown() || loading())' },
 })
 export class SidebarPinnedComponent {
   protected readonly PIN_KIND = PIN_KIND;
@@ -127,6 +129,15 @@ export class SidebarPinnedComponent {
    * The section is drawn while something is pinned; empty, only on the phone Library page once the
    * pins have loaded (no flash of the empty row before), the desktop sidebar hides it.
    */
+  protected readonly loading = computed(
+    () =>
+      this.card() &&
+      this.viewport.compact() &&
+      !this.pins.loaded() &&
+      !this.pins.error() &&
+      this.pins.rows().length === 0,
+  );
+
   protected readonly shown = computed(
     () =>
       this.pins.rows().length > 0 || (this.card() && this.viewport.compact() && this.pins.loaded()),

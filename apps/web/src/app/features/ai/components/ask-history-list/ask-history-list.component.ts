@@ -8,7 +8,12 @@ import {
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { AskConversationSummary } from '@shelfmark/contracts';
-import { ButtonComponent, ConversationRowComponent } from '@shelfmark/ui';
+import {
+  ButtonComponent,
+  ConversationRowComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
+} from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { ASK_CONVERSATION_PARAM } from '../../models/ask-conversation-param.const';
 import { AiSettingsStore } from '../../services/ai-settings.store';
@@ -25,13 +30,19 @@ import { AskHistoryStore } from '../../services/ask-history.store';
  */
 @Component({
   selector: 'app-ask-history-list',
-  imports: [TranslocoPipe, ButtonComponent, ConversationRowComponent],
+  imports: [TranslocoPipe, ButtonComponent, ConversationRowComponent, SkeletonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class.ask-history--sheet]': 'sheet()' },
   templateUrl: './ask-history-list.component.html',
   styleUrl: './ask-history-list.component.scss',
 })
 export class AskHistoryListComponent {
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
+  /** The rows the loading state holds room for: two day groups, as a used account has. */
+  protected readonly SKELETON_GROUPS: readonly (readonly number[])[] = [
+    [0, 1],
+    [0, 1, 2],
+  ];
   /** The conversation on screen (its row is current). */
   readonly activeId = input<string | null>(null);
   /** Inside the phone sheet: no card around it and no New conversation button. */

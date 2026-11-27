@@ -20,10 +20,19 @@
         {{ (settings.historyPaused() ? 'links.recent.pause.resume' : 'links.recent.pause.pause') |
         transloco }}
       </ui-button>
+      } @else {
+      <!-- The button's room while the settings load (it wraps under the switch on a phone). -->
+      <div class="recent-page__sk-button recent-page__sk-button--pause" aria-hidden="true">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+      </div>
       } @if (hasHistory()) {
       <ui-button variant="ghost" (click)="history()?.clear()">
         {{ 'links.recent.clear' | transloco }}
       </ui-button>
+      } @else if (!store.recentLoaded()) {
+      <div class="recent-page__sk-button recent-page__sk-button--clear" aria-hidden="true">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+      </div>
       } }
     </div>
   </header>

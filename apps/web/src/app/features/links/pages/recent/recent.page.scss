@@ -54,3 +54,25 @@
 .recent-page__history {
   flex: 1 0 auto;
 }
+
+// The room of the Pause and Clear buttons (ghost, 40px high, about 118px and 116px wide) until their
+// data is in, so the row does not grow and nothing wraps in later (a phone puts Clear under the
+// switch). A thinner bar stands in each.
+.recent-page__sk-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  block-size: var(--control-md);
+  padding-inline: var(--space-4);
+
+  --ui-skeleton-height: #{rem(14px)};
+}
+
+.recent-page__sk-button--pause {
+  inline-size: rem(118px);
+}
+
+.recent-page__sk-button--clear {
+  inline-size: rem(116px);
+}

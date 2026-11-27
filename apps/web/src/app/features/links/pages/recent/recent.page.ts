@@ -13,6 +13,8 @@ import {
   ButtonComponent,
   NOTICE_KIND,
   NoticeComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
   TOAST_KIND,
   ToastService,
 } from '@shelfmark/ui';
@@ -43,6 +45,7 @@ import { parseRecentView } from '../../utils/recent-view';
     NoticeComponent,
     RecentHistoryComponent,
     RecentViewSwitchComponent,
+    SkeletonComponent,
   ],
   templateUrl: './recent.page.html',
   styleUrl: './recent.page.scss',
@@ -63,6 +66,7 @@ export default class RecentPage {
   protected readonly windowDays = RECENT_LINKS_WINDOW_DAYS;
   protected readonly pluralKey = pluralKey;
   protected readonly NOTICE_KIND = NOTICE_KIND;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly hasHistory = computed(() => this.store.recent().length > 0);
 
   constructor() {

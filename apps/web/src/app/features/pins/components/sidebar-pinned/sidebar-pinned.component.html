@@ -1,4 +1,8 @@
-@if (shown()) {
+@if (loading()) {
+  <!-- The phone Library's Pinned card while the pins load: a heading and two rows, so the folders under
+       it do not jump down when it arrives. -->
+  <app-sidebar-skeleton class="pinned__loading" [rows]="2" [heading]="36" />
+} @else if (shown()) {
   <section class="pinned" aria-labelledby="sidebar-pinned-heading">
     <div class="pinned__header">
       <h2 id="sidebar-pinned-heading" class="pinned__heading">

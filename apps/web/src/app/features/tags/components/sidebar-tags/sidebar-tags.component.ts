@@ -24,6 +24,8 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   ICON_SIZE,
+  SKELETON_SHAPE,
+  SkeletonComponent,
   CHIP_VARIANT,
   ChipComponent,
   Dismissable,
@@ -65,6 +67,7 @@ import { splitTags } from '../../utils/tag-split';
     MenuItemComponent,
     MenuSeparatorComponent,
     NgTemplateOutlet,
+    SkeletonComponent,
     TooltipDirective,
     TranslocoPipe,
   ],
@@ -78,6 +81,7 @@ export class SidebarTagsComponent {
   protected readonly CHIP_VARIANT = CHIP_VARIANT;
   protected readonly pluralKey = pluralKey;
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
 
   /** The Tags tab of the phone: the heading is the page title (an `h1`, large) and chips are bigger. */
   readonly asPage = input(false, { transform: booleanAttribute });

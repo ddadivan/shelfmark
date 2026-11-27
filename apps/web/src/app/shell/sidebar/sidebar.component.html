@@ -88,11 +88,7 @@
       @if (!foldersOnly() && !pinsReady()) {
         <app-sidebar-skeleton class="sidebar__skeleton" [rows]="2" [heading]="36" />
       }
-      <app-sidebar-skeleton
-        class="sidebar__skeleton"
-        [rows]="foldersOnly() ? 5 : 4"
-        [heading]="40"
-      />
+      <app-sidebar-skeleton class="sidebar__skeleton" [rows]="4" [heading]="40" />
       @if (!foldersOnly() && !tagsReady()) {
         <app-sidebar-skeleton class="sidebar__skeleton" [rows]="3" [heading]="24" />
       }
