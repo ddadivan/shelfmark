@@ -298,7 +298,7 @@ describe('suggestion styles', () => {
 
   it('draws one focus ring for the chip and one for the x', () => {
     expect(css).toMatch(
-      /\.ui-suggestion__chip:has\(\.ui-suggestion__apply:focus-visible\)\s*\{[^}]*outline: 2px solid var\(--focus-ring\)/,
+      /\.ui-suggestion__chip:has\(\.ui-suggestion__apply:focus-visible\)\s*\{[^}]*outline: 2px solid color-mix\(in srgb, var\(--focus-ring\) 80%, transparent\)/,
     );
     expect(css).toMatch(/\.ui-suggestion__dismiss:focus-visible\s*\{[^}]*outline: 2px solid/);
   });

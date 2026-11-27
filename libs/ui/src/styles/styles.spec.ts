@@ -109,9 +109,11 @@ describe('focus mixins', () => {
     expect(css('.a { @include focus-ring; }')).not.toContain('outline: none');
   });
 
-  it('focus-ring draws a 2px focus-ring outline with a 2px offset', () => {
+  it('focus-ring draws a 2px focus-ring outline at 80% with a 2px offset', () => {
     const out = css('.a { @include focus-ring; }');
-    expect(out).toContain('outline: 2px solid var(--focus-ring)');
+    expect(out).toContain(
+      'outline: 2px solid color-mix(in srgb, var(--focus-ring) 80%, transparent)',
+    );
     expect(out).toContain('outline-offset: 2px');
   });
 

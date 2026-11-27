@@ -1,7 +1,8 @@
-// Solid 2px `focus-ring` outline for buttons, rows, cards and other non-text controls.
+// 2px `focus-ring` outline at 80% for buttons, rows, cards and other non-text controls (author,
+// Nov 27: softer in both themes; still about 9:1 on white and 11:1 on the dark page).
 // Declarations only: use it inside `&:focus-visible { @include focus-ring; }`.
 @mixin focus-ring($offset: 2px) {
-  outline: 2px solid var(--focus-ring);
+  outline: 2px solid color-mix(in srgb, var(--focus-ring) 80%, transparent);
   outline-offset: $offset;
 }
 
