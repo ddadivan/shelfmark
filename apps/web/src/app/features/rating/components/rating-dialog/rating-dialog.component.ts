@@ -34,7 +34,7 @@ import type { RatingDialogData } from '../../models/rating-dialog-data.interface
 import { RATING_STEP } from '../../models/rating-step.const';
 import type { RatingStep } from '../../models/rating-step.type';
 import { RATING_THANKS_FROM_SCORE } from '../../models/rating-thanks-from-score.const';
-import { isEditableTarget } from '../../utils/rating-blockers';
+import { isTypingTarget } from '../../../../core/layout/utils/is-typing-target';
 import { scoreForKey } from '../../utils/score-for-key';
 import { FocusWhenDirective } from '../../../../core/layout/directives/focus-when.directive';
 
@@ -171,7 +171,7 @@ export class RatingDialogComponent {
       event.altKey ||
       event.ctrlKey ||
       event.metaKey ||
-      isEditableTarget(event.target)
+      isTypingTarget(event.target)
     ) {
       return;
     }

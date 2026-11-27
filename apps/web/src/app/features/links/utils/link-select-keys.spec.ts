@@ -1,5 +1,4 @@
 import { chunks } from './chunks';
-import { isTypingTarget } from './is-typing-target';
 import { isLetter, linkKeyIntent } from './link-select-keys';
 import { LINK_KEY_INTENT } from '../models/link-key-intent.const';
 
@@ -46,30 +45,6 @@ describe('isLetter', () => {
     expect(isLetter(new KeyboardEvent('keydown', { key: 'ф', code: 'KeyA' }), 'a', 'KeyA')).toBe(
       true,
     );
-  });
-});
-
-describe('isTypingTarget', () => {
-  it('is true in text fields, editable content, dialogs and menus', () => {
-    const input = document.createElement('input');
-    const dialog = document.createElement('div');
-    dialog.setAttribute('role', 'dialog');
-    const inner = document.createElement('button');
-    dialog.append(inner);
-    const editable = document.createElement('div');
-    editable.setAttribute('contenteditable', 'true');
-    expect(isTypingTarget(input)).toBe(true);
-    expect(isTypingTarget(inner)).toBe(true);
-    expect(isTypingTarget(editable)).toBe(true);
-  });
-
-  it('is false for checkboxes, buttons, the page and non-elements', () => {
-    const box = document.createElement('input');
-    box.type = 'checkbox';
-    expect(isTypingTarget(box)).toBe(false);
-    expect(isTypingTarget(document.createElement('button'))).toBe(false);
-    expect(isTypingTarget(document.body)).toBe(false);
-    expect(isTypingTarget(null)).toBe(false);
   });
 });
 

@@ -4,9 +4,8 @@ import { KEYBOARD_KEY } from '@shelfmark/ui';
 import { LINK_SELECT_SHORTCUT } from '../../links/models/link-select-shortcut.const';
 import { parsePastedLinks } from '../../links/components/paste-many/parse-pasted-links';
 import { LinkActionsService } from '../../links/services/link-actions.service';
-import { isTypingTarget } from '../../links/utils/is-typing-target';
+import { isTypingTarget } from '../../../core/layout/utils/is-typing-target';
 import { isLetter } from '../../links/utils/link-select-keys';
-import { isEditableTarget } from '../../shortcuts/utils/is-editable-target';
 import { LibraryFeedService } from '../services/library-feed.service';
 import { LibraryFilterService } from '../services/library-filter.service';
 import { LibraryFolderService } from '../services/library-folder.service';
@@ -57,7 +56,7 @@ export class LibraryHotkeysDirective {
   onPaste(event: ClipboardEvent): void {
     if (
       event.defaultPrevented ||
-      isEditableTarget(event.target) ||
+      isTypingTarget(event.target) ||
       this.cdkDialogs.openDialogs.length > 0
     ) {
       return;
@@ -84,7 +83,11 @@ export class LibraryHotkeysDirective {
   }
 
   private selectionKey(event: KeyboardEvent): boolean {
-    if (event.defaultPrevented || event.isComposing || isTypingTarget(event.target)) {
+    if (
+      event.defaultPrevented ||
+      event.isComposing ||
+      isTypingTarget(event.target, { overlays: true })
+    ) {
       return false;
     }
     if (

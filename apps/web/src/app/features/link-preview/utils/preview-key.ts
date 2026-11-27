@@ -1,5 +1,5 @@
 import { KEYBOARD_KEY } from '@shelfmark/ui';
-import { isTypingTarget } from '../../links/utils/is-typing-target';
+import { isTypingTarget } from '../../../core/layout/utils/is-typing-target';
 import { isLetter } from '../../links/utils/link-select-keys';
 import { PREVIEW_FULL_SCREEN_SHORTCUT } from '../models/preview-full-screen-shortcut.const';
 import { PREVIEW_KEY } from '../models/preview-key.const';
@@ -28,7 +28,7 @@ export function previewKey(event: KeyboardEvent): PreviewKey | null {
     event.ctrlKey ||
     event.metaKey ||
     event.shiftKey ||
-    isTypingTarget(event.target)
+    isTypingTarget(event.target, { overlays: true })
   ) {
     return null;
   }

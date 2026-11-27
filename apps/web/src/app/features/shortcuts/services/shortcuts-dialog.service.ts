@@ -2,7 +2,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { inject, Service } from '@angular/core';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { UiStore } from '../../../stores/ui.store';
-import { isEditableTarget } from '../utils/is-editable-target';
+import { isTypingTarget } from '../../../core/layout/utils/is-typing-target';
 import { SHORTCUTS_HELP_KEY } from '../models/shortcuts-help-key.const';
 import { ShortcutsDialogComponent } from '../components/shortcuts-dialog/shortcuts-dialog.component';
 
@@ -36,7 +36,7 @@ export class ShortcutsDialogService {
       event.ctrlKey ||
       event.metaKey ||
       event.altKey ||
-      isEditableTarget(event.target)
+      isTypingTarget(event.target)
     ) {
       return false;
     }
