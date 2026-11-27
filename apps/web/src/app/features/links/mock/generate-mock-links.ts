@@ -16,7 +16,13 @@ const TAGS = ['docs', 'recipes', 'reading', 'video'] as const;
  * third link is unsorted, every fifth a favorite, every fourth was opened (spread over the last days).
  */
 export function generateMockLinks(): LinkResponse[] {
-  const links: LinkResponse[] = MOCK_LINKS.map((link) => ({ ...link, tags: [...link.tags] }));
+  // The fixtures share one timestamp; each later one is a millisecond older, so they keep this order
+  // under the API's tie-break (id, in the sort direction) that the mock now follows.
+  const links: LinkResponse[] = MOCK_LINKS.map((link, index) => ({
+    ...link,
+    tags: [...link.tags],
+    createdAt: new Date(Date.parse(link.createdAt) - index).toISOString(),
+  }));
   for (let i = links.length; i < MOCK_LINKS_COUNT; i++) {
     const created = new Date(BASE_TIME - i * HOURS_MS).toISOString();
     links.push({
