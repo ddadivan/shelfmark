@@ -80,14 +80,7 @@
 @if (viewport.compact()) {
   <!-- Phone: the swipe frame is the list item (it holds the buttons too); the row inside is not. -->
   <div class="trash-row__swipe" role="listitem">
-    <div
-      #actions
-      class="trash-row__actions"
-      role="group"
-      [attr.aria-label]="item().title"
-      (focusin)="swipe.focusIn()"
-      (focusout)="swipe.focusOut($event)"
-    >
+    <div #actions class="trash-row__actions" role="group" [attr.aria-label]="item().title">
       <ui-button
         size="lg"
         iconLeft="undo"
@@ -107,16 +100,13 @@
       </ui-button>
     </div>
     <div
-      #surface
+      #swipe="appSwipeReveal"
       class="trash-row__surface"
       uiLongPress
+      [appSwipeReveal]="swipeable()"
+      [appSwipeRevealActions]="actions"
       [class.trash-row__surface--dragging]="swipe.dragging()"
-      [style.translate.px]="swipe.offset()"
       (uiLongPress)="onLongPress()"
-      (pointerdown)="swipe.pointerDown($event)"
-      (pointermove)="swipe.pointerMove($event)"
-      (pointerup)="swipe.pointerEnd()"
-      (pointercancel)="swipe.pointerEnd()"
     >
       <ng-container [ngTemplateOutlet]="entry" />
     </div>

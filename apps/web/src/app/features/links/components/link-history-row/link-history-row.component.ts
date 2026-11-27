@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  ElementRef,
   inject,
   input,
   output,
@@ -29,7 +28,7 @@ import {
   MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
-import { SwipeReveal } from '../../../../core/layout/swipe-reveal';
+import { SwipeRevealDirective } from '../../../../core/layout/directives/swipe-reveal.directive';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkHost, ownImageUrl, safeHref } from '../../utils/link-view';
 
@@ -38,7 +37,7 @@ import { linkHost, ownImageUrl, safeHref } from '../../utils/link-view';
  * menu (Open in new tab, Show in folder, Copy link, Remove from history). It only renders and
  * emits; the page does the work.
  *
- * Phone: swiping the row left reveals "Remove" (the Trash pattern, `SwipeReveal`). The button is
+ * Phone: swiping the row left reveals "Remove" (the Trash pattern, `appSwipeReveal`). The button is
  * always in the DOM behind the row, so keyboard and screen reader users never need the swipe
  * (focusing it slides the row aside), and the menu stays on the row as well.
  */
@@ -56,6 +55,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
+    SwipeRevealDirective,
     TooltipDirective,
   ],
   templateUrl: './link-history-row.component.html',
@@ -98,34 +98,29 @@ export class LinkHistoryRowComponent {
   protected readonly preview = computed(() => ownImageUrl(this.link().imageUrl));
   protected readonly host = computed(() => linkHost(this.link().url));
 
-  private readonly actions = viewChild<ElementRef<HTMLElement>>('actions');
-  private readonly surface = viewChild<ElementRef<HTMLElement>>('surface');
-  /** Swipe state of the phone row ("Remove" waits behind it). */
-  protected readonly swipe = new SwipeReveal(
-    () => this.viewport.compact(),
-    () => this.actions()?.nativeElement,
-    () => this.surface()?.nativeElement,
-  );
+  /** Swipe state of the phone row ("Remove" waits behind it); absent on desktop. */
+  private readonly swipeReveal = viewChild(SwipeRevealDirective);
 
   /**
    * A tap opens the link (the browser follows the `href`), except the click that ends a swipe and
    * a tap on a swiped-open row, which closes it.
    */
   protected onActivated(event: MouseEvent): void {
-    if (this.swipe.takeClick()) {
+    const swipe = this.swipeReveal();
+    if (swipe?.takeClick()) {
       event.preventDefault();
       return;
     }
-    if (this.swipe.open()) {
+    if (swipe?.open()) {
       event.preventDefault();
-      this.swipe.setOpen(false);
+      swipe.setOpen(false);
       return;
     }
     this.opened.emit();
   }
 
   protected removeFromSwipe(): void {
-    this.swipe.setOpen(false);
+    this.swipeReveal()?.setOpen(false);
     this.removeRequested.emit();
   }
 }

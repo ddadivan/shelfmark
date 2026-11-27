@@ -71,14 +71,7 @@
 @if (viewport.compact()) {
   <!-- Phone: the swipe frame is the list item (it holds "Remove" too); the row inside is not. -->
   <div class="link-history-row__swipe" role="listitem">
-    <div
-      #actions
-      class="link-history-row__actions"
-      role="group"
-      [attr.aria-label]="link().title"
-      (focusin)="swipe.focusIn()"
-      (focusout)="swipe.focusOut($event)"
-    >
+    <div #actions class="link-history-row__actions" role="group" [attr.aria-label]="link().title">
       <ui-button
         size="lg"
         iconLeft="close"
@@ -90,14 +83,11 @@
       </ui-button>
     </div>
     <div
-      #surface
+      #swipe="appSwipeReveal"
       class="link-history-row__surface"
+      [appSwipeReveal]="true"
+      [appSwipeRevealActions]="actions"
       [class.link-history-row__surface--dragging]="swipe.dragging()"
-      [style.translate.px]="swipe.offset()"
-      (pointerdown)="swipe.pointerDown($event)"
-      (pointermove)="swipe.pointerMove($event)"
-      (pointerup)="swipe.pointerEnd()"
-      (pointercancel)="swipe.pointerEnd()"
     >
       <ng-container [ngTemplateOutlet]="entry" />
     </div>

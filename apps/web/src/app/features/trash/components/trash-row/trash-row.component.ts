@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  ElementRef,
   inject,
   input,
   output,
@@ -23,7 +22,7 @@ import {
   TooltipDirective,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
-import { SwipeReveal } from '../../../../core/layout/swipe-reveal';
+import { SwipeRevealDirective } from '../../../../core/layout/directives/swipe-reveal.directive';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { ownImageUrl, siteLetter } from '../../../links/utils/link-view';
 import { TRASH_EXPIRING_SOON_DAYS } from '../../models/trash-expiring-soon-days.const';
@@ -51,6 +50,7 @@ import { daysLeft } from '../../utils/trash-days-left';
     FolderIconComponent,
     HistoryRowComponent,
     LongPressDirective,
+    SwipeRevealDirective,
     TooltipDirective,
   ],
   templateUrl: './trash-row.component.html',
@@ -79,9 +79,6 @@ export class TrashRowComponent {
   /** Phone: a long press, which starts the selection with this entry. */
   readonly selectionStarted = output<void>();
 
-  private readonly actions = viewChild<ElementRef<HTMLElement>>('actions');
-  private readonly surface = viewChild<ElementRef<HTMLElement>>('surface');
-
   protected readonly isFolder = computed(() => this.item().kind === TRASH_ITEM_KIND.Folder);
   protected readonly preview = computed(() => ownImageUrl(this.item().imageUrl));
   protected readonly letter = computed(() => {
@@ -92,19 +89,16 @@ export class TrashRowComponent {
   protected readonly soon = computed(() => this.left() <= TRASH_EXPIRING_SOON_DAYS);
 
   protected readonly swipeable = computed(() => this.viewport.compact() && !this.selecting());
-  /** Swipe state of the phone row (Restore and Delete wait behind it). */
-  protected readonly swipe = new SwipeReveal(
-    () => this.swipeable(),
-    () => this.actions()?.nativeElement,
-    () => this.surface()?.nativeElement,
-  );
+  /** Swipe state of the phone row (Restore and Delete wait behind it); absent on desktop. */
+  private readonly swipeReveal = viewChild(SwipeRevealDirective);
 
   protected onActivated(): void {
-    if (this.swipe.takeClick()) {
+    const swipe = this.swipeReveal();
+    if (swipe?.takeClick()) {
       return;
     }
-    if (this.swipeable()) {
-      this.swipe.setOpen(!this.swipe.open());
+    if (swipe && this.swipeable()) {
+      swipe.setOpen(!swipe.open());
     } else {
       this.selectedChange.emit(!this.selected());
     }
@@ -112,18 +106,18 @@ export class TrashRowComponent {
 
   protected onLongPress(): void {
     if (this.swipeable()) {
-      this.swipe.setOpen(false);
+      this.swipeReveal()?.setOpen(false);
       this.selectionStarted.emit();
     }
   }
 
   protected restoreFromSwipe(): void {
-    this.swipe.setOpen(false);
+    this.swipeReveal()?.setOpen(false);
     this.restoreRequested.emit();
   }
 
   protected deleteFromSwipe(): void {
-    this.swipe.setOpen(false);
+    this.swipeReveal()?.setOpen(false);
     this.deleteRequested.emit();
   }
 }
