@@ -48,10 +48,10 @@ function normalise(text: string): string | null {
  * content shows under the fields (a contrast warning). Every string comes in translated.
  *
  * `adjust` (#415) is the caller's rule for a colour it accepts: it returns the nearest colour that
- * passes (the colour itself when it does). A colour picked in the area or on a slider moves to it
- * when the pick ends (pointer release, a slider's `change`), so a drag stays smooth; `adjusted()`
- * says so until the next change. A typed hex is never changed: "Add colour" stays disabled while
- * the current colour does not pass.
+ * passes (the colour itself when it does). The picker never moves a colour to it: the handles and
+ * the hex stay exactly where the person put them (the HSV model is the source of truth, the hex is
+ * derived from it), whether picked or typed; "Add colour" stays disabled while the current colour
+ * does not pass, and the caller shows its own warning (and a "use this shade" action).
  */
 @Component({
   selector: 'ui-color-picker',
@@ -99,8 +99,7 @@ export class ColorPickerComponent implements FormValueControl<string> {
   readonly disabled = input(false, { transform: booleanAttribute });
   /**
    * The nearest colour the caller accepts (the colour itself when it passes), or null to accept
-   * any colour. Applied when a pick in the area or on a slider ends; "Add colour" waits for a
-   * colour that passes.
+   * any colour. Never applied to the value; "Add colour" waits for a colour that passes.
    */
   readonly adjust = input<((colour: string) => string) | null>(null);
   /** The explicit choice ("Add colour"), lower-case `#rrggbb`; nothing else commits. */
@@ -145,11 +144,8 @@ export class ColorPickerComponent implements FormValueControl<string> {
     return !adjust || adjust(colour) === colour;
   });
   private readonly pickingState = signal(false);
-  private readonly adjustedState = signal(false);
   /** A pointer drag in the area is under way (the value is a raw preview until release). */
   readonly picking = this.pickingState.asReadonly();
-  /** The last pick was moved to the nearest colour `adjust` accepts; false again on any change. */
-  readonly adjusted = this.adjustedState.asReadonly();
   /** The value when the panel opened: what Esc and "Cancel" go back to. */
   private openedWith = '';
   private dragging = false;
@@ -167,7 +163,6 @@ export class ColorPickerComponent implements FormValueControl<string> {
     this.value.set('');
     this.draft.set('');
     this.openedWith = '';
-    this.adjustedState.set(false);
   }
 
   /** Focuses the swatch. */
@@ -206,7 +201,6 @@ export class ColorPickerComponent implements FormValueControl<string> {
   private discard(): void {
     this.value.set(this.openedWith);
     this.draft.set(this.openedWith);
-    this.adjustedState.set(false);
     this.open.set(false);
   }
 
@@ -251,24 +245,6 @@ export class ColorPickerComponent implements FormValueControl<string> {
     this.dragging = false;
     this.pickingState.set(false);
     (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-    this.settle();
-  }
-
-  /**
-   * A pick ended (pointer release in the area, a slider's `change`): a colour the caller does not
-   * accept moves to the nearest one it does, and the handles, the preview and the hex follow.
-   */
-  protected settle(): void {
-    const adjust = this.adjust();
-    const colour = this.value();
-    if (!adjust || !parseHex(colour)) {
-      return;
-    }
-    const nearest = adjust(colour);
-    if (nearest !== colour && parseHex(nearest)) {
-      this.value.set(nearest);
-      this.adjustedState.set(true);
-    }
   }
 
   private moveHandle(event: PointerEvent, area: HTMLElement): void {
@@ -298,7 +274,6 @@ export class ColorPickerComponent implements FormValueControl<string> {
 
   private setHsv(h: number, s: number, v: number): void {
     const hex = hsvToHex(h, s, v);
-    this.adjustedState.set(false);
     this.hsv.set([h, s, v]);
     // The linked signal keeps the model while the value is what it produced.
     this.value.set(hex);
@@ -313,7 +288,6 @@ export class ColorPickerComponent implements FormValueControl<string> {
   protected onHexInput(event: Event): void {
     const text = (event.target as HTMLInputElement).value;
     this.draft.set(text);
-    this.adjustedState.set(false);
     const colour = normalise(text);
     if (colour && colour !== this.value()) {
       this.value.set(colour);

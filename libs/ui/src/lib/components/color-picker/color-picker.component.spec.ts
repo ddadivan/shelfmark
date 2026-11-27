@@ -226,7 +226,7 @@ describe('ColorPickerComponent', () => {
         );
     }
 
-    it('a drag previews the raw colour; on release it moves to the nearest accepted one', async () => {
+    it('a pick never moves: the handle stays where it was put and the colour is not adjusted', async () => {
       const { fixture, area, hex, action, open, committed } = setup({ value: '#ff0000', adjust });
       await open();
       const picker = fixture.componentInstance;
@@ -235,78 +235,87 @@ describe('ColorPickerComponent', () => {
       fire('pointerdown', 100, 50);
       fire('pointermove', 0, 100);
       fixture.detectChanges();
-      // While dragging: the raw colour, smooth; it cannot be added.
       expect(picker.value()).toBe('#000000');
       expect(picker.picking()).toBe(true);
-      expect(picker.adjusted()).toBe(false);
       expect(action('Add color').disabled).toBe(true);
 
       fire('pointerup', 0, 100);
       fixture.detectChanges();
       expect(picker.picking()).toBe(false);
-      expect(picker.value()).toBe('#333333');
-      expect(picker.adjusted()).toBe(true);
-      expect(hex().value).toBe('#333333');
-      // The handles follow the adjusted colour (grey: no saturation, 20% brightness).
+      // Released: still the raw colour, the handle where the pointer was (bottom left).
+      expect(picker.value()).toBe('#000000');
+      expect(hex().value).toBe('#000000');
       expect(area().style.getPropertyValue('--ui-cp-x')).toBe('0%');
-      expect(area().style.getPropertyValue('--ui-cp-y')).toBe('80%');
-      expect(action('Add color').disabled).toBe(false);
+      expect(area().style.getPropertyValue('--ui-cp-y')).toBe('100%');
+      // It does not pass, so it cannot be added until the person picks another colour.
+      expect(action('Add color').disabled).toBe(true);
       expect(committed).toEqual([]);
 
-      // The next change forgets the note.
       fire('pointerdown', 200, 0);
-      fixture.detectChanges();
-      expect(picker.adjusted()).toBe(false);
       fire('pointerup', 200, 0);
+      fixture.detectChanges();
       expect(picker.value()).toBe('#ff0000');
-      expect(picker.adjusted()).toBe(false);
       action('Add color').click();
       expect(committed).toEqual(['#ff0000']);
     });
 
-    it('a slider adjusts when its change ends, not on every input', async () => {
-      const { fixture, slider, open } = setup({ value: '#808080', adjust });
+    it('a click at an exact spot keeps the handle there, also where the hex rounds', async () => {
+      const { fixture, area, open } = setup({ value: '#ff0000', adjust });
+      await open();
+      const fire = pointerArea(area());
+      fire('pointerdown', 67, 33);
+      fire('pointerup', 67, 33);
+      fixture.detectChanges();
+      expect(area().style.getPropertyValue('--ui-cp-x')).toBe('34%');
+      expect(area().style.getPropertyValue('--ui-cp-y')).toBe('33%');
+    });
+
+    it('a slider never moves the pick on its change either; the hue survives a grey', async () => {
+      const { fixture, slider, area, open } = setup({ value: '#336699', adjust });
       await open();
       const picker = fixture.componentInstance;
-      const brightness = slider('Brightness');
-      brightness.value = '100';
-      brightness.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
-      expect(picker.value()).toBe('#ffffff');
-      brightness.dispatchEvent(new Event('change'));
-      fixture.detectChanges();
-      expect(picker.value()).toBe('#333333');
-      expect(picker.adjusted()).toBe(true);
-
       const hue = slider('Hue');
       hue.value = '120';
       hue.dispatchEvent(new Event('input'));
-      hue.dispatchEvent(new Event('change'));
+      const saturation = slider('Saturation');
+      saturation.value = '0';
+      saturation.dispatchEvent(new Event('input'));
+      saturation.dispatchEvent(new Event('change'));
       fixture.detectChanges();
-      // An accepted colour stays as it is.
-      expect(picker.adjusted()).toBe(false);
+      expect(picker.value()).toMatch(/^#([0-9a-f]{2})\1\1$/);
+      expect(slider('Hue').value).toBe('120');
+      const brightness = slider('Brightness');
+      brightness.value = '100';
+      brightness.dispatchEvent(new Event('input'));
+      brightness.dispatchEvent(new Event('change'));
+      fixture.detectChanges();
+      // White is not accepted by `adjust`, and it stays white: no jump to a grey.
+      expect(picker.value()).toBe('#ffffff');
+      expect(slider('Hue').value).toBe('120');
+      expect(area().style.getPropertyValue('--ui-cp-x')).toBe('0%');
     });
 
-    it('a typed colour is never changed: "Add color" waits until it is accepted', async () => {
-      const { fixture, hex, action, open, committed } = setup({ adjust });
+    it('typing a hex moves the handles; "Add color" waits until it is accepted', async () => {
+      const { fixture, hex, area, action, open, committed } = setup({ adjust });
       await open();
       const picker = fixture.componentInstance;
       type(hex(), '#ffffff');
       fixture.detectChanges();
       expect(picker.value()).toBe('#ffffff');
-      expect(picker.adjusted()).toBe(false);
+      expect(area().style.getPropertyValue('--ui-cp-y')).toBe('0%');
       expect(action('Add color').disabled).toBe(true);
       action('Add color').click();
       expect(committed).toEqual([]);
 
       type(hex(), '#336699');
       fixture.detectChanges();
+      expect(area().style.getPropertyValue('--ui-cp-x')).toBe('67%');
       expect(action('Add color').disabled).toBe(false);
       action('Add color').click();
       expect(committed).toEqual(['#336699']);
     });
 
-    it('Cancel forgets an adjusted pick', async () => {
+    it('Cancel puts back the colour of the opening', async () => {
       const { fixture, slider, action, open } = setup({ value: '#808080', adjust });
       await open();
       const brightness = slider('Brightness');
@@ -314,9 +323,7 @@ describe('ColorPickerComponent', () => {
       brightness.dispatchEvent(new Event('input'));
       brightness.dispatchEvent(new Event('change'));
       fixture.detectChanges();
-      expect(fixture.componentInstance.adjusted()).toBe(true);
       action('Cancel').click();
-      expect(fixture.componentInstance.adjusted()).toBe(false);
       expect(fixture.componentInstance.value()).toBe('#808080');
     });
   });

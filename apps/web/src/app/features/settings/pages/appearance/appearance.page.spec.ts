@@ -56,6 +56,13 @@ function customize(root: HTMLElement): void {
   radioIn(root, 'Theme', 'Custom').click();
 }
 
+/** The contrast warning of an own-colour picker while it shows (an idle one is hidden and inert). */
+function warningIn(root: HTMLElement): Element | null {
+  return root.querySelector(
+    '.appearance__own-warning:not(.appearance__own-warning--idle) ui-notice',
+  );
+}
+
 /** The own-colour picker whose swatch button is named `label`. */
 async function pickerNamed(
   harness: { fixture: ComponentFixture<unknown> },
@@ -238,7 +245,7 @@ describe('AppearancePage', () => {
     // No curated swatch is checked; the own color is a swatch of its own and is checked (#335).
     expect(radioIn(page, 'Accent', 'Graphite').checked).toBe(false);
     expect(radioIn(page, 'Accent', '#23716c').checked).toBe(true);
-    expect(page.querySelector('ui-notice')).toBeNull();
+    expect(warningIn(page)).toBeNull();
 
     // A curated accent takes over again and drops the custom properties.
     radioIn(page, 'Accent', 'Sage').click();
@@ -264,7 +271,7 @@ describe('AppearancePage', () => {
     // Not applied: the accent stays and nothing is saved.
     expect(theme.customTheme().accent).toBe(CUSTOM_THEME_DEFAULT.accent);
     expect(settingsApi.update).not.toHaveBeenCalled();
-    const notice = page.querySelector('ui-notice');
+    const notice = warningIn(page);
     expect(notice?.textContent).toMatch(
       /hard to read on your background \(1\.\d:1, it needs 4\.5:1\)/u,
     );
@@ -280,7 +287,7 @@ describe('AppearancePage', () => {
     expect(settingsApi.update).toHaveBeenLastCalledWith({
       customTheme: { ...CUSTOM_THEME_DEFAULT, accent: shade },
     });
-    expect(page.querySelector('ui-notice')).toBeNull();
+    expect(warningIn(page)).toBeNull();
     // The shade is a swatch of its own now, checked; the "+" panel closed.
     expect(radioIn(page, 'Accent', shade).checked).toBe(true);
   });
@@ -325,7 +332,7 @@ describe('AppearancePage', () => {
 
     expect(theme.customTheme().background).toBe(CUSTOM_THEME_DEFAULT.background);
     expect(settingsApi.update).not.toHaveBeenCalled();
-    const notice = page.querySelector('ui-notice');
+    const notice = warningIn(page);
     expect(notice?.textContent).toMatch(/Text is hard to read on this background/u);
     const shade = nearestReadableBackground('#808080', 'light');
     const use = Array.from(notice?.querySelectorAll('button') ?? []).find((b) =>
@@ -337,8 +344,8 @@ describe('AppearancePage', () => {
     expect(theme.customTheme().background).toBe(shade);
   });
 
-  it('a palette pick moves to the nearest readable shade with a note; Add is enabled (#415)', async () => {
-    const { root: page, theme, stable, harness } = await setup();
+  it('a background pick is never moved: the warning shows and Add stays off (#415)', async () => {
+    const { root: page, stable, harness } = await setup();
     customize(page);
     await stable();
 
@@ -347,46 +354,102 @@ describe('AppearancePage', () => {
     await picker.setHex('#fdf6e3');
     await stable();
     expect(await picker.canAdd()).toBe(true);
-    // Brightness down to black: on the light base text would not read, so the pick is lightened.
+    // Brightness down to black: on the light base text would not read. The pick stays put.
     await picker.setBrightness(0);
     await stable();
-    const shade = nearestReadableBackground('#000000', 'light');
-    expect(await picker.getHex()).toBe(shade);
-    expect(await picker.canAdd()).toBe(true);
-    expect(page.querySelector('ui-notice')).toBeNull();
-    const note = page.querySelector('.appearance__own-adjusted');
-    expect(note?.getAttribute('role')).toBe('status');
-    expect(note?.textContent?.trim()).toBe(`Adjusted to ${shade} so text stays readable.`);
-
-    // Typing again drops the note.
-    await picker.setHex('#fffdf8');
-    await stable();
-    expect(note?.textContent?.trim()).toBe('');
-
-    await picker.add();
-    await stable();
-    expect(theme.customTheme().background).toBe('#fffdf8');
+    expect(await picker.getHex()).toBe('#000000');
+    expect(await picker.canAdd()).toBe(false);
+    expect(warningIn(page)?.textContent).toMatch(/Text is hard to read on this background/u);
   });
 
-  it('the accent pick is adjusted for the current page too (#415)', async () => {
+  it('keeps the note and warning lines in the layout while idle, so the panel never jumps (#415)', async () => {
     const { root: page, stable, harness } = await setup();
     customize(page);
     await stable();
 
     const picker = await pickerNamed(harness, 'Your own color');
     await picker.open();
+    await picker.setHex('#23716c');
+    await stable();
+    const note = page.querySelector('.appearance__own-adjusted');
+    const idle = page.querySelector('.appearance__own-warning');
+    expect(note).not.toBeNull();
+    expect(idle?.querySelector('ui-notice')).not.toBeNull();
+    expect(idle?.classList).toContain('appearance__own-warning--idle');
+    expect(idle?.hasAttribute('inert')).toBe(true);
+
     await picker.setHex('#f5d0e0');
     await stable();
-    await picker.setHue(330);
+    expect(idle?.classList).not.toContain('appearance__own-warning--idle');
+    expect(idle?.hasAttribute('inert')).toBe(false);
+    // The same element and the same notice: only its visibility changed.
+    expect(page.querySelector('.appearance__own-warning')).toBe(idle);
+  });
+
+  it('shows the other-base shade only when it differs from the picked colour (#415)', async () => {
+    const { root: page, stable, harness } = await setup();
+    customize(page);
     await stable();
-    const hex = await picker.getHex();
-    expect(hex).toBe(nearestAccessibleAccent(hex, 'light', 'paper'));
-    expect(hex).not.toBe('#f5d0e0');
-    expect(await picker.canAdd()).toBe(true);
-    expect(page.querySelector('ui-notice')).toBeNull();
-    expect(page.querySelector('.appearance__own-adjusted')?.textContent).toContain(
-      `Adjusted to ${hex} so it stays readable.`,
-    );
+
+    const picker = await pickerNamed(harness, 'Your own color');
+    await picker.open();
+    // A mid-light green passes on light only after the dark base needs a paler shade or not.
+    await picker.setHex('#1a5fb4');
+    await stable();
+    const note = page.querySelector('.appearance__own-adjusted');
+    const shade = nearestAccessibleAccent('#1a5fb4', 'dark', 'ink');
+    if (shade === '#1a5fb4') {
+      expect(note?.classList).toContain('appearance__own-adjusted--idle');
+    } else {
+      expect(note?.classList).not.toContain('appearance__own-adjusted--idle');
+      expect(note?.textContent).toContain(`Adjusted to ${shade} so it stays readable.`);
+    }
+    // A colour that is the same on both bases has no note: white-ish grey passes nowhere, so use
+    // a colour whose shade equals itself on the other base.
+    await picker.setHex('#808080');
+    await stable();
+    const grey = nearestAccessibleAccent('#808080', 'dark', 'ink');
+    expect(note?.classList.contains('appearance__own-adjusted--idle')).toBe(grey === '#808080');
+  });
+
+  it.each(['light', 'dark'] as const)(
+    'warns about an unreadable accent the same way on the %s base (#415)',
+    async (base) => {
+      const { root: page, theme, stable, harness } = await setup();
+      customize(page);
+      await stable();
+      radioIn(page, 'Start from', base === 'dark' ? 'Dark' : 'Light').click();
+      await stable();
+      // Too close to the page of its own base: pale on light, dark on dark.
+      const bad = base === 'light' ? '#f5d0e0' : '#10202a';
+      const picker = await pickerNamed(harness, 'Your own color');
+      await picker.open();
+      await picker.setHex(bad);
+      await stable();
+      expect(await picker.getHex()).toBe(bad);
+      expect(await picker.canAdd()).toBe(false);
+      expect(warningIn(page)?.textContent).toMatch(/hard to read on your background/u);
+      expect(theme.customTheme().base).toBe(base);
+    },
+  );
+
+  it('measures a typed accent on the base on screen, not on the stored Custom base (#415)', async () => {
+    const { root: page, theme, stable, harness } = await setup();
+    // Custom on the dark base, then back to the fixed Light theme: the stored base stays dark.
+    customize(page);
+    await stable();
+    radioIn(page, 'Start from', 'Dark').click();
+    await stable();
+    radioIn(page, 'Theme', 'Light').click();
+    await stable();
+    expect(theme.customTheme().base).toBe('dark');
+    const picker = await pickerNamed(harness, 'Your own color');
+    await picker.open();
+    // Pale pink: readable on a dark page, not on the white one the page really has.
+    await picker.setHex('#f5d0e0');
+    await stable();
+    expect(await picker.canAdd()).toBe(false);
+    expect(warningIn(page)).not.toBeNull();
   });
 
   it('sets Animations', async () => {
@@ -420,8 +483,8 @@ describe('AppearancePage', () => {
     appearance?.setTheme('nope');
     appearance?.setMotion('nope');
     appearance?.setCorners('nope');
-    appearance?.setAccent('nope', untouched);
-    appearance?.setBackground('nope', untouched);
+    appearance?.setAccent('nope');
+    appearance?.setBackground('nope');
     appearance?.setBase('light');
     expect(appearance).toBeDefined();
     expect(settingsApi.update).not.toHaveBeenCalled();

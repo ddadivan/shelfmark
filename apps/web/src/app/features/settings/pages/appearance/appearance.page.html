@@ -30,7 +30,7 @@
             [ariaLabelledby]="accentRow.titleId"
             [options]="accentOptions()"
             [value]="accentValue()"
-            (valueChange)="appearance.chooseAccent($event, accentPicker)"
+            (valueChange)="appearance.chooseAccent($event)"
             (removed)="appearance.removeOwnColour($event)"
           />
           <ui-color-picker
@@ -48,27 +48,38 @@
             [(value)]="appearance.pickedColour"
             (committed)="appearance.pickOwnAccent($event, accentPicker)"
           >
+            <!-- Both lines always take their room (hidden while idle), so the panel never changes height. -->
             <div class="appearance__own-hint">
               <p>{{ 'settings.appearance.custom.own.hint' | transloco }}</p>
-              <!-- A palette pick moved to a readable shade (#415): a neutral note, read out. -->
-              <p class="appearance__own-adjusted" role="status">
-                @if (accentPicker.adjusted()) { {{ 'settings.appearance.custom.own.adjusted' |
-                transloco: { colour: appearance.pickedColour() } }} }
+              <!-- The shade used on the other base, when it differs from the colour (#415). -->
+              <p
+                class="appearance__own-adjusted"
+                role="status"
+                [class.appearance__own-adjusted--idle]="!appearance.accentOtherShade()"
+              >
+                {{ 'settings.appearance.custom.own.adjusted' | transloco: { colour:
+                appearance.accentOtherShade() ?? '#000000' } }}
               </p>
             </div>
-            <!-- Not while dragging: the raw colour is a preview until the pick ends. -->
-            @if (!accentPicker.picking() && appearance.accentWarning(); as warning) {
-            <ui-notice [kind]="NOTICE_KIND.Warning">
-              {{ 'settings.appearance.custom.own.warning' | transloco: { ratio: warning.ratio } }}
-              <ui-button
-                uiNoticeAction
-                [size]="BUTTON_SIZE.Sm"
-                (click)="appearance.useShade(warning.shade, accentPicker)"
-              >
-                {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning.shade } }}
-              </ui-button>
-            </ui-notice>
-            }
+            @let warning = appearance.accentWarning();
+            <div
+              class="appearance__own-warning"
+              [class.appearance__own-warning--idle]="!warning"
+              [attr.inert]="warning ? null : ''"
+            >
+              <ui-notice [kind]="NOTICE_KIND.Warning">
+                {{ 'settings.appearance.custom.own.warning' | transloco: { ratio: warning?.ratio ??
+                '0.0' } }}
+                <ui-button
+                  uiNoticeAction
+                  [size]="BUTTON_SIZE.Sm"
+                  (click)="warning && appearance.useShade(warning.shade, accentPicker)"
+                >
+                  {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning?.shade ??
+                  '#000000' } }}
+                </ui-button>
+              </ui-notice>
+            </div>
           </ui-color-picker>
         </div>
       </ui-settings-row>
@@ -103,7 +114,7 @@
               [ariaLabelledby]="backgroundRow.titleId"
               [options]="backgroundOptions()"
               [value]="theme.customTheme().background"
-              (valueChange)="appearance.setBackground($event, backgroundPicker)"
+              (valueChange)="appearance.setBackground($event)"
               (removed)="appearance.removeOwnColour($event)"
             />
             <ui-color-picker
@@ -123,25 +134,36 @@
             >
               <div class="appearance__own-hint">
                 <p>{{ 'settings.appearance.custom.ownBackground.hint' | transloco }}</p>
-                <p class="appearance__own-adjusted" role="status">
-                  @if (backgroundPicker.adjusted()) { {{
-                  'settings.appearance.custom.ownBackground.adjusted' | transloco: { colour:
-                  appearance.pickedBackground() } }} }
+                <p
+                  class="appearance__own-adjusted"
+                  role="status"
+                  [class.appearance__own-adjusted--idle]="!appearance.backgroundOtherShade()"
+                >
+                  {{ 'settings.appearance.custom.ownBackground.adjusted' | transloco: { colour:
+                  appearance.backgroundOtherShade() ?? '#000000' } }}
                 </p>
               </div>
-              @if (!backgroundPicker.picking() && appearance.backgroundWarning(); as warning) {
-              <ui-notice [kind]="NOTICE_KIND.Warning">
-                {{ 'settings.appearance.custom.ownBackground.warning' | transloco: { ratio:
-                warning.ratio } }}
-                <ui-button
-                  uiNoticeAction
-                  [size]="BUTTON_SIZE.Sm"
-                  (click)="appearance.useBackgroundShade(warning.shade, backgroundPicker)"
-                >
-                  {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning.shade } }}
-                </ui-button>
-              </ui-notice>
-              }
+              @let bgWarning = appearance.backgroundWarning();
+              <div
+                class="appearance__own-warning"
+                [class.appearance__own-warning--idle]="!bgWarning"
+                [attr.inert]="bgWarning ? null : ''"
+              >
+                <ui-notice [kind]="NOTICE_KIND.Warning">
+                  {{ 'settings.appearance.custom.ownBackground.warning' | transloco: { ratio:
+                  bgWarning?.ratio ?? '0.0' } }}
+                  <ui-button
+                    uiNoticeAction
+                    [size]="BUTTON_SIZE.Sm"
+                    (click)="
+                      bgWarning && appearance.useBackgroundShade(bgWarning.shade, backgroundPicker)
+                    "
+                  >
+                    {{ 'settings.appearance.custom.own.use' | transloco: { colour: bgWarning?.shade
+                    ?? '#000000' } }}
+                  </ui-button>
+                </ui-notice>
+              </div>
             </ui-color-picker>
           </div>
         </ui-settings-row>

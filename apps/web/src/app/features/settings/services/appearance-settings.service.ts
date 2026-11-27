@@ -67,6 +67,19 @@ export class AppearanceSettingsService {
     return isHexColour(background) ? background : null;
   });
 
+  /**
+   * The base and page background the accent is measured on: the Custom theme's own when Custom is
+   * on, else what the page draws now (System, Light or Dark), whatever the stored Custom theme
+   * says, so the check is the same in both bases.
+   */
+  private readonly ground = computed(() => {
+    const custom = this.theme.customTheme();
+    if (this.theme.preference() === THEME_PREFERENCE.Custom) {
+      return { base: custom.base, background: custom.background };
+    }
+    return this.groundOf(this.baseOnScreen());
+  });
+
   /** What the accent picker shows while open: the colour being picked (empty again once it is a swatch). */
   readonly pickedColour = signal('');
   /** What the background picker shows while open. */
@@ -74,7 +87,7 @@ export class AppearanceSettingsService {
   /** The accent being picked when it would not keep 4.5:1, with the nearest shade that does. */
   readonly accentWarning = computed<AccentWarning | null>(() => {
     const colour = this.pickedColour();
-    const { base, background } = this.theme.customTheme();
+    const { base, background } = this.ground();
     if (!isHexColour(colour) || isAccessibleAccent(colour, base, background)) {
       return null;
     }
@@ -87,7 +100,7 @@ export class AppearanceSettingsService {
   /** The background being picked when text would not keep 4.5:1, with the nearest shade. */
   readonly backgroundWarning = computed<AccentWarning | null>(() => {
     const colour = this.pickedBackground();
-    const base = this.theme.customTheme().base;
+    const base = this.ground().base;
     if (!isHexColour(colour) || isReadableBackground(colour, base)) {
       return null;
     }
@@ -99,12 +112,35 @@ export class AppearanceSettingsService {
   });
   /** The accent picker's `adjust`: the nearest shade that keeps 4.5:1 on the current theme. */
   readonly adjustAccent = (colour: string): string => {
-    const { base, background } = this.theme.customTheme();
+    const { base, background } = this.ground();
     return nearestAccessibleAccent(colour, base, background);
   };
   /** The background picker's `adjust`: the nearest shade on which text keeps 4.5:1. */
   readonly adjustBackground = (colour: string): string =>
-    nearestReadableBackground(colour, this.theme.customTheme().base);
+    nearestReadableBackground(colour, this.ground().base);
+
+  /**
+   * The shade Shelfmark draws the picked accent in on the other base, when it is not the colour
+   * itself (a note, never a warning); null when it is the same or nothing is picked.
+   */
+  readonly accentOtherShade = computed(() => {
+    const colour = this.pickedColour();
+    if (!isHexColour(colour)) {
+      return null;
+    }
+    const { base, background } = this.groundOf(this.otherBase());
+    const shade = nearestAccessibleAccent(colour, base, background);
+    return shade === colour.toLowerCase() ? null : shade;
+  });
+  /** The same for the page background on the other base. */
+  readonly backgroundOtherShade = computed(() => {
+    const colour = this.pickedBackground();
+    if (!isHexColour(colour)) {
+      return null;
+    }
+    const shade = nearestReadableBackground(colour, this.otherBase());
+    return shade === colour.toLowerCase() ? null : shade;
+  });
 
   setTheme(value: string): void {
     if (isThemePreference(value)) {
@@ -172,20 +208,22 @@ export class AppearanceSettingsService {
    * The top-level Accent row: Graphite on System, Light or Dark is what they already draw, so it
    * changes nothing; any other accent goes to the Custom theme (`setCustom`).
    */
-  chooseAccent(value: string, picker: ColorPickerComponent): void {
+  chooseAccent(value: string): void {
     if (
       this.theme.preference() !== THEME_PREFERENCE.Custom &&
       value === CUSTOM_THEME_ACCENT.Graphite
     ) {
       return;
     }
-    this.setAccent(value, picker);
+    this.setAccent(value);
   }
 
   /** A curated accent, or an own colour swatch (applied when it keeps 4.5:1, else the warning). */
-  setAccent(value: string, picker: ColorPickerComponent): void {
+  setAccent(value: string): void {
     if (isHexColour(value)) {
-      this.pickOwnAccent(value, picker, false);
+      // A swatch of the account is applied as it is: the theme draws it in its nearest readable
+      // shade, the same one the swatch shows (`customAccentTokens`).
+      this.setCustom({ accent: value });
       return;
     }
     const accent = Object.values(CUSTOM_THEME_ACCENT).find((name) => name === value);
@@ -203,7 +241,7 @@ export class AppearanceSettingsService {
     if (!isHexColour(colour)) {
       return;
     }
-    const { base, background } = this.theme.customTheme();
+    const { base, background } = this.ground();
     this.pickedColour.set(colour);
     if (isAccessibleAccent(colour, base, background)) {
       // Kept as a swatch only once it is the accent (a refused colour is not remembered).
@@ -227,9 +265,10 @@ export class AppearanceSettingsService {
   }
 
   /** A curated background of the base, or an own colour swatch (checked like a picked one). */
-  setBackground(value: string, picker: ColorPickerComponent): void {
+  setBackground(value: string): void {
     if (isHexColour(value)) {
-      this.pickOwnBackground(value, picker, false);
+      // Applied as it is, drawn in its nearest readable shade (`customBackgroundTokens`), like its swatch.
+      this.setCustom({ background: value });
       return;
     }
     const base = this.theme.customTheme().base;
@@ -248,7 +287,7 @@ export class AppearanceSettingsService {
     if (!isHexColour(colour)) {
       return;
     }
-    const base = this.theme.customTheme().base;
+    const base = this.ground().base;
     this.pickedBackground.set(colour);
     if (isReadableBackground(colour, base)) {
       if (remember) {
@@ -304,10 +343,7 @@ export class AppearanceSettingsService {
       void this.save({ customTheme: { ...current, ...change } });
       return;
     }
-    const base =
-      this.theme.resolved() === CUSTOM_THEME_BASE.Dark
-        ? CUSTOM_THEME_BASE.Dark
-        : CUSTOM_THEME_BASE.Light;
+    const base = this.baseOnScreen();
     const background =
       base === current.base
         ? current.background
@@ -316,6 +352,31 @@ export class AppearanceSettingsService {
       theme: THEME_PREFERENCE.Custom,
       customTheme: { ...current, base, background, ...change },
     });
+  }
+
+  /** The base the page is drawn on now. */
+  private baseOnScreen(): CustomTheme['base'] {
+    return this.theme.resolved() === CUSTOM_THEME_BASE.Dark
+      ? CUSTOM_THEME_BASE.Dark
+      : CUSTOM_THEME_BASE.Light;
+  }
+
+  private otherBase(): CustomTheme['base'] {
+    return this.ground().base === CUSTOM_THEME_BASE.Dark
+      ? CUSTOM_THEME_BASE.Light
+      : CUSTOM_THEME_BASE.Dark;
+  }
+
+  /** The page background an accent meets on `base` when Custom is switched on (as `setCustom`). */
+  private groundOf(base: CustomTheme['base']): Pick<CustomTheme, 'base' | 'background'> {
+    const current = this.theme.customTheme();
+    return {
+      base,
+      background:
+        base === current.base
+          ? current.background
+          : (this.ownBackground() ?? CUSTOM_THEME_BACKGROUNDS[base][0]),
+    };
   }
 
   private async save(change: Partial<Appearance>): Promise<void> {

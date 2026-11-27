@@ -62,6 +62,8 @@ function setup({
   return {
     service: TestBed.inject(AppearanceSettingsService),
     customTheme,
+    resolved,
+    themePreference,
     shown,
     setAppearance,
     setFolderColours,
@@ -76,10 +78,10 @@ describe('AppearanceSettingsService', () => {
   it('keeps Graphite on a fixed theme as it is and turns Custom on for another accent (Shelf)', () => {
     const { service, setAppearance, pickerRef } = setup({ preference: THEME_PREFERENCE.System });
 
-    service.chooseAccent(CUSTOM_THEME_ACCENT.Graphite, pickerRef);
+    service.chooseAccent(CUSTOM_THEME_ACCENT.Graphite);
     expect(setAppearance).not.toHaveBeenCalled();
 
-    service.chooseAccent(CUSTOM_THEME_ACCENT.Ink, pickerRef);
+    service.chooseAccent(CUSTOM_THEME_ACCENT.Ink);
     expect(setAppearance).toHaveBeenCalledWith({
       theme: THEME_PREFERENCE.Custom,
       customTheme: {
@@ -94,7 +96,7 @@ describe('AppearanceSettingsService', () => {
   it('changes only the accent while Custom is on', () => {
     const { service, setAppearance, pickerRef } = setup();
 
-    service.chooseAccent(CUSTOM_THEME_ACCENT.Graphite, pickerRef);
+    service.chooseAccent(CUSTOM_THEME_ACCENT.Graphite);
     expect(setAppearance).toHaveBeenCalledWith({
       customTheme: { ...CUSTOM_THEME_DEFAULT, accent: CUSTOM_THEME_ACCENT.Graphite },
     });
@@ -162,12 +164,93 @@ describe('AppearanceSettingsService', () => {
   });
 
   it('checks an own accent swatch without remembering it again', () => {
-    const { service, addCustomColour, setAppearance, pickerRef } = setup();
+    const { service, addCustomColour, setAppearance } = setup();
 
-    service.setAccent(DEEP, pickerRef);
+    service.setAccent(DEEP);
 
     expect(addCustomColour).not.toHaveBeenCalled();
     expect(setAppearance).toHaveBeenCalledOnce();
+  });
+
+  it('applies an own colour swatch as it is, also one the page draws in another shade (#335)', () => {
+    const { service, setAppearance } = setup();
+
+    // Dark green: not readable as a page background on the light base, drawn in its shade there.
+    service.setBackground('#00820c');
+
+    expect(setAppearance).toHaveBeenCalledWith({
+      customTheme: { ...CUSTOM_THEME_DEFAULT, background: '#00820c' },
+    });
+  });
+
+  it('measures the accent on the base on screen when Custom is off (#415)', () => {
+    const { service, customTheme, resolved, themePreference } = setup({
+      preference: THEME_PREFERENCE.Light,
+    });
+    // The stored Custom theme says dark, the page is light.
+    customTheme.set({ ...CUSTOM_THEME_DEFAULT, base: CUSTOM_THEME_BASE.Dark, background: 'ink' });
+    resolved.set(CUSTOM_THEME_BASE.Light);
+
+    service.pickOwnAccent(PALE, {
+      open: signal(true),
+      clear: vi.fn(),
+    } as unknown as ColorPickerComponent);
+    expect(service.accentWarning()?.shade).toBe(
+      nearestAccessibleAccent(
+        PALE,
+        CUSTOM_THEME_BASE.Light,
+        CUSTOM_THEME_BACKGROUNDS[CUSTOM_THEME_BASE.Light][0],
+      ),
+    );
+    expect(service.adjustBackground('#000000')).toBe(nearestReadableBackground('#000000', 'light'));
+
+    // On a dark page the same stored theme measures on dark.
+    themePreference.set(THEME_PREFERENCE.Dark);
+    resolved.set(CUSTOM_THEME_BASE.Dark);
+    expect(service.adjustBackground('#000000')).toBe('#000000');
+  });
+
+  it.each([
+    [CUSTOM_THEME_BASE.Light, '#f5d0e0'],
+    [CUSTOM_THEME_BASE.Dark, '#10202a'],
+  ] as const)(
+    'warns for a colour under 4.5:1 on its own page the same way on the %s base (#415)',
+    (base, bad) => {
+      const { service, customTheme } = setup();
+      customTheme.set({
+        ...CUSTOM_THEME_DEFAULT,
+        base,
+        background: CUSTOM_THEME_BACKGROUNDS[base][0],
+      });
+      service.pickOwnAccent(bad, {
+        open: signal(true),
+        clear: vi.fn(),
+      } as unknown as ColorPickerComponent);
+      expect(service.accentWarning()?.colour).toBe(bad);
+      expect(service.accentWarning()?.shade).not.toBe(bad);
+    },
+  );
+
+  it('names the shade of the other base only when it differs from the colour (#415)', () => {
+    const { service } = setup();
+    const picker = { open: signal(true), clear: vi.fn() } as unknown as ColorPickerComponent;
+
+    service.pickOwnAccent(DEEP, picker);
+    const shade = nearestAccessibleAccent(
+      DEEP,
+      CUSTOM_THEME_BASE.Dark,
+      CUSTOM_THEME_BACKGROUNDS[CUSTOM_THEME_BASE.Dark][0],
+    );
+    expect(service.accentOtherShade()).toBe(shade === DEEP ? null : shade);
+    // The same colour as its shade: nothing to say.
+    service.pickedColour.set(shade);
+    expect(service.accentOtherShade()).toBeNull();
+    service.pickedColour.set('');
+    expect(service.accentOtherShade()).toBeNull();
+    service.pickedBackground.set('#ffffff');
+    expect(service.backgroundOtherShade()).toBe(nearestReadableBackground('#ffffff', 'dark'));
+    service.pickedBackground.set('#000000');
+    expect(service.backgroundOtherShade()).toBeNull();
   });
 
   it('refuses an unreadable own background with a warning and applies the shade on "Use"', () => {
@@ -219,8 +302,8 @@ describe('AppearanceSettingsService', () => {
     ]) {
       set.call(service, 'nope');
     }
-    service.setAccent('nope', pickerRef);
-    service.setBackground('nope', pickerRef);
+    service.setAccent('nope');
+    service.setBackground('nope');
     service.setBase(CUSTOM_THEME_DEFAULT.base);
     service.pickOwnAccent('nope', pickerRef);
     service.pickOwnBackground('nope', pickerRef);

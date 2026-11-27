@@ -57,10 +57,20 @@
   }
 }
 
-// The note after a palette pick was moved to a readable shade (#415): neutral, under the hint. The
-// live region stays in the page while empty (no height), so the note is read out when it appears.
-.appearance__own-adjusted:not(:empty) {
+// The note about the shade used on the other base (#415): neutral, under the hint. The line always
+// takes its room (hidden while idle), so the panel keeps its height.
+.appearance__own-adjusted {
   margin-block-start: var(--space-1);
+}
+
+// Idle lines keep their room (the panel never changes height while the colour is dragged).
+.appearance__own-adjusted--idle,
+.appearance__own-warning--idle {
+  visibility: hidden;
+}
+
+.appearance__own-warning {
+  margin-block-start: var(--space-2);
 }
 
 // The Custom options sit on the page background, inset in the panel (Themes mockup).
