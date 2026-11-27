@@ -244,7 +244,7 @@ describe('DropZoneComponent', () => {
     it('draws the 160px scene straight on the page, without a disc', () => {
       const css = compileScss('lib/components/drop-zone/drop-zone.component.scss');
       expect(css).not.toContain('illustration-disc');
-      expect(css).toMatch(/--ui-illustration-width:\s*10rem/);
+      expect(css).toMatch(/--ui-illustration-size:\s*10rem/);
     });
   });
 

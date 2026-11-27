@@ -18,22 +18,18 @@ ui-dialog {
   overflow-x: clip;
 }
 
-// Shelf: the scene on the soft sage disc of the empty states, centred.
+// The scene straight on the dialog, centred (160px square: the phone size of the illustration).
 .onboarding__scene {
   align-self: center;
-  width: rem(176px);
+  width: rem(160px);
   aspect-ratio: 1;
-  overflow: hidden;
-  background: var(--illustration-disc);
-  border-radius: var(--radius-full);
   animation: onboarding-next var(--duration-slow) var(--ease-out) both;
 }
 
 .onboarding__art {
-  --ui-illustration-width: 100%;
+  --ui-illustration-size: 100%;
 
   display: block;
-  height: 100%;
 }
 
 // The title and text of the step, then the step dots, centred.

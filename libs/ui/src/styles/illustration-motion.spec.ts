@@ -29,23 +29,46 @@ describe('illustration motion', () => {
     const out = css('@include illustration-keyframes;');
     const names = [...out.matchAll(/@keyframes (\S+)/g)].map((m) => m[1]);
     expect(names).toEqual([
-      'ui-ill-fly',
-      'ui-ill-fly-loop',
-      'ui-ill-grow',
-      'ui-ill-grow-loop',
-      'ui-ill-type',
-      'ui-ill-type-loop',
-      'ui-ill-fade',
-      'ui-ill-fade-loop',
-      'ui-ill-shift',
+      'ui-ill-twinkle',
+      'ui-ill-drift',
+      'ui-ill-bob',
+      'ui-ill-pulse',
+      'ui-ill-ring',
+      'ui-ill-lid',
+      'ui-ill-hand',
+      'ui-ill-swing',
+      'ui-ill-wave',
+      'ui-ill-flap',
+      'ui-ill-wobble',
+      'ui-ill-shackle',
+      'ui-ill-ribbon',
+      'ui-ill-hop',
+      'ui-ill-slide-in',
+      'ui-ill-scan',
+      'ui-ill-pick',
     ]);
     expect(out).not.toMatch(/\d+px/);
   });
 
-  it('keeps the loop cycle between 3 and 5 seconds', () => {
-    const out = css('.a { --loop: #{$illustration-loop-duration}; }');
-    const seconds = Number(/--loop:\s*([\d.]+)s/.exec(out)?.[1]);
-    expect(seconds).toBeGreaterThanOrEqual(3);
-    expect(seconds).toBeLessThanOrEqual(5);
+  it('has a part for every keyframes, each cycle between 1.4 and 5 seconds', () => {
+    const out = css(
+      '@each $name, $c in $illustration-parts { .#{$name} { --d: #{map-get($c, "duration")}; } }',
+    );
+    const parts = [...out.matchAll(/\.([\w-]+) \{\s*--d:\s*([\d.]+)s/g)];
+    expect(parts.map((m) => `ui-ill-${m[1]}`).sort()).toEqual(
+      [...css('@include illustration-keyframes;').matchAll(/@keyframes (\S+)/g)]
+        .map((m) => m[1])
+        .sort(),
+    );
+    for (const [, , seconds] of parts) {
+      expect(Number(seconds)).toBeGreaterThanOrEqual(1.4);
+      expect(Number(seconds)).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('turns grid units into a percentage of the 120 viewBox', () => {
+    const out = css('.a { x: illustration-unit(60); y: illustration-unit(-14); }');
+    expect(out).toContain('x: 50%');
+    expect(out).toMatch(/y: -11\.66666/);
   });
 });

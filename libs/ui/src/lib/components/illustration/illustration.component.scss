@@ -1,198 +1,183 @@
+@use 'sass:list';
+@use 'sass:map';
 @use '../../../styles/ui' as *;
 
+// The scene is square (120 x 120 grid) and `--ui-illustration-size` sets its side: 15rem (240px) by
+// default, 10rem (160px) on a phone. Line widths do not follow the drawn size: the host is a
+// size container and the strokes are non-scaling, so the same widths read on screen at 160 and 240.
 :host {
+  --ill-default-size: #{rem(240px)};
+
   display: block;
-  width: var(--ui-illustration-width, #{rem(240px)});
+  width: var(--ui-illustration-size, var(--ill-default-size));
   max-width: 100%;
   line-height: 0;
+  container-type: inline-size;
+
+  @include phone {
+    --ill-default-size: #{rem(160px)};
+  }
 }
 
 .ui-illustration__svg {
+  // Screen line widths: card edge 1, dash 1.5, line art 2 at 160px and 2.5 at 240px (the
+  // container width in between), the lens handle 4.5 / 6.
+  --ill-w-edge: 1;
+  --ill-w-dash: 1.5;
+  --ill-w-line: clamp(#{rem(2px)}, 1.04cqi, #{rem(2.5px)});
+  --ill-w-handle: clamp(#{rem(4.5px)}, 2.5cqi, #{rem(6px)});
+
   display: block;
   width: 100%;
   height: auto;
+  overflow: visible;
 }
 
-// Fills are classes bound to tokens. Resting styles are the final frame of every scene.
-// The scenes stand straight on the page (no disc behind them, author decision 2026-11-25): white
-// parts take the `line-strong` hairline, the pale sage bodies a sage `ai-line` edge.
-// `--ui-illustration-edge` / `--ui-illustration-key-edge` let a caller set other edges.
-.ui-illustration__surface {
+// Parts. Colour 70 / 20 / 10: the objects are neutral (`surface` body, `line-strong` edge,
+// `surface-pressed` skeleton lines), the line art is `text-muted`, and ONE small detail per scene
+// is sage (`ai`, `ai-bg` only inside it, `ai-line` for its edge); `error` takes `danger`. A new
+// scene is built from these classes only, so it cannot invent a colour or a width.
+.ui-illustration__card,
+.ui-illustration__dash,
+.ui-illustration__ink,
+.ui-illustration__accent-edge,
+.ui-illustration__accent-frame,
+.ui-illustration__accent-stroke,
+.ui-illustration__handle,
+.ui-illustration__danger-stroke {
+  vector-effect: non-scaling-stroke;
+}
+
+// A card or chip: the white object of the scene.
+.ui-illustration__card {
   fill: var(--surface);
-  stroke: var(--ui-illustration-edge, var(--line-strong));
-  stroke-width: 1;
+  stroke: var(--line-strong);
+  stroke-width: var(--ill-w-edge);
 }
 
-.ui-illustration__surface--accent {
-  stroke: var(--ai);
-}
-
-.ui-illustration__ink {
-  fill: var(--primary);
-}
-
-.ui-illustration__accent {
-  fill: var(--ai);
-}
-
-.ui-illustration__tint {
-  fill: var(--ai-bg);
-}
-
-// A pale sage body that carries the scene (a folder, a tray, a filter chip).
-.ui-illustration__tint--key {
-  stroke: var(--ui-illustration-key-edge, var(--ai-line));
-  stroke-width: 1.5;
-}
-
+// A skeleton line or block on a card, or the ground shadow.
 .ui-illustration__line {
   fill: var(--surface-pressed);
 }
 
-// A mark that stands on the ground, not on a white part (the offline break marks).
-.ui-illustration__line--ground {
-  fill: var(--ui-illustration-edge, var(--line-strong));
-}
-
-.ui-illustration__mark {
-  fill: var(--logo-bookmark);
-}
-
-// Status badges of the system scenes (Shelf `sc-danger`, `sc-success`) with their white marks.
-.ui-illustration__danger {
-  fill: var(--danger);
-}
-
-.ui-illustration__success {
-  fill: var(--success);
-}
-
-.ui-illustration__on {
-  fill: var(--surface);
-}
-
-.ui-illustration__on-stroke {
+// A dashed placeholder outline ("nothing here"): the muted text colour at 40%.
+.ui-illustration__dash {
   fill: none;
-  stroke: var(--surface);
-  stroke-width: 2;
+  stroke: color-mix(in srgb, var(--text-muted) 40%, transparent);
+  stroke-width: var(--ill-w-dash);
+  stroke-dasharray: 5 5;
+}
+
+// Line art: a folder, a bin, a cloud, a lens ring. `--open` is the outline only (a stroke).
+.ui-illustration__ink {
+  fill: var(--surface);
+  stroke: var(--text-muted);
+  stroke-width: var(--ill-w-line);
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.ui-illustration__plus {
-  fill: var(--surface);
+.ui-illustration__ink--open {
+  fill: none;
 }
 
-.ui-illustration__dash {
-  stroke: var(--border-control);
+.ui-illustration__ink-dot {
+  fill: var(--text-muted);
 }
 
-.ui-illustration__search {
-  stroke: var(--text-muted);
+// The one sage detail. `__focus` wraps it; these classes are used inside it only.
+.ui-illustration__accent {
+  fill: var(--ai);
 }
 
-.ui-illustration__halo {
+.ui-illustration__accent-stroke {
+  stroke: var(--ai);
+  stroke-width: var(--ill-w-line);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.ui-illustration__accent-tint {
   fill: var(--ai-bg);
-  opacity: 0.7;
 }
 
-.ui-illustration__lens {
+.ui-illustration__accent-tint--half {
+  opacity: 0.5;
+}
+
+// A pale sage body with a sage edge (the active filter chip, the folded corner).
+.ui-illustration__accent-edge {
+  fill: var(--ai-bg);
+  stroke: var(--ai-line);
+  stroke-width: var(--ill-w-dash);
+}
+
+// A white card with a sage edge (the card that arrives, the card that is found).
+.ui-illustration__accent-frame {
   fill: var(--surface);
-  stroke: var(--primary);
+  stroke: var(--ai-line);
+  stroke-width: var(--ill-w-dash);
 }
 
-// Animated parts. Offsets are percentages of the element's own box.
-.ui-illustration__fly,
-.ui-illustration__grow,
-.ui-illustration__type,
-.ui-illustration__dim,
-.ui-illustration__pick,
-.ui-illustration__shift {
-  transform-box: fill-box;
-  transform-origin: center;
+// The lens handle.
+.ui-illustration__handle {
+  fill: none;
+  stroke: var(--ai);
+  stroke-width: var(--ill-w-handle);
+  stroke-linecap: round;
 }
 
-.ui-illustration__type {
-  transform-origin: left center;
+// `error` uses the danger tokens in place of sage.
+.ui-illustration__danger {
+  fill: var(--danger);
 }
 
-.ui-illustration__fly--1 {
-  --ill-x: -129%;
-  --ill-y: -83%;
-  --ill-r: -14deg;
+.ui-illustration__danger-tint {
+  fill: var(--danger-bg);
 }
 
-.ui-illustration__fly--2 {
-  --ill-x: -167%;
-  --ill-y: 94%;
-  --ill-r: 12deg;
-  --ill-delay: 0.12s;
+.ui-illustration__danger-stroke {
+  stroke: var(--danger);
+  stroke-width: var(--ill-w-line);
+  stroke-linecap: round;
+  fill: none;
 }
 
-.ui-illustration__fly--3 {
-  --ill-x: -63%;
-  --ill-y: 133%;
-  --ill-r: -8deg;
-  --ill-delay: 0.24s;
+// The four-point sparks (at most two per scene, at the corners of the grid).
+.ui-illustration__spark {
+  fill: var(--ai);
 }
 
-.ui-illustration__fly--4 {
-  --ill-x: -200%;
-  --ill-y: -17%;
-  --ill-r: 18deg;
-  --ill-delay: 0.36s;
+// Moving parts rest on their end frame. Boxes and origins are in the parts map.
+@each $part, $config in $illustration-parts {
+  $origin: map.get($config, 'origin');
+
+  .ui-illustration__#{$part} {
+    transform-box: if(map.get($config, 'box'), map.get($config, 'box'), view-box);
+
+    @if $origin {
+      transform-origin: illustration-unit(list.nth($origin, 1))
+        illustration-unit(list.nth($origin, 2));
+    } @else if map.get($config, 'box') == fill-box {
+      transform-origin: center;
+    }
+  }
 }
 
-// The minute hand sweeps round the clock face (its box is centred on the axis).
-.ui-illustration__fly--sweep {
-  --ill-x: 0%;
-  --ill-y: 0%;
-  --ill-r: -140deg;
+// The ring is invisible at rest (its animation draws it leaving the badge).
+.ui-illustration__ring {
+  opacity: 0;
 }
 
-.ui-illustration__dim {
-  --ill-from: 1;
-  --ill-to: 0.35;
-
-  opacity: 0.35;
+.ui-illustration__twinkle--late {
+  --ill-delay: -1s;
 }
 
-// A softer fade for dashed placeholders, which would vanish at 35%.
-.ui-illustration__dim--soft {
-  --ill-to: 0.55;
-
-  opacity: 0.55;
+.ui-illustration__wave--2 {
+  --ill-delay: 0.25s;
 }
 
-.ui-illustration__pick {
-  --ill-from: 0.35;
-  --ill-to: 1;
-}
-
-.ui-illustration__shift--bob {
-  --ill-dy: -23%;
-}
-
-.ui-illustration__shift--lift {
-  --ill-dy: -45%;
-}
-
-.ui-illustration__shift--dip {
-  --ill-dy: 30%;
-}
-
-.ui-illustration__shift--scan {
-  --ill-dx: 45%;
-}
-
-.ui-illustration__shift--nudge {
-  --ill-dy: 14%;
-}
-
-.ui-illustration__shift--toward {
-  --ill-dx: 9%;
-}
-
-.ui-illustration__shift--away {
-  --ill-dx: -9%;
+.ui-illustration__wave--3 {
+  --ill-delay: 0.5s;
 }

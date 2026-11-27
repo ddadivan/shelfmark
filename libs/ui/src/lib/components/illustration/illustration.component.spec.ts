@@ -1,6 +1,7 @@
+import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
-import { compileScss } from '../../../testing/scss';
+import { compileScss, mediaBlocks, withoutMedia } from '../../../testing/scss';
 import { IllustrationComponent } from './illustration.component';
 import { ILLUSTRATION_DEFAULT_MOTION } from './models/illustration-default-motion.const';
 import type { IllustrationMotion } from './models/illustration-motion.type';
@@ -38,19 +39,58 @@ function mode(host: HTMLElement): string[] {
   );
 }
 
+/** Parts that are sage or danger: only allowed inside the focus group. */
+const COLOURED =
+  '[class*="ui-illustration__accent"], [class*="ui-illustration__danger"], .ui-illustration__handle';
+
+class FakeObserver {
+  static instances: FakeObserver[] = [];
+  constructor(readonly callback: (entries: Array<{ isIntersecting: boolean }>) => void) {
+    FakeObserver.instances.push(this);
+  }
+  observe(): void {
+    // Driven by the test.
+  }
+  unobserve(): void {
+    // Driven by the test.
+  }
+  disconnect(): void {
+    // Nothing to release.
+  }
+}
+
 describe('IllustrationComponent', () => {
   describe.each(ILLUSTRATION_NAMES)('scene %s', (name) => {
-    it('draws a non-empty svg with only token-based fills', () => {
+    it('draws a square svg on the 120 grid with only token-based colours', () => {
       const { host } = render({ name });
       const svg = host.querySelector('svg');
-      expect(svg?.getAttribute('viewBox')).toBe('0 0 240 150');
-      expect(svg?.querySelectorAll('rect, path, circle').length).toBeGreaterThan(2);
-      expect(host.querySelector('[fill^="#"], [stroke^="#"], [style]')).toBeNull();
+      expect(svg?.getAttribute('viewBox')).toBe('0 0 120 120');
+      expect(svg?.querySelectorAll('rect, path, circle, ellipse').length).toBeGreaterThan(2);
+      expect(host.querySelector('[fill], [stroke], [style]:not([style=""])')).toBeNull();
     });
 
-    it('uses its default motion', () => {
+    it('has one focus group and no sage or danger part outside it', () => {
       const { host } = render({ name });
-      expect(mode(host)).toEqual([ILLUSTRATION_DEFAULT_MOTION[name]]);
+      expect(host.querySelectorAll('.ui-illustration__focus')).toHaveLength(1);
+      const outside = [...host.querySelectorAll(COLOURED)].filter(
+        (el) => !el.closest('.ui-illustration__focus'),
+      );
+      expect(outside).toEqual([]);
+    });
+
+    it('has at most two sparks, all of them twinkling', () => {
+      const { host } = render({ name });
+      const sparks = host.querySelectorAll('.ui-illustration__spark');
+      expect(sparks.length).toBeLessThanOrEqual(2);
+      for (const spark of sparks) {
+        expect(spark.classList.contains('ui-illustration__twinkle')).toBe(true);
+      }
+    });
+
+    it('loops by default', () => {
+      const { host } = render({ name });
+      expect(ILLUSTRATION_DEFAULT_MOTION[name]).toBe(ILLUSTRATION_MOTION.Loop);
+      expect(mode(host)).toEqual([ILLUSTRATION_MOTION.Loop]);
     });
 
     it.each<IllustrationMotion>(Object.values(ILLUSTRATION_MOTION))(
@@ -62,25 +102,97 @@ describe('IllustrationComponent', () => {
     );
   });
 
-  it('defaults the welcome scenes to loop and the other five to once', () => {
-    const welcome = ILLUSTRATION_NAMES.filter((n) => n.startsWith('welcome-'));
-    expect(welcome).toHaveLength(3);
+  it('uses the sage tokens on every scene but error, which takes danger', () => {
     for (const name of ILLUSTRATION_NAMES) {
-      expect(ILLUSTRATION_DEFAULT_MOTION[name]).toBe(
-        welcome.includes(name) ? ILLUSTRATION_MOTION.Loop : ILLUSTRATION_MOTION.Once,
-      );
+      const { host } = render({ name });
+      const danger = host.querySelectorAll('[class*="ui-illustration__danger"]').length;
+      expect(danger > 0).toBe(name === 'error');
     }
   });
 
   it('follows a later change of name and motion', () => {
     const { fixture, host } = render({ name: 'empty-feed' });
-    expect(mode(host)).toEqual([ILLUSTRATION_MOTION.Once]);
-    fixture.componentRef.setInput('name', 'welcome-find');
-    fixture.detectChanges();
     expect(mode(host)).toEqual([ILLUSTRATION_MOTION.Loop]);
     fixture.componentRef.setInput('motion', ILLUSTRATION_MOTION.None);
     fixture.detectChanges();
     expect(mode(host)).toEqual([ILLUSTRATION_MOTION.None]);
+    fixture.componentRef.setInput('name', 'welcome-find');
+    fixture.componentRef.setInput('motion', ILLUSTRATION_MOTION.Once);
+    fixture.detectChanges();
+    expect(mode(host)).toEqual([ILLUSTRATION_MOTION.Once]);
+  });
+
+  describe('ids', () => {
+    it('are unique per instance, so scenes can share a page', () => {
+      const first = render({ name: 'not-found' });
+      const second = render({ name: 'not-found' });
+      const idOf = (host: HTMLElement) => host.querySelector('clipPath')?.getAttribute('id');
+      const clipOf = (host: HTMLElement) =>
+        host.querySelector('[clip-path]')?.getAttribute('clip-path');
+      expect(idOf(first.host)).toBeTruthy();
+      expect(idOf(first.host)).not.toBe(idOf(second.host));
+      expect(clipOf(first.host)).toBe(`url(#${idOf(first.host)})`);
+      expect(clipOf(second.host)).toBe(`url(#${idOf(second.host)})`);
+    });
+
+    it('never repeat in a scene', () => {
+      for (const name of ILLUSTRATION_NAMES) {
+        const { host } = render({ name });
+        const ids = [...host.querySelectorAll('[id]')].map((el) => el.id);
+        expect(new Set(ids).size).toBe(ids.length);
+      }
+    });
+  });
+
+  describe('pausing', () => {
+    beforeEach(() => {
+      FakeObserver.instances = [];
+      vi.stubGlobal('IntersectionObserver', FakeObserver);
+    });
+    afterEach(() => vi.unstubAllGlobals());
+
+    function report(isIntersecting: boolean): void {
+      for (const observer of FakeObserver.instances) {
+        observer.callback([{ isIntersecting }]);
+      }
+    }
+
+    it('is paused until the scene is on screen and again once it leaves', async () => {
+      const { fixture, host } = render({ name: 'offline' });
+      await fixture.whenStable();
+      expect(host.classList.contains('ui-illustration--paused')).toBe(true);
+      report(true);
+      fixture.detectChanges();
+      expect(host.classList.contains('ui-illustration--paused')).toBe(false);
+      report(false);
+      fixture.detectChanges();
+      expect(host.classList.contains('ui-illustration--paused')).toBe(true);
+    });
+
+    it('is paused while the tab is hidden', async () => {
+      const doc = TestBed.inject(DOCUMENT);
+      let state: DocumentVisibilityState = 'visible';
+      vi.spyOn(doc, 'visibilityState', 'get').mockImplementation(() => state);
+      const { fixture, host } = render({ name: 'offline' });
+      await fixture.whenStable();
+      report(true);
+      fixture.detectChanges();
+      expect(host.classList.contains('ui-illustration--paused')).toBe(false);
+      state = 'hidden';
+      doc.dispatchEvent(new Event('visibilitychange'));
+      fixture.detectChanges();
+      expect(host.classList.contains('ui-illustration--paused')).toBe(true);
+      state = 'visible';
+      doc.dispatchEvent(new Event('visibilitychange'));
+      fixture.detectChanges();
+      expect(host.classList.contains('ui-illustration--paused')).toBe(false);
+    });
+
+    it('never pauses for want of an observer', () => {
+      vi.unstubAllGlobals();
+      const { host } = render({ name: 'offline' });
+      expect(host.classList.contains('ui-illustration--paused')).toBe(false);
+    });
   });
 
   describe('accessibility', () => {
@@ -101,56 +213,66 @@ describe('IllustrationComponent', () => {
     });
   });
 
-  describe('edges on the empty-state disc (#315, WCAG 1.4.11)', () => {
+  describe('style system', () => {
     const css = compiledCss();
 
-    it.each([
-      ['empty-folder', 1],
-      ['empty-unsorted', 1],
-      ['empty-filter', 1],
-    ] as const)('%s marks its pale sage body as a key shape', (name, count) => {
-      const { host } = render({ name });
-      expect(host.querySelectorAll('.ui-illustration__tint--key')).toHaveLength(count);
+    it('is square: 15rem by default, 10rem on a phone, through --ui-illustration-size', () => {
+      expect(css).toMatch(/--ill-default-size:\s*15rem/);
+      expect(css).toMatch(/width:\s*var\(--ui-illustration-size,\s*var\(--ill-default-size\)\)/);
+      const phone = mediaBlocks(css, /width\s*<\s*40em|max-width:\s*39\.99em/).join('\n');
+      expect(phone).toMatch(/--ill-default-size:\s*10rem/);
     });
 
-    it('the offline break marks stand on the ground', () => {
-      const { host } = render({ name: 'offline' });
-      expect(host.querySelectorAll('.ui-illustration__line--ground')).toHaveLength(2);
+    it('draws line widths that do not follow the drawn size', () => {
+      expect(css).toMatch(/container-type:\s*inline-size/);
+      expect(css).toMatch(/--ill-w-line:\s*clamp\(0\.125rem,\s*1\.04cqi,\s*0\.15625rem\)/);
+      expect(css).toMatch(/--ill-w-handle:\s*clamp\(0\.28125rem,\s*2\.5cqi,\s*0\.375rem\)/);
+      expect(css).toMatch(/--ill-w-edge:\s*1;/);
+      expect(css).toMatch(/--ill-w-dash:\s*1\.5;/);
+      expect(css).toMatch(/\.ui-illustration__card[^{]*\{[^}]*vector-effect:\s*non-scaling-stroke/);
+      expect(css).toMatch(/stroke-linecap:\s*round/);
     });
 
-    it('takes the caller edges and draws hairline and sage edges without them', () => {
+    it('colours objects neutral and the focus detail sage, from tokens', () => {
       expect(css).toMatch(
-        /\.ui-illustration__surface\s*\{[^}]*stroke:\s*var\(--ui-illustration-edge,\s*var\(--line-strong\)\)/,
+        /\.ui-illustration__card\s*\{[^}]*fill:\s*var\(--surface\)[^}]*stroke:\s*var\(--line-strong\)/,
       );
-      expect(css).toMatch(
-        /\.ui-illustration__tint--key\s*\{[^}]*stroke:\s*var\(--ui-illustration-key-edge,\s*var\(--ai-line\)\)/,
-      );
-      expect(css).toMatch(
-        /\.ui-illustration__line--ground\s*\{[^}]*fill:\s*var\(--ui-illustration-edge,\s*var\(--line-strong\)\)/,
-      );
+      expect(css).toMatch(/\.ui-illustration__line\s*\{[^}]*fill:\s*var\(--surface-pressed\)/);
+      expect(css).toMatch(/\.ui-illustration__ink\s*\{[^}]*stroke:\s*var\(--text-muted\)/);
+      expect(css).toMatch(/\.ui-illustration__accent\s*\{[^}]*fill:\s*var\(--ai\)/);
+      expect(css).toMatch(/\.ui-illustration__accent-tint\s*\{[^}]*fill:\s*var\(--ai-bg\)/);
+      expect(css).toMatch(/\.ui-illustration__accent-edge\s*\{[^}]*stroke:\s*var\(--ai-line\)/);
+      expect(css).toMatch(/\.ui-illustration__danger\s*\{[^}]*fill:\s*var\(--danger\)/);
+      expect(css).toMatch(/\.ui-illustration__danger-tint\s*\{[^}]*fill:\s*var\(--danger-bg\)/);
+      expect(css).not.toMatch(/:\s*(#[0-9a-f]{3,8}|rgb|hsl)/i);
+      expect(css).not.toContain('--ui-illustration-edge');
+      expect(css).not.toContain('--ui-illustration-key-edge');
+    });
+
+    it('declares no keyframes of its own', () => {
+      expect(css).not.toContain('@keyframes');
     });
   });
 
   describe('motion styles', () => {
     const css = compiledCss();
+    const loopRules = css
+      .split('}')
+      .filter((r) => r.includes(':host(.ui-illustration--loop)') && r.includes('animation:'));
 
-    it('loops forever with a cycle between 3 and 5 seconds', () => {
-      const rules = css
-        .split('}')
-        .filter((r) => r.includes(':host(.ui-illustration--loop)') && r.includes('animation:'));
-      expect(rules.length).toBeGreaterThanOrEqual(5);
-      for (const rule of rules) {
-        if (rule.includes('animation: none')) {
-          continue;
-        }
+    it('loops every moving part forever with ui-ill keyframes', () => {
+      const active = loopRules.filter((r) => !r.includes('animation: none'));
+      expect(active).toHaveLength(17);
+      for (const rule of active) {
         expect(rule).toContain('infinite');
+        expect(rule).toMatch(/animation:\s*ui-ill-[a-z-]+ /);
         const seconds = Number(/ (\d+(?:\.\d+)?)s /.exec(rule)?.[1]);
-        expect(seconds).toBeGreaterThanOrEqual(3);
+        expect(seconds).toBeGreaterThanOrEqual(1.4);
         expect(seconds).toBeLessThanOrEqual(5);
       }
     });
 
-    it('plays once and holds the final frame', () => {
+    it('plays one move of the marked parts in once mode and holds the end frame', () => {
       const rules = css
         .split('}')
         .filter(
@@ -159,10 +281,18 @@ describe('IllustrationComponent', () => {
             r.includes('animation:') &&
             !r.includes('animation: none'),
         );
-      expect(rules.length).toBeGreaterThanOrEqual(5);
+      expect(rules.length).toBeGreaterThanOrEqual(8);
       for (const rule of rules) {
-        expect(rule).toMatch(/ 1 both;/);
+        expect(rule).toMatch(/ 1 \w+ both;/);
         expect(rule).not.toContain('infinite');
+      }
+    });
+
+    it('pauses the clock of both modes, without touching the drawing', () => {
+      const paused = css.split('}').filter((r) => r.includes('ui-illustration--paused'));
+      expect(paused.length).toBe(25);
+      for (const rule of paused) {
+        expect(rule).toContain('animation-play-state: paused');
       }
     });
 
@@ -170,17 +300,15 @@ describe('IllustrationComponent', () => {
       expect(css).not.toContain('ui-illustration--none');
     });
 
-    it('removes every animation under reduced motion', () => {
-      const blocks = css.split('@media (prefers-reduced-motion: reduce)').slice(1);
-      // five parts, two modes each
-      expect(blocks).toHaveLength(10);
-      for (const block of blocks) {
+    it('removes every animation under reduced motion (OS and the app setting)', () => {
+      const reduced = mediaBlocks(css, /prefers-reduced-motion:\s*reduce/);
+      expect(reduced).toHaveLength(25);
+      for (const block of reduced) {
         expect(block).toMatch(/animation: none;/);
       }
-    });
-
-    it('uses no hard-coded colours', () => {
-      expect(css).not.toMatch(/:\s*#[0-9a-f]{3,8}/i);
+      expect(css).toMatch(/\[data-motion=['"]?reduced['"]?\]/);
+      // Outside the reduced block the animations are all there.
+      expect(withoutMedia(css, /prefers-reduced-motion/)).toContain('infinite');
     });
   });
 });

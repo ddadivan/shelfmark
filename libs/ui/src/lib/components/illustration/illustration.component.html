@@ -1,400 +1,333 @@
-<svg class="ui-illustration__svg" viewBox="0 0 240 150" focusable="false">
+<svg class="ui-illustration__svg" viewBox="0 0 120 120" focusable="false">
   @switch (name()) {
-    @case ('welcome-collect') {
-      <g class="ui-illustration__fly ui-illustration__fly--1">
-        <rect class="ui-illustration__surface" x="124" y="26" width="48" height="36" rx="6" />
-        <rect class="ui-illustration__tint" x="128" y="30" width="40" height="16" rx="3" />
-        <rect class="ui-illustration__line" x="128" y="48" width="31" height="4" rx="2" />
+    @case ('not-found') {
+      <defs>
+        <clipPath [attr.id]="lensId">
+          <circle class="ui-illustration__drift" cx="64" cy="58" r="16" />
+        </clipPath>
+      </defs>
+      <rect class="ui-illustration__card" x="16" y="30" width="88" height="60" rx="10" />
+      <rect class="ui-illustration__line" x="26" y="40" width="54" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="51" width="68" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="62" width="60" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="73" width="38" height="6" rx="3" />
+      <g class="ui-illustration__focus">
+        <g [attr.clip-path]="lensClip">
+          <circle
+            class="ui-illustration__accent-tint ui-illustration__drift"
+            cx="64"
+            cy="58"
+            r="16"
+          />
+          <rect
+            class="ui-illustration__accent ui-illustration__drift"
+            x="57"
+            y="56.5"
+            width="14"
+            height="3"
+            rx="1.5"
+          />
+        </g>
+        <g class="ui-illustration__drift">
+          <line class="ui-illustration__handle" x1="76" y1="70" x2="86" y2="80" />
+        </g>
       </g>
-      <g class="ui-illustration__fly ui-illustration__fly--2">
-        <rect class="ui-illustration__surface" x="180" y="26" width="48" height="36" rx="6" />
-        <rect class="ui-illustration__accent" x="184" y="30" width="40" height="16" rx="3" />
-        <rect class="ui-illustration__line" x="184" y="48" width="31" height="4" rx="2" />
+      <g class="ui-illustration__drift">
+        <circle class="ui-illustration__ink ui-illustration__ink--open" cx="64" cy="58" r="16" />
       </g>
-      <g class="ui-illustration__fly ui-illustration__fly--3">
-        <rect class="ui-illustration__surface" x="124" y="76" width="48" height="36" rx="6" />
-        <rect class="ui-illustration__tint" x="128" y="80" width="40" height="16" rx="3" />
-        <rect class="ui-illustration__line" x="128" y="98" width="31" height="4" rx="2" />
-      </g>
-      <g class="ui-illustration__fly ui-illustration__fly--4">
-        <rect class="ui-illustration__surface" x="180" y="76" width="48" height="36" rx="6" />
-        <rect class="ui-illustration__ink" x="184" y="80" width="40" height="16" rx="3" />
-        <rect class="ui-illustration__line" x="184" y="98" width="31" height="4" rx="2" />
-      </g>
-      <rect class="ui-illustration__ink" x="24" y="40" width="70" height="64" rx="12" />
-      <path class="ui-illustration__mark" d="M70 40h13v24l-6.5-5-6.5 5z" />
-    }
-    @case ('welcome-save') {
-      <rect class="ui-illustration__surface" x="30" y="18" width="180" height="28" rx="14" />
-      <rect class="ui-illustration__accent" x="40" y="28" width="8" height="8" rx="2" />
-      <rect
-        class="ui-illustration__line ui-illustration__type"
-        x="54"
-        y="29"
-        width="110"
-        height="6"
-        rx="3"
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
       />
-      <rect class="ui-illustration__ink" x="172" y="23" width="32" height="18" rx="9" />
-      <g class="ui-illustration__grow">
-        <rect class="ui-illustration__surface" x="78" y="62" width="84" height="72" rx="6" />
-        <rect class="ui-illustration__tint" x="82" y="66" width="76" height="32" rx="3" />
-        <rect class="ui-illustration__line" x="82" y="107" width="55" height="4" rx="2" />
-        <rect class="ui-illustration__accent" x="134" y="118" width="22" height="8" rx="4" />
-      </g>
-    }
-    @case ('welcome-find') {
-      <rect class="ui-illustration__surface" x="40" y="12" width="160" height="22" rx="11" />
-      <circle
-        class="ui-illustration__search"
-        cx="54"
-        cy="23"
-        r="5"
-        fill="none"
-        stroke-width="1.5"
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle ui-illustration__twinkle--late"
+        d="M18 100l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z"
       />
-      <rect class="ui-illustration__line" x="64" y="20" width="60" height="6" rx="3" />
-      <g class="ui-illustration__dim">
-        <rect class="ui-illustration__surface" x="40" y="46" width="40" height="32" rx="6" />
-        <rect class="ui-illustration__tint" x="44" y="50" width="32" height="14" rx="3" />
-        <rect class="ui-illustration__line" x="44" y="66" width="26" height="4" rx="2" />
-        <rect class="ui-illustration__surface" x="100" y="46" width="40" height="32" rx="6" />
-        <rect class="ui-illustration__tint" x="104" y="50" width="32" height="14" rx="3" />
-        <rect class="ui-illustration__line" x="104" y="66" width="26" height="4" rx="2" />
-        <rect class="ui-illustration__surface" x="40" y="96" width="40" height="32" rx="6" />
-        <rect class="ui-illustration__tint" x="44" y="100" width="32" height="14" rx="3" />
-        <rect class="ui-illustration__line" x="44" y="116" width="26" height="4" rx="2" />
-        <rect class="ui-illustration__surface" x="100" y="96" width="40" height="32" rx="6" />
-        <rect class="ui-illustration__tint" x="104" y="100" width="32" height="14" rx="3" />
-        <rect class="ui-illustration__line" x="104" y="116" width="26" height="4" rx="2" />
-        <rect class="ui-illustration__surface" x="160" y="96" width="40" height="32" rx="6" />
-        <rect class="ui-illustration__tint" x="164" y="100" width="32" height="14" rx="3" />
-        <rect class="ui-illustration__line" x="164" y="116" width="26" height="4" rx="2" />
+    }
+    @case ('empty-filter') {
+      <rect class="ui-illustration__card" x="17" y="22" width="26" height="13" rx="6.5" />
+      <rect class="ui-illustration__card" x="47" y="22" width="26" height="13" rx="6.5" />
+      <rect class="ui-illustration__card" x="77" y="22" width="26" height="13" rx="6.5" />
+      <rect class="ui-illustration__line" x="24" y="27" width="12" height="3" rx="1.5" />
+      <rect class="ui-illustration__line" x="54" y="27" width="12" height="3" rx="1.5" />
+      <rect class="ui-illustration__line" x="84" y="27" width="12" height="3" rx="1.5" />
+      <g class="ui-illustration__focus ui-illustration__hop">
+        <rect class="ui-illustration__accent-edge" x="17" y="22" width="26" height="13" rx="6.5" />
+        <rect class="ui-illustration__accent" x="24" y="27" width="12" height="3" rx="1.5" />
       </g>
-      <g class="ui-illustration__pick">
-        <rect
-          class="ui-illustration__surface ui-illustration__surface--accent"
-          x="160"
-          y="46"
-          width="40"
-          height="32"
-          rx="6"
-        />
-        <rect class="ui-illustration__accent" x="164" y="50" width="32" height="14" rx="3" />
-        <rect class="ui-illustration__line" x="164" y="66" width="26" height="4" rx="2" />
-      </g>
+      <rect class="ui-illustration__card" x="16" y="44" width="88" height="50" rx="10" />
+      <rect class="ui-illustration__dash" x="25" y="53" width="70" height="32" rx="6" />
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle ui-illustration__twinkle--late"
+        d="M18 100l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z"
+      />
     }
     @case ('empty-feed') {
-      <rect
-        class="ui-illustration__dash"
-        x="62"
-        y="28"
-        width="116"
-        height="94"
-        rx="12"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="5 5"
-      />
-      <g class="ui-illustration__shift ui-illustration__shift--bob">
-        <rect class="ui-illustration__accent" x="98" y="64" width="44" height="22" rx="11" />
-        <rect class="ui-illustration__plus" x="118" y="69" width="4" height="12" rx="2" />
-        <rect class="ui-illustration__plus" x="114" y="73" width="12" height="4" rx="2" />
+      <g class="ui-illustration__bob">
+        <rect class="ui-illustration__card" x="16" y="30" width="88" height="60" rx="10" />
+        <rect class="ui-illustration__line" x="26" y="40" width="68" height="22" rx="5" />
+        <rect class="ui-illustration__line" x="26" y="70" width="36" height="6" rx="3" />
       </g>
+      <g class="ui-illustration__focus ui-illustration__pulse">
+        <circle class="ui-illustration__accent-tint" cx="86" cy="84" r="16" />
+        <path class="ui-illustration__accent-stroke" d="M86 78v12M80 84h12" />
+      </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
     }
     @case ('empty-folder') {
       <path
-        class="ui-illustration__tint ui-illustration__tint--key"
-        d="M64 40h34l10 10h68a8 8 0 0 1 8 8v56a8 8 0 0 1-8 8H64a8 8 0 0 1-8-8V48a8 8 0 0 1 8-8z"
+        class="ui-illustration__ink"
+        d="M24 30h22l8 8h42a8 8 0 0 1 8 8v40a8 8 0 0 1-8 8H24a8 8 0 0 1-8-8V38a8 8 0 0 1 8-8z"
       />
-      <g class="ui-illustration__shift ui-illustration__shift--bob">
-        <rect class="ui-illustration__surface" x="92" y="74" width="56" height="34" rx="6" />
-        <rect class="ui-illustration__line" x="98" y="80" width="30" height="5" rx="2.5" />
-        <rect class="ui-illustration__line" x="98" y="90" width="20" height="5" rx="2.5" />
+      <g class="ui-illustration__bob">
+        <rect class="ui-illustration__card" x="34" y="50" width="52" height="32" rx="7" />
+        <g class="ui-illustration__focus">
+          <rect class="ui-illustration__accent" x="41" y="58" width="28" height="5" rx="2.5" />
+        </g>
+        <rect class="ui-illustration__line" x="41" y="68" width="18" height="5" rx="2.5" />
       </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
     }
-    @case ('not-found') {
-      <rect
-        class="ui-illustration__dash"
-        x="36"
-        y="40"
-        width="70"
-        height="56"
-        rx="10"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="5 5"
+    @case ('empty-trash') {
+      <ellipse class="ui-illustration__line" cx="60" cy="96" rx="30" ry="4.5" />
+      <path class="ui-illustration__ink" d="M38 44h44l-4 46a6 6 0 0 1-6 5.4H48a6 6 0 0 1-6-5.4z" />
+      <path class="ui-illustration__ink ui-illustration__ink--open" d="M52 56v28M68 56v28" />
+      <g class="ui-illustration__focus ui-illustration__lid">
+        <rect class="ui-illustration__ink" x="34" y="34" width="52" height="8" rx="4" />
+        <path
+          class="ui-illustration__ink ui-illustration__ink--open"
+          d="M52 34v-3a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3"
+        />
+      </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
       />
-      <rect
-        class="ui-illustration__dash"
-        x="134"
-        y="40"
-        width="70"
-        height="56"
-        rx="10"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="5 5"
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle ui-illustration__twinkle--late"
+        d="M18 100l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z"
       />
-      <g class="ui-illustration__shift ui-illustration__shift--scan">
-        <circle class="ui-illustration__lens" cx="120" cy="66" r="20" stroke-width="5" />
-        <rect
-          class="ui-illustration__accent"
-          x="132"
-          y="84"
-          width="26"
-          height="9"
-          rx="4.5"
-          transform="rotate(45 132 84)"
+    }
+    @case ('empty-recent') {
+      <rect class="ui-illustration__card" x="16" y="30" width="88" height="60" rx="10" />
+      <rect class="ui-illustration__line" x="26" y="40" width="50" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="51" width="36" height="6" rx="3" />
+      <g class="ui-illustration__focus">
+        <circle class="ui-illustration__accent-tint" cx="86" cy="84" r="16" />
+        <path class="ui-illustration__accent-stroke" d="M86 84l-4.5 4" />
+        <g class="ui-illustration__hand">
+          <path class="ui-illustration__accent-stroke" d="M86 84v-8" />
+        </g>
+        <circle class="ui-illustration__accent" cx="86" cy="84" r="1.6" />
+      </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
+    }
+    @case ('empty-favorites') {
+      <rect class="ui-illustration__card" x="16" y="30" width="88" height="60" rx="10" />
+      <rect class="ui-illustration__line" x="26" y="40" width="50" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="51" width="36" height="6" rx="3" />
+      <g class="ui-illustration__focus ui-illustration__pulse">
+        <circle class="ui-illustration__accent-tint" cx="86" cy="84" r="16" />
+        <path
+          class="ui-illustration__accent-stroke"
+          d="M86 76.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z"
+        />
+      </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle ui-illustration__twinkle--late"
+        d="M18 100l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z"
+      />
+    }
+    @case ('empty-unsorted') {
+      <g class="ui-illustration__bob">
+        <rect class="ui-illustration__card" x="34" y="22" width="52" height="36" rx="8" />
+        <g class="ui-illustration__focus">
+          <rect class="ui-illustration__accent" x="42" y="31" width="28" height="5" rx="2.5" />
+        </g>
+        <rect class="ui-illustration__line" x="42" y="41" width="18" height="5" rx="2.5" />
+      </g>
+      <path
+        class="ui-illustration__ink"
+        d="M16 66h22l5 9h34l5-9h22v20a8 8 0 0 1-8 8H24a8 8 0 0 1-8-8z"
+      />
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
+    }
+    @case ('empty-tags') {
+      <rect class="ui-illustration__card" x="16" y="30" width="80" height="60" rx="10" />
+      <rect class="ui-illustration__line" x="26" y="40" width="44" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="51" width="30" height="6" rx="3" />
+      <circle class="ui-illustration__ink-dot" cx="92" cy="30" r="2" />
+      <g class="ui-illustration__swing">
+        <path class="ui-illustration__ink ui-illustration__ink--open" d="M92 30v10" />
+        <path
+          class="ui-illustration__ink"
+          d="M83 40h18l6 7v34a6 6 0 0 1-6 6H83a6 6 0 0 1-6-6V47z"
+        />
+        <circle class="ui-illustration__ink" cx="92" cy="50" r="2.6" />
+        <g class="ui-illustration__focus">
+          <rect class="ui-illustration__accent" x="83" y="62" width="18" height="4" rx="2" />
+        </g>
+        <rect class="ui-illustration__line" x="83" y="71" width="12" height="4" rx="2" />
+      </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle ui-illustration__twinkle--late"
+        d="M18 100l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z"
+      />
+    }
+    @case ('offline') {
+      <path
+        class="ui-illustration__ink"
+        d="M36 86h50a16 16 0 0 0 2-31.9 22 22 0 0 0-42.4-3.5A18 18 0 0 0 36 86z"
+      />
+      <g class="ui-illustration__focus">
+        <path
+          class="ui-illustration__accent-stroke ui-illustration__wave"
+          d="M52 70a11 11 0 0 1 16 0"
+        />
+        <path
+          class="ui-illustration__accent-stroke ui-illustration__wave ui-illustration__wave--2"
+          d="M46 63a20 20 0 0 1 28 0"
+        />
+        <circle
+          class="ui-illustration__accent ui-illustration__wave ui-illustration__wave--3"
+          cx="60"
+          cy="77"
+          r="2.5"
         />
       </g>
     }
     @case ('page-not-found') {
-      <rect class="ui-illustration__surface" x="70" y="30" width="100" height="90" rx="12" />
       <path
-        class="ui-illustration__accent ui-illustration__shift ui-illustration__shift--nudge"
-        d="M146 30h14v34l-7-5.5-7 5.5z"
+        class="ui-illustration__card"
+        d="M26 30h58v0l20 20v30a10 10 0 0 1-10 10H26a10 10 0 0 1-10-10V40a10 10 0 0 1 10-10z"
       />
-      <rect class="ui-illustration__line" x="84" y="78" width="72" height="8" rx="4" />
-      <rect class="ui-illustration__line" x="84" y="94" width="44" height="8" rx="4" />
-    }
-    @case ('empty-trash') {
-      <rect class="ui-illustration__tint" x="58" y="42" width="4" height="12" rx="2" />
-      <rect class="ui-illustration__tint" x="54" y="46" width="12" height="4" rx="2" />
-      <rect class="ui-illustration__tint" x="178" y="62" width="4" height="12" rx="2" />
-      <rect class="ui-illustration__tint" x="174" y="66" width="12" height="4" rx="2" />
-      <rect class="ui-illustration__tint" x="168" y="104" width="8" height="8" rx="4" />
-      <rect class="ui-illustration__surface" x="96" y="58" width="48" height="64" rx="8" />
-      <rect class="ui-illustration__line" x="108" y="70" width="4" height="40" rx="2" />
-      <rect class="ui-illustration__line" x="118" y="70" width="4" height="40" rx="2" />
-      <rect class="ui-illustration__line" x="128" y="70" width="4" height="40" rx="2" />
-      <g class="ui-illustration__shift ui-illustration__shift--lift">
-        <rect class="ui-illustration__accent" x="110" y="38" width="20" height="12" rx="4" />
-        <rect class="ui-illustration__ink" x="88" y="46" width="64" height="8" rx="4" />
-      </g>
-    }
-    @case ('empty-recent') {
-      <circle class="ui-illustration__surface" cx="80" cy="75" r="36" />
-      <rect class="ui-illustration__line" x="78" y="45" width="4" height="8" rx="2" />
-      <rect class="ui-illustration__line" x="78" y="97" width="4" height="8" rx="2" />
-      <rect class="ui-illustration__line" x="50" y="73" width="8" height="4" rx="2" />
-      <rect class="ui-illustration__line" x="102" y="73" width="8" height="4" rx="2" />
-      <rect class="ui-illustration__ink" x="78" y="73" width="17" height="4" rx="2" />
-      <g class="ui-illustration__fly ui-illustration__fly--sweep">
-        <rect class="ui-illustration__accent" x="78" y="51" width="4" height="26" rx="2" />
-        <rect x="78" y="73" width="4" height="26" fill="none" />
-      </g>
-      <circle class="ui-illustration__ink" cx="80" cy="75" r="4" />
-      <rect
-        class="ui-illustration__dash"
-        x="132"
-        y="46"
-        width="76"
-        height="16"
-        rx="8"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="4 4"
-      />
-      <rect
-        class="ui-illustration__dash"
-        x="132"
-        y="68"
-        width="76"
-        height="16"
-        rx="8"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="4 4"
-      />
-      <rect
-        class="ui-illustration__dash"
-        x="132"
-        y="90"
-        width="56"
-        height="16"
-        rx="8"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="4 4"
-      />
-    }
-    @case ('empty-favorites') {
-      <rect class="ui-illustration__surface" x="70" y="38" width="92" height="80" rx="10" />
-      <rect class="ui-illustration__tint" x="76" y="44" width="80" height="34" rx="6" />
-      <rect class="ui-illustration__line" x="76" y="86" width="60" height="6" rx="3" />
-      <rect class="ui-illustration__line" x="76" y="98" width="40" height="6" rx="3" />
-      <g class="ui-illustration__grow">
-        <circle class="ui-illustration__halo" cx="160" cy="42" r="22" />
-        <path
-          class="ui-illustration__accent"
-          d="M160 26l4.1 10.3 11.1 0.7-8.6 7.1 2.8 10.8-9.4-5.9-9.4 5.9 2.8-10.8-8.6-7.1 11.1-0.7z"
-        />
-      </g>
-    }
-    @case ('empty-unsorted') {
-      <g class="ui-illustration__shift ui-illustration__shift--dip">
-        <rect class="ui-illustration__surface" x="92" y="28" width="56" height="40" rx="6" />
-        <rect class="ui-illustration__accent" x="97" y="33" width="46" height="14" rx="3" />
-        <rect class="ui-illustration__line" x="97" y="53" width="30" height="5" rx="2.5" />
+      <rect class="ui-illustration__line" x="26" y="44" width="44" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="55" width="56" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="66" width="34" height="6" rx="3" />
+      <g class="ui-illustration__focus ui-illustration__flap">
+        <path class="ui-illustration__accent-edge" d="M84 28l20 20H90a6 6 0 0 1-6-6z" />
       </g>
       <path
-        class="ui-illustration__tint ui-illustration__tint--key"
-        d="M52 82h36l8 14h48l8-14h36v28a12 12 0 0 1-12 12H64a12 12 0 0 1-12-12z"
-      />
-    }
-    @case ('empty-tags') {
-      <rect
-        class="ui-illustration__dash"
-        x="40"
-        y="44"
-        width="64"
-        height="24"
-        rx="12"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="5 5"
-      />
-      <rect
-        class="ui-illustration__dash"
-        x="112"
-        y="44"
-        width="88"
-        height="24"
-        rx="12"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="5 5"
-      />
-      <rect
-        class="ui-illustration__dash"
-        x="56"
-        y="82"
-        width="72"
-        height="24"
-        rx="12"
-        fill="none"
-        stroke-width="1.5"
-        stroke-dasharray="5 5"
-      />
-      <g class="ui-illustration__shift ui-illustration__shift--bob">
-        <rect class="ui-illustration__accent" x="136" y="82" width="56" height="24" rx="12" />
-        <rect class="ui-illustration__plus" x="162" y="88" width="4" height="12" rx="2" />
-        <rect class="ui-illustration__plus" x="158" y="92" width="12" height="4" rx="2" />
-      </g>
-    }
-    @case ('empty-filter') {
-      <rect
-        class="ui-illustration__tint ui-illustration__tint--key"
-        x="52"
-        y="24"
-        width="60"
-        height="22"
-        rx="11"
-      />
-      <rect class="ui-illustration__accent" x="120" y="24" width="68" height="22" rx="11" />
-      <circle class="ui-illustration__plus" cx="133" cy="35" r="4" />
-      <g class="ui-illustration__dim ui-illustration__dim--soft">
-        <rect
-          class="ui-illustration__dash"
-          x="44"
-          y="62"
-          width="44"
-          height="58"
-          rx="8"
-          fill="none"
-          stroke-width="1.5"
-          stroke-dasharray="5 5"
-        />
-        <rect
-          class="ui-illustration__dash"
-          x="98"
-          y="62"
-          width="44"
-          height="58"
-          rx="8"
-          fill="none"
-          stroke-width="1.5"
-          stroke-dasharray="5 5"
-        />
-        <rect
-          class="ui-illustration__dash"
-          x="152"
-          y="62"
-          width="44"
-          height="58"
-          rx="8"
-          fill="none"
-          stroke-width="1.5"
-          stroke-dasharray="5 5"
-        />
-      </g>
-    }
-    @case ('offline') {
-      <g class="ui-illustration__shift ui-illustration__shift--toward">
-        <rect class="ui-illustration__ink" x="40" y="62" width="70" height="26" rx="13" />
-      </g>
-      <g class="ui-illustration__shift ui-illustration__shift--away">
-        <rect class="ui-illustration__accent" x="130" y="62" width="70" height="26" rx="13" />
-      </g>
-      <rect
-        class="ui-illustration__line ui-illustration__line--ground"
-        x="113"
-        y="40"
-        width="4"
-        height="12"
-        rx="2"
-        transform="rotate(-20 115 46)"
-      />
-      <rect
-        class="ui-illustration__line ui-illustration__line--ground"
-        x="123"
-        y="98"
-        width="4"
-        height="12"
-        rx="2"
-        transform="rotate(-20 125 104)"
+        class="ui-illustration__spark ui-illustration__twinkle ui-illustration__twinkle--late"
+        d="M18 100l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z"
       />
     }
     @case ('error') {
-      <rect class="ui-illustration__surface" x="70" y="66" width="84" height="56" rx="6" />
-      <rect class="ui-illustration__tint" x="74" y="70" width="76" height="25" rx="3" />
-      <rect class="ui-illustration__line" x="74" y="100" width="57" height="4" rx="2" />
-      <g class="ui-illustration__shift ui-illustration__shift--nudge">
-        <rect class="ui-illustration__surface" x="86" y="50" width="84" height="56" rx="6" />
-        <rect class="ui-illustration__line" x="90" y="54" width="76" height="25" rx="3" />
-        <rect class="ui-illustration__line" x="90" y="84" width="57" height="4" rx="2" />
-      </g>
-      <g class="ui-illustration__grow">
-        <circle class="ui-illustration__danger" cx="168" cy="50" r="11" />
-        <path class="ui-illustration__on-stroke" d="M168 44v7" />
-        <circle class="ui-illustration__on" cx="168" cy="55.5" r="1.6" />
+      <rect class="ui-illustration__card" x="16" y="30" width="88" height="60" rx="10" />
+      <rect class="ui-illustration__line" x="26" y="40" width="50" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="51" width="36" height="6" rx="3" />
+      <g class="ui-illustration__focus ui-illustration__wobble">
+        <circle class="ui-illustration__danger-tint" cx="86" cy="84" r="16" />
+        <path class="ui-illustration__danger-stroke" d="M86 77v8" />
+        <circle class="ui-illustration__danger" cx="86" cy="90.5" r="1.6" />
       </g>
     }
     @case ('signed-out') {
-      <rect class="ui-illustration__surface" x="70" y="30" width="100" height="90" rx="12" />
+      <ellipse class="ui-illustration__line" cx="60" cy="96" rx="28" ry="4.5" />
+      <g class="ui-illustration__shackle">
+        <path
+          class="ui-illustration__ink ui-illustration__ink--open"
+          d="M46 54V44a14 14 0 0 1 28 0v10"
+        />
+      </g>
+      <rect class="ui-illustration__ink" x="36" y="52" width="48" height="38" rx="9" />
+      <g class="ui-illustration__focus">
+        <circle class="ui-illustration__accent" cx="60" cy="68" r="4" />
+        <rect class="ui-illustration__accent" x="58.2" y="70" width="3.6" height="9" rx="1.8" />
+      </g>
       <path
-        class="ui-illustration__mark ui-illustration__shift ui-illustration__shift--nudge"
-        d="M146 30h14v34l-7-5.5-7 5.5z"
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
       />
-      <rect class="ui-illustration__line" x="84" y="78" width="72" height="8" rx="4" />
-      <rect class="ui-illustration__line" x="84" y="94" width="44" height="8" rx="4" />
     }
     @case ('all-done') {
-      <g class="ui-illustration__fly ui-illustration__fly--1">
-        <rect class="ui-illustration__surface" x="80" y="74" width="80" height="48" rx="6" />
-        <rect class="ui-illustration__tint" x="84" y="78" width="72" height="21" rx="3" />
-        <rect class="ui-illustration__line" x="84" y="104" width="54" height="4" rx="2" />
+      <rect class="ui-illustration__card" x="16" y="30" width="88" height="60" rx="10" />
+      <rect class="ui-illustration__line" x="26" y="40" width="50" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="51" width="36" height="6" rx="3" />
+      <g class="ui-illustration__focus">
+        <circle class="ui-illustration__accent-tint ui-illustration__ring" cx="86" cy="84" r="16" />
+        <circle class="ui-illustration__accent-tint" cx="86" cy="84" r="16" />
+        <path class="ui-illustration__accent-stroke" d="M79.5 84l4.5 4.5 8.5-9" />
       </g>
-      <g class="ui-illustration__fly ui-illustration__fly--2">
-        <rect class="ui-illustration__surface" x="84" y="62" width="72" height="44" rx="6" />
-        <rect class="ui-illustration__line" x="88" y="66" width="64" height="19" rx="3" />
-        <rect class="ui-illustration__line" x="88" y="90" width="48" height="4" rx="2" />
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle ui-illustration__twinkle--late"
+        d="M18 100l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z"
+      />
+    }
+    @case ('welcome-collect') {
+      <rect class="ui-illustration__card" x="30" y="56" width="74" height="30" rx="8" />
+      <rect class="ui-illustration__card" x="23" y="48" width="74" height="30" rx="8" />
+      <g class="ui-illustration__focus ui-illustration__slide-in">
+        <rect class="ui-illustration__accent-frame" x="16" y="40" width="74" height="30" rx="8" />
+        <rect class="ui-illustration__accent" x="24" y="48" width="34" height="5" rx="2.5" />
+        <rect class="ui-illustration__line" x="24" y="58" width="22" height="5" rx="2.5" />
       </g>
-      <g class="ui-illustration__grow">
-        <circle class="ui-illustration__success" cx="158" cy="62" r="13" />
-        <path class="ui-illustration__on-stroke" d="m152 62 4.5 4.5 8-9" />
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
+    }
+    @case ('welcome-save') {
+      <rect class="ui-illustration__card" x="16" y="30" width="88" height="60" rx="10" />
+      <rect class="ui-illustration__line" x="26" y="48" width="50" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="59" width="36" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="26" y="70" width="44" height="6" rx="3" />
+      <g class="ui-illustration__focus ui-illustration__ribbon">
+        <path class="ui-illustration__accent" d="M80 24h14v28l-7-5.5-7 5.5z" />
       </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
+    }
+    @case ('welcome-find') {
+      <rect class="ui-illustration__card" x="14" y="32" width="42" height="52" rx="8" />
+      <rect class="ui-illustration__line" x="21" y="39" width="28" height="16" rx="4" />
+      <rect class="ui-illustration__line" x="21" y="61" width="20" height="5" rx="2.5" />
+      <rect class="ui-illustration__card" x="64" y="32" width="42" height="52" rx="8" />
+      <rect class="ui-illustration__line" x="71" y="39" width="28" height="16" rx="4" />
+      <rect class="ui-illustration__line" x="71" y="61" width="20" height="5" rx="2.5" />
+      <g class="ui-illustration__focus">
+        <g class="ui-illustration__pick">
+          <rect class="ui-illustration__accent-frame" x="64" y="32" width="42" height="52" rx="8" />
+          <rect class="ui-illustration__line" x="71" y="39" width="28" height="16" rx="4" />
+          <rect class="ui-illustration__accent" x="71" y="61" width="20" height="5" rx="2.5" />
+        </g>
+        <g class="ui-illustration__scan">
+          <line class="ui-illustration__handle" x1="94" y1="80" x2="103" y2="89" />
+          <circle
+            class="ui-illustration__accent-tint ui-illustration__accent-tint--half"
+            cx="84"
+            cy="70"
+            r="13"
+          />
+          <circle class="ui-illustration__ink ui-illustration__ink--open" cx="84" cy="70" r="13" />
+        </g>
+      </g>
+      <path
+        class="ui-illustration__spark ui-illustration__twinkle"
+        d="M104 14l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z"
+      />
     }
   }
 </svg>

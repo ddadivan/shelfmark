@@ -6,7 +6,7 @@
 }
 
 .saved__scene {
-  inline-size: rem(160px);
-  block-size: rem(100px);
+  --ui-illustration-size: #{rem(160px)};
+
   margin-block-end: var(--space-2);
 }

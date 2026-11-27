@@ -1,156 +1,371 @@
-// Illustration motion (docs/design/components/Illustration/README.md). Kept apart from the
-// shared presets: these are slow scene animations, not UI feedback. The keyframes are defined
-// once, in `global.scss` (`@include illustration-keyframes`). Positions and opacities come from
-// custom properties set by the scene classes, so a few keyframes serve every scene; offsets are
-// percentages of the element's own box (`transform-box: fill-box`), never px.
-// `once` ends on its final frame, which is the element's resting state, and holds it. `loop`
-// uses the `-loop` keyframes, which fade the element out and back in around the reset so the
-// restart is invisible. `animation-delay` only offsets the first cycle, so after it the four
-// cards of a loop move together; a per-card offset would need keyframes per card. The two durations are the only non-token times, as the spec allows
-// slow 3-5 s scenes.
-$illustration-once-duration: 3.2s;
-$illustration-loop-duration: 4s;
+@use 'sass:map';
+@use 'sass:math';
+
+// Illustration motion (docs/design-next/shelf/design-system/components/Illustration/README.md).
+// Kept apart from the shared presets: these are slow scene animations, not UI feedback. The
+// keyframes are defined once, in `global.scss` (`@include illustration-keyframes`), and the
+// component applies them part by part from `$illustration-parts` (`illustration-modes`).
+
+// A scene is drawn on a 120 x 120 grid, so a move is written in grid units and turned into a
+// percentage of the viewBox (`illustration-unit`): the SVG parts use `transform-box: view-box`,
+// where 100% is the whole 120. Never px. Every move is small and slow; the end frame of a scene
+// is its resting drawing, which is what `none` and reduced motion show.
+$illustration-grid: 120;
+
+// Easing of the "breathing" parts (Shelf sketch v3): a soft in-out that is not a token curve.
+$illustration-ease: cubic-bezier(0.45, 0, 0.55, 1);
+
+/// Grid units to a percentage of the 120 viewBox (translate offsets, transform origins).
+@function illustration-unit($units) {
+  @return math.percentage(math.div($units, $illustration-grid));
+}
+
+// One entry per moving part: the class (`ui-illustration__<name>`), the keyframes (`ui-ill-<name>`),
+// one cycle in seconds, the easing, the direction, the transform box and origin (grid units; `null`
+// = the element's own box, centred) and `once` (plays in `motion="once"`: one move, then holds its
+// end frame; the others loop only). Delays come from `--ill-delay` on a modifier class.
+$illustration-parts: (
+  'drift': (
+    'duration': 2.6s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'once': true,
+  ),
+  'bob': (
+    'duration': 1.8s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'once': true,
+  ),
+  'pulse': (
+    'duration': 1.4s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'box': fill-box,
+    'once': true,
+  ),
+  'ring': (
+    'duration': 2.2s,
+    'timing': ease-out,
+    'direction': normal,
+    'box': fill-box,
+  ),
+  'lid': (
+    'duration': 1.6s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'origin': (
+      34,
+      36,
+    ),
+    'once': true,
+  ),
+  'hand': (
+    'duration': 5s,
+    'timing': linear,
+    'direction': normal,
+    'origin': (
+      86,
+      84,
+    ),
+  ),
+  'swing': (
+    'duration': 1.7s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'origin': (
+      92,
+      30,
+    ),
+    'once': true,
+  ),
+  'wave': (
+    'duration': 1.8s,
+    'timing': ease-in-out,
+    'direction': normal,
+  ),
+  'flap': (
+    'duration': 1.6s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'origin': (
+      84,
+      28,
+    ),
+    'once': true,
+  ),
+  'wobble': (
+    'duration': 2.4s,
+    'timing': ease-in-out,
+    'direction': normal,
+    'origin': (
+      86,
+      84,
+    ),
+  ),
+  'shackle': (
+    'duration': 1.6s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'once': true,
+  ),
+  'ribbon': (
+    'duration': 1.7s,
+    'timing': $illustration-ease,
+    'direction': alternate,
+    'once': true,
+  ),
+  'hop': (
+    'duration': 3.6s,
+    'timing': var(--ease-in-out),
+    'direction': normal,
+  ),
+  'slide-in': (
+    'duration': 3.2s,
+    'timing': var(--ease-out),
+    'direction': normal,
+  ),
+  'scan': (
+    'duration': 4s,
+    'timing': $illustration-ease,
+    'direction': normal,
+  ),
+  'pick': (
+    'duration': 4s,
+    'timing': $illustration-ease,
+    'direction': normal,
+  ),
+  'twinkle': (
+    'duration': 2s,
+    'timing': ease-in-out,
+    'direction': normal,
+    'box': fill-box,
+  ),
+);
 
 @mixin illustration-keyframes {
-  // Card flies in from `--ill-x`, `--ill-y`, `--ill-r` to its place.
-  @keyframes ui-ill-fly {
-    0%,
-    10% {
-      transform: translate(var(--ill-x), var(--ill-y)) rotate(var(--ill-r));
-    }
-
-    45%,
-    100% {
-      transform: none;
-    }
-  }
-
-  @keyframes ui-ill-fly-loop {
-    0% {
-      opacity: 0;
-      transform: translate(var(--ill-x), var(--ill-y)) rotate(var(--ill-r));
-    }
-
-    8% {
-      opacity: 1;
-      transform: translate(var(--ill-x), var(--ill-y)) rotate(var(--ill-r));
-    }
-
-    40%,
-    80% {
-      opacity: 1;
-      transform: none;
-    }
-
-    94%,
-    100% {
-      opacity: 0;
-      transform: none;
-    }
-  }
-
-  // New card grows out of the field above it.
-  @keyframes ui-ill-grow {
-    0%,
-    20% {
-      opacity: 0;
-      transform: translateY(-47%) scale(0.3);
-    }
-
-    50%,
-    100% {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  @keyframes ui-ill-grow-loop {
-    0%,
-    8% {
-      opacity: 0;
-      transform: translateY(-47%) scale(0.3);
-    }
-
-    40%,
-    80% {
-      opacity: 1;
-      transform: none;
-    }
-
-    94%,
-    100% {
-      opacity: 0;
-      transform: none;
-    }
-  }
-
-  // Text line is typed (scales from its left edge).
-  @keyframes ui-ill-type {
-    0%,
-    10% {
-      transform: scaleX(0);
-    }
-
-    35%,
-    100% {
-      transform: scaleX(1);
-    }
-  }
-
-  @keyframes ui-ill-type-loop {
-    0%,
-    10% {
-      transform: scaleX(0);
-    }
-
-    35%,
-    80% {
-      transform: scaleX(1);
-    }
-
-    100% {
-      transform: scaleX(0);
-    }
-  }
-
-  // Opacity from `--ill-from` to `--ill-to` (search picks one card, dims the others).
-  @keyframes ui-ill-fade {
-    0%,
-    30% {
-      opacity: var(--ill-from);
-    }
-
-    50%,
-    100% {
-      opacity: var(--ill-to);
-    }
-  }
-
-  @keyframes ui-ill-fade-loop {
-    0%,
-    10% {
-      opacity: var(--ill-from);
-    }
-
-    35%,
-    80% {
-      opacity: var(--ill-to);
-    }
-
-    100% {
-      opacity: var(--ill-from);
-    }
-  }
-
-  // Moves out by `--ill-dx`, `--ill-dy` and back; already seamless, so loop and once share it.
-  @keyframes ui-ill-shift {
+  // Spark: breathes in size and brightness with a small turn.
+  @keyframes ui-ill-twinkle {
     0%,
     100% {
-      transform: none;
+      opacity: 0.45;
+      transform: scale(0.6) rotate(0);
     }
 
     50% {
-      transform: translate(var(--ill-dx, 0), var(--ill-dy, 0));
+      opacity: 1;
+      transform: scale(1) rotate(20deg);
+    }
+  }
+
+  // The lens glides along the card.
+  @keyframes ui-ill-drift {
+    from {
+      transform: translateX(illustration-unit(-14));
+    }
+
+    to {
+      transform: translateX(illustration-unit(10));
+    }
+  }
+
+  @keyframes ui-ill-bob {
+    from {
+      transform: translateY(0);
+    }
+
+    to {
+      transform: translateY(illustration-unit(-5));
+    }
+  }
+
+  @keyframes ui-ill-pulse {
+    from {
+      transform: scale(1);
+    }
+
+    to {
+      transform: scale(1.1);
+    }
+  }
+
+  // A ring leaves the badge and fades.
+  @keyframes ui-ill-ring {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.95);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale(1.55);
+    }
+  }
+
+  @keyframes ui-ill-lid {
+    from {
+      transform: rotate(0);
+    }
+
+    to {
+      transform: rotate(-12deg);
+    }
+  }
+
+  // The minute hand of the clock.
+  @keyframes ui-ill-hand {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes ui-ill-swing {
+    from {
+      transform: rotate(-9deg);
+    }
+
+    to {
+      transform: rotate(9deg);
+    }
+  }
+
+  // The signal waves light one after another (delay per wave).
+  @keyframes ui-ill-wave {
+    0%,
+    100% {
+      opacity: 0.25;
+    }
+
+    40%,
+    60% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes ui-ill-flap {
+    from {
+      transform: rotate(0);
+    }
+
+    to {
+      transform: rotate(-14deg);
+    }
+  }
+
+  // A short shudder now and then, still for the rest of the cycle.
+  @keyframes ui-ill-wobble {
+    0%,
+    70%,
+    100% {
+      transform: rotate(0);
+    }
+
+    78% {
+      transform: rotate(-8deg);
+    }
+
+    86% {
+      transform: rotate(6deg);
+    }
+
+    93% {
+      transform: rotate(-3deg);
+    }
+  }
+
+  @keyframes ui-ill-shackle {
+    0%,
+    35% {
+      transform: translateY(0);
+    }
+
+    65%,
+    100% {
+      transform: translateY(illustration-unit(-5));
+    }
+  }
+
+  @keyframes ui-ill-ribbon {
+    from {
+      transform: translateY(illustration-unit(-4));
+    }
+
+    to {
+      transform: translateY(illustration-unit(1));
+    }
+  }
+
+  // The highlight steps over three filters.
+  @keyframes ui-ill-hop {
+    0%,
+    22% {
+      transform: translateX(0);
+    }
+
+    33%,
+    55% {
+      transform: translateX(illustration-unit(30));
+    }
+
+    66%,
+    88% {
+      transform: translateX(illustration-unit(60));
+    }
+
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  // A new card lands on the stack and fades out for the next round.
+  @keyframes ui-ill-slide-in {
+    0% {
+      opacity: 0;
+      transform: translate(illustration-unit(-14), illustration-unit(-24)) rotate(-8deg);
+    }
+
+    20% {
+      opacity: 1;
+    }
+
+    45%,
+    80% {
+      opacity: 1;
+      transform: translate(0, 0) rotate(0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+  }
+
+  // The lens comes in from the left and finds the card.
+  @keyframes ui-ill-scan {
+    0%,
+    15% {
+      transform: translateX(illustration-unit(-50));
+    }
+
+    55%,
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes ui-ill-pick {
+    0%,
+    50% {
+      opacity: 0;
+    }
+
+    62%,
+    92% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
     }
   }
 }

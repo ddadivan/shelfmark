@@ -13,10 +13,9 @@
 
 // Page layout (#315, Shelf `sm-empty`): the state is the page's content, centred both ways in
 // the free area under the page head (author decision, 2026-11-25) with no card around it; the
-// 240 x 150 scene, then 16px to the heading, the sentence and the actions.
+// square scene (240px, 160px on a phone: the illustration's own default), then 16px to the
+// heading, the sentence and the actions.
 :host(.ui-empty-state--page) {
-  --ui-illustration-width: #{rem(240px)};
-
   box-sizing: border-box;
   flex: 1 0 auto;
   gap: var(--space-4);
@@ -36,12 +35,10 @@
   place-items: center;
 }
 
-.ui-empty-state__illustration {
-  --ui-illustration-width: #{rem(220px)};
-}
-
-:host(.ui-empty-state--page) .ui-empty-state__illustration {
-  --ui-illustration-width: inherit;
+// The inline state sits in a card or panel: the small 160px scene. The page state leaves the
+// illustration's own size (240px, 160px on a phone).
+:host(:not(.ui-empty-state--page)) .ui-empty-state__illustration {
+  --ui-illustration-size: #{rem(160px)};
 }
 
 .ui-empty-state__art {

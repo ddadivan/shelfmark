@@ -40,19 +40,9 @@
   color: var(--text-muted);
 }
 
-// The done state: the scene on the sage disc, centred.
+// The done state: the scene straight on the dialog, centred (160px square).
 .backfill__scene {
+  --ui-illustration-size: #{rem(160px)};
+
   align-self: center;
-  width: rem(144px);
-  aspect-ratio: 1;
-  overflow: hidden;
-  background: var(--illustration-disc);
-  border-radius: var(--radius-full);
-
-  ui-illustration {
-    --ui-illustration-width: 100%;
-
-    display: block;
-    height: 100%;
-  }
 }
