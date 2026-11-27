@@ -99,6 +99,42 @@ test.describe('link preview (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Select links', exact: true })).toBeVisible();
   });
 
+  test('↑ ↓ walk the list in order after a sidebar folder click, keeping the open row in view', async ({
+    page,
+  }) => {
+    await openLibrary(page);
+    // A folder clicked in the sidebar keeps the focus in its tree, which has arrows of its own.
+    await page.getByRole('treeitem', { name: /^Reading\b/ }).click();
+    await expect(page).toHaveURL(/\/folders\//);
+    const titles = page.locator('.library__scroll [data-link-id] .ui-card__link');
+    await expect(titles.first()).toBeVisible();
+    await page.getByRole('treeitem', { name: /^Reading\b/ }).focus();
+    // A preview opened while the tree has the focus: the arrows must still follow the list.
+    await titles.first().evaluate((link) => (link as HTMLElement).click());
+    const rows = page.locator('.library__scroll [data-link-id]');
+    const current = page.locator('.library__scroll [data-link-id][aria-current="true"]');
+    await expect(current).toHaveCount(1);
+    const ids = await rows.evaluateAll((items) =>
+      items.map((item) => item.getAttribute('data-link-id')),
+    );
+    const area = page.locator('.library__scroll');
+
+    for (const step of [1, 2, 3, 4, 5, 6]) {
+      await page.keyboard.press('ArrowDown');
+      await expect(current).toHaveAttribute('data-link-id', ids[step] ?? '');
+      await expect(page.getByRole('treeitem', { name: /^Reading\b/ })).not.toBeFocused();
+      const [rowBox, areaBox] = await Promise.all([current.boundingBox(), area.boundingBox()]);
+      expect(
+        rowBox &&
+          areaBox &&
+          rowBox.y >= areaBox.y &&
+          rowBox.y + rowBox.height <= areaBox.y + areaBox.height,
+      ).toBe(true);
+    }
+    await page.keyboard.press('ArrowUp');
+    await expect(current).toHaveAttribute('data-link-id', ids[5] ?? '');
+  });
+
   test('resizes the list with the keyboard and hides it with Wider preview', async ({ page }) => {
     // Wide enough for the toolbar to keep Wider preview as its own button (it moves into ⋯ below
     // a 35rem panel).
