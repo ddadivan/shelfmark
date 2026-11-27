@@ -42,6 +42,7 @@ import type { CreateLinkResult } from './models/create-link-result.interface';
 import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
 import { toLinkResponse } from './to-link-response';
+import { requireLiveLink } from './link-ownership';
 
 /** Time of the request kept free for the response after a capture. */
 const CREATE_RESPONSE_MARGIN_MS = 1_000;
@@ -271,8 +272,7 @@ export class LinksWriteService {
         if (typeof request.folderId === 'string') {
           await this.requireFolder(tx, userId, request.folderId);
         }
-        const current = await tx.link.findFirst({
-          where: { id, userId, deletedAt: null },
+        const current = await requireLiveLink(tx, userId, id, {
           select: {
             id: true,
             normalizedUrl: true,
@@ -281,7 +281,6 @@ export class LinksWriteService {
             tags: { select: { tag: { select: { name: true } } } },
           },
         });
-        if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
         await this.applyFolderPin(tx, userId, current, request, data);
         // Only a really different page invalidates the captured images and the source hints (the
         // same URL written differently keeps them); the card then falls back to the site letter.
@@ -370,11 +369,7 @@ export class LinksWriteService {
       RETURNING u.history_paused AS paused`;
     const result = touched[0];
     if (!result) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
-    const row = await this.prisma.link.findFirst({
-      where: { id, userId, deletedAt: null },
-      include: LINK_INCLUDE,
-    });
-    if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    const row = await requireLiveLink(this.prisma, userId, id, { include: LINK_INCLUDE });
     return { ...toLinkResponse(row), recorded: !result.paused };
   }
 

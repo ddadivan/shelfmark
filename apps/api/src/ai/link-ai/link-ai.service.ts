@@ -26,6 +26,7 @@ import type { AiRequestContext } from '../models/ai-request-context.interface';
 import { SUGGESTION_ROW_STATE } from '../models/suggestion-row-state.const';
 import { AiSettingsService } from '../settings/ai-settings.service';
 import { orderSuggestions, toLinkSuggestion } from '../suggestions/to-link-suggestion';
+import { requireLiveLink } from '../../links/link-ownership';
 
 const OPEN_STATES: string[] = [SUGGESTION_ROW_STATE.Suggested, SUGGESTION_ROW_STATE.AutoApplied];
 const QUEUED_STATES: string[] = [AI_JOB_STATE.Pending, AI_JOB_STATE.Running];
@@ -48,8 +49,7 @@ export class LinkAiService {
 
   /** `GET /api/links/:id/ai`. */
   async state(userId: string, linkId: string): Promise<LinkAiState> {
-    const link = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
+    const link = await requireLiveLink(this.prisma, userId, linkId, {
       select: {
         folderId: true,
         summary: true,
@@ -58,7 +58,6 @@ export class LinkAiService {
         tags: { select: { tag: { select: { name: true } } } },
       },
     });
-    if (!link) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     const [job, rows] = await Promise.all([
       this.prisma.aiJob.findFirst({
         where: { userId, linkId },
@@ -105,8 +104,7 @@ export class LinkAiService {
         FOR UPDATE`;
       if (locked.length === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
       const stored = await this.settings.read(tx, userId);
-      const link = await tx.link.findFirst({
-        where: { id: linkId, userId, deletedAt: null },
+      const link = await requireLiveLink(tx, userId, linkId, {
         select: {
           folderId: true,
           summary: true,
@@ -114,7 +112,6 @@ export class LinkAiService {
           _count: { select: { tags: true } },
         },
       });
-      if (!link) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
       const parts = requestedParts(stored.settings, {
         folderSet: link.folderId !== null,
         tagsSet: link._count.tags > 0,
@@ -154,11 +151,9 @@ export class LinkAiService {
     const response = await this.prisma.$transaction(async (tx) => {
       // Lock order: `folders:` before `tags:` (ADR 0033).
       await this.folders.lockTree(tx, userId);
-      const link = await tx.link.findFirst({
-        where: { id: linkId, userId, deletedAt: null },
+      const link = await requireLiveLink(tx, userId, linkId, {
         select: { folderId: true },
       });
-      if (!link) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
       if (part === AI_APPLIED_PART.Folder) {
         const row = await tx.linkSuggestion.findFirst({
           where: {

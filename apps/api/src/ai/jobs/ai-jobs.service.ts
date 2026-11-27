@@ -248,6 +248,8 @@ export class AiJobsService {
     }
     const [link, rows] = await Promise.all([
       this.prisma.link.findFirst({
+        // No `deletedAt` filter on purpose: this reads the state of the user's own job, and a trashed
+        // link keeps its AI result (see `AiApplyService.applyToLink`); `userId` is still the session's.
         where: { id: job.linkId, userId },
         select: { summary: true, summarySource: true },
       }),

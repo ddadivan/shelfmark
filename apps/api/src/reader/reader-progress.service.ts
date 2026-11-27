@@ -7,6 +7,7 @@ import {
   type ReaderProgressResponse,
 } from '@shelfmark/contracts';
 import { PrismaService } from '../prisma/prisma.service';
+import { requireLiveLink } from '../links/link-ownership';
 
 const PROGRESS_SELECT = {
   linkId: true,
@@ -56,11 +57,9 @@ export class ReaderProgressService {
 
   /** A foreign, missing or trashed link is the same 404; no row is `null`. */
   async get(userId: string, linkId: string): Promise<ReaderProgressResponse> {
-    const link = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
+    const link = await requireLiveLink(this.prisma, userId, linkId, {
       select: { id: true, readingProgress: { select: PROGRESS_SELECT } },
     });
-    if (!link) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     const row = link.readingProgress[0];
     return { progress: row === undefined ? null : toProgress(row) };
   }

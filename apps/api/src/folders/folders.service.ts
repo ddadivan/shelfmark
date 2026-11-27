@@ -23,6 +23,7 @@ import { FOLDER_LOCK_PREFIX } from './models/folder-advisory-lock.const';
 import { toFolderResponse } from './to-folder-response';
 import { loadFolderCovers } from './folder-covers';
 import { wouldCreateCycle } from './would-create-cycle';
+import { requireOwnedOr404 } from '../links/link-ownership';
 
 @Injectable()
 export class FoldersService {
@@ -247,7 +248,7 @@ export class FoldersService {
       where: { id: folderId, userId, deletedAt: null },
       select: { id: true },
     });
-    if (!found) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
+    requireOwnedOr404(found, FOLDER_ERROR_MESSAGE.NotFound);
   }
 
   /**
@@ -264,7 +265,7 @@ export class FoldersService {
       where: { id: linkId, userId, folderId, deletedAt: null },
       select: { id: true },
     });
-    if (!found) throw new NotFoundException(FOLDER_ERROR_MESSAGE.CoverNotFound);
+    requireOwnedOr404(found, FOLDER_ERROR_MESSAGE.CoverNotFound);
   }
 
   /** The place after the last live subfolder of `parentId` (`null` = top level). */

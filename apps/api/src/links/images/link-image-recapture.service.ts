@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { LINK_ERROR_MESSAGE, type LinkResponse } from '@shelfmark/contracts';
+import { Injectable } from '@nestjs/common';
+import { type LinkResponse } from '@shelfmark/contracts';
 import { REQUEST_TIMEOUT_MS } from '../../common/interceptors/models/request-timeout.const';
 import { PrismaService } from '../../prisma/prisma.service';
 import { LinkPreviewService } from '../link-preview.service';
@@ -13,6 +13,7 @@ import {
   RECAPTURE_RESPONSE_MARGIN_MS,
 } from './models/recapture-limits.const';
 import type { CaptureSources } from './models/capture-sources.interface';
+import { requireLiveLink } from '../link-ownership';
 
 /**
  * Re-capture of a link's images after its URL changed (ADR 0027 note, #189), behind
@@ -37,11 +38,9 @@ export class LinkImageRecaptureService {
   async recapture(userId: string, linkId: string): Promise<LinkResponse> {
     const startedAt = Date.now();
     if (await this.claim(userId, linkId)) await this.run(userId, linkId, startedAt);
-    const row = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
+    const row = await requireLiveLink(this.prisma, userId, linkId, {
       include: LINK_INCLUDE,
     });
-    if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     return toLinkResponse(row);
   }
 

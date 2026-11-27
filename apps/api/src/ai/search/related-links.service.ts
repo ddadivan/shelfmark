@@ -1,8 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   AI_SEARCH_LIMIT,
   AI_SEARCH_STATE,
-  LINK_ERROR_MESSAGE,
   type AuthUser,
   type RelatedLinksResponse,
 } from '@shelfmark/contracts';
@@ -15,6 +14,7 @@ import { loadMeaningMatches } from './load-meaning-matches';
 import { whyForRelated } from './meaning-why';
 import { nearestLinks } from './nearest-links';
 import { rankMeaning } from './rank-meaning';
+import { requireLiveLink } from '../../links/link-ownership';
 
 /**
  * `GET /api/links/:id/related` (F7, ADR 0052): the closest other live links of the session user by
@@ -33,14 +33,12 @@ export class RelatedLinksService {
 
   async related(user: AuthUser, linkId: string, limit?: number): Promise<RelatedLinksResponse> {
     const userId = user.id;
-    const link = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
+    const link = await requireLiveLink(this.prisma, userId, linkId, {
       include: {
         ...LINK_INCLUDE,
         folder: { select: { name: true, deletedAt: true, userId: true } },
       },
     });
-    if (!link) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     const entitlements = await this.settings.entitlements(this.prisma, userId);
     const stored = await this.settings.read(this.prisma, userId);
     const status = await this.searchStatus.status(userId, stored, entitlements.aiTier);

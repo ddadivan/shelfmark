@@ -200,6 +200,8 @@ export class AiRunnerService {
     draft: DraftInput | undefined,
   ): Promise<DraftInput | null> {
     if (job.linkId === null) return draft ?? null;
+    // No `deletedAt` filter on purpose: a job queued before the link went to Trash still runs and
+    // writes its result (`AiApplyService.applyToLink` documents why); the row is the job owner's.
     const link = await this.prisma.link.findFirst({
       where: { id: job.linkId, userId: job.userId },
       select: { url: true, title: true, note: true },

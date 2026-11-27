@@ -1,6 +1,5 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
-  LINK_ERROR_MESSAGE,
   LINK_KIND,
   READER_ARTICLE_VERSION,
   type ReaderArticle,
@@ -14,6 +13,7 @@ import { READER_CACHE } from './models/reader-cache.const';
 import { READER_FETCH_LIMITS } from './models/reader-fetch-limits.const';
 import type { ReaderFetchOutcome } from './models/reader-fetch-outcome.interface';
 import { parseStoredArticle, storedArticleVersion } from './parse-stored-article';
+import { requireLiveLink } from '../links/link-ownership';
 
 const HTTP_OK_MIN = 200;
 const HTTP_OK_MAX = 299;
@@ -39,11 +39,9 @@ export class ReaderArticleService {
 
   /** A foreign, missing or trashed link is the same 404. */
   async article(userId: string, linkId: string): Promise<ReaderArticleResponse> {
-    const link = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
+    const link = await requireLiveLink(this.prisma, userId, linkId, {
       select: { url: true, title: true, kind: true },
     });
-    if (!link) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     if (!(await readLinkSavePrefs(this.prisma, userId)).fetchPreviews) return NO_ARTICLE;
 
     const stored = await this.prisma.linkReaderArticle.findFirst({

@@ -11,6 +11,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { LINK_INCLUDE } from '../links/models/link-include.const';
 import { toLinkResponse } from '../links/to-link-response';
+import { requireLiveLink } from '../links/link-ownership';
 
 /**
  * In-app reminders (#275): one `remind_at` per link. A link is due once that time has passed;
@@ -57,11 +58,9 @@ export class RemindersService {
       UPDATE links SET remind_at = ${at}
       WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
     if (changed === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
-    const row = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
+    const row = await requireLiveLink(this.prisma, userId, linkId, {
       include: LINK_INCLUDE,
     });
-    if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     return toLinkResponse(row);
   }
 

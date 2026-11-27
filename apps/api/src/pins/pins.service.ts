@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import {
   PIN_ERROR_MESSAGE,
   PIN_KIND,
@@ -20,6 +15,7 @@ import { LINK_INCLUDE } from '../links/models/link-include.const';
 import { toLinkResponse } from '../links/to-link-response';
 import { PrismaService } from '../prisma/prisma.service';
 import { ViewsService } from '../views/views.service';
+import { requireOwnedOr404 } from '../links/link-ownership';
 
 /** A pinned row reduced to what ordering needs. */
 interface PinSlot extends PinRef {
@@ -100,8 +96,7 @@ export class PinsService {
         : ref.kind === PIN_KIND.View
           ? await tx.savedView.findFirst({ where: { id: ref.id, userId }, select })
           : await tx.link.findFirst({ where: { id: ref.id, userId, deletedAt: null }, select });
-    if (!row) throw new NotFoundException(PIN_ERROR_MESSAGE.NotFound);
-    return row.pinnedPosition;
+    return requireOwnedOr404(row, PIN_ERROR_MESSAGE.NotFound).pinnedPosition;
   }
 
   private async setPosition(

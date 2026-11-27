@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   LINK_LIMIT,
   LINK_SORT_FIELD,
@@ -26,6 +26,7 @@ import { buildLinkWhere } from './link-where';
 import { LINK_CURSOR_VERSION } from './models/link-cursor-version.const';
 import { LINK_INCLUDE } from './models/link-include.const';
 import { toLinkResponse } from './to-link-response';
+import { requireLiveLink } from './link-ownership';
 
 @Injectable()
 export class LinksService {
@@ -141,11 +142,7 @@ export class LinksService {
   }
 
   async get(userId: string, id: string): Promise<GetLinkResponse> {
-    const row = await this.prisma.link.findFirst({
-      where: { id, userId, deletedAt: null },
-      include: LINK_INCLUDE,
-    });
-    if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    const row = await requireLiveLink(this.prisma, userId, id, { include: LINK_INCLUDE });
     return toLinkResponse(row);
   }
 }

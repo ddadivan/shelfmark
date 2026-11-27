@@ -1,6 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
-  LINK_ERROR_MESSAGE,
   LINK_FRAMING,
   isPreviewableUrl,
   linkHost,
@@ -13,6 +12,7 @@ import { decideFraming } from './decide-framing';
 import { FRAME_CHECK_FETCH_LIMITS } from './models/frame-check-fetch-limits.const';
 import { FRAME_CHECK_TTL_MS } from './models/frame-check-ttl.const';
 import type { FrameVerdict } from './models/frame-verdict.interface';
+import { requireLiveLink } from '../link-ownership';
 
 const HTTP_OK_MIN = 200;
 const HTTP_OK_MAX = 299;
@@ -38,11 +38,9 @@ export class LinkFrameCheckService {
 
   /** A foreign, missing or trashed link is the same 404. */
   async check(userId: string, linkId: string): Promise<LinkFrameCheckResponse> {
-    const link = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
+    const link = await requireLiveLink(this.prisma, userId, linkId, {
       select: { url: true },
     });
-    if (!link) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
 
     const host = linkHost(link.url) ?? link.url;
     if (!isPreviewableUrl(link.url)) {

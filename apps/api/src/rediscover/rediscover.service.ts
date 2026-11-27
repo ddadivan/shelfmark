@@ -1,8 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   AI_SEARCH_STATE,
   AI_TIER,
-  LINK_ERROR_MESSAGE,
   REDISCOVER_LIMIT,
   REDISCOVER_MODE,
   type AuthUser,
@@ -18,6 +17,7 @@ import { toLinkResponse } from '../links/to-link-response';
 import { PrismaService } from '../prisma/prisma.service';
 import { isoWeek } from './iso-week';
 import type { ThemeHit } from './models/theme-hit.interface';
+import { requireLiveLink } from '../links/link-ownership';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -74,11 +74,7 @@ export class RediscoverService {
 
   /** "Not interested": the user's live link never shows again; a foreign or missing one is a 404. */
   async hide(userId: string, linkId: string): Promise<void> {
-    const link = await this.prisma.link.findFirst({
-      where: { id: linkId, userId, deletedAt: null },
-      select: { id: true },
-    });
-    if (link === null) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    await requireLiveLink(this.prisma, userId, linkId, { select: { id: true } });
     await this.prisma.rediscoverHidden.createMany({
       data: [{ userId, linkId }],
       skipDuplicates: true,
