@@ -158,7 +158,13 @@
     block-size: var(--space-1);
     pointer-events: none;
     content: '';
-    background: var(--accent-bg);
+
+    // The rows' own fill and the side edges of their picked ring, so a merged group reads as one
+    // shape with one ring.
+    background: var(--pick);
+    box-shadow:
+      inset 2px 0 0 var(--card-checked-ring),
+      inset -2px 0 0 var(--card-checked-ring);
     opacity: 0;
     transition: opacity var(--duration-base) var(--ease-in-out);
 
@@ -170,6 +176,7 @@
 
 .library__rows > .library__item--selected + .library__item--selected {
   --ui-list-item-radius: 0 0 var(--radius-md) var(--radius-md);
+  --ui-list-item-ring-top: 0rem;
 
   &::before {
     opacity: 1;
@@ -178,6 +185,7 @@
 
 .library__rows > .library__item--selected:has(+ .library__item--selected) {
   --ui-list-item-radius: var(--radius-md) var(--radius-md) 0 0;
+  --ui-list-item-ring-bottom: 0rem;
 }
 
 .library__rows

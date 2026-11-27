@@ -64,8 +64,24 @@
 
 :host(.ui-list-item--checked) {
   --ui-chip-bg: var(--surface);
+  --ui-list-item-ring-color: var(--card-checked-ring);
 
+  // The card's picked ring (author, Nov 27): 2px of `accent` at 50%, 75% while hovered, drawn
+  // inside so neighbouring rows never hide it. A page that merges neighbouring checked rows into
+  // one shape drops the shared edges with `--ui-list-item-ring-top` / `--ui-list-item-ring-bottom`
+  // (0 instead of the default 2px).
   background: var(--pick);
+  /* stylelint-disable shelf/shadow-token -- a hard-edged 2px ring in a token colour, per edge */
+  box-shadow:
+    inset 2px 0 0 var(--ui-list-item-ring-color),
+    inset -2px 0 0 var(--ui-list-item-ring-color),
+    inset 0 var(--ui-list-item-ring-top, 2px) 0 var(--ui-list-item-ring-color),
+    inset 0 calc(var(--ui-list-item-ring-bottom, 2px) * -1) 0 var(--ui-list-item-ring-color);
+  /* stylelint-enable shelf/shadow-token */
+
+  @include hover {
+    --ui-list-item-ring-color: var(--card-checked-ring-hover);
+  }
 }
 
 // Bulk selection checkbox: above the stretched link, keeps its place (no shift on hover).
@@ -341,6 +357,19 @@
 
 :host(.ui-list-item--headline:has(:focus-visible)) .ui-list-item__trailing {
   opacity: 1;
+}
+
+// While the row is pressed its ripple fills it; the box over the end takes the same tint, so no
+// lighter patch shows under the controls (author, Nov 27). The ripple is `currentColor` at 6% /
+// 10%; 8% sits between them.
+:host(.ui-list-item--headline:has(.ui-list-item__link:active)) .ui-list-item__trailing {
+  background:
+    linear-gradient(
+      color-mix(in srgb, currentcolor 8%, transparent),
+      color-mix(in srgb, currentcolor 8%, transparent)
+    ),
+    linear-gradient(var(--ui-row-hover, var(--fill)), var(--ui-row-hover, var(--fill))),
+    var(--ui-row-ground, var(--surface));
 }
 
 // The box stays clear of the inner focus ring of a keyboard-focused row (2px top and bottom).
