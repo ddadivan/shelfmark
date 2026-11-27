@@ -1,5 +1,4 @@
 import { inject, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import {
   PIN_KIND,
   PIN_LIMIT,
@@ -8,10 +7,12 @@ import {
   type PinKind,
   type SavedViewResponse,
 } from '@shelfmark/contracts';
-import { TOAST_DURATION_MS, TOAST_KIND, toastShortcutLabel, ToastService } from '@shelfmark/ui';
+import { TOAST_DURATION_MS, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { PinsStore } from '../../../stores/pins.store';
 import { PIN_OUTCOME } from '../models/pin-outcome.const';
 import type { PinRow } from '../models/pin-row.interface';
+import { Translate } from '../../../core/i18n/translate.service';
+import { UndoToastService } from '../../../core/undo/undo-toast.service';
 
 /**
  * What a user can do with the sidebar pins: pin and unpin a folder or link (a row of the Pinned
@@ -22,7 +23,8 @@ import type { PinRow } from '../models/pin-row.interface';
 export class PinActionsService {
   private readonly pins = inject(PinsStore);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
+  private readonly undoToast = inject(UndoToastService);
 
   pinFolder(folder: FolderResponse): Promise<void> {
     return this.pin(PIN_KIND.Folder, folder.id, folder.name);
@@ -58,19 +60,18 @@ export class PinActionsService {
     if (!(await this.pins.unpin({ kind: row.kind, id: row.id }))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('pins.unpinFailed.title'),
+        title: this.translate.t('pins.unpinFailed.title'),
         detail: name,
       });
       return;
     }
-    const undo = this.t('links.item.undo');
-    this.toasts.show({
+    const undo = this.translate.t('links.item.undo');
+    this.undoToast.show({
       kind: TOAST_KIND.Success,
-      title: this.t('pins.unpinned.title'),
+      title: this.translate.t('pins.unpinned.title'),
       detail: name,
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.restore(row, index, name) },
+      actionLabel: undo,
+      onUndo: () => void this.restore(row, index, name),
     });
   }
 
@@ -83,8 +84,8 @@ export class PinActionsService {
     if (!(await this.pins.move({ kind: item.kind, id: item.id }, to))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('pins.moveFailed.title'),
-        detail: this.t('pins.moveFailed.detail'),
+        title: this.translate.t('pins.moveFailed.title'),
+        detail: this.translate.t('pins.moveFailed.detail'),
       });
     }
   }
@@ -102,14 +103,14 @@ export class PinActionsService {
     if (outcome === PIN_OUTCOME.Limit) {
       this.toasts.show({
         kind: TOAST_KIND.Warn,
-        title: this.t('pins.limit.title'),
-        detail: this.t('pins.limit.detail', { max: String(PIN_LIMIT.Max) }),
-        duration: PIN_LIMIT_TOAST_MS,
+        title: this.translate.t('pins.limit.title'),
+        detail: this.translate.t('pins.limit.detail', { max: String(PIN_LIMIT.Max) }),
+        duration: TOAST_DURATION_MS.Limit,
       });
     } else if (outcome === PIN_OUTCOME.Failed) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('pins.pinFailed.title'),
+        title: this.translate.t('pins.pinFailed.title'),
         detail: name,
       });
     }
@@ -119,16 +120,9 @@ export class PinActionsService {
     if (!(await this.pins.unpin({ kind, id }))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('pins.unpinFailed.title'),
+        title: this.translate.t('pins.unpinFailed.title'),
         detail: name,
       });
     }
   }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
-  }
 }
-
-/** The limit toast stays long enough to read (a warning would stay until closed). */
-const PIN_LIMIT_TOAST_MS = 6000;

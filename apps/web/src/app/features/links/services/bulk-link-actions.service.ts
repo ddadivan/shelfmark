@@ -1,23 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injector, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import {
   LINK_LIMIT,
   TRASH_ITEM_KIND,
   type LinkResponse,
   type UpdateLinksBatchRequest,
 } from '@shelfmark/contracts';
-import {
-  DIALOG_SIZE,
-  DialogService,
-  TOAST_DURATION_MS,
-  TOAST_KIND,
-  ToastService,
-  toastShortcutLabel,
-} from '@shelfmark/ui';
+import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
-import { pluralKey } from '../../../core/i18n/plural-key';
 import { UndoToastService } from '../../../core/undo/undo-toast.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
@@ -36,12 +27,13 @@ import type { MovePickerData } from '../models/move-picker-data.interface';
 import { MovePickerComponent } from '../components/move-picker/move-picker.component';
 import { BulkTagsDialogComponent } from '../components/bulk-tags-dialog/bulk-tags-dialog.component';
 import { groupedByFolder, tagCounts, withTagsChanged } from '../utils/bulk-link-changes';
-import { chunks } from '../utils/chunks';
+import { chunks } from '../../../core/utils/chunks';
 import { RuleOfferService } from '../../rules/services/rule-offer.service';
 import { BULK_OPEN_CONFIRM_ABOVE } from '../models/bulk-open-confirm-above.const';
 import type { BulkUpdateOutcome } from '../models/bulk-update-outcome.interface';
 import type { BulkTagsChange } from '../models/bulk-tags-change.interface';
 import type { BulkTagsDialogData } from '../models/bulk-tags-dialog-data.interface';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /** The share part of `Navigator`, so a browser without it type-checks as missing. */
 interface ShareCapable {
@@ -69,7 +61,7 @@ export class BulkLinkActionsService {
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly undoToast = inject(UndoToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly doc = inject(DOCUMENT);
   // Resolved on use, like `LinkActionsService`.
   private readonly injector = inject(Injector);
@@ -91,7 +83,7 @@ export class BulkLinkActionsService {
       size: DIALOG_SIZE.Md,
       autoFocus: false,
       data: {
-        heading: this.plural('bulk.move.title', links.length),
+        heading: this.translate.plural('bulk.move.title', links.length),
         // One shared folder is the current one; a mixed selection has none.
         currentIds: folders.size === 1 ? [...folders] : [],
         submit: (folderId) => (pick.folderId = folderId),
@@ -127,18 +119,19 @@ export class BulkLinkActionsService {
       return false;
     }
     this.recent.record(folderId);
-    const undo = this.t('links.item.undo');
-    const toast = this.toasts.show({
+    const undo = this.translate.t('links.item.undo');
+    const toast = this.undoToast.show({
       kind: TOAST_KIND.Moved,
-      title: this.plural('bulk.move.moved', moving.length, { folder: this.folderLabel(folderId) }),
+      title: this.translate.plural('bulk.move.moved', moving.length, {
+        folder: this.folderLabel(folderId),
+      }),
       detail: this.titles(moving),
       folder: toastFolder(
         folderId === null ? undefined : this.folders.entityMap()[folderId],
         (colour) => this.settings.shownColour(colour),
       ),
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.moveBack(moving, folderId) },
+      actionLabel: undo,
+      onUndo: () => void this.moveBack(moving, folderId),
     });
     if (folderId !== null) {
       // The same folder for a site again and again: a rule may be offered (AI-2).
@@ -165,7 +158,7 @@ export class BulkLinkActionsService {
     >(BulkTagsDialogComponent, {
       size: DIALOG_SIZE.Sm,
       data: {
-        heading: this.plural('bulk.tags.title', links.length),
+        heading: this.translate.plural('bulk.tags.title', links.length),
         total: links.length,
         // The selection's tags first (most used first), then the rest of the account's.
         tags: [
@@ -208,16 +201,16 @@ export class BulkLinkActionsService {
         error instanceof HttpErrorResponse && error.status === HttpStatusCode.Conflict;
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('bulk.tags.failed'),
+        title: this.translate.t('bulk.tags.failed'),
         detail: tooMany
-          ? this.t('bulk.tags.tooMany', { max: String(LINK_LIMIT.TagsMax) })
-          : this.t('bulk.tags.failedDetail'),
+          ? this.translate.t('bulk.tags.tooMany', { max: String(LINK_LIMIT.TagsMax) })
+          : this.translate.t('bulk.tags.failedDetail'),
       });
       return false;
     }
     this.toasts.show({
       kind: TOAST_KIND.Success,
-      title: this.plural('bulk.tags.done', links.length),
+      title: this.translate.plural('bulk.tags.done', links.length),
     });
     return true;
   }
@@ -243,7 +236,10 @@ export class BulkLinkActionsService {
     }
     this.toasts.show({
       kind: TOAST_KIND.Success,
-      title: this.plural(isFavorite ? 'bulk.favorite.on' : 'bulk.favorite.off', links.length),
+      title: this.translate.plural(
+        isFavorite ? 'bulk.favorite.on' : 'bulk.favorite.off',
+        links.length,
+      ),
     });
     return false;
   }
@@ -259,11 +255,11 @@ export class BulkLinkActionsService {
     }
     if (hrefs.length > BULK_OPEN_CONFIRM_ABOVE) {
       const confirmed = await this.dialogs.confirm({
-        title: this.t('bulk.open.confirmTitle', { count: String(hrefs.length) }),
-        message: this.t('bulk.open.confirmMessage'),
-        confirmLabel: this.t('bulk.open.confirm'),
-        cancelLabel: this.t('bulk.open.cancel'),
-        closeLabel: this.t('bulk.open.close'),
+        title: this.translate.t('bulk.open.confirmTitle', { count: String(hrefs.length) }),
+        message: this.translate.t('bulk.open.confirmMessage'),
+        confirmLabel: this.translate.t('bulk.open.confirm'),
+        cancelLabel: this.translate.t('bulk.open.cancel'),
+        closeLabel: this.translate.t('bulk.open.close'),
       });
       if (!confirmed) {
         return false;
@@ -283,11 +279,11 @@ export class BulkLinkActionsService {
     if (opened < hrefs.length) {
       this.toasts.show({
         kind: TOAST_KIND.Warn,
-        title: this.t('bulk.open.blocked', {
+        title: this.translate.t('bulk.open.blocked', {
           blocked: String(hrefs.length - opened),
           count: String(hrefs.length),
         }),
-        detail: this.t('bulk.open.blockedDetail'),
+        detail: this.translate.t('bulk.open.blockedDetail'),
       });
     }
     return false;
@@ -299,10 +295,10 @@ export class BulkLinkActionsService {
       await this.navigatorClipboard().writeText(this.urls(links));
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.plural('bulk.copy.done', links.length),
+        title: this.translate.plural('bulk.copy.done', links.length),
       });
     } catch {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('bulk.copy.failed') });
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t('bulk.copy.failed') });
     }
     return false;
   }
@@ -317,7 +313,7 @@ export class BulkLinkActionsService {
       await share.call(this.navigator(), { text: this.urls(links) });
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) {
-        this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('bulk.share.failed') });
+        this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t('bulk.share.failed') });
       }
     }
     return false;
@@ -332,11 +328,13 @@ export class BulkLinkActionsService {
       return false;
     }
     const confirmed = await this.dialogs.confirm({
-      title: this.plural('bulk.delete.title', links.length),
-      message: this.t('bulk.delete.message', { days: String(this.settings.retentionDays()) }),
-      confirmLabel: this.t('bulk.delete.confirm'),
-      cancelLabel: this.t('bulk.delete.cancel'),
-      closeLabel: this.t('bulk.delete.close'),
+      title: this.translate.plural('bulk.delete.title', links.length),
+      message: this.translate.t('bulk.delete.message', {
+        days: String(this.settings.retentionDays()),
+      }),
+      confirmLabel: this.translate.t('bulk.delete.confirm'),
+      cancelLabel: this.translate.t('bulk.delete.cancel'),
+      closeLabel: this.translate.t('bulk.delete.close'),
       destructive: true,
     });
     if (!confirmed) {
@@ -357,15 +355,15 @@ export class BulkLinkActionsService {
       if (done === 0) {
         this.toasts.show({
           kind: TOAST_KIND.Danger,
-          title: this.t('bulk.delete.failed'),
-          detail: this.t('bulk.delete.failedDetail'),
+          title: this.translate.t('bulk.delete.failed'),
+          detail: this.translate.t('bulk.delete.failedDetail'),
         });
         return false;
       }
       this.toasts.show({
         kind: TOAST_KIND.Warn,
-        title: this.t('bulk.delete.partial'),
-        detail: this.t('bulk.delete.partialDetail', {
+        title: this.translate.t('bulk.delete.partial'),
+        detail: this.translate.t('bulk.delete.partialDetail', {
           done: String(done),
           total: String(links.length),
         }),
@@ -384,11 +382,10 @@ export class BulkLinkActionsService {
       reminders: true,
     });
     this.undoToast.show({
-      title: this.plural('bulk.delete.done', deleted.length),
+      title: this.translate.plural('bulk.delete.done', deleted.length),
       detail: this.titles(deleted),
-      actionLabel: this.t('links.item.undo'),
+      actionLabel: this.translate.t('links.item.undo'),
       onUndo: () => void this.restore(ids),
-      onExpire: () => undefined,
     });
     return done === links.length;
   }
@@ -401,7 +398,10 @@ export class BulkLinkActionsService {
       this.refresh.afterChange({ pins: true });
       return;
     }
-    this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('bulk.delete.undoFailed') });
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.translate.t('bulk.delete.undoFailed'),
+    });
   }
 
   /** Undo of a bulk move: every link goes back to its own folder (one request per folder). */
@@ -410,7 +410,10 @@ export class BulkLinkActionsService {
     for (const [folderId, group] of groups) {
       const { ok } = await this.update(group, { folderId }, (link) => ({ ...link, folderId }));
       if (!ok) {
-        this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('bulk.move.undoFailed') });
+        this.toasts.show({
+          kind: TOAST_KIND.Danger,
+          title: this.translate.t('bulk.move.undoFailed'),
+        });
         return;
       }
     }
@@ -455,26 +458,22 @@ export class BulkLinkActionsService {
   private partial(done: number, total: number): void {
     this.toasts.show({
       kind: TOAST_KIND.Warn,
-      title: this.t('bulk.partial.title'),
-      detail: this.t('bulk.partial.detail', { done: String(done), total: String(total) }),
+      title: this.translate.t('bulk.partial.title'),
+      detail: this.translate.t('bulk.partial.detail', { done: String(done), total: String(total) }),
     });
   }
 
   private failed(titleKey: string, detailKey: string, retry: () => void): void {
-    this.toasts.show({
-      kind: TOAST_KIND.Danger,
-      title: this.t(titleKey),
-      detail: this.t(detailKey),
-      action: { label: this.t('links.item.retry'), run: retry },
+    this.undoToast.retry({
+      title: this.translate.t(titleKey),
+      detail: this.translate.t(detailKey),
+      onRetry: retry,
     });
   }
 
   /** "Work / Angular" for a folder, "Unsorted" for none. */
   private folderLabel(folderId: string | null): string {
-    const path = folderId === null ? [] : this.folders.pathTo(folderId);
-    return path.length > 0
-      ? path.map((folder) => folder.name).join(' / ')
-      : this.t('links.add.folder.unsorted');
+    return this.folders.pathLabel(folderId) || this.translate.t('links.add.folder.unsorted');
   }
 
   /** The titles as the toast detail ("Wool coat, Ramen, Signal Forms"); the toast truncates. */
@@ -500,13 +499,5 @@ export class BulkLinkActionsService {
 
   private api() {
     return this.injector.get(LINKS_API);
-  }
-
-  private plural(base: string, count: number, params: Record<string, string> = {}): string {
-    return this.t(pluralKey(base, count), { count: String(count), ...params });
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

@@ -1,6 +1,5 @@
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
 import { FOLDER_LIMIT, type FolderResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { AuthStore } from '../../../core/auth/auth.store';
@@ -23,6 +22,7 @@ import type { MoveFolderDialogData } from '../models/move-folder-dialog-data.int
 import { MoveFolderDialogComponent } from '../components/move-folder-dialog/move-folder-dialog.component';
 import type { ShareFolderDialogData } from '../../sharing/models/share-folder-dialog-data.interface';
 import { ShareFolderDialogComponent } from '../../sharing/components/share-folder-dialog/share-folder-dialog.component';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * What a user can do with folders from the sidebar: create (also as a subfolder), rename, move,
@@ -37,7 +37,7 @@ export class FolderActionsService {
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly linkActions = inject(LinkActionsService);
   private readonly treeFocus = inject(SidebarTreeFocusService);
   private readonly auth = inject(AuthStore);
@@ -47,8 +47,10 @@ export class FolderActionsService {
     if (this.folders.atLimit()) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('folders.create.limit'),
-        detail: this.t('folders.create.limitDetail', { max: String(FOLDER_LIMIT.PerUserMax) }),
+        title: this.translate.t('folders.create.limit'),
+        detail: this.translate.t('folders.create.limitDetail', {
+          max: String(FOLDER_LIMIT.PerUserMax),
+        }),
       });
       return;
     }
@@ -72,7 +74,7 @@ export class FolderActionsService {
     if (outcome.folder) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('folders.create.done'),
+        title: this.translate.t('folders.create.done'),
         detail: outcome.folder.name,
       });
       await this.router.navigate([`/${APP_PATH.Folders}`, outcome.folder.id]);
@@ -120,8 +122,8 @@ export class FolderActionsService {
               if (!moved) {
                 this.toasts.show({
                   kind: TOAST_KIND.Danger,
-                  title: this.t('folders.move.failed'),
-                  detail: this.t('folders.move.failedDetail'),
+                  title: this.translate.t('folders.move.failed'),
+                  detail: this.translate.t('folders.move.failedDetail'),
                 });
               }
             });
@@ -139,8 +141,8 @@ export class FolderActionsService {
     if (!(await this.folders.reorder(folderId, toIndex))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('pins.moveFailed.title'),
-        detail: this.t('pins.moveFailed.detail'),
+        title: this.translate.t('pins.moveFailed.title'),
+        detail: this.translate.t('pins.moveFailed.detail'),
       });
     }
   }
@@ -167,8 +169,8 @@ export class FolderActionsService {
               if (!saved) {
                 this.toasts.show({
                   kind: TOAST_KIND.Danger,
-                  title: this.t('folders.style.failed'),
-                  detail: this.t('folders.style.failedDetail'),
+                  title: this.translate.t('folders.style.failed'),
+                  detail: this.translate.t('folders.style.failedDetail'),
                 });
               }
             });
@@ -202,7 +204,7 @@ export class FolderActionsService {
       void this.trash.refresh();
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('folders.delete.done'),
+        title: this.translate.t('folders.delete.done'),
         detail: folder.name,
       });
     }
@@ -235,8 +237,8 @@ export class FolderActionsService {
       if (!saved) {
         this.toasts.show({
           kind: TOAST_KIND.Danger,
-          title: this.t('folders.rename.failed'),
-          detail: this.t('folders.rename.failedDetail'),
+          title: this.translate.t('folders.rename.failed'),
+          detail: this.translate.t('folders.rename.failedDetail'),
         });
       }
     });
@@ -247,9 +249,5 @@ export class FolderActionsService {
     if (active !== null && doomed.includes(active)) {
       await this.router.navigateByUrl(`/${APP_PATH.Links}`);
     }
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

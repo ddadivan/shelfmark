@@ -1,5 +1,4 @@
 import { inject, Injector, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import {
   AI_APPLIED_PART,
   AI_FEATURE_MODE,
@@ -9,7 +8,7 @@ import {
   type LinkAiState,
   type LinkResponse,
 } from '@shelfmark/contracts';
-import { TOAST_DURATION_MS, TOAST_KIND, ToastService, toastShortcutLabel } from '@shelfmark/ui';
+import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
@@ -24,6 +23,8 @@ import { AI_BATCH_FOLLOW_UP } from '../models/ai-batch-follow-up.const';
 import { AI_POLL_INTERVAL_MS } from '../models/ai-poll-interval.const';
 import { appliedSince } from '../utils/applied-since';
 import { AiSettingsStore } from './ai-settings.store';
+import { Translate } from '../../../core/i18n/translate.service';
+import { UndoToastService } from '../../../core/undo/undo-toast.service';
 
 /**
  * What happens after a save queued an AI job (#390 / #391): the AI tick learns of the job, and
@@ -42,7 +43,8 @@ export class AiFollowUpService {
   private readonly folders = inject(FoldersStore);
   private readonly userSettings = inject(UserSettingsStore);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
+  private readonly undoToast = inject(UndoToastService);
   private readonly watched = new Set<string>();
   /** Pending links of paste-many saves, followed by the one batch loop. */
   private readonly batch = new Set<string>();
@@ -195,23 +197,22 @@ export class AiFollowUpService {
   }
 
   private announce(link: LinkResponse, applied: AiAutoApplied): void {
-    const undo = this.t('ai.toast.undo');
+    const undo = this.translate.t('ai.toast.undo');
     const moved = applied.folderId !== null;
     const folder = moved ? this.folders.entityMap()[applied.folderId ?? ''] : undefined;
-    this.toasts.show({
+    this.undoToast.show({
       kind: moved ? TOAST_KIND.Moved : TOAST_KIND.Success,
       title: moved
-        ? this.t('ai.toast.moved', { folder: folder?.name ?? '' })
-        : this.t(pluralKey('ai.toast.tagged', applied.tags.length), {
+        ? this.translate.t('ai.toast.moved', { folder: folder?.name ?? '' })
+        : this.translate.t(pluralKey('ai.toast.tagged', applied.tags.length), {
             count: applied.tags.length,
           }),
       detail: link.title,
       ...(moved && {
         folder: toastFolder(folder, (colour) => this.userSettings.shownColour(colour)),
       }),
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.undo(link, applied) },
+      actionLabel: undo,
+      onUndo: () => void this.undo(link, applied),
     });
   }
 
@@ -230,11 +231,10 @@ export class AiFollowUpService {
       this.links.applyEdit(latest);
       this.injector.get(LibraryRefreshService).afterChange({ folders: true, tags: true });
     } catch {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('ai.applied.undoFailed') });
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.translate.t('ai.applied.undoFailed'),
+      });
     }
-  }
-
-  private t(key: string, params?: Record<string, unknown>): string {
-    return this.transloco.translate(key, params);
   }
 }

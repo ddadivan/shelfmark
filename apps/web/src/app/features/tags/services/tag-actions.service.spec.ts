@@ -98,7 +98,7 @@ describe('TagActionsService', () => {
       await router.navigateByUrl('/links?tag=docs&tag=recipes');
       await actions.delete(docs(store));
 
-      shown[0].onExpire();
+      shown[0].onExpire?.();
       await vi.waitFor(() => {
         expect(data.tagList.some((tag) => tag.id === MOCK_ID.TagDocs)).toBe(false);
         expect(router.url).toBe('/links?tag=recipes');

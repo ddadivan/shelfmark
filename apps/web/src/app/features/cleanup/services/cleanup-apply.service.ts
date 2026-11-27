@@ -1,16 +1,16 @@
 import { inject, Injector, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import type {
   CleanupApplyRequest,
   CleanupApplyResponse,
   CleanupUndoRequest,
 } from '@shelfmark/contracts';
-import { TOAST_DURATION_MS, TOAST_KIND, ToastService, toastShortcutLabel } from '@shelfmark/ui';
+import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
-import { pluralKey } from '../../../core/i18n/plural-key';
 import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { LinksStore } from '../../../stores/links.store';
 import { CLEANUP_API } from '../models/cleanup-api.const';
+import { Translate } from '../../../core/i18n/translate.service';
+import { UndoToastService } from '../../../core/undo/undo-toast.service';
 
 /**
  * One clean-up run (AI-5): sends the selected rows in one request, takes the trashed copies out of
@@ -25,7 +25,8 @@ export class CleanupApplyService {
   private readonly links = inject(LinksStore);
   private readonly refresh = inject(LibraryRefreshService);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
+  private readonly undoToast = inject(UndoToastService);
 
   /**
    * Applies `request`; resolves false (with a toast) when the request fails. `undone` runs after a
@@ -38,8 +39,8 @@ export class CleanupApplyService {
     } catch {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('cleanup.toast.failed'),
-        detail: this.t('cleanup.toast.failedDetail'),
+        title: this.translate.t('cleanup.toast.failed'),
+        detail: this.translate.t('cleanup.toast.failedDetail'),
       });
       return false;
     }
@@ -47,8 +48,8 @@ export class CleanupApplyService {
       // Every selected row changed meanwhile (trashed, edited, merged elsewhere): say so.
       this.toasts.show({
         kind: TOAST_KIND.Info,
-        title: this.t('cleanup.toast.nothing'),
-        detail: this.t('cleanup.toast.nothingDetail'),
+        title: this.translate.t('cleanup.toast.nothing'),
+        detail: this.translate.t('cleanup.toast.nothingDetail'),
       });
       return true;
     }
@@ -58,20 +59,19 @@ export class CleanupApplyService {
   }
 
   private announce(response: CleanupApplyResponse, undone?: () => void): void {
-    const title = this.plural('cleanup.toast.title', response.trashed + response.merged);
+    const title = this.translate.plural('cleanup.toast.title', response.trashed + response.merged);
     const request = response.undo;
     if (request === null) {
       this.toasts.show({ kind: TOAST_KIND.Success, title, detail: this.detail(response) });
       return;
     }
-    const undo = this.t('cleanup.toast.undo');
-    this.toasts.show({
+    const undo = this.translate.t('cleanup.toast.undo');
+    this.undoToast.show({
       kind: TOAST_KIND.Success,
       title,
       detail: this.detail(response),
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.undo(request, undone) },
+      actionLabel: undo,
+      onUndo: () => void this.undo(request, undone),
     });
   }
 
@@ -83,13 +83,13 @@ export class CleanupApplyService {
     try {
       await firstValueFrom(this.injector.get(CLEANUP_API).undo(request));
     } catch {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('cleanup.undoFailed') });
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t('cleanup.undoFailed') });
       return;
     }
     // Restored copies and split tags come back with the next page load.
     this.refresh.afterLibraryRewrite();
     undone?.();
-    this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('cleanup.undone') });
+    this.toasts.show({ kind: TOAST_KIND.Success, title: this.translate.t('cleanup.undone') });
   }
 
   /** The feed and the counts after the run. */
@@ -101,19 +101,11 @@ export class CleanupApplyService {
 
   /** "2 copies in Trash, 1 tag merged" (either part alone when the other is 0). */
   private detail(response: { trashed: number; merged: number }): string {
-    const copies = this.plural('cleanup.toast.copies', response.trashed);
-    const tags = this.plural('cleanup.toast.tags', response.merged);
+    const copies = this.translate.plural('cleanup.toast.copies', response.trashed);
+    const tags = this.translate.plural('cleanup.toast.tags', response.merged);
     if (response.trashed > 0 && response.merged > 0) {
-      return this.t('cleanup.toast.detail', { copies, tags });
+      return this.translate.t('cleanup.toast.detail', { copies, tags });
     }
     return response.trashed > 0 ? copies : tags;
-  }
-
-  private plural(base: string, count: number): string {
-    return this.t(pluralKey(base, count), { count: String(count) });
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

@@ -1,8 +1,13 @@
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
 import { PIN_KIND, SAVED_VIEW_LIMIT, type SavedViewResponse } from '@shelfmark/contracts';
-import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
+import {
+  DIALOG_SIZE,
+  DialogService,
+  TOAST_DURATION_MS,
+  TOAST_KIND,
+  ToastService,
+} from '@shelfmark/ui';
 import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
 import { VIEW_OUTCOME } from '../../../stores/models/view-outcome.const';
 import { PinsStore } from '../../../stores/pins.store';
@@ -18,6 +23,7 @@ import { NewViewDialogComponent } from '../components/new-view-dialog/new-view-d
 import { ViewNameDialogComponent } from '../components/view-name-dialog/view-name-dialog.component';
 import { NEW_VIEW_FOCUS } from '../models/new-view-focus.const';
 import type { NewViewDialogData } from '../models/new-view-dialog-data.interface';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * What a user can do with saved views: apply one (or "All"), save the current filter as a view (the new view dialog),
@@ -35,7 +41,7 @@ export class SavedViewActionsService {
   private readonly router = inject(Router);
   private readonly pins = inject(PinsStore);
   private readonly pinActions = inject(PinActionsService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
 
   /** "All": the feed the chips sit on, with no type and no search (its own tags kept). */
   async applyAll(
@@ -58,8 +64,8 @@ export class SavedViewActionsService {
     if (!view.available) {
       this.toasts.show({
         kind: TOAST_KIND.Info,
-        title: this.t('views.unavailable.title'),
-        detail: this.t('views.unavailable.detail', { name: view.name }),
+        title: this.translate.t('views.unavailable.title'),
+        detail: this.translate.t('views.unavailable.detail', { name: view.name }),
       });
       return;
     }
@@ -107,7 +113,7 @@ export class SavedViewActionsService {
     if (await ref.result) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('views.created.title'),
+        title: this.translate.t('views.created.title'),
         detail: saved,
       });
       return createdId;
@@ -139,7 +145,7 @@ export class SavedViewActionsService {
       },
     );
     if (await ref.result) {
-      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('views.edited.title') });
+      this.toasts.show({ kind: TOAST_KIND.Success, title: this.translate.t('views.edited.title') });
     }
   }
 
@@ -181,11 +187,11 @@ export class SavedViewActionsService {
 
   async delete(view: SavedViewResponse): Promise<void> {
     const confirmed = await this.dialogs.confirm({
-      title: this.t('views.deleteConfirm.title', { name: view.name }),
-      message: this.t('views.deleteConfirm.message'),
-      confirmLabel: this.t('views.deleteConfirm.confirm'),
-      cancelLabel: this.t('views.deleteConfirm.cancel'),
-      closeLabel: this.t('views.deleteConfirm.close'),
+      title: this.translate.t('views.deleteConfirm.title', { name: view.name }),
+      message: this.translate.t('views.deleteConfirm.message'),
+      confirmLabel: this.translate.t('views.deleteConfirm.confirm'),
+      cancelLabel: this.translate.t('views.deleteConfirm.cancel'),
+      closeLabel: this.translate.t('views.deleteConfirm.close'),
       destructive: true,
     });
     if (!confirmed) {
@@ -194,7 +200,7 @@ export class SavedViewActionsService {
     if (await this.store.remove(view.id)) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('views.deleted.title'),
+        title: this.translate.t('views.deleted.title'),
         detail: view.name,
       });
     } else {
@@ -216,20 +222,13 @@ export class SavedViewActionsService {
   private limitToast(): void {
     this.toasts.show({
       kind: TOAST_KIND.Warn,
-      title: this.t('views.limit.title'),
-      detail: this.t('views.limit.detail', { max: String(SAVED_VIEW_LIMIT.PerUserMax) }),
-      duration: LIMIT_TOAST_MS,
+      title: this.translate.t('views.limit.title'),
+      detail: this.translate.t('views.limit.detail', { max: String(SAVED_VIEW_LIMIT.PerUserMax) }),
+      duration: TOAST_DURATION_MS.Limit,
     });
   }
 
   private failToast(key: string, name: string): void {
-    this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t(key), detail: name });
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
+    this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t(key), detail: name });
   }
 }
-
-/** The limit toast stays long enough to read (a warning would stay until closed). */
-const LIMIT_TOAST_MS = 6000;

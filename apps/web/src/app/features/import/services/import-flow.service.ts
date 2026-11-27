@@ -1,5 +1,4 @@
 import { computed, inject, Injector, Service, signal } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { IMPORT_LIMIT, type ImportSource } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
@@ -25,6 +24,7 @@ import { applyGroups } from '../utils/apply-groups';
 import { groupsRequest } from '../utils/groups-request';
 import { ImportGroupsService } from './import-groups.service';
 import { ImportRunService } from './import-run.service';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * State of one import dialog (scoped to it): the source and file, the review choices and the hand
@@ -34,7 +34,7 @@ import { ImportRunService } from './import-run.service';
 @Service()
 export class ImportFlowService {
   private readonly injector = inject(Injector);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly runner = inject(ImportRunService);
   private readonly settings = inject(AiSettingsStore);
   private readonly folders = inject(FoldersStore);
@@ -109,9 +109,9 @@ export class ImportFlowService {
   /** Name of where the links go, for "Everything in one list in “…”". */
   readonly targetName = computed(() => {
     const target = this.target();
-    if (target === IMPORT_NEW_FOLDER) return this.t('import.review.newFolderName');
-    if (target === null) return this.t('import.review.unsorted');
-    return this.folders.entityMap()[target]?.name ?? this.t('import.review.unsorted');
+    if (target === IMPORT_NEW_FOLDER) return this.translate.t('import.review.newFolderName');
+    if (target === null) return this.translate.t('import.review.unsorted');
+    return this.folders.entityMap()[target]?.name ?? this.translate.t('import.review.unsorted');
   });
 
   constructor() {
@@ -198,12 +198,12 @@ export class ImportFlowService {
       : this.plan(parsed, this.foldersMode() === IMPORT_FOLDERS_MODE.File);
     if (ai) this.groups.consumed();
     const target = this.target();
-    const newFolderName = this.t('import.review.newFolderName');
+    const newFolderName = this.translate.t('import.review.newFolderName');
     this.step.set(IMPORT_STEP.Progress);
     void this.runner.start({
       start: {
         source: this.sourceId(),
-        fileName: this.fileName() || this.t('import.review.untitledFile'),
+        fileName: this.fileName() || this.translate.t('import.review.untitledFile'),
         ...(target === IMPORT_NEW_FOLDER && { newFolderName }),
         ...(target !== IMPORT_NEW_FOLDER && target !== null && { targetFolderId: target }),
         ...(ai && { aiPass: true }),
@@ -248,7 +248,10 @@ export class ImportFlowService {
   private async parse(file: File): Promise<ParsedImport | null> {
     let parsed: ParsedImport;
     try {
-      parsed = this.source().parse(await file.text(), this.t('import.review.untitledFolder'));
+      parsed = this.source().parse(
+        await file.text(),
+        this.translate.t('import.review.untitledFolder'),
+      );
     } catch (error) {
       this.problem.set(
         error instanceof ImportParseError
@@ -289,9 +292,5 @@ export class ImportFlowService {
       return null;
     }
     return { saved, room };
-  }
-
-  private t(key: string): string {
-    return this.transloco.translate(key);
   }
 }

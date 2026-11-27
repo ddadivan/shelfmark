@@ -1,5 +1,4 @@
 import { inject, Injector, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { LINK_LIMIT, type RuleOffer } from '@shelfmark/contracts';
 import {
   TOAST_CLOSE_REASON,
@@ -19,6 +18,7 @@ import { AiSettingsStore } from '../../ai/services/ai-settings.store';
 import { toastFolder } from '../../links/utils/toast-folder';
 import { RULES_API } from '../models/rules-api.const';
 import { RuleActionsService } from './rule-actions.service';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * Rule offers (AI-2, ADR 0050): after the user filed links (Tidy, a move, an edit or a save into a
@@ -39,7 +39,7 @@ export class RuleOfferService {
   private readonly folders = inject(FoldersStore);
   private readonly settings = inject(UserSettingsStore);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   /** Domains answered in this session. */
   private readonly answered = new Set<string>();
   /** Filed link ids not checked yet (merged across filings that came while a check waited). */
@@ -115,12 +115,20 @@ export class RuleOfferService {
     const folder = this.folders.entityMap()[offer.folderId];
     const ref = this.toasts.show({
       kind: TOAST_KIND.Moved,
-      title: this.t('rules.offer.title', { domain: offer.domain, folder: folder?.name ?? '' }),
-      detail: this.t(pluralKey('rules.offer.detail', offer.count), { count: offer.count }),
+      title: this.translate.t('rules.offer.title', {
+        domain: offer.domain,
+        folder: folder?.name ?? '',
+      }),
+      detail: this.translate.t(pluralKey('rules.offer.detail', offer.count), {
+        count: offer.count,
+      }),
       folder: toastFolder(folder, (colour) => this.settings.shownColour(colour)),
       duration: TOAST_DURATION_MS.Sticky,
-      action: { label: this.t('rules.offer.create'), run: () => void this.create(offer) },
-      secondary: { label: this.t('rules.offer.notNow'), run: () => void this.notNow(offer) },
+      action: { label: this.translate.t('rules.offer.create'), run: () => void this.create(offer) },
+      secondary: {
+        label: this.translate.t('rules.offer.notNow'),
+        run: () => void this.notNow(offer),
+      },
     });
     const reason = await ref.closed;
     if (epoch === this.epoch) {
@@ -145,22 +153,18 @@ export class RuleOfferService {
     const result = await this.rules.create({ domain: offer.domain, folderId: offer.folderId });
     const rule = result.outcome === RULE_OUTCOME.Done ? result.rule : undefined;
     if (!rule) {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('rules.offer.failed') });
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t('rules.offer.failed') });
       return;
     }
     const actions = this.injector.get(RuleActionsService);
     this.toasts.show({
       kind: TOAST_KIND.Success,
-      title: this.t('rules.offer.created'),
+      title: this.translate.t('rules.offer.created'),
       detail: actions.describe(rule),
       action: {
-        label: this.t('rules.offer.applyExisting'),
+        label: this.translate.t('rules.offer.applyExisting'),
         run: () => void actions.applyToExisting(rule),
       },
     });
-  }
-
-  private t(key: string, params?: Record<string, unknown>): string {
-    return this.transloco.translate(key, params);
   }
 }

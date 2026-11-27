@@ -2,10 +2,8 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { isFolderEmoji } from '@shelfmark/contracts';
 import {
-  TOAST_DURATION_MS,
   TOAST_KIND,
   ToastService,
-  toastShortcutLabel,
   type EmojiPickerCategory,
   type EmojiPickerItem,
 } from '@shelfmark/ui';
@@ -20,6 +18,9 @@ import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { FOLDER_EMOJI_RECENT_MAX } from '../models/folder-emoji-recent-max.const';
 import { loadFolderEmojiNames } from './folder-emoji-names.loader';
+import { Translate } from '../../../core/i18n/translate.service';
+import { UndoToastService } from '../../../core/undo/undo-toast.service';
+import { pushRecent } from '../../../core/utils/push-recent';
 
 const CATEGORIES = Object.keys(FOLDER_EMOJI_CATALOG) as FolderEmojiCategory[];
 const CATALOGUED: ReadonlySet<string> = new Set(Object.values(FOLDER_EMOJI_CATALOG).flat());
@@ -35,6 +36,8 @@ const CATALOGUED: ReadonlySet<string> = new Set(Object.values(FOLDER_EMOJI_CATAL
 export class FolderEmojiService {
   private readonly locale = inject(LocaleService);
   private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
+  private readonly undoToast = inject(UndoToastService);
   private readonly settings = inject(UserSettingsStore);
   private readonly folders = inject(FoldersStore);
   private readonly toasts = inject(ToastService);
@@ -115,10 +118,7 @@ export class FolderEmojiService {
     if (!isFolderEmoji(icon)) {
       return;
     }
-    const next = [icon, ...this.recentList().filter((emoji) => emoji !== icon)].slice(
-      0,
-      FOLDER_EMOJI_RECENT_MAX,
-    );
+    const next = pushRecent(this.recentList(), icon, FOLDER_EMOJI_RECENT_MAX);
     this.recentList.set(next);
     this.writeRecent(next);
     if (!CATALOGUED.has(icon) && !this.settings.customEmoji().includes(icon)) {
@@ -131,19 +131,18 @@ export class FolderEmojiService {
     if (!(await this.settings.removeCustomEmoji(emoji))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('folders.style.emoji.removeFailed'),
+        title: this.translate.t('folders.style.emoji.removeFailed'),
         detail: emoji,
       });
       return;
     }
-    const undo = this.t('folders.style.emoji.undo');
-    this.toasts.show({
+    const undo = this.translate.t('folders.style.emoji.undo');
+    this.undoToast.show({
       kind: TOAST_KIND.Info,
-      title: this.t('folders.style.emoji.removed'),
+      title: this.translate.t('folders.style.emoji.removed'),
       detail: emoji,
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.settings.addCustomEmoji(emoji) },
+      actionLabel: undo,
+      onUndo: () => void this.settings.addCustomEmoji(emoji),
     });
   }
 
@@ -162,9 +161,5 @@ export class FolderEmojiService {
   private writeRecent(list: readonly string[]): void {
     // Storage full or blocked (private mode): "Recent" lives until the page reloads.
     this.storage.setJson(STORAGE_KEY.EmojiRecent, list);
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

@@ -1,15 +1,12 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injector, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { PIN_KIND, type LinkResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import {
   DIALOG_SIZE,
   DialogService,
-  TOAST_DURATION_MS,
   TOAST_KIND,
   ToastService,
-  toastShortcutLabel,
   type ToastFolder,
   type ToastRef,
 } from '@shelfmark/ui';
@@ -35,6 +32,7 @@ import { MovePickerComponent } from '../components/move-picker/move-picker.compo
 import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
 import { AiFollowUpService } from '../../ai/services/ai-follow-up.service';
 import { RuleOfferService } from '../../rules/services/rule-offer.service';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
@@ -58,7 +56,7 @@ export class LinkActionsService {
   private readonly undoToast = inject(UndoToastService);
   private readonly addLinkDialog = inject(AddLinkDialogService);
   private readonly ruleActions = inject(RuleActionsService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly doc = inject(DOCUMENT);
 
   /** Records the open; the browser opens the link itself (the card is a real `<a>`). */
@@ -88,26 +86,21 @@ export class LinkActionsService {
       this.refresh.afterChange({ folders: true });
       if (this.store.leftByUnstar(link.id)) {
         // Unstarred in Favorites (or an "only favorites" view): the card left, Undo stars it back.
-        const undo = this.t('links.item.undo');
-        this.toasts.show({
+        const undo = this.translate.t('links.item.undo');
+        this.undoToast.show({
           kind: TOAST_KIND.Info,
-          title: this.t('links.item.unstarred'),
+          title: this.translate.t('links.item.unstarred'),
           detail: link.title,
-          duration: TOAST_DURATION_MS.Undo,
-          actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-          action: {
-            label: undo,
-            run: () => void this.undoUnstar(link),
-          },
+          actionLabel: undo,
+          onUndo: () => void this.undoUnstar(link),
         });
       }
       return;
     }
-    this.toasts.show({
-      kind: TOAST_KIND.Danger,
-      title: this.t('links.item.favoriteFailed'),
+    this.undoToast.retry({
+      title: this.translate.t('links.item.favoriteFailed'),
       detail: link.title,
-      action: { label: this.t('links.item.retry'), run: () => void this.toggleFavorite(link) },
+      onRetry: () => void this.toggleFavorite(link),
     });
   }
 
@@ -123,7 +116,7 @@ export class LinkActionsService {
     }
     this.toasts.show({
       kind: TOAST_KIND.Danger,
-      title: this.t('links.item.favoriteFailed'),
+      title: this.translate.t('links.item.favoriteFailed'),
       detail: link.title,
     });
   }
@@ -135,7 +128,7 @@ export class LinkActionsService {
     }
     this.toasts.show({
       kind: TOAST_KIND.Danger,
-      title: this.t('pins.pinnedToTopFailed.title'),
+      title: this.translate.t('pins.pinnedToTopFailed.title'),
       detail: link.title,
     });
   }
@@ -149,14 +142,14 @@ export class LinkActionsService {
 
   async delete(link: LinkResponse): Promise<void> {
     const confirmed = await this.dialogs.confirm({
-      title: this.t('links.item.confirm.title'),
-      message: this.t('links.item.confirm.message', {
+      title: this.translate.t('links.item.confirm.title'),
+      message: this.translate.t('links.item.confirm.message', {
         title: link.title,
         days: String(this.settings.retentionDays()),
       }),
-      confirmLabel: this.t('links.item.confirm.confirm'),
-      cancelLabel: this.t('links.item.confirm.cancel'),
-      closeLabel: this.t('links.item.confirm.close'),
+      confirmLabel: this.translate.t('links.item.confirm.confirm'),
+      cancelLabel: this.translate.t('links.item.confirm.cancel'),
+      closeLabel: this.translate.t('links.item.confirm.close'),
       destructive: true,
     });
     if (!confirmed) {
@@ -167,9 +160,9 @@ export class LinkActionsService {
       return;
     }
     const toast = this.undoToast.show({
-      title: this.t('links.item.deleted'),
+      title: this.translate.t('links.item.deleted'),
       detail: link.title,
-      actionLabel: this.t('links.item.undo'),
+      actionLabel: this.translate.t('links.item.undo'),
       onUndo: () => this.store.undoRemove(link.id),
       onExpire: () => void this.commitDelete(link.id),
     });
@@ -193,7 +186,7 @@ export class LinkActionsService {
       size: DIALOG_SIZE.Md,
       autoFocus: false,
       data: {
-        heading: this.t('links.move.title', { title: link.title }),
+        heading: this.translate.t('links.move.title', { title: link.title }),
         currentIds: [link.folderId],
         submit: (folderId) => void this.moveTo(link, folderId),
       },
@@ -210,25 +203,23 @@ export class LinkActionsService {
       return;
     }
     if (!(await this.store.move(link, folderId))) {
-      this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.t('links.move.failed'),
-        detail: this.t('links.move.failedDetail'),
-        action: { label: this.t('links.item.retry'), run: () => void this.moveTo(link, folderId) },
+      this.undoToast.retry({
+        title: this.translate.t('links.move.failed'),
+        detail: this.translate.t('links.move.failedDetail'),
+        onRetry: () => void this.moveTo(link, folderId),
       });
       return;
     }
     this.refresh.afterChange({ folders: true });
     this.recent.record(folderId);
-    const undo = this.t('links.item.undo');
-    const toast = this.toasts.show({
+    const undo = this.translate.t('links.item.undo');
+    const toast = this.undoToast.show({
       kind: TOAST_KIND.Moved,
-      title: this.t('links.move.moved', { folder: this.folderLabel(folderId) }),
+      title: this.translate.t('links.move.moved', { folder: this.folderLabel(folderId) }),
       detail: link.title,
       folder: this.toastFolder(folderId),
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.moveBack({ ...link, folderId }, from) },
+      actionLabel: undo,
+      onUndo: () => void this.moveBack({ ...link, folderId }, from),
     });
     if (folderId !== null) {
       this.offerRule([link.id], toast);
@@ -253,7 +244,7 @@ export class LinkActionsService {
     }
     this.toasts.show({
       kind: TOAST_KIND.Danger,
-      title: this.t('links.move.undoFailed'),
+      title: this.translate.t('links.move.undoFailed'),
       detail: link.title,
     });
   }
@@ -282,7 +273,7 @@ export class LinkActionsService {
     this.refresh.afterChange({ folders: true, tags: true });
     this.toasts.show({
       kind: TOAST_KIND.Saved,
-      title: this.t('links.item.savedTo', { folder: this.folderLabel(link.folderId) }),
+      title: this.translate.t('links.item.savedTo', { folder: this.folderLabel(link.folderId) }),
       detail: link.title,
       thumb: ownImageUrl(link.imageUrl),
     });
@@ -301,8 +292,8 @@ export class LinkActionsService {
     if (links.length === 0) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('links.many.noneSaved'),
-        detail: this.t(pluralKey('links.many.skippedByServer', errors.length), {
+        title: this.translate.t('links.many.noneSaved'),
+        detail: this.translate.t(pluralKey('links.many.skippedByServer', errors.length), {
           count: String(errors.length),
         }),
       });
@@ -312,30 +303,29 @@ export class LinkActionsService {
     // Their summaries arrive a few seconds later, through one refresh loop for the batch.
     this.injector.get(AiFollowUpService).watchMany(links);
     this.refresh.afterChange({ folders: true, tags: true });
-    const undo = this.t('links.item.undo');
+    const undo = this.translate.t('links.item.undo');
     // Domain rules (#398) may file the links in different folders: then no folder is named.
     const landed = new Set(links.map((link) => link.folderId));
     const shared = landed.size === 1 ? (links[0]?.folderId ?? null) : undefined;
-    this.toasts.show({
+    this.undoToast.show({
       kind: errors.length > 0 ? TOAST_KIND.Warn : TOAST_KIND.Success,
       title:
         shared === undefined
-          ? this.t(pluralKey('links.many.savedMixed', links.length), {
+          ? this.translate.t(pluralKey('links.many.savedMixed', links.length), {
               count: String(links.length),
             })
-          : this.t(pluralKey('links.many.saved', links.length), {
+          : this.translate.t(pluralKey('links.many.saved', links.length), {
               count: String(links.length),
               folder: this.folderLabel(shared),
             }),
       detail:
         errors.length > 0
-          ? this.t(pluralKey('links.many.skippedByServer', errors.length), {
+          ? this.translate.t(pluralKey('links.many.skippedByServer', errors.length), {
               count: String(errors.length),
             })
-          : this.t('links.many.stillLoading'),
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.undoSavedMany(links) },
+          : this.translate.t('links.many.stillLoading'),
+      actionLabel: undo,
+      onUndo: () => void this.undoSavedMany(links),
     });
   }
 
@@ -353,8 +343,8 @@ export class LinkActionsService {
       this.store.addSavedMany(links);
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('links.many.undoFailed'),
-        detail: this.t('links.many.undoFailedDetail'),
+        title: this.translate.t('links.many.undoFailed'),
+        detail: this.translate.t('links.many.undoFailedDetail'),
       });
     }
   }
@@ -372,7 +362,7 @@ export class LinkActionsService {
       this.refresh.afterChange({ tags: true });
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('links.item.edited'),
+        title: this.translate.t('links.item.edited'),
         detail: result.link.title,
       });
     } else if (result?.action === ADD_LINK_ACTION.Delete) {
@@ -384,10 +374,7 @@ export class LinkActionsService {
 
   /** "Work / Angular" for a link in a folder, "Unsorted" for one outside any folder. */
   private folderLabel(folderId: string | null): string {
-    const path = folderId === null ? [] : this.folders.pathTo(folderId);
-    return path.length > 0
-      ? path.map((folder) => folder.name).join(' / ')
-      : this.t('links.add.folder.unsorted');
+    return this.folders.pathLabel(folderId) || this.translate.t('links.add.folder.unsorted');
   }
 
   private async openSaved(id: string): Promise<void> {
@@ -396,7 +383,10 @@ export class LinkActionsService {
         this.store.entityMap()[id] ?? (await firstValueFrom(this.injector.get(LINKS_API).get(id)));
       await this.edit(link);
     } catch {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.item.openFailed') });
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.translate.t('links.item.openFailed'),
+      });
     }
   }
 
@@ -407,13 +397,9 @@ export class LinkActionsService {
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('links.item.deleteFailed'),
-        detail: this.t('links.item.deleteFailedDetail'),
+        title: this.translate.t('links.item.deleteFailed'),
+        detail: this.translate.t('links.item.deleteFailedDetail'),
       });
     }
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

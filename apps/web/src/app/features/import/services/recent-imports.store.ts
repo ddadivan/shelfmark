@@ -1,5 +1,4 @@
 import { inject, Injector, Service, signal } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import type { ImportSummary, UndoImportResponse } from '@shelfmark/contracts';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
@@ -8,6 +7,7 @@ import { pluralKey } from '../../../core/i18n/plural-key';
 import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { IMPORT_API } from '../models/import-api.const';
 import { ImportAiFollowService } from './import-ai-follow.service';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * "Recent imports" of Account › Your data (SetImport.dc.html): the imports of the last 7 days
@@ -17,7 +17,7 @@ import { ImportAiFollowService } from './import-ai-follow.service';
 @Service()
 export class RecentImportsStore {
   private readonly injector = inject(Injector);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly toasts = inject(ToastService);
   private readonly dialogs = inject(DialogService);
 
@@ -57,10 +57,12 @@ export class RecentImportsStore {
       return false;
     }
     const confirmed = await this.dialogs.confirm({
-      title: this.t('import.undo.title'),
-      message: this.t(pluralKey('import.undo.message', linkCount), { count: String(linkCount) }),
-      confirmLabel: this.t('import.undo.confirm'),
-      cancelLabel: this.t('import.undo.cancel'),
+      title: this.translate.t('import.undo.title'),
+      message: this.translate.t(pluralKey('import.undo.message', linkCount), {
+        count: String(linkCount),
+      }),
+      confirmLabel: this.translate.t('import.undo.confirm'),
+      cancelLabel: this.translate.t('import.undo.cancel'),
     });
     if (!confirmed) {
       return false;
@@ -71,7 +73,7 @@ export class RecentImportsStore {
       response = await firstValueFrom(this.injector.get(IMPORT_API).undo(id));
     } catch {
       this.undoingState.set(null);
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('import.undo.failed') });
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t('import.undo.failed') });
       void this.load();
       return false;
     }
@@ -81,15 +83,11 @@ export class RecentImportsStore {
     this.injector.get(LibraryRefreshService).afterLibraryRewrite();
     this.toasts.show({
       kind: TOAST_KIND.Success,
-      title: this.t('import.undo.done'),
-      detail: this.t(pluralKey('import.undo.doneDetail', response.links), {
+      title: this.translate.t('import.undo.done'),
+      detail: this.translate.t(pluralKey('import.undo.doneDetail', response.links), {
         count: String(response.links),
       }),
     });
     return true;
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

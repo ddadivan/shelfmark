@@ -1,15 +1,7 @@
 import { inject, Injector, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import type { TidyApplyItem, TidyApplyResponse, TidyUndoRequest } from '@shelfmark/contracts';
-import {
-  TOAST_DURATION_MS,
-  TOAST_KIND,
-  ToastService,
-  toastShortcutLabel,
-  type ToastFolder,
-} from '@shelfmark/ui';
+import { TOAST_KIND, ToastService, type ToastFolder } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
-import { pluralKey } from '../../../core/i18n/plural-key';
 import { LibraryRefreshService } from '../../../stores/library-refresh.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
@@ -17,6 +9,8 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { toastFolder } from '../../links/utils/toast-folder';
 import { RuleOfferService } from '../../rules/services/rule-offer.service';
 import { AI_API } from '../models/ai-api.const';
+import { Translate } from '../../../core/i18n/translate.service';
+import { UndoToastService } from '../../../core/undo/undo-toast.service';
 
 /**
  * One Tidy run (AI-2): sends the selected suggestions in one request, puts the changed links into
@@ -33,7 +27,8 @@ export class TidyApplyService {
   private readonly settings = inject(UserSettingsStore);
   private readonly refresh = inject(LibraryRefreshService);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
+  private readonly undoToast = inject(UndoToastService);
 
   /**
    * Applies `items`; resolves false (with a toast) when the request fails. `undone` runs after a
@@ -49,8 +44,8 @@ export class TidyApplyService {
     } catch {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('ai.tidy.toast.failed'),
-        detail: this.t('ai.tidy.toast.failedDetail'),
+        title: this.translate.t('ai.tidy.toast.failed'),
+        detail: this.translate.t('ai.tidy.toast.failedDetail'),
       });
       return false;
     }
@@ -62,23 +57,22 @@ export class TidyApplyService {
       // Every selected suggestion was decided, moved or ruled meanwhile: say so; the page reloads.
       this.toasts.show({
         kind: TOAST_KIND.Info,
-        title: this.t('ai.tidy.toast.nothing'),
-        detail: this.t('ai.tidy.toast.nothingDetail'),
+        title: this.translate.t('ai.tidy.toast.nothing'),
+        detail: this.translate.t('ai.tidy.toast.nothingDetail'),
       });
     }
     return true;
   }
 
   private announce(response: TidyApplyResponse, undone?: () => void): void {
-    const undo = this.t('ai.tidy.toast.undo');
-    const toast = this.toasts.show({
+    const undo = this.translate.t('ai.tidy.toast.undo');
+    const toast = this.undoToast.show({
       kind: response.folders > 0 ? TOAST_KIND.Moved : TOAST_KIND.Success,
-      title: this.plural('ai.tidy.toast.title', response.applied),
+      title: this.translate.plural('ai.tidy.toast.title', response.applied),
       detail: this.detail(response),
       ...(response.folders > 0 && { folder: this.tile(response.undo) }),
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.undo(response.undo, undone) },
+      actionLabel: undo,
+      onUndo: () => void this.undo(response.undo, undone),
     });
     const filed = response.undo.items.filter((item) => item.folderId !== null);
     if (filed.length > 0) {
@@ -98,18 +92,18 @@ export class TidyApplyService {
       // Links that had left the open view come back with the next page load.
       this.refreshLibrary(true);
       undone?.();
-      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('ai.tidy.undone') });
+      this.toasts.show({ kind: TOAST_KIND.Success, title: this.translate.t('ai.tidy.undone') });
     } catch {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('ai.tidy.undoFailed') });
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t('ai.tidy.undoFailed') });
     }
   }
 
   /** "Moved into 4 folders, 19 tags added" (either part alone when the other is 0). */
   private detail(response: TidyApplyResponse): string {
-    const folders = this.plural('ai.tidy.toast.folders', response.folders);
-    const tags = this.plural('ai.tidy.toast.tags', response.tagsAdded);
+    const folders = this.translate.plural('ai.tidy.toast.folders', response.folders);
+    const tags = this.translate.plural('ai.tidy.toast.tags', response.tagsAdded);
     if (response.folders > 0 && response.tagsAdded > 0) {
-      return this.t('ai.tidy.toast.detail', { folders, tags });
+      return this.translate.t('ai.tidy.toast.detail', { folders, tags });
     }
     return response.folders > 0 ? folders : tags;
   }
@@ -139,13 +133,5 @@ export class TidyApplyService {
 
   private api() {
     return this.injector.get(AI_API);
-  }
-
-  private plural(base: string, count: number, params: Record<string, string> = {}): string {
-    return this.t(pluralKey(base, count), { count: String(count), ...params });
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

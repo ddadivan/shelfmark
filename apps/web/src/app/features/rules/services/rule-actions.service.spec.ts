@@ -174,7 +174,7 @@ describe('RuleActionsService', () => {
 
     actions.delete(rule);
     const second = undo.mock.calls[1]?.[0] as UndoToastOptions;
-    second.onExpire();
+    second.onExpire?.();
     await until(() => expect(data.rules).toEqual([]));
   });
 

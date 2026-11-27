@@ -1,6 +1,5 @@
 import { DestroyRef, inject, Injector, Service } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { SafeStorage } from '../../../core/storage/safe-storage.service';
@@ -11,6 +10,7 @@ import { APP_PATH } from '../../../models/app-path.const';
 import { RemindersStore } from '../../../stores/reminders.store';
 import { linkHost } from '../../links/utils/link-view';
 import { REMINDER_NOTICE } from '../models/reminder-notice.const';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * The note when reminders become due (#275, Shelf 12-notify "A reminder arrives"): on app open,
@@ -25,7 +25,7 @@ import { REMINDER_NOTICE } from '../models/reminder-notice.const';
 export class ReminderNoticeService {
   private readonly store = inject(RemindersStore);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly router = inject(Router);
   private readonly injector = inject(Injector);
   private readonly storage = inject(SafeStorage);
@@ -77,11 +77,11 @@ export class ReminderNoticeService {
     }
     this.toasts.show({
       kind: TOAST_KIND.Warn,
-      title: this.t(pluralKey('reminders.toast.due', fresh.length), {
+      title: this.translate.t(pluralKey('reminders.toast.due', fresh.length), {
         count: String(fresh.length),
       }),
       action: {
-        label: this.t('reminders.toast.show'),
+        label: this.translate.t('reminders.toast.show'),
         run: () => void this.router.navigateByUrl(`/${APP_PATH.Reminders}`),
       },
     });
@@ -91,10 +91,13 @@ export class ReminderNoticeService {
   private showOne(link: LinkResponse): void {
     this.toasts.show({
       kind: TOAST_KIND.Warn,
-      title: this.t('reminders.toast.dueOne', { title: link.title }),
+      title: this.translate.t('reminders.toast.dueOne', { title: link.title }),
       detail: linkHost(link.url),
-      action: { label: this.t('reminders.toast.open'), run: () => void this.open(link) },
-      secondary: { label: this.t('reminders.toast.snooze'), run: () => void this.snooze(link) },
+      action: { label: this.translate.t('reminders.toast.open'), run: () => void this.open(link) },
+      secondary: {
+        label: this.translate.t('reminders.toast.snooze'),
+        run: () => void this.snooze(link),
+      },
     });
   }
 
@@ -143,10 +146,6 @@ export class ReminderNoticeService {
       clearTimeout(this.timer);
       this.timer = null;
     }
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 
   private readSeen(): string | null {

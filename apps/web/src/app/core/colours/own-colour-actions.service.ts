@@ -1,8 +1,9 @@
 import { inject, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { isHexColour } from '@shelfmark/contracts';
-import { TOAST_DURATION_MS, TOAST_KIND, ToastService, toastShortcutLabel } from '@shelfmark/ui';
+import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { UserSettingsStore } from '../../stores/user-settings.store';
+import { Translate } from '../i18n/translate.service';
+import { UndoToastService } from '../undo/undo-toast.service';
 
 /**
  * Removing an own colour (#350) from the places that show them as swatches (the folder style
@@ -14,7 +15,8 @@ import { UserSettingsStore } from '../../stores/user-settings.store';
 export class OwnColourActionsService {
   private readonly settings = inject(UserSettingsStore);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
+  private readonly undoToast = inject(UndoToastService);
 
   /** Forgets `colour` and says so with an Undo; a failed save puts it back and tells. */
   async remove(colour: string): Promise<void> {
@@ -24,28 +26,23 @@ export class OwnColourActionsService {
     if (!(await this.settings.removeCustomColour(colour))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('settings.appearance.custom.own.removeFailed'),
+        title: this.translate.t('settings.appearance.custom.own.removeFailed'),
         detail: colour,
       });
       return;
     }
-    const undo = this.t('settings.appearance.custom.own.undo');
-    this.toasts.show({
+    const undo = this.translate.t('settings.appearance.custom.own.undo');
+    this.undoToast.show({
       kind: TOAST_KIND.Info,
-      title: this.t('settings.appearance.custom.own.removed'),
+      title: this.translate.t('settings.appearance.custom.own.removed'),
       detail: colour,
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: { label: undo, run: () => void this.settings.addCustomColour(colour) },
+      actionLabel: undo,
+      onUndo: () => void this.settings.addCustomColour(colour),
     });
   }
 
   /** The accessible name of the remove action of one own swatch ("Remove colour #a33a5b"). */
   removeLabel(colour: string): string {
-    return this.t('settings.appearance.custom.own.remove', { colour });
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
+    return this.translate.t('settings.appearance.custom.own.remove', { colour });
   }
 }

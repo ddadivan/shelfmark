@@ -8,7 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { SHARE_LIMIT } from '@shelfmark/contracts';
 import {
   BUTTON_VARIANT,
@@ -30,6 +30,7 @@ import { SHARE_ERROR } from '../../models/share-error.const';
 import type { ShareFolderDialogData } from '../../models/share-folder-dialog-data.interface';
 import { PUBLIC_COLLECTION_ORIGIN } from '../../models/public-collection-origin.const';
 import { publicCollectionUrl } from '../../utils/public-collection-url';
+import { Translate } from '../../../../core/i18n/translate.service';
 
 /**
  * Share a folder as a public collection (Share.dc board 1 without invites and roles, #276): the
@@ -63,7 +64,7 @@ export class ShareFolderDialogComponent {
   protected readonly store = inject(FolderShareStore);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly doc = inject(DOCUMENT);
   private readonly publicOrigin = inject(PUBLIC_COLLECTION_ORIGIN);
 
@@ -103,7 +104,10 @@ export class ShareFolderDialogComponent {
     if (url === '') return;
     if (await copyText(this.doc, url)) {
       this.copyFailed.set(false);
-      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('sharing.dialog.copied') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.translate.t('sharing.dialog.copied'),
+      });
     } else {
       this.copyFailed.set(true);
       this.linkField()?.select();
@@ -112,27 +116,23 @@ export class ShareFolderDialogComponent {
 
   protected async reset(): Promise<void> {
     const confirmed = await this.dialogs.confirm({
-      title: this.t('sharing.reset.title'),
-      message: this.t('sharing.reset.message'),
-      confirmLabel: this.t('sharing.reset.confirm'),
-      cancelLabel: this.t('sharing.reset.cancel'),
+      title: this.translate.t('sharing.reset.title'),
+      message: this.translate.t('sharing.reset.message'),
+      confirmLabel: this.translate.t('sharing.reset.confirm'),
+      cancelLabel: this.translate.t('sharing.reset.cancel'),
       destructive: true,
     });
     if (confirmed && (await this.store.reset())) {
       this.copyFailed.set(false);
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('sharing.reset.done'),
-        detail: this.t('sharing.reset.doneDetail'),
+        title: this.translate.t('sharing.reset.done'),
+        detail: this.translate.t('sharing.reset.doneDetail'),
       });
     }
   }
 
   protected retry(): void {
     void this.store.load(this.data.folder.id);
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

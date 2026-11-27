@@ -1,11 +1,10 @@
 import { inject, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { TRASH_ITEM_KIND, type TrashItem } from '@shelfmark/contracts';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { pluralKey } from '../../../core/i18n/plural-key';
 import { TrashStore } from '../../../stores/trash.store';
 import { TRASH_OUTCOME } from '../models/trash-outcome.const';
 import { toRef } from '../utils/trash-key';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * What a user can do in Trash: restore, delete forever (confirmed) and empty (confirmed). Texts
@@ -18,7 +17,7 @@ export class TrashActionsService {
   private readonly store = inject(TrashStore);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
 
   async restore(items: readonly TrashItem[]): Promise<boolean> {
     if (items.length === 0) {
@@ -28,7 +27,7 @@ export class TrashActionsService {
     if (outcome === TRASH_OUTCOME.Done) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('trash.toast.restored'),
+        title: this.translate.t('trash.toast.restored'),
         detail: this.what(items, 'trash.toast.restoredMany'),
       });
       return true;
@@ -36,8 +35,10 @@ export class TrashActionsService {
     const full = outcome === TRASH_OUTCOME.Conflict;
     this.toasts.show({
       kind: TOAST_KIND.Danger,
-      title: this.t(full ? 'trash.toast.restoreFull' : 'trash.toast.restoreFailed'),
-      detail: this.t(full ? 'trash.toast.restoreFullDetail' : 'trash.toast.restoreFailedDetail'),
+      title: this.translate.t(full ? 'trash.toast.restoreFull' : 'trash.toast.restoreFailed'),
+      detail: this.translate.t(
+        full ? 'trash.toast.restoreFullDetail' : 'trash.toast.restoreFailedDetail',
+      ),
     });
     return false;
   }
@@ -48,11 +49,11 @@ export class TrashActionsService {
       return false;
     }
     const confirmed = await this.dialogs.confirm({
-      title: this.t('trash.deleteConfirm.title'),
+      title: this.translate.t('trash.deleteConfirm.title'),
       message: this.deleteMessage(items),
-      confirmLabel: this.t('trash.deleteConfirm.confirm'),
-      cancelLabel: this.t('trash.deleteConfirm.cancel'),
-      closeLabel: this.t('trash.deleteConfirm.close'),
+      confirmLabel: this.translate.t('trash.deleteConfirm.confirm'),
+      cancelLabel: this.translate.t('trash.deleteConfirm.cancel'),
+      closeLabel: this.translate.t('trash.deleteConfirm.close'),
       destructive: true,
     });
     if (!confirmed) {
@@ -61,15 +62,15 @@ export class TrashActionsService {
     if ((await this.store.deleteForever(items.map(toRef))) === TRASH_OUTCOME.Done) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('trash.toast.deleted'),
+        title: this.translate.t('trash.toast.deleted'),
         detail: this.what(items, 'trash.toast.deletedMany'),
       });
       return true;
     }
     this.toasts.show({
       kind: TOAST_KIND.Danger,
-      title: this.t('trash.toast.deleteFailed'),
-      detail: this.t('trash.toast.deleteFailedDetail'),
+      title: this.translate.t('trash.toast.deleteFailed'),
+      detail: this.translate.t('trash.toast.deleteFailedDetail'),
     });
     return false;
   }
@@ -81,24 +82,27 @@ export class TrashActionsService {
       return false;
     }
     const confirmed = await this.dialogs.confirm({
-      title: this.t('trash.emptyConfirm.title'),
+      title: this.translate.t('trash.emptyConfirm.title'),
       message: this.emptyMessage(total),
-      confirmLabel: this.plural('trash.emptyConfirm.confirm', total),
-      cancelLabel: this.t('trash.emptyConfirm.cancel'),
-      closeLabel: this.t('trash.emptyConfirm.close'),
+      confirmLabel: this.translate.plural('trash.emptyConfirm.confirm', total),
+      cancelLabel: this.translate.t('trash.emptyConfirm.cancel'),
+      closeLabel: this.translate.t('trash.emptyConfirm.close'),
       destructive: true,
     });
     if (!confirmed) {
       return false;
     }
     if ((await this.store.empty()) === TRASH_OUTCOME.Done) {
-      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('trash.toast.emptied') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.translate.t('trash.toast.emptied'),
+      });
       return true;
     }
     this.toasts.show({
       kind: TOAST_KIND.Danger,
-      title: this.t('trash.toast.emptyFailed'),
-      detail: this.t('trash.toast.emptyFailedDetail'),
+      title: this.translate.t('trash.toast.emptyFailed'),
+      detail: this.translate.t('trash.toast.emptyFailedDetail'),
     });
     return false;
   }
@@ -106,51 +110,43 @@ export class TrashActionsService {
   /** The title of one entry, or "3 items are back" for several. */
   private what(items: readonly TrashItem[], manyKey: string): string {
     const [only] = items;
-    return items.length === 1 && only ? only.title : this.plural(manyKey, items.length);
+    return items.length === 1 && only ? only.title : this.translate.plural(manyKey, items.length);
   }
 
   private deleteMessage(items: readonly TrashItem[]): string {
     const [only] = items;
     if (items.length === 1 && only) {
       return only.kind === TRASH_ITEM_KIND.Folder
-        ? this.t('trash.deleteConfirm.messageFolder', {
+        ? this.translate.t('trash.deleteConfirm.messageFolder', {
             title: only.title,
-            links: this.plural('trash.row.links', only.linkCount ?? 0),
+            links: this.translate.plural('trash.row.links', only.linkCount ?? 0),
           })
-        : this.t('trash.deleteConfirm.message', { title: only.title });
+        : this.translate.t('trash.deleteConfirm.message', { title: only.title });
     }
-    return this.t('trash.deleteConfirm.messageMany', {
-      items: this.plural('trash.emptyConfirm.items', items.length),
+    return this.translate.t('trash.deleteConfirm.messageMany', {
+      items: this.translate.plural('trash.emptyConfirm.items', items.length),
     });
   }
 
   private emptyMessage(total: number): string {
     const folders = this.store.folderItems();
-    const items = this.plural('trash.emptyConfirm.items', total);
+    const items = this.translate.plural('trash.emptyConfirm.items', total);
     const links = folders.reduce((sum, folder) => sum + (folder.linkCount ?? 0), 0);
     const [first] = folders;
     if (folders.length === 1 && first) {
-      return this.t('trash.emptyConfirm.messageFolder', {
+      return this.translate.t('trash.emptyConfirm.messageFolder', {
         items,
         name: first.title,
-        links: this.plural('trash.row.links', links),
+        links: this.translate.plural('trash.row.links', links),
       });
     }
     if (folders.length > 1) {
-      return this.t('trash.emptyConfirm.messageFolders', {
+      return this.translate.t('trash.emptyConfirm.messageFolders', {
         items,
-        folders: this.plural('trash.emptyConfirm.folders', folders.length),
-        links: this.plural('trash.row.links', links),
+        folders: this.translate.plural('trash.emptyConfirm.folders', folders.length),
+        links: this.translate.plural('trash.row.links', links),
       });
     }
-    return this.t('trash.emptyConfirm.message', { items });
-  }
-
-  private plural(base: string, count: number): string {
-    return this.transloco.translate(pluralKey(base, count), { count });
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
+    return this.translate.t('trash.emptyConfirm.message', { items });
   }
 }

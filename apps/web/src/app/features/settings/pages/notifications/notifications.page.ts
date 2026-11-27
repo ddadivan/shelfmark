@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import type { UpdateNotificationSettings } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
@@ -20,6 +20,7 @@ import { DeviceNotificationsService } from '../../../notifications/services/devi
 import { NotificationSettingsStore } from '../../../notifications/services/notification-settings.store';
 import { quietHourValues } from '../../../notifications/utils/quiet-hours';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
+import { Translate } from '../../../../core/i18n/translate.service';
 
 /**
  * `/settings/notifications` (Shelf 05-settings Notifications, 12-notify): "On this device" (the
@@ -48,7 +49,7 @@ export default class NotificationsPage {
   protected readonly store = inject(NotificationSettingsStore);
   protected readonly locale = inject(LocaleService);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
 
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
@@ -77,20 +78,20 @@ export default class NotificationsPage {
     if (!(await this.device.turnOn()) && this.device.blocked()) {
       this.toasts.show({
         kind: TOAST_KIND.Info,
-        title: this.t('settings.notifications.blocked.title'),
+        title: this.translate.t('settings.notifications.blocked.title'),
       });
     }
   }
 
   protected async test(): Promise<void> {
     const shown = await this.device.test(
-      this.t('settings.notifications.test.title'),
-      this.t('settings.notifications.test.body'),
+      this.translate.t('settings.notifications.test.title'),
+      this.translate.t('settings.notifications.test.body'),
     );
     if (!shown) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('settings.notifications.test.failed'),
+        title: this.translate.t('settings.notifications.test.failed'),
       });
     }
   }
@@ -105,7 +106,10 @@ export default class NotificationsPage {
 
   protected async save(change: UpdateNotificationSettings): Promise<void> {
     if (!(await this.store.update(change))) {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('settings.notifications.failed') });
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.translate.t('settings.notifications.failed'),
+      });
     }
   }
 
@@ -113,13 +117,9 @@ export default class NotificationsPage {
     if (!(await this.store.removeDevice(id))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('settings.notifications.failed'),
+        title: this.translate.t('settings.notifications.failed'),
         detail: name,
       });
     }
-  }
-
-  private t(key: string): string {
-    return this.transloco.translate(key);
   }
 }

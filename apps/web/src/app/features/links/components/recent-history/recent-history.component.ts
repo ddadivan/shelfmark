@@ -40,7 +40,6 @@ import {
 } from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { copyText } from '../../../../core/browser/copy-text';
-import { pluralKey } from '../../../../core/i18n/plural-key';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinksStore } from '../../../../stores/links.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
@@ -58,6 +57,8 @@ import { RECENT_FILTER_KINDS } from '../../models/recent-filter-kinds.const';
 import { LinkHistoryRowComponent } from '../link-history-row/link-history-row.component';
 import { HISTORY_DAY_KIND } from '../../models/history-day-kind.const';
 import type { HistoryDay } from '../../models/history-day.interface';
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import { Translate } from '../../../../core/i18n/translate.service';
 
 /** Placeholders shown while the history loads. */
 const SKELETON_COUNT = 5;
@@ -90,6 +91,7 @@ export class RecentHistoryComponent {
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly localeService = inject(LocaleService);
   private readonly router = inject(Router);
   private readonly doc = inject(DOCUMENT);
@@ -164,10 +166,10 @@ export class RecentHistoryComponent {
     this.i18n();
     const recent = this.store.recent();
     return [
-      { id: ALL_KINDS, label: this.t('links.recent.filter.all'), count: recent.length },
+      { id: ALL_KINDS, label: this.translate.t('links.recent.filter.all'), count: recent.length },
       ...RECENT_FILTER_KINDS.map((kind) => ({
         id: kind,
-        label: this.t(`links.kind.${kind}`),
+        label: this.translate.t(`links.kind.${kind}`),
         count: recent.filter((link) => link.kind === kind).length,
       })),
     ];
@@ -194,11 +196,11 @@ export class RecentHistoryComponent {
   protected dayTitle(day: HistoryDay): string {
     switch (day.kind) {
       case HISTORY_DAY_KIND.Today:
-        return this.t('links.recent.day.today');
+        return this.translate.t('links.recent.day.today');
       case HISTORY_DAY_KIND.Yesterday:
-        return this.t('links.recent.day.yesterday');
+        return this.translate.t('links.recent.day.yesterday');
       case HISTORY_DAY_KIND.Week:
-        return this.t('links.recent.day.week');
+        return this.translate.t('links.recent.day.week');
       default:
         return this.localeService
           .dateTimeFormat({
@@ -265,10 +267,16 @@ export class RecentHistoryComponent {
   /** Copies the address; a toast says it worked, or that the browser did not allow it. */
   protected async copyLink(link: LinkResponse): Promise<void> {
     if (await copyText(this.doc, link.url)) {
-      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('links.recent.linkCopied') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.translate.t('links.recent.linkCopied'),
+      });
     } else {
       // No Clipboard API (insecure context, old browser) or the permission was refused.
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.recent.copyFailed') });
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.translate.t('links.recent.copyFailed'),
+      });
     }
   }
 
@@ -276,13 +284,13 @@ export class RecentHistoryComponent {
     if (await this.store.removeFromHistory(link.id)) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('links.recent.removed'),
+        title: this.translate.t('links.recent.removed'),
         detail: link.title,
       });
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('links.recent.removeFailed'),
+        title: this.translate.t('links.recent.removeFailed'),
         detail: link.title,
       });
     }
@@ -291,24 +299,26 @@ export class RecentHistoryComponent {
   /** Asks first, then empties the history; a toast reports the result. */
   async clear(): Promise<void> {
     const confirmed = await this.dialogs.confirm({
-      title: this.t('links.recent.confirm.title'),
-      message: this.t('links.recent.confirm.message'),
-      confirmLabel: this.t('links.recent.confirm.confirm'),
-      cancelLabel: this.t('links.recent.confirm.cancel'),
-      closeLabel: this.t('links.recent.confirm.close'),
+      title: this.translate.t('links.recent.confirm.title'),
+      message: this.translate.t('links.recent.confirm.message'),
+      confirmLabel: this.translate.t('links.recent.confirm.confirm'),
+      cancelLabel: this.translate.t('links.recent.confirm.cancel'),
+      closeLabel: this.translate.t('links.recent.confirm.close'),
       destructive: true,
     });
     if (!confirmed) {
       return;
     }
     if (await this.store.clearHistory()) {
-      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('links.recent.cleared') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.translate.t('links.recent.cleared'),
+      });
     } else {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.recent.clearFailed') });
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.translate.t('links.recent.clearFailed'),
+      });
     }
-  }
-
-  private t(key: string): string {
-    return this.transloco.translate(key);
   }
 }

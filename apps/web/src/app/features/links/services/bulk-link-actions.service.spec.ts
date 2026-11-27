@@ -88,6 +88,7 @@ async function setup(options: Options = {}) {
     folders: {
       refresh: vi.fn(() => Promise.resolve()),
       pathTo: vi.fn(() => []),
+      pathLabel: vi.fn(() => ''),
       entityMap: () => ({}),
     },
     tags: {

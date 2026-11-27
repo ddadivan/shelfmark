@@ -1,6 +1,5 @@
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
 import { normalizeTagName, type TagResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { APP_PATH } from '../../../models/app-path.const';
@@ -11,6 +10,7 @@ import { UndoToastService } from '../../../core/undo/undo-toast.service';
 import type { MergeTagDialogData } from '../models/merge-tag-dialog-data.interface';
 import { TAG_QUERY_PARAM } from '../models/tag-query-param.const';
 import { MergeTagDialogComponent } from '../components/merge-tag-dialog/merge-tag-dialog.component';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * What a user can do with a tag from the sidebar and the filter row: show its links, merge,
@@ -24,7 +24,7 @@ export class TagActionsService {
   private readonly toasts = inject(ToastService);
   private readonly undoToast = inject(UndoToastService);
   private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
 
   /** Lists the links with this tag (all links, filtered by the tag). */
   async showLinks(name: string): Promise<void> {
@@ -65,8 +65,8 @@ export class TagActionsService {
     }
     this.toasts.show({
       kind: TOAST_KIND.Danger,
-      title: this.t('tags.merge.failedTitle'),
-      detail: this.t('tags.merge.failedDetail'),
+      title: this.translate.t('tags.merge.failedTitle'),
+      detail: this.translate.t('tags.merge.failedDetail'),
     });
     return false;
   }
@@ -79,21 +79,21 @@ export class TagActionsService {
   /** Confirms with the link count, hides the tag and offers Undo; the request goes out when the window ends. */
   async delete(tag: TagResponse): Promise<void> {
     const confirmed = await this.dialogs.confirm({
-      title: this.t('tags.delete.title', { name: tag.name }),
-      message: this.t(pluralKey('tags.delete.message', tag.linkCount), {
+      title: this.translate.t('tags.delete.title', { name: tag.name }),
+      message: this.translate.t(pluralKey('tags.delete.message', tag.linkCount), {
         count: String(tag.linkCount),
       }),
-      confirmLabel: this.t('tags.delete.confirm'),
-      cancelLabel: this.t('tags.dialog.cancel'),
-      closeLabel: this.t('tags.dialog.close'),
+      confirmLabel: this.translate.t('tags.delete.confirm'),
+      cancelLabel: this.translate.t('tags.dialog.cancel'),
+      closeLabel: this.translate.t('tags.dialog.close'),
       destructive: true,
     });
     if (!confirmed || !this.tags.hide(tag.id)) {
       return;
     }
     this.undoToast.show({
-      title: this.t('tags.delete.done', { name: tag.name }),
-      actionLabel: this.t('tags.delete.undo'),
+      title: this.translate.t('tags.delete.done', { name: tag.name }),
+      actionLabel: this.translate.t('tags.delete.undo'),
       onUndo: () => this.tags.undoRemove(tag.id),
       onExpire: () => void this.commitDelete(tag),
     });
@@ -105,8 +105,8 @@ export class TagActionsService {
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('tags.delete.failed', { name: tag.name }),
-        detail: this.t('tags.delete.failedDetail'),
+        title: this.translate.t('tags.delete.failed', { name: tag.name }),
+        detail: this.translate.t('tags.delete.failedDetail'),
       });
     }
   }
@@ -114,7 +114,7 @@ export class TagActionsService {
   private mergedInto(source: TagResponse, target: TagResponse): void {
     this.toasts.show({
       kind: TOAST_KIND.Success,
-      title: this.t('tags.merge.done', { name: source.name, target: target.name }),
+      title: this.translate.t('tags.merge.done', { name: source.name, target: target.name }),
     });
     void this.retargetFilter(source.name, target.name);
   }
@@ -145,9 +145,5 @@ export class TagActionsService {
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

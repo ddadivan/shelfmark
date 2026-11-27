@@ -1,5 +1,4 @@
 import { inject, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { pluralKey } from '../../../core/i18n/plural-key';
@@ -10,6 +9,7 @@ import type { RemindDialogResult } from '../models/remind-dialog-result.interfac
 import type { RemindOption } from '../models/remind-option.interface';
 import { NotificationPromptService } from '../../notifications/services/notification-prompt.service';
 import { ReminderFormatService } from './reminder-format.service';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * What a user does with reminders (#275): "Remind me" on one link or a selection (the dialog),
@@ -21,7 +21,7 @@ export class ReminderActionsService {
   private readonly store = inject(RemindersStore);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
   private readonly format = inject(ReminderFormatService);
   private readonly notificationPrompt = inject(NotificationPromptService);
 
@@ -40,8 +40,8 @@ export class ReminderActionsService {
       size: DIALOG_SIZE.Sm,
       data: {
         heading: single
-          ? this.t('reminders.dialog.title')
-          : this.t(pluralKey('reminders.dialog.titleMany', links.length), {
+          ? this.translate.t('reminders.dialog.title')
+          : this.translate.t(pluralKey('reminders.dialog.titleMany', links.length), {
               count: String(links.length),
             }),
         subtitle: single ? first.title : undefined,
@@ -68,10 +68,10 @@ export class ReminderActionsService {
     if (!(await this.store.set(links, remindAt))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('reminders.toast.failed'),
+        title: this.translate.t('reminders.toast.failed'),
         detail: links.length === 1 ? links[0]?.title : undefined,
         action: {
-          label: this.t('reminders.toast.retry'),
+          label: this.translate.t('reminders.toast.retry'),
           run: () => void this.save(links, remindAt),
         },
       });
@@ -82,7 +82,7 @@ export class ReminderActionsService {
     if (
       remindAt !== null &&
       this.notificationPrompt.offer(
-        this.t('reminders.toast.set', { when: this.format.when(remindAt) }),
+        this.translate.t('reminders.toast.set', { when: this.format.when(remindAt) }),
       )
     ) {
       return true;
@@ -91,16 +91,12 @@ export class ReminderActionsService {
       kind: TOAST_KIND.Success,
       title:
         remindAt === null
-          ? this.t(pluralKey('reminders.toast.cleared', links.length), {
+          ? this.translate.t(pluralKey('reminders.toast.cleared', links.length), {
               count: String(links.length),
             })
-          : this.t('reminders.toast.set', { when: this.format.when(remindAt) }),
+          : this.translate.t('reminders.toast.set', { when: this.format.when(remindAt) }),
       detail: links.length === 1 ? links[0]?.title : undefined,
     });
     return true;
-  }
-
-  private t(key: string, params?: Record<string, string>): string {
-    return this.transloco.translate(key, params);
   }
 }

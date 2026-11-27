@@ -6,6 +6,7 @@ import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import {
   DialogService,
   TOAST_CLOSE_REASON,
+  TOAST_DURATION_MS,
   TOAST_KIND,
   ToastService,
   type ToastCloseReason,
@@ -17,7 +18,6 @@ import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco
 import { AddLinkDialogService } from './add-link-dialog.service';
 import { LinkActionsService } from './link-actions.service';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
-import { DELETE_UNDO_MS } from '../../../core/undo/models/delete-undo.const';
 import { LINKS_API } from '../models/links-api.const';
 import type { LinksApi } from '../models/links-api.interface';
 import { LINKS_SCOPE } from '../models/links-scope.const';
@@ -143,7 +143,7 @@ describe('LinkActionsService', () => {
       await actions.delete(link(1));
 
       toasts[0].action?.run();
-      await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
+      await vi.advanceTimersByTimeAsync(TOAST_DURATION_MS.Undo);
 
       expect(ids(store)).toEqual(['id-1', 'id-2']);
       expect(api.remove).not.toHaveBeenCalled();
@@ -153,7 +153,7 @@ describe('LinkActionsService', () => {
       const { actions, api } = await setup();
       await actions.delete(link(1));
 
-      await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
+      await vi.advanceTimersByTimeAsync(TOAST_DURATION_MS.Undo);
 
       expect(api.remove).toHaveBeenCalledWith('id-1');
     });
@@ -163,7 +163,7 @@ describe('LinkActionsService', () => {
       api.remove.mockReturnValue(throwError(() => new Error('boom')));
       await actions.delete(link(1));
 
-      await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
+      await vi.advanceTimersByTimeAsync(TOAST_DURATION_MS.Undo);
 
       expect(ids(store)).toEqual(['id-1', 'id-2']);
       expect(toasts[1]).toMatchObject({ kind: TOAST_KIND.Danger });
@@ -305,7 +305,7 @@ describe('LinkActionsService', () => {
 
       expect(toasts[0].title).toBe('Moved to Trash');
       expect(store.isPending('id-9')).toBe(true);
-      await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
+      await vi.advanceTimersByTimeAsync(TOAST_DURATION_MS.Undo);
 
       expect(api.remove).toHaveBeenCalledWith('id-9');
     });
@@ -315,7 +315,7 @@ describe('LinkActionsService', () => {
       await actions.delete(link(9));
 
       toasts[0].action?.run();
-      await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
+      await vi.advanceTimersByTimeAsync(TOAST_DURATION_MS.Undo);
 
       expect(store.isPending('id-9')).toBe(false);
       expect(api.remove).not.toHaveBeenCalled();

@@ -1,14 +1,11 @@
 import { inject, Service } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { normalizeRuleDomain, type RuleResponse } from '@shelfmark/contracts';
 import {
   DIALOG_SIZE,
   DIALOG_VARIANT,
   DialogService,
-  TOAST_DURATION_MS,
   TOAST_KIND,
   ToastService,
-  toastShortcutLabel,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { UndoToastService } from '../../../core/undo/undo-toast.service';
@@ -18,6 +15,7 @@ import { RulesStore } from '../../../stores/rules.store';
 import { RuleDialogComponent } from '../components/rule-dialog/rule-dialog.component';
 import type { RuleDialogData } from '../models/rule-dialog-data.interface';
 import { RuleApplyService } from './rule-apply.service';
+import { Translate } from '../../../core/i18n/translate.service';
 
 /**
  * What can be done with a domain rule (#398): add (also prefilled from a link's menu), edit,
@@ -32,7 +30,7 @@ export class RuleActionsService {
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly undoToast = inject(UndoToastService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly translate = inject(Translate);
 
   /** "Add rule", or "Create a rule for youtube.com…" with the domain of a link. */
   async create(url?: string): Promise<RuleResponse | null> {
@@ -47,8 +45,8 @@ export class RuleActionsService {
     if (this.store.atLimit()) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('rules.limit.title'),
-        detail: this.t('rules.dialog.limit'),
+        title: this.translate.t('rules.limit.title'),
+        detail: this.translate.t('rules.dialog.limit'),
       });
       return null;
     }
@@ -56,7 +54,7 @@ export class RuleActionsService {
     if (rule) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('rules.created.title'),
+        title: this.translate.t('rules.created.title'),
         detail: this.describe(rule),
       });
     }
@@ -68,7 +66,7 @@ export class RuleActionsService {
     if (saved) {
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        title: this.t('rules.saved.title'),
+        title: this.translate.t('rules.saved.title'),
         detail: this.describe(saved),
       });
     }
@@ -81,9 +79,9 @@ export class RuleActionsService {
       return;
     }
     this.undoToast.show({
-      title: this.t('rules.deleted.title'),
+      title: this.translate.t('rules.deleted.title'),
       detail: rule.domain,
-      actionLabel: this.t('rules.undo'),
+      actionLabel: this.translate.t('rules.undo'),
       onUndo: () => this.store.putBack(rule),
       onExpire: () => void this.commitDelete(rule),
     });
@@ -99,20 +97,25 @@ export class RuleActionsService {
     if (found.total === 0) {
       this.toasts.show({
         kind: TOAST_KIND.Info,
-        title: this.t('rules.apply.none', { domain: rule.domain }),
+        title: this.translate.t('rules.apply.none', { domain: rule.domain }),
       });
       return;
     }
     const count = found.items.length;
     const confirmed = await this.dialogs.confirm({
-      title: this.t('rules.apply.title', { domain: rule.domain }),
+      title: this.translate.t('rules.apply.title', { domain: rule.domain }),
       message: [
-        this.t(pluralKey('rules.apply.message', count), { count, target: this.describe(rule) }),
-        ...(found.total > count ? [this.t('rules.apply.more', { total: found.total })] : []),
+        this.translate.t(pluralKey('rules.apply.message', count), {
+          count,
+          target: this.describe(rule),
+        }),
+        ...(found.total > count
+          ? [this.translate.t('rules.apply.more', { total: found.total })]
+          : []),
       ].join(' '),
-      confirmLabel: this.t(pluralKey('rules.apply.confirm', count), { count }),
-      cancelLabel: this.t('rules.apply.cancel'),
-      closeLabel: this.t('rules.dialog.close'),
+      confirmLabel: this.translate.t(pluralKey('rules.apply.confirm', count), { count }),
+      cancelLabel: this.translate.t('rules.apply.cancel'),
+      closeLabel: this.translate.t('rules.dialog.close'),
     });
     if (!confirmed) {
       return;
@@ -121,22 +124,18 @@ export class RuleActionsService {
       this.failed('rules.apply.failed');
       return;
     }
-    const undo = this.t('rules.undo');
-    this.toasts.show({
+    const undo = this.translate.t('rules.undo');
+    this.undoToast.show({
       kind: TOAST_KIND.Success,
-      title: this.t(pluralKey('rules.apply.done', count), { count }),
+      title: this.translate.t(pluralKey('rules.apply.done', count), { count }),
       detail: this.describe(rule),
-      duration: TOAST_DURATION_MS.Undo,
-      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
-      action: {
-        label: undo,
-        run: () =>
-          void this.applier.undo(rule, found.items).then((done) => {
-            if (!done) {
-              this.failed('rules.apply.undoFailed');
-            }
-          }),
-      },
+      actionLabel: undo,
+      onUndo: () =>
+        void this.applier.undo(rule, found.items).then((done) => {
+          if (!done) {
+            this.failed('rules.apply.undoFailed');
+          }
+        }),
     });
   }
 
@@ -145,7 +144,7 @@ export class RuleActionsService {
     const folderId = this.applier.folderOf(rule);
     const folder = folderId === null ? null : (this.folders.entityMap()[folderId]?.name ?? null);
     const parts = [...(folder === null ? [] : [folder]), ...rule.tags.map((tag) => `#${tag}`)];
-    return this.t('rules.describe', { domain: rule.domain, target: parts.join(', ') });
+    return this.translate.t('rules.describe', { domain: rule.domain, target: parts.join(', ') });
   }
 
   private async open(data: RuleDialogData): Promise<RuleResponse | null> {
@@ -165,10 +164,6 @@ export class RuleActionsService {
   }
 
   private failed(key: string): void {
-    this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t(key) });
-  }
-
-  private t(key: string, params?: Record<string, unknown>): string {
-    return this.transloco.translate(key, params);
+    this.toasts.show({ kind: TOAST_KIND.Danger, title: this.translate.t(key) });
   }
 }
