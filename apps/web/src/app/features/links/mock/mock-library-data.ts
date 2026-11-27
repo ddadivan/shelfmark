@@ -5,6 +5,7 @@ import {
   FOLDER_DELETE_MODE,
   PIN_KIND,
   SAVED_VIEW_SCOPE,
+  linkCapFor,
   TRASH_ITEM_KIND,
   TRASH_RETENTION_DEFAULT,
   type FolderDeleteMode,
@@ -32,7 +33,7 @@ import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scen
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { savedWithin } from '../utils/filter-params';
 import { matchesQuery } from '../utils/search-query';
-import { buildDemoLibrarySeed, usesDemoLibrary } from './demo-library-seed';
+import { buildDemoLibrarySeed, isDemoMockSession, usesDemoLibrary } from './demo-library-seed';
 import { generateMockLinks } from './generate-mock-links';
 import { withMockPreviews } from './with-mock-previews';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
@@ -90,6 +91,21 @@ export class MockLibraryData {
 
   /** The links each mock import created, by import id (the Tidy review of one import reads it). */
   readonly importLinkIds = new Map<string, ReadonlySet<string>>();
+
+  /** Whether this is the demo account, which has the smaller link cap. */
+  readonly isDemo = isDemoMockSession();
+
+  /**
+   * How many more links the account can hold, like the API's `linkRoom`: Trash counts toward the
+   * cap (ADR 0036), the links of a trashed folder too.
+   */
+  linkRoom(): number {
+    const trashed = this.trash.reduce(
+      (sum, entry) => sum + (entry.kind === TRASH_ITEM_KIND.Link ? 1 : entry.links.length),
+      0,
+    );
+    return linkCapFor(this.isDemo) - this.links.length - trashed;
+  }
 
   /** The mock Trash, newest first. */
   trash: MockTrashEntry[] = this.seedTrash();

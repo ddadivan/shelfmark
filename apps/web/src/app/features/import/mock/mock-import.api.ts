@@ -11,7 +11,6 @@ import {
   IMPORT_ERROR_MESSAGE,
   IMPORT_LIMIT,
   LINK_BATCH_ERROR_CODE,
-  LINK_LIMIT,
   linkLimitMessage,
   SUGGESTION_KIND,
   SUGGESTION_STATE,
@@ -107,7 +106,7 @@ export class MockImportApi implements ImportApi {
       const indexes = urls.flatMap((url, index) => (saved.has(normalizeUrl(url)) ? [index] : []));
       return of({
         saved: indexes,
-        room: Math.max(0, LINK_LIMIT.PerUserMax - this.data.links.length),
+        room: Math.max(0, this.data.linkRoom()),
       });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
@@ -222,13 +221,9 @@ export class MockImportApi implements ImportApi {
         return throwError(() => new Error('Mock: import batch failed'));
       }
       const fresh = request.items.filter((item) => !this.created.has(item.idempotencyKey));
-      if (this.data.links.length + fresh.length > LINK_LIMIT.PerUserMax) {
-        return throwError(() =>
-          mockHttpError(
-            HttpStatusCode.Conflict,
-            linkLimitMessage(LINK_LIMIT.PerUserMax - this.data.links.length),
-          ),
-        );
+      const room = this.data.linkRoom();
+      if (fresh.length > room) {
+        return throwError(() => mockHttpError(HttpStatusCode.Conflict, linkLimitMessage(room)));
       }
       const known = new Set(this.data.tagList.map((tag) => tag.name.toLowerCase()));
       const errors: LinkBatchItemError[] = [];
