@@ -102,3 +102,33 @@
   margin-inline-start: auto;
   color: var(--text-muted);
 }
+
+// The loading tile: the loaded tile's own parts as plain boxes, so it is as tall and the data
+// replaces it in place. The bars sit in the line boxes of the real text (22px title, 16px reason).
+.today-back__sk-thumb {
+  --ui-skeleton-width: #{rem(72px)};
+  --ui-skeleton-height: #{rem(56px)};
+  --ui-skeleton-radius: var(--radius-sm);
+
+  flex: none;
+}
+
+.today-back__sk-title {
+  --ui-skeleton-width: 70%;
+  --ui-skeleton-height: #{rem(12px)};
+
+  padding-block: rem(5px);
+}
+
+.today-back__sk-why {
+  --ui-skeleton-width: 45%;
+  --ui-skeleton-height: #{rem(10px)};
+
+  padding-block: rem(3px);
+}
+
+.today-back__sk-action {
+  --ui-skeleton-width: #{rem(32px)};
+  --ui-skeleton-height: #{rem(32px)};
+  --ui-skeleton-radius: var(--radius-full);
+}

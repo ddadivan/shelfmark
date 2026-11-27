@@ -10,6 +10,8 @@ import {
   MenuItemComponent,
   MenuSeparatorComponent,
   MenuTriggerDirective,
+  SKELETON_SHAPE,
+  SkeletonComponent,
 } from '@shelfmark/ui';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { APP_PATH } from '../../../../models/app-path.const';
@@ -37,6 +39,7 @@ import { TodayThumbComponent } from '../today-thumb/today-thumb.component';
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
+    SkeletonComponent,
     TodayThumbComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,12 +50,15 @@ export class TodayBackComponent {
   readonly links = input.required<readonly LinkResponse[]>();
   /** All due reminders (the tiles show the first few). */
   readonly count = input.required<number>();
+  /** False while the reminders load: one placeholder tile holds the place of the list. */
+  readonly loaded = input(true);
 
   private readonly reminders = inject(ReminderActionsService);
   private readonly format = inject(ReminderFormatService);
   private readonly actions = inject(LinkActionsService);
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly remindersHref = `/${APP_PATH.Revisit}`;
   protected readonly safeHref = safeHref;
 

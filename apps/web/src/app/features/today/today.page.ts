@@ -20,6 +20,9 @@ import { TodayShelfComponent } from './components/today-shelf/today-shelf.compon
 import { TodayWeekComponent } from './components/today-week/today-week.component';
 import { TodayStore } from './services/today.store';
 
+/** Placeholder cards of "All links": the page loads up to eight (`TODAY_LIMIT.Latest`). */
+const SKELETON_COUNT = 8;
+
 /**
  * Today (Shelf `01-library.html`, route `APP_PATH.Today`): the day's date, then "Back to these"
  * (due reminders), "Saved this week" beside "From your shelf" (one column below 64em), and the
@@ -46,6 +49,7 @@ import { TodayStore } from './services/today.store';
   styleUrl: './today.page.scss',
 })
 export default class TodayPage {
+  protected readonly SKELETON_COUNT = SKELETON_COUNT;
   protected readonly store = inject(TodayStore);
   protected readonly chips = inject(FolderChipsService);
   protected readonly actions = inject(LinkActionsService);

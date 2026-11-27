@@ -36,6 +36,10 @@
   }
   if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
   if (demo) root.setAttribute('data-boot-demo', '');
+  // The main area of the page the address leads to (styles in src/_boot-skeleton.scss); every other
+  // address keeps the library's.
+  const page = bootPage();
+  if (page) root.setAttribute('data-boot-page', page);
   if (extensionBanner()) root.setAttribute('data-boot-extension', '');
   if (extensionRow()) root.setAttribute('data-boot-extension-row', '');
   root.setAttribute('data-boot-skeleton', '');
@@ -43,6 +47,14 @@
     const left = document.querySelector('[data-app-skeleton]');
     if (left) left.remove();
   }, MAX_MS);
+
+  /** The page variant of the skeleton's main area, or null for the library (`APP_PATH`). */
+  function bootPage() {
+    if (path === '/today') return 'today';
+    if (path === '/recent') return 'recent';
+    if (path === '/trash') return 'trash';
+    return null;
+  }
 
   /**
    * As `BrowserExtensionService.offered` and `ExtensionBannerService.bannerShown`: a library page

@@ -11,8 +11,12 @@
       >{{ 'today.retry' | transloco }}</ui-button
     >
   </ui-notice>
-  } @else if (store.backLoaded()) {
-  <app-today-back [links]="store.back()" [count]="store.backCount()" />
+  } @else {
+  <app-today-back
+    [links]="store.back()"
+    [count]="store.backCount()"
+    [loaded]="store.backLoaded()"
+  />
   }
 
   <div class="today__two">
@@ -44,7 +48,7 @@
     </ui-notice>
     } @else if (!store.latestLoaded()) {
     <div class="today__cards" aria-hidden="true">
-      <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="4" />
+      <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
     </div>
     } @else {
     <ul class="today__cards today__cards--masonry">

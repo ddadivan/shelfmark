@@ -1,13 +1,30 @@
 <section class="today-section" aria-labelledby="today-back-title">
   <div class="today-section__head">
     <h2 id="today-back-title" class="today-section__title">{{ 'today.back.title' | transloco }}</h2>
-    <span class="today-section__count">{{ count() }}</span>
-    <a class="today-section__more" [routerLink]="remindersHref">
-      {{ 'today.back.more' | transloco }}
-      <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
-    </a>
+    @if (loaded()) {
+      <span class="today-section__count">{{ count() }}</span>
+      <a class="today-section__more" [routerLink]="remindersHref">
+        {{ 'today.back.more' | transloco }}
+        <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
+      </a>
+    }
   </div>
-  @if (links().length > 0) {
+  @if (!loaded()) {
+    <!-- One tile of the loaded list (72 x 56 preview, title and reason, the two buttons), same size. -->
+    <div class="today-back" aria-hidden="true">
+      <div class="today-back__item">
+        <ui-skeleton class="today-back__sk-thumb" [shape]="SKELETON_SHAPE.Block" />
+        <div class="today-back__text">
+          <ui-skeleton class="today-back__sk-title" [shape]="SKELETON_SHAPE.Block" />
+          <ui-skeleton class="today-back__sk-why" [shape]="SKELETON_SHAPE.Block" />
+        </div>
+        <div class="today-back__actions">
+          <ui-skeleton class="today-back__sk-action" [shape]="SKELETON_SHAPE.Block" />
+          <ui-skeleton class="today-back__sk-action" [shape]="SKELETON_SHAPE.Block" />
+        </div>
+      </div>
+    </div>
+  } @else if (links().length > 0) {
     <ul class="today-back">
       @for (link of links(); track link.id) {
         <li class="today-back__item">

@@ -103,8 +103,12 @@ import { SearchGoToComponent } from '../search/components/search-go-to/search-go
 import { SearchMeaningComponent } from '../search/components/search-meaning/search-meaning.component';
 import { SearchQuestionHintComponent } from '../search/components/search-question-hint/search-question-hint.component';
 
-/** Number of placeholders shown while the first page loads. */
-const SKELETON_COUNT = 8;
+/**
+ * Number of placeholders shown while the first page loads: cards are about 340px tall, so 36 fill
+ * four rows of nine columns, enough to reach the bottom of a 1440p screen (the grid clips at the
+ * viewport height, `library__grid--skeleton`).
+ */
+const SKELETON_COUNT = 36;
 
 /**
  * The links feed of one scope (all, unsorted, favorites; the route data sets `scope`): a toolbar

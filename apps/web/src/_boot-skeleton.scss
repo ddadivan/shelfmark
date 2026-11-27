@@ -465,7 +465,7 @@
 
   // Phone: the 8px gap, the 44px control row (picker and tools) and 12px above the feed.
   @include phone {
-    margin-block-end: rem(44px);
+    margin-block-end: rem(32px);
   }
 
   @include desktop {
@@ -494,34 +494,41 @@
   }
 }
 
-// The feed: the same fluid columns as the library grid (one column on a phone). A card is the
-// library skeleton's card (`ui-skeleton` card, Shelf 14-system `y-skc`): a `fill` card, radius 16,
-// the full-bleed 16:9 preview, then the 14px title lines (85%, 55%) and the 10px meta line (40%) in
-// 12px of padding: about 230px at 1440px, as tall as the loading feed's, so skeleton to skeleton
-// does not jump. The grid shows only the cards of the rows that fit (four at most).
+// The feed: the same fluid columns as the library grid (two columns on a phone, as the library's
+// own). A card is the library skeleton's card (`ui-skeleton` card, which repeats `ui-card`): a
+// `fill` card, radius 16, the full-bleed 4:3 preview, then the body in the card's padding and gap:
+// the date line (16px), two title lines (24px each), the source row (the 16px favicon and the host)
+// and the tag row (8px above 16px chips). 268px wide that is about 340px tall, as a typical real
+// card, so skeleton to skeleton and skeleton to cards do not jump. The grid shows only the cards of
+// the rows that fit (four at most: four rows of cards reach past the bottom of any screen).
 .boot__grid {
   display: grid;
-  gap: var(--density-feed-gap, var(--space-4));
-  overflow: hidden;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
 
-  @media (width > 120em) {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.25rem), 1fr));
+  // The loaded masonry's own columns (`--library-column`, 13.75rem) and gaps (a tenth of the
+  // column, 12 to 28px: 22px), so the cards stand where the loaded ones do.
+  gap: clamp(0.75rem, calc(13.75rem * 0.1), 1.75rem);
+  overflow: hidden;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
+  container: boot-feed / inline-size;
+
+  @include phone {
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 // Only the cards of the four visible rows are rendered: every card sweeps, and 48 sweeping cards
 // kept a slow machine busy before the app could render. The columns follow the grid's own width
-// (column minimum plus the 1rem gap per column).
-@mixin boot-visible-cards($column-em) {
+// (column minimum plus the 1.375rem gap per column).
+@mixin boot-visible-cards($column-em, $gap-em) {
   @for $columns from 1 through 12 {
     $from: 0;
 
     @if $columns > 1 {
-      $from: $columns * ($column-em + 1) - 1;
+      $from: $columns * ($column-em + $gap-em) - $gap-em;
     }
 
-    $to: ($columns + 1) * ($column-em + 1) - 1;
+    $to: ($columns + 1) * ($column-em + $gap-em) - $gap-em;
 
     @container boot-feed (width >= #{$from}em) and (width < #{$to}em) {
       .boot__card:nth-child(n + #{4 * $columns + 1}) {
@@ -531,16 +538,15 @@
   }
 }
 
-.boot__grid {
-  container: boot-feed / inline-size;
+// Two columns on a phone: eight cards are the four rows.
+@media (width >= 40em) {
+  @include boot-visible-cards(13.75, 1.375);
 }
 
-@media (width <= 120em) {
-  @include boot-visible-cards(14.25);
-}
-
-@media (width > 120em) {
-  @include boot-visible-cards(16.25);
+@include phone {
+  .boot__grid .boot__card:nth-child(n + 9) {
+    display: none;
+  }
 }
 
 .boot__card {
@@ -552,15 +558,41 @@
 }
 
 .boot__media {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   border-radius: 0;
 }
 
 .boot__card-body {
   display: flex;
   flex-direction: column;
+  gap: var(--density-card-gap);
+  padding: var(--density-card-padding);
+}
+
+// One line box of the real text (caption 16px, body 24px) with a thinner bar centred in it.
+.boot__card-row {
+  display: flex;
+  align-items: center;
+}
+
+.boot__card-row--meta,
+.boot__card-row--source {
+  block-size: rem(16px);
+}
+
+.boot__card-row--title {
+  block-size: rem(24px);
+}
+
+.boot__card-row--source {
   gap: var(--space-2);
-  padding: var(--space-3);
+  margin-block-start: rem(2px);
+}
+
+.boot__card-row--tags {
+  gap: var(--space-1) var(--space-3);
+  align-items: flex-end;
+  padding-block-start: var(--space-2);
 }
 
 .boot__line {
@@ -578,6 +610,29 @@
 .boot__line--meta {
   width: 40%;
   height: rem(10px);
+}
+
+.boot__favicon {
+  flex: none;
+  width: rem(16px);
+  height: rem(16px);
+  border-radius: var(--radius-full);
+}
+
+.boot__host {
+  flex: 0 1 45%;
+  height: rem(10px);
+}
+
+.boot__chip {
+  flex: none;
+  width: rem(48px);
+  height: rem(16px);
+  border-radius: var(--radius-full);
+}
+
+.boot__chip--short {
+  width: rem(36px);
 }
 
 // The floating tab bar of the mobile shell (ui-tab-bar: 8px from the sides, 8px above the
@@ -611,4 +666,553 @@
 .boot__tab--add {
   width: rem(52px);
   height: rem(52px);
+}
+
+// Pages ---------------------------------------------------------------------------------------
+// The main area of the other pages (`html[data-boot-page]`, set by `public/boot-skeleton.js`):
+// each repeats the in-app skeleton of its page (`today.page`, `recent-history`, `trash.page`), which
+// reuse the loaded page's own boxes, so the page replaces it without a jump. The library blocks
+// (`.boot__lib`) are left out. The shell's main column has 24px on top on a desktop, 16px below
+// 64em, and every page starts 8px under that.
+.boot__page {
+  display: none;
+  flex-direction: column;
+  inline-size: 100%;
+  padding-block-start: var(--space-2);
+  margin-inline: auto;
+}
+
+:root[data-boot-page] .boot__lib {
+  display: none;
+}
+
+:root[data-boot-page='today'] .boot__today,
+:root[data-boot-page='recent'] .boot__recent,
+:root[data-boot-page='trash'] .boot__trash {
+  display: flex;
+}
+
+:root[data-boot-page] .boot__main {
+  @include desktop {
+    padding-block-start: var(--space-6);
+
+    // The real main column keeps the room of its scrollbar (`scrollbar-gutter: stable`), which
+    // moves the centred pages by half of it. The library fits and scrolls only its list.
+    scrollbar-gutter: stable;
+  }
+}
+
+// Today (today.page.scss): the head, "Back to these", "Saved this week" beside "From your shelf",
+// then the newest links, 32px apart.
+.boot__today {
+  gap: var(--space-8);
+  max-inline-size: rem(2400px);
+}
+
+.boot__today-head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+  block-size: rem(30px);
+  margin-block-end: calc(var(--space-2) * -1);
+}
+
+.boot__today-title {
+  flex: none;
+  width: rem(64px);
+  height: rem(30px);
+}
+
+.boot__today-date {
+  flex: none;
+  width: rem(130px);
+  height: rem(12px);
+  margin-block-end: rem(5px);
+}
+
+.boot__sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+// The heading line of a part (18px, 1.25): a bar centred in it.
+.boot__sec-head {
+  display: flex;
+  align-items: center;
+  block-size: calc(var(--font-size-section) * 1.25);
+}
+
+.boot__sec-title {
+  width: rem(110px);
+  height: rem(14px);
+}
+
+.boot__sec-title--week {
+  width: rem(130px);
+}
+
+.boot__sec-title--shelf {
+  width: rem(116px);
+}
+
+.boot__sec-title--all {
+  width: rem(76px);
+}
+
+.boot__back {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @include compact {
+    gap: var(--space-3);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// The one tile: the 72 x 56 preview, the title and the reason, the Done and Snooze buttons.
+.boot__back-item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.boot__back-thumb {
+  flex: none;
+  width: rem(72px);
+  height: rem(56px);
+  border-radius: var(--radius-sm);
+}
+
+.boot__back-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.boot__back-line {
+  width: 70%;
+  height: rem(12px);
+  margin-block: rem(5px);
+}
+
+.boot__back-why {
+  width: 45%;
+  height: rem(10px);
+  margin-block: rem(3px);
+}
+
+.boot__back-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  @include compact {
+    flex-direction: row;
+    align-self: center;
+  }
+}
+
+.boot__back-action {
+  width: rem(32px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__two {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+
+  @include compact {
+    gap: var(--space-8);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.boot__box {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+// "Saved this week": four rows of the 48 x 36 preview, the title and "to folder", 52px high.
+.boot__week-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-block-size: rem(52px);
+  padding: var(--space-2) var(--space-4);
+
+  & + & {
+    border-block-start: 1px solid var(--sep);
+  }
+
+  @include phone {
+    flex-wrap: wrap;
+    row-gap: rem(2px);
+    padding-inline: var(--space-3);
+  }
+}
+
+.boot__week-thumb {
+  flex: none;
+  width: rem(48px);
+  height: rem(36px);
+  border-radius: var(--radius-sm);
+}
+
+.boot__week-title {
+  flex: 1 1 0;
+  height: rem(12px);
+  max-inline-size: 42%;
+
+  @include phone {
+    flex-basis: calc(100% - #{rem(60px)});
+    max-inline-size: none;
+  }
+}
+
+.boot__week-to {
+  flex: none;
+  margin-inline-start: auto;
+
+  @include phone {
+    flex: 1 1 100%;
+    padding-block: rem(7px);
+    margin-inline-start: rem(60px);
+  }
+}
+
+.boot__week-to-bar {
+  width: rem(88px);
+  height: rem(10px);
+}
+
+// "From your shelf": the 16:7 preview, the saved line, the title and the three buttons.
+.boot__shelf {
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.boot__shelf-cover {
+  aspect-ratio: 16 / 7;
+  border-radius: var(--radius-sm);
+}
+
+.boot__shelf-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.boot__shelf-meta {
+  display: flex;
+  align-items: center;
+  block-size: rem(16px);
+}
+
+.boot__shelf-meta-bar {
+  width: rem(128px);
+  height: rem(10px);
+}
+
+.boot__shelf-title {
+  display: flex;
+  align-items: center;
+  block-size: calc(var(--font-size-section) * 1.3);
+  margin: var(--space-1) 0 var(--space-1-5);
+}
+
+.boot__shelf-title-bar {
+  width: 70%;
+  height: rem(16px);
+}
+
+.boot__shelf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.boot__shelf-button {
+  width: rem(72px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+
+  &:nth-child(2) {
+    width: rem(104px);
+  }
+
+  &:nth-child(3) {
+    width: rem(120px);
+  }
+}
+
+// The newest links: the same columns as the page's own grid (13.75rem columns, 20px gaps; three
+// on a tablet, two on a phone).
+.boot__today-cards {
+  display: grid;
+  gap: rem(20px);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
+
+  @include tablet {
+    gap: var(--space-4);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include phone {
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+// Recent (recent.page.scss, recent-history): one 960px column, the title and the switch, the kind
+// chips and the search, then the day groups of flat rows.
+.boot__recent {
+  gap: var(--space-6);
+  max-inline-size: rem(960px);
+}
+
+.boot__recent-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+// The title (30px) and the empty count line (4px above 16px) stand in one box of the heading.
+.boot__recent-title {
+  width: rem(177px);
+  height: rem(30px);
+  margin-block-end: rem(20px);
+}
+
+.boot__recent-switch {
+  width: rem(176px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__recent-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.boot__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: var(--space-6);
+}
+
+.boot__tools-chips {
+  flex: 0 1 rem(320px);
+  height: rem(28px);
+  border-radius: var(--radius-full);
+}
+
+.boot__tools-search {
+  flex: 0 1 rem(260px);
+  height: rem(40px);
+  border-radius: var(--radius-full);
+
+  @include phone {
+    flex-basis: 100%;
+  }
+}
+
+.boot__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.boot__hgroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+// The day heading (a 16px line; the group title of a card group is 22px): a short bar in it.
+.boot__hgroup-title {
+  display: flex;
+  align-items: center;
+  block-size: rem(16px);
+}
+
+.boot__hgroup-bar {
+  width: rem(64px);
+  height: rem(10px);
+}
+
+.boot__hlist {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+}
+
+// A history row (`ui-history-row`): 14px gaps, 10px / 14px padding, the 72 x 48 preview (56 x 40 in
+// the flat groups of the Recent page, 48 wide on a phone), two lines, the time at the end.
+.boot__hrow {
+  display: flex;
+  gap: rem(14px);
+  align-items: center;
+  padding: var(--space-2-5) rem(14px);
+
+  @include phone {
+    gap: var(--space-3);
+    min-height: rem(60px);
+    padding: var(--space-2) var(--space-1-5);
+  }
+}
+
+.boot__hrow-check {
+  flex: none;
+  width: rem(20px);
+  height: rem(20px);
+}
+
+.boot__hrow-preview {
+  flex: none;
+  width: rem(72px);
+  height: rem(48px);
+}
+
+.boot__groups--flat .boot__hrow-preview {
+  width: rem(56px);
+  height: rem(40px);
+}
+
+.boot__hrow-preview,
+.boot__groups--flat .boot__hrow-preview {
+  @include phone {
+    width: rem(48px);
+  }
+}
+
+.boot__hrow-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.boot__hrow-title {
+  height: rem(14px);
+  width: 62%;
+}
+
+.boot__hrow-meta {
+  height: rem(10px);
+  width: 22%;
+}
+
+.boot__hrow-trail {
+  flex: none;
+  width: rem(64px);
+  height: rem(12px);
+}
+
+.boot__hlist > :nth-child(3n + 2) {
+  .boot__hrow-title {
+    width: 48%;
+  }
+
+  .boot__hrow-meta {
+    width: 18%;
+  }
+}
+
+.boot__hlist > :nth-child(3n) {
+  .boot__hrow-title {
+    width: 56%;
+  }
+
+  .boot__hrow-meta {
+    width: 26%;
+  }
+}
+
+// Trash (trash.page.scss): one 880px column, on a phone the way back above the title, then the
+// filter and the group card.
+.boot__trash {
+  gap: var(--space-4);
+  max-inline-size: rem(880px);
+}
+
+.boot__trash-top {
+  display: none;
+  align-items: center;
+  block-size: rem(40px);
+  margin-block-end: calc(-1 * var(--space-3));
+
+  @include compact {
+    display: flex;
+  }
+}
+
+.boot__trash-back {
+  width: rem(103px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__trash-head {
+  display: flex;
+  align-items: center;
+  block-size: rem(30px);
+}
+
+.boot__trash-title {
+  width: rem(59px);
+  height: rem(30px);
+}
+
+.boot__trash-sk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.boot__trash-filter {
+  width: rem(256px);
+  height: rem(32px);
+  border-radius: var(--radius-md);
+}
+
+// The card group: a 22px title, a card of rows 6px in from its edge.
+.boot__hgroup--card {
+  .boot__hgroup-title {
+    block-size: rem(22px);
+    padding-inline-start: var(--space-1);
+  }
+
+  .boot__hlist {
+    padding: var(--space-1-5);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+
+  .boot__hrow-check {
+    @include compact {
+      display: none;
+    }
+  }
 }
