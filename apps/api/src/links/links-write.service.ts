@@ -8,6 +8,7 @@ import {
   LINK_LIMIT,
   deriveLinkKind,
   linkSiteKey,
+  linkTitleSortKey,
   normalizeUrl,
   LINK_ERROR_MESSAGE,
   type CreateLinkRequest,
@@ -41,6 +42,7 @@ import { toLinkResponse } from './to-link-response';
 import { requireLiveLink } from './link-ownership';
 import { assertLinkQuotaFits } from './link-quota';
 import { assertTagNamesFit } from './validation/assert-tag-names-fit';
+import { buildLinkDerivedColumns } from './build-link-derived-columns';
 
 /** Time of the request kept free for the response after a capture. */
 const CREATE_RESPONSE_MARGIN_MS = 1_000;
@@ -154,11 +156,8 @@ export class LinksWriteService {
             userId,
             folderId: request.folderId ?? rule?.folderId ?? null,
             url,
-            normalizedUrl,
             title: finalTitle,
-            titleSortKey: finalTitle.toLowerCase(),
-            host: linkSiteKey(url),
-            kind,
+            ...buildLinkDerivedColumns(url, finalTitle, { normalizedUrl, kind }),
             note: noteOrNull(request.note),
             ...userSummary(request.summary),
             faviconSourceUrl,
@@ -440,7 +439,7 @@ export class LinksWriteService {
     }
     if (request.title !== undefined) {
       data.title = request.title;
-      data.titleSortKey = request.title.toLowerCase();
+      data.titleSortKey = linkTitleSortKey(request.title);
     }
     if (request.note !== undefined) data.note = noteOrNull(request.note);
     if (request.folderId !== undefined) data.folderId = request.folderId;

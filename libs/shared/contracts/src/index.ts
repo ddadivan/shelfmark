@@ -62,6 +62,7 @@ export { toVideoEmbedUrl } from './links/to-video-embed-url';
 export { LINK_ERROR_MESSAGE } from './links/link-error-message.const';
 export { LINK_LIMIT } from './links/link-limit.const';
 export { linkCapFor } from './links/link-cap-for';
+export { linkTitleSortKey } from './links/link-title-sort-key';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
 
 export type { FolderResponse } from './folders/folder-response.interface';

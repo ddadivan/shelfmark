@@ -1,7 +1,7 @@
-import { linkSiteKey, normalizeUrl } from '@shelfmark/contracts';
 import { escapeLike } from '../src/common/util/escape-like';
 import type { PrismaService } from '../src/prisma/prisma.service';
 import type { SeedLinkOptions } from './models/seed-link-options.interface';
+import { buildLinkDerivedColumns } from '../src/links/build-link-derived-columns';
 
 let counter = 0;
 
@@ -27,14 +27,11 @@ export async function seedLink(
     data: {
       userId,
       url,
-      normalizedUrl: normalizeUrl(url),
       title,
-      titleSortKey: title.toLowerCase(),
-      host: linkSiteKey(url),
+      ...buildLinkDerivedColumns(url, title, { kind: options.kind }),
       note: options.note ?? null,
       folderId: options.folderId ?? null,
       isFavorite: options.isFavorite ?? false,
-      ...(options.kind === undefined ? {} : { kind: options.kind }),
       lastOpenedAt: options.lastOpenedAt ?? null,
       idempotencyKey: options.idempotencyKey ?? null,
       ...(options.createdAt === undefined ? {} : { createdAt: options.createdAt }),

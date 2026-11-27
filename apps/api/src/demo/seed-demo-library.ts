@@ -1,10 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
   AI_JOB_STATUS,
-  deriveLinkKind,
-  linkSiteKey,
   normalizeTagName,
-  normalizeUrl,
   SUGGESTION_KIND,
   SUMMARY_SOURCE,
 } from '@shelfmark/contracts';
@@ -14,6 +11,7 @@ import type { Prisma } from '../generated/prisma/client';
 import { toLinkKind } from '../links/to-link-kind';
 import type { DemoSeed } from './models/demo-seed.interface';
 import { seedDemoEmbeddings } from './seed-demo-embeddings';
+import { buildLinkDerivedColumns } from '../links/build-link-derived-columns';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MS_PER_MINUTE = 60 * 1000;
@@ -96,11 +94,10 @@ export async function seedDemoLibrary(
       userId,
       folderId: link.folder === null ? null : idOfFolder(link.folder),
       url: link.url,
-      normalizedUrl: normalizeUrl(link.url),
       title: link.title,
-      titleSortKey: link.title.toLowerCase(),
-      host: linkSiteKey(link.url),
-      kind: link.kind === undefined ? deriveLinkKind(link.url) : toLinkKind(link.kind),
+      ...buildLinkDerivedColumns(link.url, link.title, {
+        kind: link.kind === undefined ? undefined : toLinkKind(link.kind),
+      }),
       note: link.note ?? null,
       isFavorite: link.isFavorite,
       createdAt: daysAgo(now, link.createdDaysAgo, order),

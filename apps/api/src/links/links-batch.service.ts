@@ -6,8 +6,6 @@ import {
   normalizeUrl,
   type LinkBatchItemError,
   type LinkResponse,
-  deriveLinkKind,
-  linkSiteKey,
 } from '@shelfmark/contracts';
 import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
@@ -32,6 +30,7 @@ import { fallbackTitle } from './title-or-url';
 import { toLinkResponse } from './to-link-response';
 import { assertLinkQuotaFits } from './link-quota';
 import { assertTagNamesFit } from './validation/assert-tag-names-fit';
+import { buildLinkDerivedColumns } from './build-link-derived-columns';
 
 /**
  * Several links at once (paste many, #265). One transaction under the lock order of ADR 0033
@@ -213,12 +212,9 @@ export class LinksBatchService {
           userId,
           folderId,
           url: item.url,
-          normalizedUrl: entry.normalizedUrl,
           title,
-          titleSortKey: title.toLowerCase(),
-          host: linkSiteKey(item.url),
           // Like a single save: the type comes from known hosts (no page is fetched here).
-          kind: deriveLinkKind(item.url),
+          ...buildLinkDerivedColumns(item.url, title, { normalizedUrl: entry.normalizedUrl }),
           faviconSourceUrl: item.faviconUrl ?? null,
           imageSourceUrl: item.imageUrl ?? null,
           captureAttemptedAt: null,
