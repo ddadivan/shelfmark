@@ -7,18 +7,111 @@
   </div>
   <div class="boot__body">
     <div class="boot__sidebar">
-      <span class="boot__block boot__logo"></span>
-      <span class="boot__block boot__row"></span>
-      <span class="boot__block boot__row"></span>
-      <span class="boot__block boot__row"></span>
-      <span class="boot__block boot__row boot__row--folder"></span>
-      <span class="boot__block boot__row boot__row--folder"></span>
-      <span class="boot__block boot__row"></span>
+      <!-- The sidebar of the loaded app (shell + sidebar.component): the logo row with the avatar, the
+             Add link button, the five fixed rows, the Pinned, Folders and Tags groups and the footer. -->
+      <div class="boot__side-head">
+        <span class="boot__block boot__mark"></span>
+        <span class="boot__block boot__wordmark"></span>
+        <span class="boot__block boot__avatar boot__avatar--side"></span>
+      </div>
+      <span class="boot__block boot__add-link"></span>
+      <div class="boot__side-scroll">
+        <div class="boot__nav">
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+        </div>
+        <div class="boot__group">
+          <span class="boot__group-head"><span class="boot__block boot__group-title"></span></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+        </div>
+        <div class="boot__group">
+          <span class="boot__group-head"><span class="boot__block boot__group-title"></span></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+        </div>
+        <div class="boot__group">
+          <span class="boot__group-head"><span class="boot__block boot__group-title"></span></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+          <span class="boot__nav-row"
+            ><span class="boot__block boot__nav-icon"></span
+            ><span class="boot__block boot__nav-name"></span
+            ><span class="boot__block boot__nav-count"></span
+          ></span>
+        </div>
+      </div>
       <div class="boot__footer">
-        <span class="boot__block boot__row"></span>
-        <span class="boot__block boot__row"></span>
-        <span class="boot__divider"></span>
-        <span class="boot__block boot__row"></span>
+        <span class="boot__block boot__card-note"></span>
+        <span class="boot__nav-row boot__nav-row--footer boot__nav-row--extension"
+          ><span class="boot__block boot__nav-icon"></span
+          ><span class="boot__block boot__nav-name"></span
+        ></span>
+        <span class="boot__nav-row boot__nav-row--footer"
+          ><span class="boot__block boot__nav-icon"></span
+          ><span class="boot__block boot__nav-name"></span
+        ></span>
+        <span class="boot__nav-row boot__nav-row--footer"
+          ><span class="boot__block boot__nav-icon"></span
+          ><span class="boot__block boot__nav-name"></span
+        ></span>
       </div>
     </div>
     <div class="boot__content">
@@ -38,12 +131,16 @@
           <span class="boot__extension boot__extension--shown"></span>
         }
         <div class="boot__grid">
-          @for (card of cards; track card) {}
-          <div class="boot__card">
-            <span class="boot__block boot__media"></span
-            ><span class="boot__block boot__line boot__line--long"></span
-            ><span class="boot__block boot__line boot__line--short"></span>
-          </div>
+          @for (card of cards; track card) {
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__card-body"
+                ><span class="boot__block boot__line boot__line--long"></span
+                ><span class="boot__block boot__line boot__line--medium"></span
+                ><span class="boot__block boot__line boot__line--meta"></span
+              ></span>
+            </div>
+          }
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { DOCUMENT } from '@angular/common';
+import { bootAwareLoader } from '../../core/routing/boot-aware-loader';
 import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
 import {
   booleanAttribute,
@@ -13,6 +14,7 @@ import {
   input,
   viewChild,
 } from '@angular/core';
+import { SidebarSkeletonComponent } from './sidebar-skeleton/sidebar-skeleton.component';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -22,14 +24,11 @@ import {
   ButtonComponent,
   ICON_SIZE,
   KEYBOARD_KEY,
-  loaderVisible,
   LogoComponent,
   MENU_FOCUS_EDGE,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
-  SKELETON_SHAPE,
-  SkeletonComponent,
   TooltipDirective,
   TreeComponent,
   UI_TREE_CONTEXT_MENU_TRIGGER,
@@ -92,7 +91,7 @@ import { CurrentUrl } from '../../core/routing/current-url.service';
     RouterLink,
     SidebarPinnedComponent,
     SidebarTagsComponent,
-    SkeletonComponent,
+    SidebarSkeletonComponent,
     TooltipDirective,
     TranslocoPipe,
     TreeComponent,
@@ -121,12 +120,15 @@ export class SidebarComponent {
   protected readonly BADGE_TONE = BADGE_TONE;
   /** Shown as the badge of "What's new" in the data menu while a release is unseen. */
   protected readonly whatsNewPending = this.whatsNew.pending;
-  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   /** The folder list answered (or failed): before that the section stays out, not empty. */
   protected readonly foldersReady = latched(() => this.folders.loaded() || this.folders.error());
   protected readonly tagsReady = latched(() => this.tagsStore.loaded() || this.tagsStore.error());
-  /** Rows of the first load show after 300 ms (Loading spec), never a flash for a fast answer. */
-  protected readonly loaderShown = loaderVisible(computed(() => !this.foldersReady()));
+  protected readonly pinsReady = computed(() => this.pins.loaded() || this.pins.error());
+  /**
+   * Rows of the first load show after 300 ms (Loading spec), never a flash for a fast answer; at
+   * once while the app skeleton hands over (`bootAwareLoader`), so the sidebar is never bare.
+   */
+  protected readonly loaderShown = bootAwareLoader(computed(() => !this.foldersReady()));
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
   readonly showLogo = input(false, { transform: booleanAttribute });
   /**

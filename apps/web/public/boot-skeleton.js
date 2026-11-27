@@ -37,6 +37,7 @@
   if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
   if (demo) root.setAttribute('data-boot-demo', '');
   if (extensionBanner()) root.setAttribute('data-boot-extension', '');
+  if (extensionRow()) root.setAttribute('data-boot-extension-row', '');
   root.setAttribute('data-boot-skeleton', '');
   setTimeout(function () {
     const left = document.querySelector('[data-app-skeleton]');
@@ -59,6 +60,27 @@
     } catch {
       return false;
     }
+    return extensionBrowser();
+  }
+
+  /**
+   * As `ExtensionBannerService.entryShown`: the "Get the extension" row of the sidebar footer takes
+   * the banner's place once it is closed (same browser and desktop window, any page).
+   */
+  function extensionRow() {
+    return matchMedia(DESKTOP_QUERY).matches && extensionBrowser() && extensionBannerClosed();
+  }
+
+  function extensionBannerClosed() {
+    try {
+      return localStorage.getItem(EXTENSION_DISMISSED_KEY) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  /** As `isExtensionBrowser`. */
+  function extensionBrowser() {
     const data = navigator.userAgentData;
     if (data && data.brands && data.brands.length > 0) {
       if (data.mobile || data.platform === 'Android') return false;

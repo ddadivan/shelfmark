@@ -113,13 +113,16 @@
   }
 }
 
-// Sidebar (Shelf 14-system): 240px, full height, the sidebar fill with a hairline edge, the logo
-// block and thin 12px lines of varied length; desktop only.
+// Sidebar (Shelf 14-system, measured on the loaded sidebar at 1440px; shell.component and
+// sidebar.component): 240px, full height, the sidebar fill with a hairline edge, 16px / 12px of
+// padding. The logo row (32px: the 22px mark, the wordmark, the 32px avatar), 24px, the 40px Add
+// link button, 24px, the fixed rows (36px, 1px apart), then the Pinned, Folders and Tags groups
+// (24px gap, `sep` hairline, 16px, a 32px heading row, 36px rows) and the footer at the bottom
+// (the "How it works" card, the extension row, Data & help, Trash); desktop only.
 .boot__sidebar {
   display: none;
   flex: none;
   flex-direction: column;
-  gap: rem(10px);
   align-self: stretch;
   box-sizing: border-box;
   width: rem(240px);
@@ -132,51 +135,183 @@
   }
 }
 
-.boot__logo {
-  width: 50%;
-  height: rem(24px);
-  margin-block-end: var(--space-6);
+.boot__side-head {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  block-size: rem(32px);
+  padding-inline: var(--space-2) var(--space-1);
 }
 
-.boot__row {
-  width: 66%;
-  height: rem(12px);
-  margin-inline-start: var(--space-3);
+.boot__mark {
+  flex: none;
+  width: rem(22px);
+  height: rem(22px);
+  border-radius: var(--radius-tile-sm);
+}
+
+.boot__wordmark {
+  width: rem(74px);
+  height: rem(14px);
   border-radius: var(--radius-full);
+}
 
-  &:nth-child(2) {
-    width: 70%;
-  }
+// The avatar of the sidebar head sits at the end of the row (the top bar's one is `.boot__avatar`).
+.boot__side-head .boot__avatar {
+  margin-inline: auto #{rem(1px)};
+}
 
-  &:nth-child(3) {
-    width: 60%;
-  }
+.boot__add-link {
+  // The real button is 4px in from the start and as wide as the column (it ends 4px past it).
+  flex: none;
+  align-self: flex-start;
+  width: 100%;
+  height: rem(40px);
+  margin-inline-start: var(--space-1);
+  margin-block-start: var(--space-6);
+  border-radius: var(--radius-full);
+}
 
-  &:nth-child(4) {
-    width: 52%;
+// The middle of the sidebar clips like the real scroll area; the footer stays put.
+.boot__side-scroll {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  margin-block-start: var(--space-6);
+  overflow: hidden;
+
+  // The real scroll area keeps 6px at its end for the scrollbar, so its rows are 209px wide.
+  padding-inline-end: var(--space-1-5);
+
+  > * {
+    flex: none;
   }
 }
 
-.boot__row--folder {
-  width: 58%;
-
-  & + & {
-    width: 72%;
-  }
-}
-
-// The sidebar footer at the bottom of the card (#335): "What's new" and "Send feedback", then Trash
-// under a divider.
-.boot__footer {
+.boot__nav,
+.boot__group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin-block-start: auto;
+  gap: rem(1px);
 }
 
-.boot__divider {
-  display: block;
+.boot__group {
+  padding-block-start: var(--space-4);
+  margin-block-start: var(--space-6);
   border-block-start: 1px solid var(--sep);
+}
+
+// "Pinned" / "Folders" / "Tags": a 32px row with a short bar 8px from the start.
+.boot__group-head {
+  display: flex;
+  align-items: center;
+  block-size: rem(32px);
+  padding-inline-start: var(--space-2);
+}
+
+.boot__group-title {
+  width: rem(40px);
+  height: rem(10px);
+  border-radius: var(--radius-full);
+}
+
+.boot__group:nth-child(2) .boot__group-title {
+  width: rem(36px);
+}
+
+.boot__group:nth-child(4) .boot__group-title {
+  width: rem(24px);
+}
+
+// A row of the tree: 36px, the 16px icon 12px from the start (14px in the fixed rows), the name and
+// the count 14px from the end.
+.boot__nav-row {
+  display: flex;
+  flex: none;
+  gap: var(--space-3);
+  align-items: center;
+  block-size: rem(36px);
+  padding-inline: var(--space-3) rem(14px);
+
+  .boot__nav > & {
+    padding-inline-start: rem(14px);
+  }
+}
+
+.boot__nav-icon {
+  flex: none;
+  width: rem(16px);
+  height: rem(16px);
+  border-radius: var(--radius-sm);
+}
+
+.boot__nav-name {
+  flex: none;
+  width: 58%;
+  height: rem(12px);
+  border-radius: var(--radius-full);
+}
+
+.boot__nav-count {
+  flex: none;
+  width: rem(8px);
+  height: rem(12px);
+  margin-inline-start: auto;
+  border-radius: var(--radius-full);
+}
+
+// Name widths vary like text; the fourth folder is nested (the real tree indents it).
+.boot__nav-row:nth-child(2) .boot__nav-name {
+  width: 44%;
+}
+
+.boot__nav-row:nth-child(3) .boot__nav-name {
+  width: 52%;
+}
+
+.boot__nav-row:nth-child(4) .boot__nav-name {
+  width: 36%;
+}
+
+.boot__nav-row:nth-child(5) .boot__nav-name {
+  width: 48%;
+}
+
+// The footer at the bottom of the sidebar (`sidebar__footer`: 8px above, 12px below): the "How it
+// works" card (90px and 8px under it, a demo start), the extension row (a desktop Chromium that has
+// closed the banner), Data & help and Trash, 36px each, with no count.
+.boot__footer {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  padding-block: var(--space-2) var(--space-3);
+}
+
+.boot__card-note {
+  display: none;
+  height: rem(90px);
+  margin-block: var(--space-2) var(--space-2);
+  border-radius: var(--radius-md);
+}
+
+:root[data-boot-demo] .boot__card-note,
+:root[data-boot-extension-row] .boot__nav-row--extension,
+.boot--page .boot__card-note {
+  display: flex;
+}
+
+.boot__nav-row--extension {
+  display: none;
+}
+
+.boot__nav-row--footer {
+  padding-inline-start: rem(14px);
+}
+
+.boot__footer .boot__nav-name {
+  width: 38%;
 }
 
 // The mobile shell's top bar (shell `.shell__top`, Shelf block 1): 16px from the top, the logo
@@ -359,27 +494,23 @@
   }
 }
 
-// The feed: the same fluid columns as the library grid (one column on a phone). Cards have a fixed
-// height and the grid is cut after three rows, however many columns the width gives.
+// The feed: the same fluid columns as the library grid (one column on a phone). A card is the
+// library skeleton's card (`ui-skeleton` card, Shelf 14-system `y-skc`): a `fill` card, radius 16,
+// the full-bleed 16:9 preview, then the 14px title lines (85%, 55%) and the 10px meta line (40%) in
+// 12px of padding: about 230px at 1440px, as tall as the loading feed's, so skeleton to skeleton
+// does not jump. The grid shows only the cards of the rows that fit (four at most).
 .boot__grid {
-  --boot-card-height: #{rem(340px)};
-
   display: grid;
   gap: var(--density-feed-gap, var(--space-4));
-  max-block-size: calc(3 * var(--boot-card-height) + 2 * var(--density-feed-gap, var(--space-4)));
   overflow: hidden;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
-
-  @include phone {
-    --boot-card-height: #{rem(384px)};
-  }
 
   @media (width > 120em) {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.25rem), 1fr));
   }
 }
 
-// Only the cards of the three visible rows are rendered: every card sweeps, and 36 sweeping cards
+// Only the cards of the four visible rows are rendered: every card sweeps, and 48 sweeping cards
 // kept a slow machine busy before the app could render. The columns follow the grid's own width
 // (column minimum plus the 1rem gap per column).
 @mixin boot-visible-cards($column-em) {
@@ -393,7 +524,7 @@
     $to: ($columns + 1) * ($column-em + 1) - 1;
 
     @container boot-feed (width >= #{$from}em) and (width < #{$to}em) {
-      .boot__card:nth-child(n + #{3 * $columns + 1}) {
+      .boot__card:nth-child(n + #{4 * $columns + 1}) {
         display: none;
       }
     }
@@ -412,36 +543,41 @@
   @include boot-visible-cards(16.25);
 }
 
-// Shelf 14-system: a card is one `surface-hover` block, radius 16 (its parts in the same fill only
-// carry the sweep).
 .boot__card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  block-size: var(--boot-card-height);
-  padding-block-end: var(--space-4);
   overflow: hidden;
-  background: var(--surface-hover);
-  border-radius: var(--radius-lg);
+  background: var(--fill);
+  border-radius: var(--radius-card);
 }
 
 .boot__media {
-  margin: rem(6px) rem(6px) var(--space-1);
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius-card);
+  border-radius: 0;
+}
+
+.boot__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
 }
 
 .boot__line {
   height: rem(14px);
-  margin-inline: var(--space-4);
 }
 
 .boot__line--long {
-  width: 80%;
+  width: 85%;
 }
 
-.boot__line--short {
-  width: 45%;
+.boot__line--medium {
+  width: 55%;
+}
+
+.boot__line--meta {
+  width: 40%;
+  height: rem(10px);
 }
 
 // The floating tab bar of the mobile shell (ui-tab-bar: 8px from the sides, 8px above the

@@ -14,5 +14,5 @@ import { ExtensionBannerService } from '../../core/browser-extension/extension-b
 })
 export class BootSkeletonComponent {
   protected readonly extensionBanner = inject(ExtensionBannerService);
-  protected readonly cards = [0, 1, 2, 3, 4, 5, 6, 7];
+  protected readonly cards = Array.from({ length: 48 }, (_, index) => index);
 }

@@ -1,0 +1,15 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// The section heading row (`sidebar-section.header`): 32px, the 12px label 8px from the start.
+.sidebar-skeleton__header {
+  --ui-skeleton-height: #{rem(10px)};
+
+  display: flex;
+  align-items: center;
+  block-size: rem(32px);
+  padding-inline-start: var(--space-2);
+}

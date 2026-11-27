@@ -331,3 +331,54 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
     expectSameBox(skeleton.card, app.card, 'first card');
   });
 });
+
+test.describe('the sidebar skeleton matches the sidebar (desktop, mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock library');
+
+  test('the Add link button and the five fixed rows stand where the app draws them', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await seedSession(page);
+    await page.addInitScript(`localStorage.setItem('${SESSION_HINT_KEY}', '1');`);
+    await page.addInitScript(`
+      const rect = (element) => {
+        if (!element) return null;
+        const r = element.getBoundingClientRect();
+        return { x: r.x, y: r.y, height: r.height };
+      };
+      const frame = () => {
+        const root = document.querySelector('[data-app-skeleton]');
+        if (root && getComputedStyle(root).display !== 'none') {
+          const rows = [...root.querySelectorAll('.boot__nav > .boot__nav-row')].map(rect);
+          const titles = [...root.querySelectorAll('.boot__group-title')].map(rect);
+          globalThis.__sidebar = { add: rect(root.querySelector('.boot__add-link')), rows, titles };
+        }
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    `);
+    await page.route(/\/main[^/]*\.js$/, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, BUNDLE_DELAY_MS));
+      await route.continue();
+    });
+    await page.goto('/links');
+    await expect(page.locator('app-sidebar .ui-tree__item').first()).toBeVisible();
+    await expect(page.locator('app-shell ui-card').first()).toBeVisible();
+
+    const skeleton = await page.evaluate<{
+      add: Box;
+      rows: Box[];
+      titles: Box[];
+    }>(`globalThis.__sidebar`);
+    const app = await page.evaluate<{ add: Box; rows: Box[] }>(`({
+      add: (() => { const r = document.querySelector('.shell__add button').getBoundingClientRect(); return { x: r.x, y: r.y, height: r.height }; })(),
+      rows: [...document.querySelectorAll('app-sidebar nav > .sidebar__scroll > ui-tree .ui-tree__row')].slice(0, 5).map((e) => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, height: r.height }; }),
+    })`);
+    expectSameBox(skeleton.add, app.add, 'Add link', true);
+    expect(skeleton.rows.length).toBe(5);
+    for (const [index, row] of app.rows.entries()) {
+      expectSameBox(skeleton.rows[index] ?? null, row, `fixed row ${index + 1}`, true);
+    }
+  });
+});
