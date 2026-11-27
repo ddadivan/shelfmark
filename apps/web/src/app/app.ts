@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { ApplicationRef, ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { BootHandover } from './core/routing/boot-handover.service';
 import { removeBootSkeleton } from './core/routing/boot-skeleton';
 
 @Component({
@@ -12,6 +13,8 @@ import { removeBootSkeleton } from './core/routing/boot-skeleton';
 export class App {
   private readonly appRef = inject(ApplicationRef);
   private readonly document = inject(DOCUMENT);
+  // Created here, while the static skeleton is still up (the pages ask it later).
+  private readonly bootHandover = inject(BootHandover);
 
   /**
    * The outlet inserts a routed page into the document as soon as it is created, but its bindings

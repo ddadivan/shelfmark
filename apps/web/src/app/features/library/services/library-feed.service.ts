@@ -10,8 +10,9 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoService } from '@jsverse/transloco';
-import { loaderVisible, type SegmentedOption } from '@shelfmark/ui';
+import { type SegmentedOption } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
+import { bootAwareLoader } from '../../../core/routing/boot-aware-loader';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
 import { isUiView } from '../../../stores/is-ui-view';
@@ -98,7 +99,7 @@ export class LibraryFeedService {
    * The skeleton of the first load: nothing shows before 300 ms (a fast response never flashes
    * it) and, once shown, it stays at least 400 ms (Loading spec).
    */
-  readonly skeletonVisible = loaderVisible(this.firstLoad);
+  readonly skeletonVisible = bootAwareLoader(this.firstLoad);
   readonly failed = computed(() => this.ownError() && this.ownCount() === 0);
   /**
    * A settled view without links. It stays empty while the same view is fetched again (a retry, a
