@@ -1,3 +1,4 @@
+import { urlPath } from '../core/routing/url-path';
 import { APP_PATH } from '../models/app-path.const';
 import { previewIdOfUrl } from '../features/link-preview/utils/preview-id-of-url';
 
@@ -10,6 +11,6 @@ const PUSHED_PATHS: readonly string[] = [`/${APP_PATH.Tidy}`];
 
 /** Whether the URL (query and fragment ignored) is a pushed page. */
 export function isPushedUrl(url: string): boolean {
-  const path = (url.split(/[?#]/)[0] ?? '').replace(/\/+$/, '');
+  const path = urlPath(url).replace(/\/+$/, '');
   return PUSHED_PATHS.includes(path) || previewIdOfUrl(url) !== null;
 }

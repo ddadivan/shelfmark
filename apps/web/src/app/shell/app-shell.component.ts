@@ -8,7 +8,7 @@ import {
   untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -26,7 +26,7 @@ import {
   ToastService,
   TooltipDirective,
 } from '@shelfmark/ui';
-import { combineLatest, filter, map } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { AdminStore } from '../features/admin/services/admin.store';
 import { FeedbackDialogService } from '../features/feedback/services/feedback-dialog.service';
 import { AuthStore } from '../core/auth/auth.store';
@@ -61,6 +61,7 @@ import { SettingsChipsComponent } from '../features/settings/components/settings
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
 import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.directive';
+import { CurrentUrl } from '../core/routing/current-url.service';
 
 /**
  * Layout around the signed-in pages (Shelf, ADR 0061). Desktop: the 240px sidebar on the left (logo,
@@ -116,13 +117,7 @@ export default class AppShellComponent {
   protected readonly howItWorks = inject(HowItWorksService);
   /** The Link page in full screen: the sidebar and the header step aside. */
   protected readonly linkFullScreen = inject(PreviewFullScreen);
-  private readonly url = toSignal(
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => this.router.url),
-    ),
-    { initialValue: this.router.url },
-  );
+  private readonly url = inject(CurrentUrl).url;
   /** The feed or folder the Library tab was pressed on; pressing it again returns there. */
   private libraryReturn: string | null = null;
   /** The tab of the current page (the tab bar marks it with `aria-current`). */

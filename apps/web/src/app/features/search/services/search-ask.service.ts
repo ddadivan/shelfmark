@@ -1,6 +1,7 @@
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { ViewportService } from '../../../core/layout/viewport.service';
+import { urlPath } from '../../../core/routing/url-path';
 import { APP_PATH } from '../../../models/app-path.const';
 import { AskInbox } from '../../ai/services/ask-inbox.service';
 import { AskPanelService } from '../../ai/services/ask-panel.service';
@@ -19,7 +20,7 @@ export class SearchAskService {
   private readonly router = inject(Router);
 
   async ask(question: string): Promise<void> {
-    const onAskPage = this.router.url.split(/[?#]/u)[0] === `/${APP_PATH.Ask}`;
+    const onAskPage = urlPath(this.router.url) === `/${APP_PATH.Ask}`;
     if (this.viewport.compact() || onAskPage) {
       this.inbox.put(question);
       if (!onAskPage) await this.router.navigateByUrl(`/${APP_PATH.Ask}`);

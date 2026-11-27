@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DrawerComponent, UiDialogRef } from '@shelfmark/ui';
-import { filter, map } from 'rxjs';
+import { filter } from 'rxjs';
+import { CurrentUrl } from '../../../../core/routing/current-url.service';
 import { HelpSidebarComponent } from '../help-sidebar/help-sidebar.component';
 
 /**
@@ -20,15 +21,10 @@ import { HelpSidebarComponent } from '../help-sidebar/help-sidebar.component';
 export class HelpDrawerComponent {
   private readonly ref = inject<UiDialogRef<unknown>>(UiDialogRef);
   private readonly router = inject(Router);
+  private readonly currentUrl = inject(CurrentUrl);
 
   /** The article being read, followed while the drawer is open. */
-  protected readonly currentId = toSignal(
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => this.articleIdOf(this.router.url)),
-    ),
-    { initialValue: this.articleIdOf(this.router.url) },
-  );
+  protected readonly currentId = computed(() => this.articleIdOf(this.currentUrl.url()));
 
   constructor() {
     this.router.events

@@ -1,14 +1,13 @@
 import { DOCUMENT, Location } from '@angular/common';
 import { computed, inject, Service } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { Router } from '@angular/router';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { PREVIEW_QUERY_PARAM } from '../../../models/preview-query-param.const';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { PREVIEW_BACK_SETTLE_MS } from '../models/preview-back-settle-ms.const';
 import { previewIdOfUrl } from '../utils/preview-id-of-url';
 import { wantsPreview } from '../utils/wants-preview';
+import { CurrentUrl } from '../../../core/routing/current-url.service';
 
 /** Query parameters of side by side (#386): the preview and the split never show together. */
 const SIDE_BY_SIDE_PARAMS = { split: null, related: null } as const;
@@ -25,13 +24,7 @@ export class LinkPreviewRoute {
   private readonly history = inject(DOCUMENT).defaultView?.history;
   private readonly viewport = inject(ViewportService);
   private readonly settings = inject(UserSettingsStore);
-  private readonly url = toSignal(
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => this.router.url),
-    ),
-    { initialValue: this.router.url },
-  );
+  private readonly url = inject(CurrentUrl).url;
   /**
    * The history length right after this app pushed the open preview, else `null`. Close goes Back
    * only while the length is unchanged: a page the frame navigated to inside itself adds entries

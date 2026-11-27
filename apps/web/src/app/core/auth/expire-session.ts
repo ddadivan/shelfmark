@@ -5,6 +5,7 @@ import { AUTH_ROUTE } from './models/auth-routes.const';
 import { SIGN_IN_QUERY } from './models/sign-in-query.const';
 import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import { safeReturnUrl } from './safe-return-url';
+import { urlPath } from '../routing/url-path';
 
 /**
  * A 401 from `/api/**`: the session is gone. Clears the user and goes to the sign-in screen with the
@@ -18,7 +19,7 @@ export function expireSession(injector: Injector): void {
   }
   const router = injector.get(Router);
   auth.expireSession();
-  const onSignIn = router.url.split(/[?#]/)[0] === AUTH_ROUTE.SignIn;
+  const onSignIn = urlPath(router.url) === AUTH_ROUTE.SignIn;
   if (!onSignIn) {
     void router.navigate([AUTH_ROUTE.SignIn], {
       queryParams: {

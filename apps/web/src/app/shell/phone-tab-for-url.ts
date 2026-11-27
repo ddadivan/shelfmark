@@ -1,3 +1,4 @@
+import { urlPath } from '../core/routing/url-path';
 import { APP_PATH } from '../models/app-path.const';
 import { PHONE_TAB } from './models/phone-tab.const';
 import type { PhoneTab } from './models/phone-tab.type';
@@ -10,7 +11,7 @@ import type { PhoneTab } from './models/phone-tab.type';
  * over the page and is never the current tab.
  */
 export function phoneTabForUrl(url: string): PhoneTab | null {
-  const first = (url.split(/[?#]/)[0] ?? '').split('/').find(Boolean);
+  const first = urlPath(url).split('/').find(Boolean);
   switch (first) {
     case APP_PATH.Today:
       return PHONE_TAB.Today;

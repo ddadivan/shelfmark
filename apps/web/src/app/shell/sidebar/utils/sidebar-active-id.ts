@@ -1,3 +1,4 @@
+import { urlPath } from '../../../core/routing/url-path';
 import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../../models/app-path.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
@@ -9,7 +10,7 @@ import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
  * "Recently opened" row, `SIDEBAR_TRASH_ID` the Trash row) or a folder id; `null` for pages without a row (settings).
  */
 export function sidebarActiveId(url: string): string | null {
-  const [first, second] = (url.split(/[?#]/)[0] ?? '').split('/').filter(Boolean);
+  const [first, second] = urlPath(url).split('/').filter(Boolean);
   switch (first) {
     case APP_PATH.Links:
       return LINKS_SCOPE.All;

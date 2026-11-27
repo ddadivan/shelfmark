@@ -13,8 +13,7 @@ import {
   input,
   viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   BADGE_TONE,
@@ -38,7 +37,6 @@ import {
   type UiTreeNode,
   ScrollFadeDirective,
 } from '@shelfmark/ui';
-import { filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { RediscoverStore } from '../../features/rediscover/services/rediscover.store';
@@ -68,6 +66,7 @@ import { SidebarFoldersService } from './services/sidebar-folders.service';
 import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
 import { SidebarSections } from './services/sidebar-sections.service';
 import { SIDEBAR_SECTION } from './models/sidebar-section.const';
+import { CurrentUrl } from '../../core/routing/current-url.service';
 
 /**
  * The library sidebar, an inset card that only navigates: the logo, "All links", "Unsorted",
@@ -158,13 +157,7 @@ export class SidebarComponent {
   private readonly tree = viewChild<TreeComponent>('folderTree');
   private readonly treeFocus = inject(SidebarTreeFocusService);
 
-  private readonly url = toSignal(
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => this.router.url),
-    ),
-    { initialValue: this.router.url },
-  );
+  private readonly url = inject(CurrentUrl).url;
   protected readonly activeId = computed(() => sidebarActiveId(this.url()));
   protected readonly navLabelKey = computed(() =>
     this.foldersOnly() ? 'shell.sidebar.foldersNav' : 'shell.sidebar.nav',
