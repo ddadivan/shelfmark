@@ -1,5 +1,6 @@
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
 import { RECENT_FOLDERS_MAX } from './models/recent-folders-max.const';
+import { pushRecent } from '../core/utils/push-recent';
 
 /**
  * Reads the stored list: a JSON array of folder ids, `unsorted` for Unsorted. Anything else
@@ -30,5 +31,5 @@ export function pushRecentFolder(
   ids: readonly (string | null)[],
   target: string | null,
 ): (string | null)[] {
-  return [target, ...ids.filter((id) => id !== target)].slice(0, RECENT_FOLDERS_MAX);
+  return pushRecent(ids, target, RECENT_FOLDERS_MAX);
 }

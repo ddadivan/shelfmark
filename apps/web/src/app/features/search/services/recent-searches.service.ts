@@ -4,6 +4,7 @@ import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { parseSearchQuery } from '../../links/utils/search-query';
 import { RECENT_SEARCHES_MAX } from '../models/recent-searches-max.const';
+import { pushRecent } from '../../../core/utils/push-recent';
 
 /**
  * "Recent searches" under the empty search field (Shelf): the last `RECENT_SEARCHES_MAX` texts,
@@ -29,10 +30,11 @@ export class RecentSearchesService {
     if (query === '') {
       return;
     }
-    const lower = query.toLowerCase();
-    const next = [query, ...this.list().filter((item) => item.toLowerCase() !== lower)].slice(
-      0,
+    const next = pushRecent(
+      this.list(),
+      query,
       RECENT_SEARCHES_MAX,
+      (a, b) => a.toLowerCase() === b.toLowerCase(),
     );
     this.list.set(next);
     // Blocked storage: kept for this visit only.
