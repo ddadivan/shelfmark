@@ -12,15 +12,15 @@
   [class.ui-dialog--sheet-tall]="sheetHeight() === SHEET_HEIGHT.Tall"
   [class.ui-dialog--enter]="!leaving()"
   [class.ui-dialog--leave]="leaving()"
-  [class.ui-dialog--dragging]="dragging()"
-  [class.ui-dialog--snapping]="snapping()"
+  [class.ui-dialog--dragging]="sheetDrag.dragging()"
+  [class.ui-dialog--snapping]="sheetDrag.snapping()"
 >
   <div
+    #sheetDrag="uiSheetDrag"
     class="ui-dialog__drag"
-    (pointerdown)="onPointerDown($event)"
-    (pointermove)="onPointerMove($event)"
-    (pointerup)="onPointerUp($event)"
-    (pointercancel)="onPointerCancel($event)"
+    [uiSheetDrag]="panel"
+    [uiSheetDragEnabled]="dragEnabled()"
+    (closeRequested)="requestClose()"
   >
     <div class="ui-dialog__grip" aria-hidden="true"></div>
     <div class="ui-dialog__head">

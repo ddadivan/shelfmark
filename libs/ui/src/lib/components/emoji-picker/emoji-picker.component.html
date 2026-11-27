@@ -59,7 +59,7 @@
       role="dialog"
       tabindex="-1"
       [class.ui-emoji-picker__panel--sheet]="overlay.sheet()"
-      [class.ui-emoji-picker__panel--snapping]="overlay.snapping()"
+      [class.ui-emoji-picker__panel--snapping]="sheetDrag.snapping()"
       [id]="panelId"
       [attr.aria-label]="label()"
       [animate.enter]="overlay.sheet() ? 'ui-emoji-picker--sheet-enter' : 'ui-emoji-picker--enter'"
@@ -68,11 +68,11 @@
       (focusout)="overlay.focusOut($event)"
     >
       <div
+        #sheetDrag="uiSheetDrag"
         class="ui-emoji-picker__drag"
-        (pointerdown)="overlay.dragStart($event)"
-        (pointermove)="overlay.dragMove($event)"
-        (pointerup)="overlay.dragEnd($event)"
-        (pointercancel)="overlay.dragCancel($event)"
+        [uiSheetDrag]="panel"
+        [uiSheetDragEnabled]="overlay.sheet()"
+        (closeRequested)="overlay.hide(true)"
       >
         @if (overlay.sheet()) {
           <div class="ui-emoji-picker__grip" aria-hidden="true"></div>

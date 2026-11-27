@@ -16,7 +16,6 @@ import {
 } from '../../services/dialog/focus-return';
 import { mediaMatch } from '../../utils/media/media-match';
 import { PHONE_MEDIA_QUERY } from '../../utils/media/models/phone-media-query.const';
-import { SHEET_DRAG_END, SheetDragTracker } from '../../utils/sheet-drag';
 import type { EmojiPickerOverlayHost } from './models/emoji-picker-overlay-host.interface';
 import { EMOJI_PICKER_WIDTH_PROPERTY } from './models/emoji-picker-width-property.const';
 
@@ -29,7 +28,7 @@ const PANEL_STOPS = 'input, button:not([tabindex="-1"]), [tabindex="0"]';
  * sheet at the bottom edge), focus on open (the search box, or
  * the panel on a phone so the keyboard stays closed) and on close (`returnFocus`: no ring after a
  * pointer, no tooltip), closing on a press or focus outside (a toast does not count), Tab leaving
- * the panel, and the phone sheet's grip drag (`SheetDragTracker`). Create it in the component's
+ * the panel, and the phone sheet's grip drag (`uiSheetDrag` in the template). Create it in the component's
  * injection context; it is disposed with the component.
  */
 export class EmojiPickerOverlay {
@@ -39,13 +38,10 @@ export class EmojiPickerOverlay {
   readonly attached = signal(false);
   /** This open is the phone sheet. */
   readonly sheet = signal(false);
-  /** The sheet snaps back after a short drag (only then its transform is animated). */
-  readonly snapping = signal(false);
 
   private readonly overlays = inject(UiOverlay);
   private readonly injector = inject(Injector);
   private readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
-  private readonly drag = new SheetDragTracker();
   private overlay: ConnectedOverlay | null = null;
   private overlaySheet = false;
   private detachSubscription: Subscription | null = null;
@@ -171,38 +167,6 @@ export class EmojiPickerOverlay {
   isFieldBlur(event: FocusEvent): boolean {
     const next = event.relatedTarget;
     return !this.open() && !(next instanceof Node && this.host.popup().contains(next));
-  }
-
-  /** The grip or the head of the phone sheet is pressed: it follows the finger down. */
-  dragStart(event: PointerEvent): void {
-    if (this.sheet() && this.drag.start(event)) {
-      this.snapping.set(false);
-    }
-  }
-
-  dragMove(event: PointerEvent): void {
-    const panel = this.host.panel();
-    if (panel) {
-      this.drag.move(event, panel);
-    }
-  }
-
-  /** Past 30% of the height or a flick closes (from where it was dragged); else it snaps back. */
-  dragEnd(event: PointerEvent): void {
-    const panel = this.host.panel();
-    const end = panel ? this.drag.end(event, panel) : null;
-    if (end === SHEET_DRAG_END.Close) {
-      this.hide(true);
-    } else if (end === SHEET_DRAG_END.Snap) {
-      this.snapping.set(true);
-    }
-  }
-
-  dragCancel(event: PointerEvent): void {
-    const panel = this.host.panel();
-    if (panel && this.drag.cancel(event, panel)) {
-      this.snapping.set(true);
-    }
   }
 
   private createOverlay(sheet: boolean): void {

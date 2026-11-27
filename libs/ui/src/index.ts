@@ -88,6 +88,7 @@ export * from './lib/directives/popover-trigger';
 export * from './lib/directives/ripple';
 export * from './lib/directives/auto-height';
 export * from './lib/directives/scroll-fade';
+export * from './lib/directives/sheet-drag';
 export * from './lib/directives/shake';
 export * from './lib/directives/tooltip';
 

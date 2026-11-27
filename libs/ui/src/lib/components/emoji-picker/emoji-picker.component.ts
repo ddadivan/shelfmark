@@ -25,6 +25,7 @@ import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { SheetDragDirective } from '../../directives/sheet-drag/sheet-drag.directive';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { emojiCellAction, firstGridStop, focusAfterRemoval, opensPanel } from './emoji-picker-keys';
@@ -52,6 +53,7 @@ import type { EmojiPickerSection } from './models/emoji-picker-section.interface
     GridRow,
     IconComponent,
     NgTemplateOutlet,
+    SheetDragDirective,
     SpinnerComponent,
     Tab,
     TabContent,

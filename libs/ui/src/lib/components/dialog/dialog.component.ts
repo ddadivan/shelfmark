@@ -20,7 +20,7 @@ import type { DialogSize } from './models/dialog-size.type';
 import { SHEET_HEIGHT } from '../sheet/models/sheet-height.const';
 import type { SheetHeight } from '../sheet/models/sheet-height.type';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
-import { SHEET_DRAG_END, SheetDragTracker } from '../../utils/sheet-drag';
+import { SheetDragDirective } from '../../directives/sheet-drag/sheet-drag.directive';
 import { DIALOG_SIZE } from './models/dialog-size.const';
 import { DIALOG_VARIANT } from './models/dialog-variant.const';
 import type { DialogVariant } from './models/dialog-variant.type';
@@ -41,7 +41,7 @@ import { BUTTON_SIZE } from '../button/models/button-size.const';
  */
 @Component({
   selector: 'ui-dialog',
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, SheetDragDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-dialog-host',
@@ -95,7 +95,6 @@ export class DialogComponent {
 
   private readonly context = inject(UI_DIALOG_CONTEXT, { optional: true });
   private readonly ref = inject<UiDialogRef<unknown>>(UiDialogRef, { optional: true });
-  private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
   private readonly body = viewChild.required<ElementRef<HTMLElement>>('body');
 
   protected readonly titleId = this.context?.titleId ?? nextDialogId('ui-dialog-title');
@@ -121,12 +120,12 @@ export class DialogComponent {
   protected readonly sheetMode = computed(
     () => this.phone() || (this.sheetHeight() !== undefined && this.compact()),
   );
-  protected readonly dragging = signal(false);
-  protected readonly snapping = signal(false);
+  /** A sheet drag may start: not on a plain dialog, a full-screen phone page, a leaving or locked one. */
+  protected readonly dragEnabled = computed(
+    () => this.sheetMode() && !this.phoneFullscreen() && !this.leaving() && !this.locked(),
+  );
   /** The body overflows: it becomes a focusable region so the keyboard can scroll it. */
   protected readonly scrollable = signal(false);
-
-  private readonly drag = new SheetDragTracker();
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -166,44 +165,5 @@ export class DialogComponent {
     }
     this.closeRequested.emit();
     this.ref?.close();
-  }
-
-  protected onPointerDown(event: PointerEvent): void {
-    if (
-      !this.sheetMode() ||
-      this.phoneFullscreen() ||
-      this.leaving() ||
-      this.locked() ||
-      !this.drag.start(event)
-    ) {
-      return;
-    }
-    this.snapping.set(false);
-    this.dragging.set(true);
-  }
-
-  protected onPointerMove(event: PointerEvent): void {
-    this.drag.move(event, this.panel().nativeElement);
-  }
-
-  protected onPointerUp(event: PointerEvent): void {
-    const end = this.drag.end(event, this.panel().nativeElement);
-    if (end === null) {
-      return;
-    }
-    this.dragging.set(false);
-    if (end === SHEET_DRAG_END.Close) {
-      // The leave animation starts from the dragged position (`--ui-sheet-drag` stays set).
-      this.requestClose();
-    } else {
-      this.snapping.set(true);
-    }
-  }
-
-  protected onPointerCancel(event: PointerEvent): void {
-    if (this.drag.cancel(event, this.panel().nativeElement)) {
-      this.dragging.set(false);
-      this.snapping.set(true);
-    }
   }
 }
