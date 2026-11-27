@@ -2,6 +2,11 @@
   <section class="search-meaning" aria-labelledby="search-meaning-heading">
     @if (empty()) {
       <p class="search-meaning__lead">{{ 'ai.search.noWordMatches' | transloco }}</p>
+      @if (elsewhere()) {
+        <ui-button variant="ghost" size="sm" (click)="filters.searchEverywhere()">{{
+          'search.everywhere' | transloco
+        }}</ui-button>
+      }
     }
     <h2 id="search-meaning-heading" class="search-meaning__heading">
       <ui-icon class="search-meaning__spark" name="spark" />

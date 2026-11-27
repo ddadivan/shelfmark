@@ -2,13 +2,32 @@
   popup
   emptyPanel
   [query]="search.text()"
-  [inputLabel]="'search.label' | transloco"
-  [placeholder]="'search.placeholder' | transloco"
+  [inputLabel]="placeholder()"
+  [placeholder]="placeholder()"
   [listLabel]="'search.recent.title' | transloco"
   (queryChange)="search.setText($event)"
   (selected)="choose($event)"
   (keydown)="onKeydown($event)"
 >
+  @if (scope(); as scope) {
+    <ui-chip
+      slot="input-lead"
+      class="header-search__scope"
+      truncate
+      removable
+      [removeLabel]="'search.everywhere' | transloco"
+      (removed)="searchEverywhere()"
+    >
+      <span class="header-search__scope-label">
+        @if (scope.colour !== null) {
+          <ui-folder-icon size="sm" [icon]="scope.icon" [colour]="scope.colour" />
+        } @else {
+          <ui-icon [name]="scopeIcon()" [size]="ICON_SIZE.Md" />
+        }
+        <span class="header-search__scope-name">{{ scopeName() }}</span>
+      </span>
+    </ui-chip>
+  }
   @if (search.text() === '') {
     <kbd slot="input-end">{{ shortcut }}</kbd>
   } @else {

@@ -4,15 +4,27 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
+import type { FeedSearchScope } from '../../models/feed-search-scope.interface';
 import { FeedSearchService } from '../../services/feed-search.service';
 import { RecentSearchesService } from '../../services/recent-searches.service';
 import { SearchFieldService } from '../../services/search-field.service';
 import { HeaderSearchComponent } from './header-search.component';
 
-async function setup(options: { text?: string; recent?: string[]; askOn?: boolean } = {}) {
+const FOLDER_SCOPE: FeedSearchScope = {
+  labelKey: null,
+  name: 'Work',
+  icon: 'folder',
+  colour: 'amber',
+};
+
+async function setup(
+  options: { text?: string; recent?: string[]; askOn?: boolean; scope?: FeedSearchScope } = {},
+) {
   const text = signal(options.text ?? '');
   const search = {
     text,
+    scope: signal<FeedSearchScope | null>(options.scope ?? null),
+    searchEverywhere: vi.fn(() => Promise.resolve()),
     setText: vi.fn((value: string) => text.set(value)),
     flush: vi.fn(() => Promise.resolve()),
     clear: vi.fn(() => {
@@ -153,5 +165,60 @@ describe('HeaderSearchComponent (Shelf header search)', () => {
 
     fixture.destroy();
     expect(registry.focus()).toBe(false);
+  });
+
+  describe('scope chip', () => {
+    it('is not there on All links', async () => {
+      const { element, input } = await setup();
+
+      expect(element.querySelector('ui-chip')).toBeNull();
+      expect(input.getAttribute('placeholder')).toBe('Search links, folders and tags');
+    });
+
+    it('shows the folder tile and name, and names the field "Search in Work"', async () => {
+      const { element, input } = await setup({ scope: FOLDER_SCOPE });
+      const chip = element.querySelector('.ui-command-list__field > ui-chip');
+
+      expect(chip?.textContent).toContain('Work');
+      expect(chip?.querySelector('ui-folder-icon')).not.toBeNull();
+      expect(input.getAttribute('placeholder')).toBe('Search in Work');
+      expect(input.getAttribute('aria-label')).toBe('Search in Work');
+    });
+
+    it('shows the translated scope of Unsorted with its icon', async () => {
+      const { element, input } = await setup({
+        scope: { labelKey: 'library.scope.unsorted', name: null, icon: 'inbox', colour: null },
+      });
+      const chip = element.querySelector('ui-chip');
+
+      expect(chip?.textContent).toContain('Unsorted');
+      expect(chip?.querySelector('ui-folder-icon')).toBeNull();
+      expect(chip?.querySelector('ui-icon')).not.toBeNull();
+      expect(input.getAttribute('placeholder')).toBe('Search in Unsorted');
+    });
+
+    it('searches all links with the × and keeps focus in the field', async () => {
+      const { element, fixture, search, input } = await setup({
+        scope: FOLDER_SCOPE,
+        text: 'jacket',
+      });
+
+      element.querySelector<HTMLButtonElement>('button[aria-label="Search all links"]')?.click();
+      await fixture.whenStable();
+
+      expect(search.searchEverywhere).toHaveBeenCalledTimes(1);
+      await vi.waitFor(() => expect(document.activeElement).toBe(input));
+    });
+
+    it('keeps the chip when Backspace is pressed in the empty field', async () => {
+      const { fixture, element, input, search } = await setup({ scope: FOLDER_SCOPE });
+
+      input.focus();
+      key(input, 'Backspace');
+      await fixture.whenStable();
+
+      expect(element.querySelector('ui-chip')).not.toBeNull();
+      expect(search.searchEverywhere).not.toHaveBeenCalled();
+    });
   });
 });

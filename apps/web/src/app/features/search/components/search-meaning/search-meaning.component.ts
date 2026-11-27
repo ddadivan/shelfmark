@@ -27,7 +27,7 @@ import { SearchAskService } from '../../services/search-ask.service';
  * feed's word answer for the text has settled) as cards under the word results; with `empty` (no
  * word match) it is the whole answer: the meaning cards under "No links with these words", or the
  * "Nothing found" state with Clear search, Ask your shelf (while Ask is on) and, outside All links,
- * Search all folders.
+ * Search all links.
  */
 @Component({
   selector: 'app-search-meaning',
@@ -70,7 +70,7 @@ export class SearchMeaningComponent {
       failed: false,
     };
   });
-  /** "Search all folders" is offered outside All links. */
+  /** "Search all links" is offered outside All links. */
   protected readonly elsewhere = computed(() => this.filters.scope() !== LINKS_SCOPE.All);
 
   constructor() {

@@ -1261,9 +1261,9 @@
     },
     "emptySearch": {
       "title": "Nessun risultato per “{{query}}”",
-      "text": "Prova un’altra parola o cerca in tutte le cartelle.",
+      "text": "Prova un’altra parola o cerca in tutti i link.",
       "clear": "Cancella ricerca",
-      "all": "Cerca in tutte le cartelle"
+      "all": "Cerca in tutti i link"
     },
     "breadcrumb": {
       "label": "Percorso",
@@ -2313,6 +2313,8 @@
     "close": "Chiudi la ricerca",
     "label": "Cerca link, cartelle e tag",
     "placeholder": "Cerca link, cartelle e tag",
+    "placeholderIn": "Cerca in {{scope}}",
+    "everywhere": "Cerca in tutti i link",
     "results": "Risultati della ricerca",
     "esc": "Esc",
     "inFolder": "in {{folder}}",

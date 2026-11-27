@@ -1261,9 +1261,9 @@
     },
     "emptySearch": {
       "title": "Aucun résultat pour « {{query}} »",
-      "text": "Essayez un autre mot, ou cherchez dans tous les dossiers.",
+      "text": "Essayez un autre mot, ou cherchez dans tous les liens.",
       "clear": "Effacer la recherche",
-      "all": "Chercher dans tous les dossiers"
+      "all": "Rechercher dans tous les liens"
     },
     "breadcrumb": {
       "label": "Fil d’Ariane",
@@ -2313,6 +2313,8 @@
     "close": "Fermer la recherche",
     "label": "Rechercher des liens, dossiers et tags",
     "placeholder": "Rechercher des liens, dossiers et tags",
+    "placeholderIn": "Rechercher dans {{scope}}",
+    "everywhere": "Rechercher dans tous les liens",
     "results": "Résultats de recherche",
     "esc": "Échap",
     "inFolder": "dans {{folder}}",

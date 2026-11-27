@@ -1261,9 +1261,9 @@
     },
     "emptySearch": {
       "title": "No se encontró nada para «{{query}}»",
-      "text": "Prueba otra palabra o busca en todas las carpetas.",
+      "text": "Prueba otra palabra o busca en todos los enlaces.",
       "clear": "Borrar búsqueda",
-      "all": "Buscar en todas las carpetas"
+      "all": "Buscar en todos los enlaces"
     },
     "breadcrumb": {
       "label": "Ruta de navegación",
@@ -2313,6 +2313,8 @@
     "close": "Cerrar búsqueda",
     "label": "Buscar enlaces, carpetas y etiquetas",
     "placeholder": "Buscar enlaces, carpetas y etiquetas",
+    "placeholderIn": "Buscar en {{scope}}",
+    "everywhere": "Buscar en todos los enlaces",
     "results": "Resultados de búsqueda",
     "esc": "Esc",
     "inFolder": "en {{folder}}",

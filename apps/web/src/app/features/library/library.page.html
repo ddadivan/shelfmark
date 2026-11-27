@@ -90,6 +90,9 @@
             <!-- prettier-ignore -->
             <h1 class="library__title">{{ filters.folder()?.name }}</h1>
             <ng-container *ngTemplateOutlet="countLine" />
+            @if (filters.searching()) {
+            <ng-container *ngTemplateOutlet="searchAll" />
+            }
             <ng-container *ngTemplateOutlet="folderActions" />
             @if (head.description; as description) {
             <p class="library__description">{{ description }}</p>
@@ -112,6 +115,7 @@
               'search.feed.count' : 'search.feed.countIn') | transloco: { count: feed.shownCount() +
               (feed.shownHasMore() ? '+' : ''), query: filters.query(), scope:
               filters.folder()?.name ?? (filters.titleKey() | transloco) } }} }
+              <ng-container *ngTemplateOutlet="searchAll" />
             </p>
             } @if (splitView.open()) {
             <ui-picker-menu
@@ -178,6 +182,18 @@
                 {{ 'shell.sidebar.menu.delete' | transloco }}
               </ui-menu-item>
             </ui-menu>
+            }
+          </ng-template>
+          <!-- "Search all links" while results of a folder, Unsorted or Favorites are shown. -->
+          <ng-template #searchAll>
+            @if (filters.scope() !== LINKS_SCOPE.All && !feed.empty()) {
+            <ui-button
+              class="library__search-all"
+              variant="ghost"
+              size="sm"
+              (click)="filters.searchEverywhere()"
+              >{{ 'search.everywhere' | transloco }}</ui-button
+            >
             }
           </ng-template>
           <ng-template #countLine>

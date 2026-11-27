@@ -8,3 +8,23 @@
   min-width: rem(240px);
   max-width: rem(640px);
 }
+
+// The scope chip inside the field box (after the search icon): the folder tile or the scope's icon
+// and the name, ending in an ellipsis from 10rem.
+.header-search__scope {
+  --ui-chip-max-inline-size: 10rem;
+  --ui-chip-bg: var(--surface);
+}
+
+.header-search__scope-label {
+  display: inline-flex;
+  gap: var(--space-1-5);
+  align-items: center;
+  min-inline-size: 0;
+}
+
+.header-search__scope-name {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1238,9 +1238,9 @@
     },
     "emptySearch": {
       "title": "Nothing found for “{{query}}”",
-      "text": "Try another word, or search in all folders.",
+      "text": "Try another word, or search all links.",
       "clear": "Clear search",
-      "all": "Search all folders"
+      "all": "Search all links"
     },
     "breadcrumb": {
       "label": "Breadcrumb",
@@ -2263,6 +2263,8 @@
     "close": "Close search",
     "label": "Search links, folders and tags",
     "placeholder": "Search links, folders and tags",
+    "placeholderIn": "Search in {{scope}}",
+    "everywhere": "Search all links",
     "results": "Search results",
     "esc": "Esc",
     "inFolder": "in {{folder}}",

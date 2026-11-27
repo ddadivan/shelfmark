@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { FoldersStore } from '../../../stores/folders.store';
 import { SEARCH_DEBOUNCE_MS } from '../models/search-debounce-ms.const';
 import { FeedSearchService } from './feed-search.service';
 
@@ -10,11 +11,20 @@ class BlankPage {}
 async function setup(url: string) {
   TestBed.configureTestingModule({
     providers: [
+      {
+        provide: FoldersStore,
+        useValue: {
+          entityMap: signal({
+            f1: { id: 'f1', name: 'Work', icon: 'briefcase', colour: 'amber' },
+          }),
+        },
+      },
       provideRouter([
         { path: 'links', component: BlankPage },
         { path: 'folders/:id', component: BlankPage },
         { path: 'unsorted/tidy', component: BlankPage },
         { path: 'unsorted', component: BlankPage },
+        { path: 'favorites', component: BlankPage },
         { path: 'today', component: BlankPage },
       ]),
     ],
@@ -95,5 +105,75 @@ describe('FeedSearchService', () => {
     await service.flush();
 
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  describe('scope', () => {
+    it('is null on All links and on pages that are no feed', async () => {
+      const { router, service } = await setup('/links?q=a');
+      expect(service.scope()).toBeNull();
+
+      await router.navigateByUrl('/today');
+      expect(service.scope()).toBeNull();
+    });
+
+    it('names Unsorted and Favorites by their scope label and sidebar icon', async () => {
+      const { router, service } = await setup('/unsorted');
+      expect(service.scope()).toEqual({
+        labelKey: 'library.scope.unsorted',
+        name: null,
+        icon: 'inbox',
+        colour: null,
+      });
+
+      await router.navigateByUrl('/favorites');
+      expect(service.scope()).toEqual({
+        labelKey: 'library.scope.favorites',
+        name: null,
+        icon: 'star',
+        colour: null,
+      });
+    });
+
+    it('is the folder with its icon and colour on a folder page, null for an unknown folder', async () => {
+      const { router, service } = await setup('/folders/f1?q=x');
+      expect(service.scope()).toEqual({
+        labelKey: null,
+        name: 'Work',
+        icon: 'briefcase',
+        colour: 'amber',
+      });
+
+      await router.navigateByUrl('/folders/missing');
+      expect(service.scope()).toBeNull();
+    });
+
+    it('is null on Tidy Unsorted', async () => {
+      const { service } = await setup('/unsorted/tidy');
+
+      expect(service.scope()).toBeNull();
+    });
+  });
+
+  describe('searchEverywhere', () => {
+    it('opens All links with the text of the field and keeps the text', async () => {
+      const { router, service } = await setup('/folders/f1');
+
+      service.setText('  Angular   signals ');
+      await service.searchEverywhere();
+
+      expect(router.url).toBe('/links?q=Angular%20signals');
+      // The URL holds the normalised text; the field shows it.
+      expect(service.text()).toBe('Angular signals');
+      await pause();
+      expect(router.url).toBe('/links?q=Angular%20signals');
+    });
+
+    it('opens All links without q while the field is empty', async () => {
+      const { router, service } = await setup('/favorites');
+
+      await service.searchEverywhere();
+
+      expect(router.url).toBe('/links');
+    });
   });
 });

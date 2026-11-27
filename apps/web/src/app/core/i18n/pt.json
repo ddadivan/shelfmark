@@ -1261,9 +1261,9 @@
     },
     "emptySearch": {
       "title": "Nada encontrado para “{{query}}”",
-      "text": "Tente outra palavra ou pesquise em todas as pastas.",
+      "text": "Tente outra palavra ou pesquise em todos os links.",
       "clear": "Limpar pesquisa",
-      "all": "Pesquisar em todas as pastas"
+      "all": "Pesquisar em todos os links"
     },
     "breadcrumb": {
       "label": "Trilha de navegação",
@@ -2313,6 +2313,8 @@
     "close": "Fechar pesquisa",
     "label": "Pesquisar links, pastas e tags",
     "placeholder": "Pesquisar links, pastas e tags",
+    "placeholderIn": "Pesquisar em {{scope}}",
+    "everywhere": "Pesquisar em todos os links",
     "results": "Resultados da pesquisa",
     "esc": "Esc",
     "inFolder": "em {{folder}}",

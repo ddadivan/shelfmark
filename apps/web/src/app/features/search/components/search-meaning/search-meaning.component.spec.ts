@@ -151,6 +151,23 @@ describe('SearchMeaningComponent', () => {
     expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
   });
 
+  it('with only meaning matches on a scoped feed, offers "Search all links" under the lead', async () => {
+    const { fixture, element, filters } = await setup({
+      empty: true,
+      words: [],
+      scope: LINKS_SCOPE.Favorites,
+    });
+    const loader = TestbedHarnessEnvironment.loader(fixture);
+
+    await vi.waitFor(async () => {
+      await fixture.whenStable();
+      expect(element.textContent).toContain('No links with these words');
+    }, WAIT);
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Search all links' }))).click();
+
+    expect(filters.searchEverywhere).toHaveBeenCalledTimes(1);
+  });
+
   it('with nothing at all, is "Nothing found" with Clear search and Ask your shelf', async () => {
     const { fixture, element, filters, asker } = await setup({
       empty: true,
@@ -171,11 +188,11 @@ describe('SearchMeaningComponent', () => {
     expect(filters.clearSearch).toHaveBeenCalledTimes(1);
     expect(asker.ask).toHaveBeenCalledWith('signals talk');
     expect(
-      await loader.getAllHarnesses(UiButtonHarness.with({ text: 'Search all folders' })),
+      await loader.getAllHarnesses(UiButtonHarness.with({ text: 'Search all links' })),
     ).toHaveLength(0);
   });
 
-  it('offers "Search all folders" outside All links and no Ask while it is off', async () => {
+  it('offers "Search all links" outside All links and no Ask while it is off', async () => {
     const { fixture, element, filters } = await setup({
       empty: true,
       words: [],
@@ -189,7 +206,7 @@ describe('SearchMeaningComponent', () => {
     expect(
       await loader.getAllHarnesses(UiButtonHarness.with({ text: 'Ask your shelf' })),
     ).toHaveLength(0);
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Search all folders' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Search all links' }))).click();
     expect(filters.searchEverywhere).toHaveBeenCalledTimes(1);
   });
 

@@ -1238,9 +1238,9 @@
     },
     "emptySearch": {
       "title": "Nichts gefunden für „{{query}}“",
-      "text": "Versuch ein anderes Wort oder suche in allen Ordnern.",
+      "text": "Versuch ein anderes Wort oder durchsuche alle Links.",
       "clear": "Suche löschen",
-      "all": "In allen Ordnern suchen"
+      "all": "Alle Links durchsuchen"
     },
     "breadcrumb": {
       "label": "Brotkrümelnavigation",
@@ -2263,6 +2263,8 @@
     "close": "Suche schließen",
     "label": "Links, Ordner und Tags durchsuchen",
     "placeholder": "Links, Ordner und Tags durchsuchen",
+    "placeholderIn": "In {{scope}} suchen",
+    "everywhere": "Alle Links durchsuchen",
     "results": "Suchergebnisse",
     "esc": "Esc",
     "inFolder": "in {{folder}}",

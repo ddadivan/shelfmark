@@ -4,15 +4,21 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  computed,
   inject,
   viewChild,
 } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   ButtonComponent,
   CommandGroupComponent,
   CommandItemComponent,
+  ChipComponent,
   CommandListComponent,
+  FolderIconComponent,
+  ICON_NAMES,
+  ICON_SIZE,
   IconComponent,
   isMacPlatform,
   KEYBOARD_KEY,
@@ -37,9 +43,11 @@ import { SearchFieldService } from '../../services/search-field.service';
   imports: [
     TranslocoPipe,
     ButtonComponent,
+    ChipComponent,
     CommandGroupComponent,
     CommandItemComponent,
     CommandListComponent,
+    FolderIconComponent,
     IconComponent,
   ],
   host: { '(focusout)': 'onFocusout($event)' },
@@ -53,6 +61,31 @@ export class HeaderSearchComponent {
   protected readonly ai = inject(AiSettingsStore);
   /** Shortcut hint at the end of the field (the key is Cmd on Apple devices, else Ctrl). */
   protected readonly shortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';
+
+  protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly scope = this.search.scope;
+
+  private readonly transloco = inject(TranslocoService);
+  // Re-reads the scope name when the language changes or its file arrives.
+  private readonly lang = toSignal(this.transloco.langChanges$);
+  /** The name of the scope in the chip: the folder's name or the translated "Unsorted". */
+  protected readonly scopeName = computed(() => {
+    this.lang();
+    const scope = this.scope();
+    return scope?.name ?? (scope?.labelKey ? this.transloco.translate(scope.labelKey) : '');
+  });
+  protected readonly scopeIcon = computed(() => {
+    const icon = this.scope()?.icon;
+    return ICON_NAMES.find((name) => name === icon) ?? 'folder';
+  });
+  /** Placeholder and accessible name of the field: "Search in Work" while scoped. */
+  protected readonly placeholder = computed(() => {
+    this.lang();
+    const name = this.scopeName();
+    return this.transloco.translate(name === '' ? 'search.placeholder' : 'search.placeholderIn', {
+      scope: name,
+    });
+  });
 
   private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -71,6 +104,12 @@ export class HeaderSearchComponent {
     this.search.setText(selection.value);
     this.recent.add(selection.value);
     void this.search.flush();
+  }
+
+  /** The chip's ×: the same text in All links; focus stays in the field. */
+  protected async searchEverywhere(): Promise<void> {
+    await this.search.searchEverywhere();
+    this.list().focus();
   }
 
   protected async clear(): Promise<void> {

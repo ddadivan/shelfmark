@@ -494,6 +494,24 @@ describe('LibraryPage of a folder', () => {
     expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
   });
 
+  it('offers "Search all links" in the folder head while its search has results', async () => {
+    const { element, fixture } = await setupFolder('f1');
+    const everywhere = () =>
+      [...element.querySelectorAll('.library__heading--folder ui-button')].find((button) =>
+        button.textContent?.includes('Search all links'),
+      );
+    expect(everywhere()).toBeUndefined();
+
+    fixture.componentRef.setInput('q', 'lemon');
+    await fixture.whenStable();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    everywhere()?.querySelector('button')?.click();
+
+    expect(navigate).toHaveBeenCalledWith(['/', 'links'], {
+      queryParams: { q: 'lemon', sort: null },
+    });
+  });
+
   it('offers "Pin to top" on the cards of a folder only', async () => {
     const { element, fixture } = await setupFolder('f1');
     const menuItems = async (root: HTMLElement) => {
@@ -688,7 +706,28 @@ describe('LibraryPage of a folder', () => {
       expect(element.querySelector('.library__filter')).toBeNull();
     });
 
-    it('shows the empty search state, with Search all folders off the all-links page', async () => {
+    it('offers Search all links next to the count outside All links, and not on All links', async () => {
+      const { element, fixture } = await setup();
+      const everywhere = () =>
+        [...element.querySelectorAll('.library__search-count ui-button')].find((button) =>
+          button.textContent?.includes('Search all links'),
+        );
+
+      fixture.componentRef.setInput('q', 'signal');
+      await fixture.whenStable();
+      expect(everywhere()).toBeUndefined();
+
+      fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+      await fixture.whenStable();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      everywhere()?.querySelector('button')?.click();
+
+      expect(navigate).toHaveBeenCalledWith(['/', 'links'], {
+        queryParams: { q: 'signal', sort: null },
+      });
+    });
+
+    it('shows the empty search state, with Search all links off the all-links page', async () => {
       const { api, element, fixture } = await setup();
       api.list.mockReturnValue(of(page([])));
 
@@ -698,14 +737,14 @@ describe('LibraryPage of a folder', () => {
       expect(text(fixture)).toContain('Nothing found');
       expect(text(fixture)).toContain('Nothing for “zzz”');
       expect(text(fixture)).toContain('Clear search');
-      expect(text(fixture)).not.toContain('Search all folders');
+      expect(text(fixture)).not.toContain('Search all links');
 
       fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
       await fixture.whenStable();
-      expect(text(fixture)).toContain('Search all folders');
+      expect(text(fixture)).toContain('Search all links');
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       [...element.querySelectorAll('ui-button')]
-        .find((button) => button.textContent?.includes('Search all folders'))
+        .find((button) => button.textContent?.includes('Search all links'))
         ?.querySelector('button')
         ?.click();
       expect(navigate).toHaveBeenCalledWith(['/', 'links'], {
@@ -742,7 +781,7 @@ describe('LibraryPage of a folder', () => {
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
       [...element.querySelectorAll('ui-button')]
-        .find((button) => button.textContent?.includes('Search all folders'))
+        .find((button) => button.textContent?.includes('Search all links'))
         ?.querySelector('button')
         ?.click();
 
