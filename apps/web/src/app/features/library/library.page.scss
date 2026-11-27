@@ -81,7 +81,10 @@
     // scrollbar takes no width (touch overlay scrollbars, Firefox's own) `--scrollbar-size` is 0.
     margin-inline-end: calc((var(--space-2) + var(--scrollbar-size)) * -1);
     padding-inline-end: var(--space-2);
-    padding-block-end: var(--space-3);
+
+    // The 12px overhang above plus 24px of room, so the last row never sits on the window edge
+    // (author, Nov 27).
+    padding-block-end: calc(var(--space-3) + var(--space-6));
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
