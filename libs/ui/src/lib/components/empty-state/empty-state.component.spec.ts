@@ -79,7 +79,7 @@ describe('EmptyStateComponent', () => {
   it('plays the scene default when no motion is given', () => {
     const { host, update } = setup();
     update((c) => c.illustration.set('not-found'));
-    expect(host.querySelector('ui-illustration')?.classList.contains('ui-illustration--once')).toBe(
+    expect(host.querySelector('ui-illustration')?.classList.contains('ui-illustration--loop')).toBe(
       true,
     );
   });
