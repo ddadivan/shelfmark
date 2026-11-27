@@ -346,7 +346,9 @@ describe('AskDrawerComponent', () => {
         locked: () => false,
         leaving: signal(false),
       };
-      const dialogs = { confirm: vi.fn(async (_config: ConfirmDialogConfig) => answer) };
+      const dialogs = {
+        confirm: vi.fn<(config: ConfirmDialogConfig) => Promise<boolean>>(async () => answer),
+      };
       const context = await setup([
         { provide: UiDialogRef, useValue: ref },
         { provide: DialogService, useValue: dialogs },

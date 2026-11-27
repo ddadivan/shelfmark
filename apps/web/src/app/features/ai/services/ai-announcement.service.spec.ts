@@ -49,7 +49,9 @@ function setup(
   };
   const actions = { setEnabled: vi.fn(() => Promise.resolve(true)) };
   const result = signal<Promise<boolean | undefined>>(Promise.resolve(false));
-  const dialogs = { open: vi.fn((..._args: unknown[]) => ({ result: result() })) };
+  const dialogs = {
+    open: vi.fn<(...args: unknown[]) => { result: Promise<unknown> }>(() => ({ result: result() })),
+  };
   TestBed.configureTestingModule({
     providers: [
       { provide: AuthStore, useValue: { user } },

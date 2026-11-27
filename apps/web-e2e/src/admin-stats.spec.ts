@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_ADMIN_KEY, seedMockKey } from './support/feedback';
 import { openAccountMenu, openYouPage, seedSession } from './support/mock-session';
-import { isCompact, tabBar } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 
 // Same value as MOCK_ADMIN_STATS_STORAGE_KEY in apps/web/src/app/features/admin/mock/models.

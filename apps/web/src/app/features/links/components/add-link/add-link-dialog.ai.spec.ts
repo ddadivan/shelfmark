@@ -9,7 +9,6 @@ import {
   LINK_KIND,
   SUGGESTION_KIND,
   SUGGESTION_STATE,
-  SUMMARY_SOURCE,
   type AiJobResponse,
   type AiSettingsResponse,
   type LinkPreviewResponse,

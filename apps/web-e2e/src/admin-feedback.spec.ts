@@ -8,7 +8,7 @@ import {
   openYouPage,
   seedSession,
 } from './support/mock-session';
-import { isCompact, tabBar } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 
 const IDEA = 'Sort a folder by when I last opened a link';

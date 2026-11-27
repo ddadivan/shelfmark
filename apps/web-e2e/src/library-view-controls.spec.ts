@@ -170,7 +170,6 @@ test.describe('library view controls (mock API)', () => {
     async ({ page }) => {
       await openFeed(page);
       const card = page.locator('ui-card').first();
-      const more = card.getByRole('button', { name: /^Actions for / });
       const star = card.getByRole('button', { name: /^Favorite: / });
       await expect(star).toBeVisible();
       const touch = await page.evaluate<boolean>("matchMedia('(hover: none)').matches");

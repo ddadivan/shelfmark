@@ -13,8 +13,8 @@ import { provideLibraryPage } from './provide-library-page';
 
 function setup() {
   const router = {
-    navigate: vi.fn((_commands: readonly unknown[], _extras?: NavigationExtras) =>
-      Promise.resolve(true),
+    navigate: vi.fn<(commands: readonly unknown[], extras?: NavigationExtras) => Promise<boolean>>(
+      () => Promise.resolve(true),
     ),
   };
   TestBed.configureTestingModule({

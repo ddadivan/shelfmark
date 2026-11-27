@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ButtonComponent } from '@shelfmark/ui';
+import { queryRequired } from '../../../../testing/query-required';
 import { FocusWhenDirective } from './focus-when.directive';
 
 @Component({
@@ -45,7 +46,7 @@ describe('FocusWhenDirective', () => {
   });
 
   it('focuses a native control after the render once the input turns true', async () => {
-    const focus = vi.spyOn(root.querySelector<HTMLElement>('#plain')!, 'focus');
+    const focus = vi.spyOn(queryRequired<HTMLElement>(root, '#plain'), 'focus');
     host.plain.set(true);
     await fixture.whenStable();
     expect(active()).toBe('plain');
@@ -73,7 +74,7 @@ describe('FocusWhenDirective', () => {
   it('focuses again on each false to true change', async () => {
     host.plain.set(true);
     await fixture.whenStable();
-    root.querySelector<HTMLElement>('#inner')!.focus();
+    queryRequired<HTMLElement>(root, '#inner').focus();
     host.plain.set(false);
     await fixture.whenStable();
     expect(active()).toBe('inner');

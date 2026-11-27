@@ -9,7 +9,9 @@ import { translocoConfig } from '../../../core/i18n/transloco.config';
 import { AskLeaveGuard } from './ask-leave-guard.service';
 
 async function setup(answer: boolean) {
-  const dialogs = { confirm: vi.fn(async (_config: ConfirmDialogConfig) => answer) };
+  const dialogs = {
+    confirm: vi.fn<(config: ConfirmDialogConfig) => Promise<boolean>>(async () => answer),
+  };
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),

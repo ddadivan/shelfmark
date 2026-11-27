@@ -267,8 +267,23 @@ describe('demo library, limits and expiry', () => {
         (link) => link.suggestFolder !== undefined || (link.suggestTags?.length ?? 0) > 0,
       );
       expect(suggesting.length).toBeGreaterThan(0);
+      // The seed holds several links with the same URL (Hacker News, only one of them suggests), and
+      // `findMany` has no order, so a lookup by URL alone picks any of them: match the rows that carry
+      // suggestions instead.
+      const suggestedIds = new Set(
+        (
+          await t.db.prisma.linkSuggestion.findMany({
+            where: { userId: demo.userId },
+            select: { linkId: true },
+          })
+        ).map((row) => row.linkId),
+      );
+      const suggested = links.filter((candidate) => suggestedIds.has(candidate.id));
+      expect(suggested.map((link) => link.url).sort()).toEqual(
+        suggesting.map((link) => link.url).sort(),
+      );
       for (const seedLink of suggesting) {
-        const link = links.find((candidate) => candidate.url === seedLink.url);
+        const link = suggested.find((candidate) => candidate.url === seedLink.url);
         expect(link?.folderId).toBeNull();
         expect(link?.aiStatus).toBe(AI_JOB_STATUS.Done);
         const res = await asUser(t.app, demo)

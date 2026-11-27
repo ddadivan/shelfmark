@@ -29,8 +29,8 @@ const TAGS = [
 
 async function setup(scopeValue: LinksScope = LINKS_SCOPE.All, compact = false) {
   const router = {
-    navigate: vi.fn((_commands: readonly unknown[], _extras?: NavigationExtras) =>
-      Promise.resolve(true),
+    navigate: vi.fn<(commands: readonly unknown[], extras?: NavigationExtras) => Promise<boolean>>(
+      () => Promise.resolve(true),
     ),
   };
   TestBed.configureTestingModule({

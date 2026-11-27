@@ -2,7 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isPhone, openSidebar, openTags, tabBar } from './support/sidebar';
+import { openSidebar, openTags, tabBar } from './support/sidebar';
 import { SEARCH_BUTTON } from './support/search-button';
 import { E2E_TAG } from './models/e2e-tag.const';
 

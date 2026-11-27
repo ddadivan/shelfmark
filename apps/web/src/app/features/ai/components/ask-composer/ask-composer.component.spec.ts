@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { ASK_PERIOD, type AskEvent } from '@shelfmark/contracts';
 import { firstValueFrom, Subject } from 'rxjs';
+import { queryRequired } from '../../../../../testing/query-required';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
 import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
@@ -30,7 +31,7 @@ async function setup() {
   document.body.appendChild(fixture.nativeElement as HTMLElement);
   await fixture.whenStable();
   const host = fixture.nativeElement as HTMLElement;
-  const field = (): HTMLTextAreaElement => host.querySelector('textarea')!;
+  const field = (): HTMLTextAreaElement => queryRequired<HTMLTextAreaElement>(host, 'textarea');
   const type = async (text: string): Promise<void> => {
     field().value = text;
     field().dispatchEvent(new Event('input', { bubbles: true }));
@@ -108,9 +109,9 @@ describe('AskComposerComponent', () => {
     const outside = document.createElement('button');
     document.body.appendChild(outside);
     outside.focus();
-    (fixture.nativeElement as HTMLElement)
-      .querySelector('form')!
-      .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    queryRequired<HTMLFormElement>(fixture.nativeElement as HTMLElement, 'form').dispatchEvent(
+      new Event('submit', { bubbles: true, cancelable: true }),
+    );
     await fixture.whenStable();
     expect(field().disabled).toBe(true);
 

@@ -10,7 +10,6 @@ import { USER_SETTINGS_API } from '../../../settings/models/user-settings-api.co
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-route.service';
 import { LinkCardComponent } from './link-card.component';
-import { readRepoFile } from '../../../../../testing/read-repo-file';
 
 const LINK: LinkResponse = {
   ...MOCK_LINKS[0],

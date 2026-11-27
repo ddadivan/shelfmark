@@ -56,7 +56,11 @@ async function setup(seen: string | null, session: AuthUser | null = user()) {
     signInDemo: vi.fn(),
     signOut: vi.fn(() => Promise.resolve()),
   };
-  const dialogs = { open: vi.fn((..._args: unknown[]) => ({ result: Promise.resolve() })) };
+  const dialogs = {
+    open: vi.fn<(...args: unknown[]) => { result: Promise<unknown> }>(() => ({
+      result: Promise.resolve(),
+    })),
+  };
   TestBed.configureTestingModule({
     providers: [
       { provide: AUTH_API, useValue: authApi },

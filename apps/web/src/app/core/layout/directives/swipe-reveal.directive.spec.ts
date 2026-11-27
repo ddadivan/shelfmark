@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { queryRequired } from '../../../../testing/query-required';
 import { SwipeRevealDirective } from './swipe-reveal.directive';
 
 @Component({
@@ -47,15 +48,17 @@ describe('SwipeRevealDirective', () => {
     document.body.append(fixture.nativeElement);
     fixture.detectChanges();
     const root: HTMLElement = fixture.nativeElement;
-    surface = root.querySelector<HTMLElement>('.surface')!;
-    actions = root.querySelector<HTMLElement>('.actions')!;
-    outside = root.querySelector<HTMLElement>('.outside')!;
-    action = root.querySelector<HTMLElement>('.action')!;
+    surface = queryRequired<HTMLElement>(root, '.surface');
+    actions = queryRequired<HTMLElement>(root, '.actions');
+    outside = queryRequired<HTMLElement>(root, '.outside');
+    action = queryRequired<HTMLElement>(root, '.action');
     Object.defineProperty(actions, 'offsetWidth', { value: WIDTH });
     surface.setPointerCapture = vi.fn();
-    directive = fixture.debugElement.children
-      .find((el) => el.nativeElement === surface)!
-      .injector.get(SwipeRevealDirective);
+    const found = fixture.debugElement.children
+      .find((el) => el.nativeElement === surface)
+      ?.injector.get(SwipeRevealDirective);
+    if (!found) throw new Error('SwipeRevealDirective not found on the surface');
+    directive = found;
     await fixture.whenStable();
   });
 

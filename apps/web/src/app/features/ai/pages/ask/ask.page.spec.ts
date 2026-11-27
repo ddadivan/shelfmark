@@ -106,7 +106,9 @@ async function setup({
     remove: vi.fn(() => of(undefined)),
     clear: vi.fn(() => of({ deleted: 2 })),
   };
-  const dialogs = { confirm: vi.fn(async (_config: ConfirmDialogConfig) => leave) };
+  const dialogs = {
+    confirm: vi.fn<(config: ConfirmDialogConfig) => Promise<boolean>>(async () => leave),
+  };
   const toasts = { show: vi.fn() };
   const sheet = { open: vi.fn(async () => STORED_ID) };
   TestBed.configureTestingModule({

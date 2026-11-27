@@ -107,7 +107,9 @@ test.describe('scroll fades (mock API)', () => {
   const fade = (page: Page, selector: string, edge: '::before' | '::after') =>
     // Arguments, not a code string built from the selector (CodeQL js/bad-code-sanitization).
     page.locator(selector).evaluate((element, pseudo) => {
-      const s = element.ownerDocument.defaultView!.getComputedStyle(element, pseudo);
+      const view = element.ownerDocument.defaultView;
+      if (!view) throw new Error('The element is not attached to a window');
+      const s = view.getComputedStyle(element, pseudo);
       return {
         opacity: s.opacity,
         pointerEvents: s.pointerEvents,

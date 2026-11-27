@@ -4,7 +4,7 @@ import { HOW_IT_WORKS_CHAPTERS } from './models/how-it-works-chapters.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { openAccountMenu, openYouPage, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isCompact, isPhone, tabBar, openTags } from './support/sidebar';
+import { isCompact, isPhone, openTags } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 /** The landing section heading, with the typographic apostrophe of the copy. */

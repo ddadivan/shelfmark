@@ -10,7 +10,6 @@ import { expect, test } from './support/test';
 test.describe('new view dialog (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
-  const views = (page: Page): Locator => page.getByRole('toolbar', { name: 'Saved views' });
   const spark = (dialog: Locator): Locator => dialog.getByRole('img', { name: AI_DISCLAIMER });
 
   const type = (dialog: Locator): Locator => dialog.getByRole('combobox', { name: 'Type' });

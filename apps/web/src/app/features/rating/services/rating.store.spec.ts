@@ -45,9 +45,15 @@ async function setup(
   const api = {
     prompt: vi.fn(() => Promise.resolve(milestone)),
     record: vi.fn(() => Promise.resolve()),
-    recordPromptView: vi.fn((_milestone: FeedbackMilestone) => Promise.resolve()),
+    recordPromptView: vi.fn<(milestone: FeedbackMilestone) => Promise<void>>(() =>
+      Promise.resolve(),
+    ),
   } satisfies RatingApi;
-  const dialogs = { open: vi.fn((..._args: unknown[]) => ({ result: closed.promise })) };
+  const dialogs = {
+    open: vi.fn<(...args: unknown[]) => { result: Promise<unknown> }>(() => ({
+      result: closed.promise,
+    })),
+  };
   TestBed.configureTestingModule({
     providers: [
       { provide: AUTH_API, useValue: authApi },

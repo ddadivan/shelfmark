@@ -39,7 +39,9 @@ async function setup({ fails = false, askHistory = true, sheet = false } = {}) {
     remove: vi.fn(() => of(undefined)),
     clear: vi.fn(() => of({ deleted: 2 })),
   };
-  const dialogs = { confirm: vi.fn(async (_config: ConfirmDialogConfig) => true) };
+  const dialogs = {
+    confirm: vi.fn<(config: ConfirmDialogConfig) => Promise<boolean>>(async () => true),
+  };
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
