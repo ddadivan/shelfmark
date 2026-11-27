@@ -1,7 +1,8 @@
 @use '../../../styles/ui' as *;
 
-// Shelf toast: the inverted layer (`text` fill, `bg` text), 12px corners, `shadow-l2`. Width
-// follows the text up to 540px; the detail line truncates. The detail is a mix of the two colours:
+// Shelf toast: the inverted layer (`text` fill, `bg` text), 12px corners, `shadow-l2`. At least
+// 420px wide where the window has room (author, Nov 27), else the width of the region (10px from
+// the window edges on a phone); it follows the text up to 540px and the detail line truncates. The detail is a mix of the two colours:
 // 72% `bg` over `text` is at least 6:1 in both themes. Controls inside take the same pair.
 :host {
   @include type(label);
@@ -17,7 +18,7 @@
   gap: var(--space-3);
   align-items: center;
   inline-size: max-content;
-  min-inline-size: min(rem(300px), 100%);
+  min-inline-size: min(rem(420px), 100%);
   max-inline-size: min(rem(540px), 100%);
   padding: var(--space-2-5) var(--space-2-5) var(--space-2-5) var(--space-3);
   color: var(--ui-toast-ink);
@@ -104,6 +105,9 @@
 .ui-toast__text {
   flex: 1;
   min-width: 0;
+
+  // 24px between the text and the controls after it (author, Nov 27), the 12px gap plus this.
+  margin-inline-end: var(--space-3);
   overflow-wrap: anywhere;
 }
 

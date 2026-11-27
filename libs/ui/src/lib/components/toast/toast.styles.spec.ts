@@ -41,6 +41,9 @@ describe('toast styles', () => {
     expect(toast).toMatch(/:host\s*\{[^}]*color:\s*var\(--ui-toast-ink\)/);
     expect(toast).not.toContain('--shadow-popover');
     expect(toast).toContain('max-inline-size: min(33.75rem, 100%)');
+    // At least 420px where there is room (author, Nov 27), 24px between the text and the controls.
+    expect(toast).toContain('min-inline-size: min(26.25rem, 100%)');
+    expect(toast).toMatch(/\.ui-toast__text\s*\{[^}]*margin-inline-end:\s*var\(--space-3\)/);
     expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*text-overflow:\s*ellipsis/);
     expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*white-space:\s*nowrap/);
   });
