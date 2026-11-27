@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
-import { ButtonComponent, IconComponent, ICON_SIZE } from '@shelfmark/ui';
+import {
+  ButtonComponent,
+  IconComponent,
+  ICON_SIZE,
+  SKELETON_SHAPE,
+  SkeletonComponent,
+} from '@shelfmark/ui';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
@@ -16,7 +22,7 @@ import { RediscoverStore } from '../../../rediscover/services/rediscover.store';
  */
 @Component({
   selector: 'app-today-shelf',
-  imports: [TranslocoPipe, ButtonComponent, IconComponent],
+  imports: [TranslocoPipe, ButtonComponent, IconComponent, SkeletonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './today-shelf.component.html',
   styleUrl: './today-shelf.component.scss',
@@ -27,6 +33,7 @@ export class TodayShelfComponent {
   private readonly locale = inject(LocaleService);
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
 
   /** The link on show: the first one left in the block. */
   protected readonly link = computed<LinkResponse | undefined>(() => this.store.items()[0]);

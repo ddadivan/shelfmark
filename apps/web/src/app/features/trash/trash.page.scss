@@ -73,6 +73,20 @@
   justify-content: space-between;
 }
 
+// The loading page: the filter's box and the group card under it, spaced as the loaded page is.
+.trash-page__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+// The All / Links / Folders control: 32px high, about 256px wide.
+.trash-page__sk-filter {
+  --ui-skeleton-width: #{rem(256px)};
+  --ui-skeleton-height: #{rem(32px)};
+  --ui-skeleton-radius: var(--radius-md);
+}
+
 .trash-page__all {
   margin-inline-start: auto;
 }

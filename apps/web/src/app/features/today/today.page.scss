@@ -98,13 +98,16 @@
 // desktop, three on a tablet, two on a phone.
 .today__cards {
   display: grid;
-  gap: var(--density-feed-gap);
+
+  // The masonry's own column gaps, so the loading cards stand where the loaded ones do.
+  gap: rem(20px);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
   padding: 0;
   margin: 0;
   list-style: none;
 
   @include tablet {
+    gap: var(--space-4);
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 

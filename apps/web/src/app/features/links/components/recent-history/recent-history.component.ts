@@ -60,8 +60,8 @@ import type { HistoryDay } from '../../models/history-day.interface';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { Translate } from '../../../../core/i18n/translate.service';
 
-/** Placeholders shown while the history loads. */
-const SKELETON_COUNT = 5;
+/** Rows of the day groups shown while the history loads (Today, Yesterday, earlier). */
+const SKELETON_GROUPS: readonly number[] = [1, 2, 4];
 
 /**
  * The links opened in the last 30 days, in local-time day groups: the body of the `/recent` page
@@ -101,7 +101,7 @@ export class RecentHistoryComponent {
   protected readonly compact = inject(ViewportService).compact;
 
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
-  protected readonly SKELETON_COUNT = SKELETON_COUNT;
+  protected readonly SKELETON_GROUPS = SKELETON_GROUPS;
   /** Level of the day headings: 2 on the page, 3 inside the sheet whose title is the h2. */
   readonly headingLevel = input<HistoryHeadingLevel>(HISTORY_HEADING_LEVEL.Two);
   protected readonly windowDays = RECENT_LINKS_WINDOW_DAYS;

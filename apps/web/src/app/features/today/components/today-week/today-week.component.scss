@@ -98,3 +98,40 @@
   color: var(--text-muted);
   text-align: center;
 }
+
+// The loading rows: blocks where the thumb, the title and "to folder" go.
+.today-week__sk-thumb {
+  --ui-skeleton-width: #{rem(48px)};
+  --ui-skeleton-height: #{rem(36px)};
+  --ui-skeleton-radius: var(--radius-sm);
+
+  flex: none;
+}
+
+.today-week__sk-title {
+  --ui-skeleton-width: 100%;
+  --ui-skeleton-height: #{rem(12px)};
+
+  flex: 1 1 0;
+  max-inline-size: 42%;
+
+  @include phone {
+    flex-basis: calc(100% - #{rem(60px)});
+    max-inline-size: none;
+  }
+}
+
+.today-week__sk-to {
+  --ui-skeleton-width: #{rem(88px)};
+  --ui-skeleton-height: #{rem(10px)};
+
+  flex: none;
+  margin-inline-start: auto;
+
+  // Phone: "to folder" is a 24px line under the title (the folder chip is 24px high).
+  @include phone {
+    flex: 1 1 100%;
+    padding-block: rem(7px);
+    margin-inline-start: rem(60px);
+  }
+}

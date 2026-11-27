@@ -1,6 +1,28 @@
 @if (!store.recentLoaded()) {
-  <div class="recent-history__skeleton" aria-busy="true">
-    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+  <!-- The loaded list's own places: the kind chips and the search, then day groups of rows. -->
+  <div
+    class="recent-history__skeleton"
+    [class.recent-history__skeleton--page]="page()"
+    aria-busy="true"
+  >
+    @if (filterable()) {
+      <div class="recent-history__tools">
+        <ui-skeleton class="recent-history__sk-chips" [shape]="SKELETON_SHAPE.Block" />
+        <ui-skeleton class="recent-history__sk-search" [shape]="SKELETON_SHAPE.Block" />
+      </div>
+    }
+    <div class="recent-history__groups">
+      @for (rows of SKELETON_GROUPS; track $index) {
+        <div class="recent-history__sk-group">
+          <div class="recent-history__sk-title">
+            <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+          </div>
+          <div class="recent-history__sk-list">
+            <ui-skeleton [shape]="SKELETON_SHAPE.History" [count]="rows" />
+          </div>
+        </div>
+      }
+    </div>
   </div>
 } @else if (!hasHistory()) {
   <ui-empty-state

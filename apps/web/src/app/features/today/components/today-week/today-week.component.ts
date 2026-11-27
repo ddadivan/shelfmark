@@ -8,6 +8,8 @@ import {
   IconComponent,
   ICON_SIZE,
   NoticeComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
 } from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
@@ -32,6 +34,7 @@ import { LINKS_SCOPE_LABEL_KEY } from '../../../links/models/links-scope-label-k
     FolderIconComponent,
     IconComponent,
     NoticeComponent,
+    SkeletonComponent,
     TodayThumbComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +55,9 @@ export class TodayWeekComponent {
   private readonly actions = inject(LinkActionsService);
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
+  /** Rows of the box while the week loads (the loaded box shows up to this many). */
+  protected readonly SKELETON_ROWS: readonly number[] = [0, 1, 2, 3];
   protected readonly safeHref = safeHref;
   protected readonly allHref = `/${APP_PATH.Links}`;
   protected readonly allQuery = { [SAVED_QUERY_PARAM]: SAVED_WITHIN.Week };

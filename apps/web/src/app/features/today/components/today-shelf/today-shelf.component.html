@@ -59,5 +59,23 @@
         <p class="today-clear__text">{{ 'today.shelf.emptyText' | transloco }}</p>
       </div>
     }
+  } @else {
+    <!-- The loaded box's own parts: the 16:7 preview, the saved line, the title and the buttons. -->
+    <div class="today-shelf today-box" aria-hidden="true">
+      <ui-skeleton class="today-shelf__sk-cover" [shape]="SKELETON_SHAPE.Block" />
+      <div class="today-shelf__body">
+        <div class="today-shelf__sk-meta">
+          <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+        </div>
+        <div class="today-shelf__sk-title">
+          <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
+        </div>
+        <div class="today-shelf__actions">
+          <ui-skeleton class="today-shelf__sk-button" [shape]="SKELETON_SHAPE.Block" />
+          <ui-skeleton class="today-shelf__sk-button" [shape]="SKELETON_SHAPE.Block" />
+          <ui-skeleton class="today-shelf__sk-button" [shape]="SKELETON_SHAPE.Block" />
+        </div>
+      </div>
+    </div>
   }
 </section>

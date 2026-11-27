@@ -50,5 +50,16 @@
     } @else {
       <p class="today-week__empty today-box">{{ 'today.week.empty' | transloco }}</p>
     }
+  } @else {
+    <!-- The loaded box's own rows (48 x 36 preview, the title, "to folder"), same height and lines. -->
+    <div class="today-week today-box" aria-hidden="true">
+      @for (row of SKELETON_ROWS; track row) {
+        <div class="today-week__row">
+          <ui-skeleton class="today-week__sk-thumb" [shape]="SKELETON_SHAPE.Block" />
+          <ui-skeleton class="today-week__sk-title" [shape]="SKELETON_SHAPE.Block" />
+          <ui-skeleton class="today-week__sk-to" [shape]="SKELETON_SHAPE.Block" />
+        </div>
+      }
+    </div>
   }
 </section>
