@@ -10,6 +10,8 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { ownImageUrl } from '../../links/utils/link-view';
 import type { FolderBannerView } from '../models/folder-banner-view.interface';
 import { LibraryFilterService } from './library-filter.service';
+import { scopeLabelKey } from '../../links/utils/scope-label-key';
+import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 
 /**
  * The names of the library page: the breadcrumb trail and header of a folder page and the tab title
@@ -25,7 +27,9 @@ export class LibraryHeadService {
 
   /** The document title the app started with (the brand), the suffix of every page title. */
   private readonly appName = this.title.getTitle();
-  private readonly rootLabel = toSignal(this.transloco.selectTranslate('library.scope.all'));
+  private readonly rootLabel = toSignal(
+    this.transloco.selectTranslate(scopeLabelKey(LINKS_SCOPE.All)),
+  );
   private readonly scopeLabel = toSignal(
     toObservable(this.filters.titleKey).pipe(
       switchMap((key) => this.transloco.selectTranslate(key)),

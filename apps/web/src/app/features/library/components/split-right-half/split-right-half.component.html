@@ -42,7 +42,7 @@
       </div>
       <ui-picker-list
         [options]="split.rightOptions()"
-        [emptyLabel]="'library.scope.unsorted' | transloco"
+        [emptyLabel]="LINKS_SCOPE_LABEL_KEY.unsorted | transloco"
         [currentIds]="split.rightCurrentIds()"
         [currentCheck]="false"
         [recentIds]="related.pickerIds()"
@@ -63,7 +63,7 @@
         [label]="split.rightLabel()"
         [icon]="split.rightTile().icon"
         [colour]="split.rightTile().colour"
-        [emptyLabel]="'library.scope.unsorted' | transloco"
+        [emptyLabel]="LINKS_SCOPE_LABEL_KEY.unsorted | transloco"
         [currentIds]="split.rightCurrentIds()"
         [recentIds]="split.rightRecent()"
         [recentLabel]="'links.move.recent' | transloco"

@@ -9,20 +9,20 @@
     <app-library-tile
       [href]="'/' + APP_PATH.Links"
       icon="link"
-      [label]="'library.scope.all' | transloco"
+      [label]="LINKS_SCOPE_LABEL_KEY.all | transloco"
       [meta]="counts()?.all?.toString()"
     />
     <app-library-tile
       [href]="'/' + APP_PATH.Unsorted"
       icon="inbox"
-      [label]="'library.scope.unsorted' | transloco"
+      [label]="LINKS_SCOPE_LABEL_KEY.unsorted | transloco"
       [meta]="counts()?.unsorted?.toString()"
     />
     <app-library-tile
       [href]="'/' + APP_PATH.Favorites"
       icon="star"
       accent
-      [label]="'library.scope.favorites' | transloco"
+      [label]="LINKS_SCOPE_LABEL_KEY.favorites | transloco"
       [meta]="counts()?.favorites?.toString()"
     />
     <app-library-tile

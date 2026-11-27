@@ -33,6 +33,7 @@ import {
   swapCommands,
 } from '../utils/split-param';
 import { LibraryFilterService } from './library-filter.service';
+import { scopeLabelKey } from '../../links/utils/scope-label-key';
 
 /**
  * The side-by-side view of the library page (#386, ADR 0044): which feed the right half shows,
@@ -98,9 +99,9 @@ export class SplitViewService {
       this.folders.entities(),
       this.tags.entities(),
       {
-        all: this.transloco.translate(`library.scope.${LINKS_SCOPE.All}`),
-        unsorted: this.transloco.translate(`library.scope.${LINKS_SCOPE.Unsorted}`),
-        favorites: this.transloco.translate(`library.scope.${LINKS_SCOPE.Favorites}`),
+        all: this.transloco.translate(scopeLabelKey(LINKS_SCOPE.All)),
+        unsorted: this.transloco.translate(scopeLabelKey(LINKS_SCOPE.Unsorted)),
+        favorites: this.transloco.translate(scopeLabelKey(LINKS_SCOPE.Favorites)),
       },
       (colour) => this.settings.shownColour(colour),
     );
@@ -169,7 +170,7 @@ export class SplitViewService {
     activeLang();
     const target = this.rightTarget();
     if (target === null) {
-      return this.transloco.translate(`library.scope.${LINKS_SCOPE.Unsorted}`);
+      return this.transloco.translate(scopeLabelKey(LINKS_SCOPE.Unsorted));
     }
     return this.rightFolder()?.name ?? '';
   });

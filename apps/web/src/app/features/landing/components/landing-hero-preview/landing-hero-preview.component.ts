@@ -47,6 +47,7 @@ import type { LandingPreviewTab } from '../../models/landing-preview-tab.type';
 import { LANDING_FOLDER } from '../../models/landing-folder.const';
 import { LandingPreviewCycleService } from '../../services/landing-preview-cycle.service';
 import { previewShows } from '../../utils/landing-preview';
+import { scopeLabelKey } from '../../../links/utils/scope-label-key';
 
 /** The window the picture shows: the app at 1400px, laid out at that size and scaled down. */
 const STAGE_WIDTH = 1400;
@@ -203,7 +204,7 @@ export class LandingHeroPreviewComponent {
   protected readonly titleKey = computed(() => {
     const scope = this.cycle.state().scope;
     const folder = (Object.values(LANDING_FOLDER) as string[]).includes(scope);
-    return folder ? `landing.folders.${scope}` : `library.scope.${scope}`;
+    return folder ? `landing.folders.${scope}` : scopeLabelKey(scope);
   });
 
   protected folderKey(folder: LandingFolder): string {

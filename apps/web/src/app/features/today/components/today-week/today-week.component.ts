@@ -16,6 +16,7 @@ import { FolderChipsService } from '../../../links/services/folder-chips.service
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { safeHref } from '../../../links/utils/link-view';
 import { TodayThumbComponent } from '../today-thumb/today-thumb.component';
+import { LINKS_SCOPE_LABEL_KEY } from '../../../links/models/links-scope-label-key.const';
 
 /**
  * "Saved this week" of Today (Shelf): how many links came in over the last 7 days and how many
@@ -47,6 +48,7 @@ export class TodayWeekComponent {
   readonly retry = output<void>();
 
   protected readonly chips = inject(FolderChipsService);
+  protected readonly LINKS_SCOPE_LABEL_KEY = LINKS_SCOPE_LABEL_KEY;
   private readonly actions = inject(LinkActionsService);
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly ICON_SIZE = ICON_SIZE;

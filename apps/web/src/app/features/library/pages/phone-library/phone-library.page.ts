@@ -26,6 +26,7 @@ import { RecentSheetComponent } from '../../../links/components/recent-sheet/rec
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import { SidebarTagsComponent } from '../../../tags/components/sidebar-tags/sidebar-tags.component';
 import { LibraryTileComponent } from './library-tile.component';
+import { LINKS_SCOPE_LABEL_KEY } from '../../../links/models/links-scope-label-key.const';
 
 /**
  * The Library tab of the phone (MobileMenu): Pinned, the folder tree with its menus (#512), then
@@ -47,6 +48,7 @@ import { LibraryTileComponent } from './library-tile.component';
 })
 export default class PhoneLibraryPage {
   protected readonly folders = inject(FoldersStore);
+  protected readonly LINKS_SCOPE_LABEL_KEY = LINKS_SCOPE_LABEL_KEY;
   private readonly links = inject(LinksStore);
   private readonly trash = inject(TrashStore);
   private readonly reminders = inject(RemindersStore);

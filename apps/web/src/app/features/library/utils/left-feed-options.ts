@@ -9,6 +9,7 @@ import { LEFT_FEED_ID } from '../models/left-feed-id.const';
 import { SPLIT_TILE_ICON } from '../models/split-tile-icon.const';
 import type { LeftFeedLabels } from '../models/left-feed-labels.interface';
 import type { LibraryRoute } from '../models/library-route.interface';
+import { scopeLabelKey } from '../../links/utils/scope-label-key';
 
 /** Translates a key (`TranslocoService.translate`). */
 type Translate = (key: string, params?: Record<string, string>) => string;
@@ -90,5 +91,5 @@ export function leftFeedLabel(
   if (filter.scope === LINKS_SCOPE.All && filter.tags && filter.tags.length > 0) {
     return filter.tags.map((tag) => `#${tag}`).join(' ');
   }
-  return translate(`library.scope.${filter.scope}`);
+  return translate(scopeLabelKey(filter.scope));
 }

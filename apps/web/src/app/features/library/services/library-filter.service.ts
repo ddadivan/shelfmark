@@ -36,6 +36,7 @@ import { GRID_STEP_DEFAULT } from '../models/grid-step-default.const';
 import { FILTER_PARAMS_OFF } from '../models/filter-params-off.const';
 import type { CardField } from '../models/card-field.type';
 import type { CardFields } from '../models/card-fields.type';
+import { scopeLabelKey } from '../../links/utils/scope-label-key';
 
 const NO_INPUTS: LibraryRouteInputs = {
   scope: signal(LINKS_SCOPE.All),
@@ -151,7 +152,7 @@ export class LibraryFilterService {
     const id = this.folderId();
     return this.isFolder() && id !== undefined ? { folderId: id } : {};
   });
-  readonly titleKey = computed(() => `library.scope.${this.scope()}`);
+  readonly titleKey = computed(() => scopeLabelKey(this.scope()));
   readonly emptyKey = computed(() =>
     this.isFolder() ? 'library.emptyFolder' : EMPTY_KEYS[this.scope()],
   );
