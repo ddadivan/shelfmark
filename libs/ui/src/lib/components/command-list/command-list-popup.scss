@@ -51,7 +51,7 @@
 
 // The header field: the Shelf search of the trigger (`surface-hover`, inset hairline, 48px, up to
 // 640px, `radius-card`, 16px icon), the text in the body size, the hint in `text-muted`, no divider
-// (the panel is a separate surface). Focus draws the 2px ring.
+// (the panel is a separate surface). Focus turns the hairline `text-muted`.
 .ui-command-list--popup .ui-command-list__field {
   --ui-search-hairline: var(--search-hairline);
   --ui-icon-size: var(--icon-size-sm);
@@ -69,11 +69,12 @@
     border-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out);
 
-  // The dialog row's bottom-line focus is replaced by the ring; the hairline stays.
+  // Focus (author, Nov 27: the 2px ring was too heavy on a field that always shows it): the
+  // hairline turns `text-muted`, no outer ring; the transparent outline keeps a ring in forced
+  // colours.
   &:has(.ui-command-list__input:focus-visible) {
-    @include focus-ring;
-
-    box-shadow: inset 0 0 0 1px var(--ui-search-hairline);
+    outline: 1px solid transparent;
+    box-shadow: inset 0 0 0 1px var(--text-muted);
   }
 
   @include hover {
