@@ -23,6 +23,7 @@
       <div class="ui-skeleton__tree-row">
         <div class="ui-skeleton__block ui-skeleton__icon"></div>
         <div class="ui-skeleton__block ui-skeleton__line"></div>
+        <div class="ui-skeleton__block ui-skeleton__count"></div>
       </div>
     }
     @case (SKELETON_SHAPE.Preview) {
@@ -35,6 +36,22 @@
             class="ui-skeleton__block ui-skeleton__preview-title ui-skeleton__preview-title--short"
           ></div>
         </div>
+      </div>
+    }
+    @case (SKELETON_SHAPE.Block) {
+      <div class="ui-skeleton__block ui-skeleton__box"></div>
+    }
+    @case (SKELETON_SHAPE.History) {
+      <div class="ui-skeleton__history">
+        @if (selectable()) {
+          <div class="ui-skeleton__block ui-skeleton__check"></div>
+        }
+        <div class="ui-skeleton__block ui-skeleton__history-preview"></div>
+        <div class="ui-skeleton__history-main">
+          <div class="ui-skeleton__block ui-skeleton__history-title"></div>
+          <div class="ui-skeleton__block ui-skeleton__history-meta"></div>
+        </div>
+        <div class="ui-skeleton__block ui-skeleton__history-trail"></div>
       </div>
     }
     @default {

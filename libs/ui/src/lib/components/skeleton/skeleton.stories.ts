@@ -12,7 +12,7 @@ const meta: Meta<SkeletonComponent> = {
     docs: {
       description: {
         component:
-          'Placeholder for a first load, in the shape of the content (card, row, tree, preview, line). Widths vary 90 / 70 / 50% so it reads as text. The shimmer stops under reduced motion. It is `aria-hidden`: the consumer marks its container `aria-busy="true"` and announces the loading. Later refetches use the top bar, never skeletons again.',
+          'Placeholder for a first load, in the shape of the content (card, row, tree, preview, line, block, history). Widths vary 90 / 70 / 50% so it reads as text. The shimmer stops under reduced motion. It is `aria-hidden`: the consumer marks its container `aria-busy="true"` and announces the loading. Later refetches use the top bar, never skeletons again.',
       },
     },
   },
@@ -49,6 +49,21 @@ export const Tree: Story = { args: { shape: SKELETON_SHAPE.Tree, count: 5 } };
 
 /** The link preview box in the add-link dialog. */
 export const Preview: Story = { args: { shape: SKELETON_SHAPE.Preview, count: 1 } };
+
+/** A plain box (12px high by default), sized by `--ui-skeleton-width|height|radius` on the host. */
+export const Block: Story = {
+  args: { shape: SKELETON_SHAPE.Block, count: 2 },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="cs-phone" aria-busy="true">
+        <ui-skeleton [shape]="shape" [count]="count" />
+      </div>`,
+  }),
+};
+
+/** Mirrors `ui-history-row` (Trash, Recently opened): preview, two lines, the time at the end. */
+export const History: Story = { args: { shape: SKELETON_SHAPE.History, count: 4 } };
 
 /** Every shape in both themes. */
 export const AllVariants: Story = {

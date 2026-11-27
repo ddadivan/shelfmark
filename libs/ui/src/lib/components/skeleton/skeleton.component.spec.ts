@@ -7,11 +7,12 @@ import { SkeletonComponent } from './skeleton.component';
 
 @Component({
   imports: [SkeletonComponent],
-  template: `<ui-skeleton [shape]="shape()" [count]="count()" />`,
+  template: `<ui-skeleton [shape]="shape()" [count]="count()" [selectable]="selectable()" />`,
 })
 class HostComponent {
   readonly shape = signal<SkeletonShape>(SKELETON_SHAPE.Line);
   readonly count = signal<number | string>(1);
+  readonly selectable = signal(false);
 }
 
 function setup() {
@@ -32,6 +33,8 @@ const ITEM_SELECTOR: Record<SkeletonShape, string> = {
   tree: '.ui-skeleton__tree-row',
   preview: '.ui-skeleton__preview',
   line: '.ui-skeleton__line',
+  block: '.ui-skeleton__box',
+  history: '.ui-skeleton__history',
 };
 
 describe('SkeletonComponent', () => {
@@ -60,6 +63,23 @@ describe('SkeletonComponent', () => {
     expect(skeleton.querySelectorAll('.ui-skeleton__title').length).toBe(2);
     expect(skeleton.querySelectorAll('.ui-skeleton__card .ui-skeleton__line--meta').length).toBe(1);
     expect(skeleton.querySelector('.ui-skeleton__chip')).toBeNull();
+  });
+
+  it('history is a history row, with a checkbox only when selectable', () => {
+    const { skeleton, update } = setup();
+    update((c) => c.shape.set(SKELETON_SHAPE.History));
+    expect(skeleton.querySelector('.ui-skeleton__history-preview')).not.toBeNull();
+    expect(skeleton.querySelectorAll('.ui-skeleton__history-main > *').length).toBe(2);
+    expect(skeleton.querySelector('.ui-skeleton__history-trail')).not.toBeNull();
+    expect(skeleton.querySelector('.ui-skeleton__check')).toBeNull();
+    update((c) => c.selectable.set(true));
+    expect(skeleton.querySelector('.ui-skeleton__check')).not.toBeNull();
+  });
+
+  it('tree rows end with a count placeholder', () => {
+    const { skeleton, update } = setup();
+    update((c) => c.shape.set(SKELETON_SHAPE.Tree));
+    expect(skeleton.querySelector('.ui-skeleton__tree-row .ui-skeleton__count')).not.toBeNull();
   });
 
   it('accepts a numeric string and clamps count to 0..50', () => {

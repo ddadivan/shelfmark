@@ -155,10 +155,13 @@
 
 .ui-skeleton__tree-row {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-3);
   align-items: center;
   min-height: rem(36px);
-  padding-inline: var(--space-2-5);
+
+  // The folder row's own places (`ui-tree`): the icon 12px from the start, the name at 40px, the
+  // count 14px from the end.
+  padding-inline: var(--space-3) rem(14px);
 
   @include phone {
     min-height: rem(44px);
@@ -167,6 +170,13 @@
   .ui-skeleton__line {
     flex: none;
   }
+}
+
+.ui-skeleton__count {
+  flex: none;
+  width: rem(8px);
+  height: rem(12px);
+  margin-inline-start: auto;
 }
 
 :host(.ui-skeleton--tree) > :nth-child(4n + 1) .ui-skeleton__line {
@@ -178,7 +188,7 @@
 }
 
 :host(.ui-skeleton--tree) > :nth-child(4n + 3) {
-  padding-inline-start: var(--space-6);
+  padding-inline-start: rem(26px);
 
   .ui-skeleton__line {
     width: 60%;
@@ -237,4 +247,117 @@
 
 :host(.ui-skeleton--line) > :nth-child(3n) {
   width: 50%;
+}
+
+// Block ---------------------------------------------------------------------------------------
+
+:host(.ui-skeleton--block) {
+  display: block;
+}
+
+// One plain box (Shelf 14-system `sk`: `surface-hover`, radius 8), sized by the consumer: width,
+// height (`auto` with an aspect ratio) and radius.
+.ui-skeleton__box {
+  inline-size: var(--ui-skeleton-width, 100%);
+  block-size: var(--ui-skeleton-height, #{rem(12px)});
+  aspect-ratio: var(--ui-skeleton-aspect, auto);
+  background: var(--surface-hover);
+  border-radius: var(--ui-skeleton-radius, var(--radius-tile));
+}
+
+// History row -----------------------------------------------------------------------------------
+
+:host(.ui-skeleton--history) {
+  gap: rem(2px);
+}
+
+// `ui-history-row`: 14px gaps, 10px / 14px padding, the preview at the row's own size (72 x 48;
+// a flat group makes it 56 x 40; 48 wide on a phone), two text lines, the time at the end.
+.ui-skeleton__history {
+  display: flex;
+  gap: rem(14px);
+  align-items: center;
+  padding: var(--space-2-5) rem(14px);
+
+  @include phone {
+    gap: var(--space-3);
+    min-height: rem(60px);
+    padding: var(--space-2) var(--space-1-5);
+  }
+}
+
+.ui-skeleton__check {
+  flex: none;
+  width: rem(20px);
+  height: rem(20px);
+}
+
+.ui-skeleton__history-preview {
+  flex: none;
+  width: var(--ui-history-row-preview-width, #{rem(72px)});
+  height: var(--ui-history-row-preview-height, #{rem(48px)});
+  background: var(--surface-hover);
+
+  @include phone {
+    width: rem(48px);
+  }
+}
+
+.ui-skeleton__history-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ui-skeleton__history-title,
+.ui-skeleton__history-meta,
+.ui-skeleton__history-trail {
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
+}
+
+.ui-skeleton__history-title {
+  height: rem(14px);
+}
+
+.ui-skeleton__history-meta {
+  height: rem(10px);
+}
+
+.ui-skeleton__history-trail {
+  flex: none;
+  width: var(--ui-skeleton-trail-width, #{rem(64px)});
+  height: rem(12px);
+}
+
+:host(.ui-skeleton--history) > :nth-child(3n + 1) {
+  .ui-skeleton__history-title {
+    width: 62%;
+  }
+
+  .ui-skeleton__history-meta {
+    width: 22%;
+  }
+}
+
+:host(.ui-skeleton--history) > :nth-child(3n + 2) {
+  .ui-skeleton__history-title {
+    width: 48%;
+  }
+
+  .ui-skeleton__history-meta {
+    width: 18%;
+  }
+}
+
+:host(.ui-skeleton--history) > :nth-child(3n) {
+  .ui-skeleton__history-title {
+    width: 56%;
+  }
+
+  .ui-skeleton__history-meta {
+    width: 26%;
+  }
 }

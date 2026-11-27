@@ -5,4 +5,6 @@ export const SKELETON_SHAPE = {
   Tree: 'tree',
   Preview: 'preview',
   Line: 'line',
+  Block: 'block',
+  History: 'history',
 } as const;
