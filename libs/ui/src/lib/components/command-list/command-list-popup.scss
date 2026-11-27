@@ -108,7 +108,7 @@
 }
 
 // `emptyPanel` (Shelf `03-search.html` `.s-recent`): 8px padding, 36px rows with a bare 16px glyph
-// and 14px text, the row under the arrow keys on `surface-hover` (with its ring), no Enter cap.
+// and 14px text, the row under the arrow keys on `surface-hover` (no ring), no Enter cap.
 .ui-command-list__panel--compact {
   .ui-command-list__list {
     padding: var(--space-2);

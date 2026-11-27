@@ -19,11 +19,10 @@
     background: var(--surface-pressed);
   }
 
-  // The option under the arrow keys (DOM focus stays in the input).
+  // The option under the arrow keys (DOM focus stays in the input): a fill only, no ring (author,
+  // Nov 27); it moves with the arrows.
   &[data-active='true'] {
     background: var(--fill);
-
-    @include focus-ring(-2px);
   }
 
   &[aria-disabled='true'] {

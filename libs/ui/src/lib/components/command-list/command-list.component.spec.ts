@@ -761,7 +761,14 @@ describe('CommandListComponent screen', () => {
     expect(css).toMatch(
       /\.ui-command-list__option \+ \.ui-command-list__option\s*{[^}]*border-top/,
     );
-    expect(mediaBlocks(css, /pointer:\s*coarse/).join('\n')).toContain('outline: none');
+  });
+
+  it('marks the row under the arrow keys with a fill only, no ring (author, Nov 27)', () => {
+    const rows = compileScss('lib/components/command-list/command-list-rows.scss');
+    const active =
+      /\.ui-command-list__option\[data-active=true\]\s*\{([^}]*)\}/.exec(rows)?.[1] ?? '';
+    expect(active).toContain('background: var(--fill)');
+    expect(active).not.toContain('outline');
   });
 });
 

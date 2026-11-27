@@ -93,11 +93,6 @@
 
     &[data-active='true'] {
       background: transparent;
-
-      // A touch screen has no arrow keys: no ring on the first row there.
-      @include coarse {
-        outline: none;
-      }
     }
   }
 
