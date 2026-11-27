@@ -110,7 +110,7 @@ export const BothSets: Story = {
                 <li style="display: flex; align-items: center; gap: 0.5rem">
                   <ui-icon [name]="n" [size]="24" />
                   <ui-icon [name]="n" [size]="16" />
-                  <code style="font-size: 0.6875rem">{{ n }}</code>
+                  <code style="font-size: var(--font-size-meta)">{{ n }}</code>
                 </li>
               }
             </ul>

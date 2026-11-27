@@ -8,6 +8,7 @@ import '../src/styles/global.scss';
 import './breadcrumbs-stories.scss';
 import './card-stories.scss';
 import './command-list-stories.scss';
+import './directive-stories.scss';
 import './display-stories.scss';
 import './dialog-stories.scss';
 import './drawer-stories.scss';
