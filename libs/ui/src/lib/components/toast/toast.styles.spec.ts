@@ -54,6 +54,8 @@ describe('toast styles', () => {
     expect(phone).toMatch(/:host[^{]*\{[^}]*flex-wrap:\s*wrap/);
     expect(phone).toMatch(/\.ui-toast__action[^{]*\{[^}]*order:\s*2/);
     expect(phone).toMatch(/\.ui-toast__close[^{]*\{[^}]*order:\s*1/);
+    expect(phone).toMatch(/:host[^{]*\{[^}]*justify-content:\s*flex-end/);
+    expect(phone).toMatch(/\.ui-toast__action[^{]*\{[^}]*min-inline-size:\s*5\.5rem/);
   });
 
   it('tints the icon tile by kind', () => {

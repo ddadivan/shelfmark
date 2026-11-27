@@ -132,11 +132,13 @@
 // Phone (author, Nov 27): the actions go on their own line under the lead and the text, so a long
 // title keeps the width instead of wrapping into a narrow column beside them. The lead, the text
 // and the close button share the first line (the text takes all but the room of the lead, the
-// close button and their gaps; `close` is 44px under touch); the actions follow from the start.
+// close button and their gaps; `close` is 44px under touch); the actions follow at the end, wider
+// (at least 88px, 16px side padding) so they are easy to hit.
 @include phone {
   :host {
     flex-wrap: wrap;
     row-gap: var(--space-2-5);
+    justify-content: flex-end;
   }
 
   .ui-toast__text {
@@ -151,5 +153,12 @@
   .ui-toast__keys,
   .ui-toast__action {
     order: 2;
+  }
+
+  // `:host` first: the action's own rules (`toast-actions.scss`, loaded after this sheet) set the
+  // touch size and padding at the same specificity.
+  :host .ui-toast__action {
+    min-inline-size: rem(88px);
+    padding-inline: var(--space-4);
   }
 }
