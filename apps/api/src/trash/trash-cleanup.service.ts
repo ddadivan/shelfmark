@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { runBatchedWithBudget } from '../common/cron/run-batched-with-budget';
 import { PrismaService } from '../prisma/prisma.service';
 import { TRASH_CLEANUP_LIMITS } from './models/trash-cleanup-limits.const';
 import type { TrashCleanupOptions } from './models/trash-cleanup-options.interface';
@@ -22,23 +23,27 @@ export class TrashCleanupService {
     const batchSize = options.batchSize ?? TRASH_CLEANUP_LIMITS.BatchSize;
     const budgetMs = options.budgetMs ?? TRASH_CLEANUP_LIMITS.BudgetMs;
     const now = options.now ?? new Date();
-    const started = Date.now();
+    const startedAt = Date.now();
     let deleted = 0;
     let hasMore = false;
 
-    const batches = [
+    const phases = [
       (): Promise<number> => this.purgeLinks(now, batchSize),
       (): Promise<number> => this.purgeFolders(now, batchSize),
     ];
-    outer: for (const purge of batches) {
-      for (;;) {
-        const count = await purge();
-        deleted += count;
-        if (count < batchSize) break;
-        if (Date.now() - started >= budgetMs) {
-          hasMore = await this.anyExpired(now);
-          break outer;
-        }
+    // Both phases share one budget; a phase the budget ended is the last one.
+    for (const step of phases) {
+      const phase = await runBatchedWithBudget({
+        batchSize,
+        budgetMs,
+        startedAt,
+        step,
+        anyLeft: () => this.anyExpired(now),
+      });
+      deleted += phase.processed;
+      if (phase.budgetEnded) {
+        hasMore = phase.hasMore;
+        break;
       }
     }
     this.logger.log(`Trash cleanup deleted ${deleted} row(s), hasMore=${hasMore}`);

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ASK_HISTORY_LIMIT } from '@shelfmark/contracts';
+import { runBatchedWithBudget } from '../../common/cron/run-batched-with-budget';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ASK_HISTORY_PURGE_LIMITS } from '../models/ask-history-purge-limits.const';
 import type { AskHistoryPurgeOptions } from '../models/ask-history-purge-options.interface';
@@ -24,19 +25,13 @@ export class AskHistoryPurgeService {
     const budgetMs = options.budgetMs ?? ASK_HISTORY_PURGE_LIMITS.BudgetMs;
     const now = options.now ?? new Date();
     const cutoff = new Date(now.getTime() - ASK_HISTORY_LIMIT.RetentionDays * DAY_MS);
-    const started = Date.now();
-    let deleted = 0;
-    let hasMore = false;
-    for (;;) {
-      const count = await this.purgeBatch(cutoff, batchSize);
-      deleted += count;
-      if (count < batchSize) break;
-      if (Date.now() - started >= budgetMs) {
-        hasMore =
-          (await this.prisma.askConversation.count({ where: { updatedAt: { lt: cutoff } } })) > 0;
-        break;
-      }
-    }
+    const { processed: deleted, hasMore } = await runBatchedWithBudget({
+      batchSize,
+      budgetMs,
+      step: () => this.purgeBatch(cutoff, batchSize),
+      anyLeft: async () =>
+        (await this.prisma.askConversation.count({ where: { updatedAt: { lt: cutoff } } })) > 0,
+    });
     this.logger.log(`Ask history purge deleted ${deleted} conversation(s), hasMore=${hasMore}`);
     return { deleted, hasMore };
   }

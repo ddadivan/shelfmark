@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { runBatchedWithBudget } from '../common/cron/run-batched-with-budget';
 import { PrismaService } from '../prisma/prisma.service';
 import { ACCOUNT_PURGE_LIMITS } from './models/account-purge-limits.const';
 import type { AccountPurgeOptions } from './models/account-purge-options.interface';
@@ -22,19 +23,13 @@ export class AccountPurgeService {
     const batchSize = options.batchSize ?? ACCOUNT_PURGE_LIMITS.BatchSize;
     const budgetMs = options.budgetMs ?? ACCOUNT_PURGE_LIMITS.BudgetMs;
     const now = options.now ?? new Date();
-    const started = Date.now();
-    let deleted = 0;
-    let hasMore = false;
-    for (;;) {
-      const count = await this.purgeBatch(now, batchSize);
-      deleted += count;
-      if (count < batchSize) break;
-      if (Date.now() - started >= budgetMs) {
-        hasMore =
-          (await this.prisma.user.count({ where: { deletionScheduledAt: { lte: now } } })) > 0;
-        break;
-      }
-    }
+    const { processed: deleted, hasMore } = await runBatchedWithBudget({
+      batchSize,
+      budgetMs,
+      step: () => this.purgeBatch(now, batchSize),
+      anyLeft: async () =>
+        (await this.prisma.user.count({ where: { deletionScheduledAt: { lte: now } } })) > 0,
+    });
     this.logger.log(`Account purge deleted ${deleted} account(s), hasMore=${hasMore}`);
     return { deleted, hasMore };
   }
