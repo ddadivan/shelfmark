@@ -59,8 +59,11 @@
   height: rem(16px);
 }
 
-// Card (Shelf 14-system `y-skc`): a `fill` card, radius 16, the full-bleed preview block, then
-// two 14px title lines (85%, 55%) and a 10px meta line (40%) in 12px of padding.
+// Card (`ui-card`): the card's own measure (`styles/_card-geometry.scss`, included by the card too):
+// a `fill` card, radius 16, the full-bleed 4:3 preview, then the body in the card's padding and gap
+// with the date line, the title on two lines, the source row (favicon and host) and the tag row.
+// Each row is one line box of the real text with a thinner bar centred in it. With two title lines
+// that is about 340px at 268px wide, as tall as a typical real card (317 to 440px).
 .ui-skeleton__card {
   display: flex;
   flex-direction: column;
@@ -70,16 +73,13 @@
 }
 
 .ui-skeleton__media {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: #{$card-media-ratio};
   background: var(--surface-hover);
   border-radius: 0;
 }
 
 .ui-skeleton__card-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  @include card-body;
 }
 
 .ui-skeleton__card .ui-skeleton__title {
@@ -93,6 +93,67 @@
   height: rem(10px);
   background: var(--surface-hover);
   border-radius: var(--radius-tile);
+}
+
+.ui-skeleton__card-meta,
+.ui-skeleton__card-line,
+.ui-skeleton__card-source,
+.ui-skeleton__card-tags {
+  display: flex;
+  align-items: center;
+}
+
+.ui-skeleton__card-meta {
+  @include card-meta-text;
+
+  block-size: 1lh;
+}
+
+.ui-skeleton__card-line {
+  @include card-title-text;
+
+  block-size: 1lh;
+}
+
+.ui-skeleton__card-source {
+  @include card-source-row;
+  @include card-meta-text;
+
+  block-size: 1lh;
+}
+
+.ui-skeleton__card-tags {
+  @include card-tags-row;
+
+  flex-wrap: nowrap;
+  align-items: flex-end;
+}
+
+.ui-skeleton__favicon {
+  flex: none;
+  width: $card-favicon-size;
+  height: $card-favicon-size;
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+}
+
+.ui-skeleton__host {
+  flex: 0 1 45%;
+  height: rem(10px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
+}
+
+.ui-skeleton__chip {
+  flex: none;
+  width: rem(48px);
+  height: rem(16px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+}
+
+.ui-skeleton__chip--short {
+  width: rem(36px);
 }
 
 .ui-skeleton__title--long {

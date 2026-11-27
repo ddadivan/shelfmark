@@ -38,7 +38,7 @@ type Story = StoryObj<SkeletonComponent>;
 /** Three text lines: 90, 70 and 50% wide. */
 export const Line: Story = {};
 
-/** Mirrors `ui-card`: 16:9 media, meta line, two title lines, chips. */
+/** Mirrors `ui-card`: 4:3 media, meta line, two title lines, source row, chips (about 341px tall). */
 export const Card: Story = { args: { shape: SKELETON_SHAPE.Card, count: 1 } };
 
 /** Mirrors `ui-list-item`: icon, title and meta. */

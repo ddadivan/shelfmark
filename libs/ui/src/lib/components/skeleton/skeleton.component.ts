@@ -15,7 +15,7 @@ const MAX_COUNT = 50;
 /**
  * Placeholder for content on its first load, in the shape of the real thing: `card`
  * (matches `ui-card`), `row` (`ui-list-item`), `tree` (`ui-tree`), `preview` (the link preview
- * box) or `line` (text). `count` repeats it (6 cards, 8 rows, 5 folders fill a typical screen).
+ * box) or `line` (text). `count` repeats it (12 to 16 cards, 8 rows, 5 folders fill a typical screen).
  * Line widths cycle 90 / 70 / 50% so the blocks read as text. The shimmer stops under
  * `prefers-reduced-motion`. It is `aria-hidden`: the consumer marks its container
  * `aria-busy="true"` and announces the loading itself. `card` has no box of its own

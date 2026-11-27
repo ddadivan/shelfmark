@@ -98,7 +98,7 @@
   color: var(--text-muted);
   background: color-mix(in srgb, var(--ui-card-fill) 97%, var(--card-media-mix));
   transition: background-color var(--duration-base) var(--ease-out);
-  aspect-ratio: var(--ui-card-media-ratio, 4 / 3);
+  aspect-ratio: var(--ui-card-media-ratio, #{$card-media-ratio});
 }
 
 :host(.ui-card--natural.ui-card--image) {

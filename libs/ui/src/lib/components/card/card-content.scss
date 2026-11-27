@@ -40,15 +40,14 @@
 
   // Cards in a grid row share one height: the body takes the free room.
   flex: 1;
-  flex-direction: column;
-  gap: var(--density-card-gap);
   min-width: 0;
-  padding: var(--density-card-padding);
+
+  @include card-body;
 }
 
 // Folder (filled icon in the folder colour and its name) and the date at the end.
 .ui-card__meta {
-  @include type(caption);
+  @include card-meta-text;
 
   display: flex;
   gap: var(--space-1-5);
@@ -94,10 +93,9 @@
 // The one activation target: a native link or button reset to look like text. 16/24 500, two
 // lines at most.
 .ui-card__link {
-  @include type(body);
+  @include card-title-text;
   @include line-clamp(2);
 
-  font-weight: 500;
   padding: 0;
   margin: 0;
   color: var(--text);
@@ -149,10 +147,8 @@
 }
 
 .ui-card__source {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  margin-block-start: rem(2px);
+  @include card-source-row;
+
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -166,10 +162,7 @@
 
 // Up to three `#tag` words as plain text, not chips.
 .ui-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  padding-block-start: var(--space-2);
+  @include card-tags-row;
 }
 
 // The person's note: a pen and the text on the sage `ai-bg`.

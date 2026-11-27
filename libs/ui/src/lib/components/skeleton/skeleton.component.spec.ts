@@ -56,13 +56,19 @@ describe('SkeletonComponent', () => {
     expect(skeleton.querySelector('.ui-skeleton__block')).not.toBeNull();
   });
 
-  it('card has a 16:9 media block, two title lines and a meta line (Shelf y-skc)', () => {
+  it('card mirrors ui-card: 4:3 media, meta, two title lines, source row and tag chips', () => {
     const { skeleton, update } = setup();
     update((c) => c.shape.set(SKELETON_SHAPE.Card));
     expect(skeleton.querySelector('.ui-skeleton__media')).not.toBeNull();
     expect(skeleton.querySelectorAll('.ui-skeleton__title').length).toBe(2);
     expect(skeleton.querySelectorAll('.ui-skeleton__card .ui-skeleton__line--meta').length).toBe(1);
-    expect(skeleton.querySelector('.ui-skeleton__chip')).toBeNull();
+    expect(
+      skeleton.querySelectorAll('.ui-skeleton__card-source .ui-skeleton__favicon').length,
+    ).toBe(1);
+    expect(skeleton.querySelectorAll('.ui-skeleton__card-source .ui-skeleton__host').length).toBe(
+      1,
+    );
+    expect(skeleton.querySelectorAll('.ui-skeleton__card-tags .ui-skeleton__chip').length).toBe(2);
   });
 
   it('history is a history row, with a checkbox only when selectable', () => {

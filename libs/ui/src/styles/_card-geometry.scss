@@ -1,0 +1,48 @@
+// The measure of a link card (`ui-card`), kept in one place: the card and its placeholder
+// (`ui-skeleton` card shape) include the same mixins, so when the card changes the skeleton follows.
+// A card is the full-bleed preview (4:3), then the body: the meta line, the title (two lines at
+// most), the source row (favicon and host) and the tag row.
+@use 'functions' as *;
+@use 'typography' as *;
+
+/// The preview's ratio (`cover`, `contain`; `natural` follows the picture).
+$card-media-ratio: '4 / 3';
+
+/// The favicon of the source row.
+$card-favicon-size: rem(16px);
+
+/// The card's text column: the density's padding and gap.
+@mixin card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--density-card-gap);
+  padding: var(--density-card-padding);
+}
+
+/// The date / folder line: a caption.
+@mixin card-meta-text {
+  @include type(caption);
+}
+
+/// The title: body type, 500, one line box each (two lines at most).
+@mixin card-title-text {
+  @include type(body);
+
+  font-weight: 500;
+}
+
+/// The source row: the favicon and the host, a hair lower than the gap alone puts it.
+@mixin card-source-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-block-start: rem(2px);
+}
+
+/// The tag row: 8px of room above the chips.
+@mixin card-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding-block-start: var(--space-2);
+}
