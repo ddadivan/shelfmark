@@ -76,7 +76,15 @@ export default class RevisitPage {
   protected readonly phone = inject(ViewportService).phone;
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
-  protected readonly SKELETON_GROUPS: readonly number[] = [1, 2];
+  /** The loading page: Due (one row), Forgotten (six cards) and Recently opened (five rows). */
+  protected readonly SKELETON_GROUPS: readonly {
+    readonly rowList: readonly number[];
+    readonly cards: number;
+  }[] = [
+    { rowList: [0], cards: 0 },
+    { rowList: [], cards: 6 },
+    { rowList: [0, 1, 2, 3, 4], cards: 0 },
+  ];
   protected readonly pluralKey = pluralKey;
   protected readonly recentHref = `/${APP_PATH.Recent}`;
   protected readonly linkHost = linkHost;

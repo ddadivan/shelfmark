@@ -110,3 +110,45 @@
 .rules__more {
   flex: none;
 }
+
+// One rule row while the rules load: bars in the 22px lines of the loaded text, the 50 x 32 Edit
+// button and the 32px menu button.
+.rules__sk-line {
+  display: flex;
+  align-items: center;
+  block-size: rem(22px);
+}
+
+.rules__sk-favicon {
+  --ui-skeleton-width: #{rem(16px)};
+  --ui-skeleton-height: #{rem(16px)};
+  --ui-skeleton-radius: var(--radius-full);
+
+  flex: none;
+}
+
+.rules__sk-domain {
+  --ui-skeleton-width: #{rem(140px)};
+  --ui-skeleton-height: #{rem(12px)};
+}
+
+.rules__sk-target {
+  --ui-skeleton-width: #{rem(200px)};
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+.rules__sk-edit {
+  --ui-skeleton-width: #{rem(50px)};
+  --ui-skeleton-height: #{rem(32px)};
+  --ui-skeleton-radius: var(--radius-full);
+
+  flex: none;
+}
+
+.rules__sk-more {
+  --ui-skeleton-width: #{rem(32px)};
+  --ui-skeleton-height: #{rem(32px)};
+  --ui-skeleton-radius: var(--radius-full);
+
+  flex: none;
+}

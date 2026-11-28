@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { WEEK_START } from '@shelfmark/contracts';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 import { SETTINGS_TEST_STATS } from '../../../../../testing/settings-test-stats.const';
 import { axeViolations } from '../../../../../testing/axe';
 import {
@@ -17,6 +17,16 @@ const setup = (user = SETTINGS_TEST_USER, stats = () => of(SETTINGS_TEST_STATS))
   setupSettingsPage(AccountPage, 'account', { user, stats });
 
 describe('AccountPage', () => {
+  it('draws the shelf while the stats load: three counts, two lists of five, twelve weeks', async () => {
+    const { root } = await setup(SETTINGS_TEST_USER, () => NEVER);
+    const loading = root.querySelector('.shelf__loading');
+
+    expect(loading?.getAttribute('role')).toBe('status');
+    expect(loading?.querySelectorAll('.shelf__count')).toHaveLength(3);
+    expect(loading?.querySelectorAll('.shelf__site')).toHaveLength(10);
+    expect(loading?.querySelectorAll('.shelf__week')).toHaveLength(12);
+  });
+
   it('shows the account from the session, read-only', async () => {
     const { root } = await setup();
 

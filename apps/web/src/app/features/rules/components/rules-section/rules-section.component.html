@@ -18,6 +18,23 @@
         'rules.retry' | transloco
       }}</ui-button>
     </ui-notice>
+  } @else if (!store.loaded()) {
+    <!-- One rule row's room while the rules load (the favicon, two 22px lines, Edit and the menu). -->
+    <ul class="rules__list" aria-hidden="true">
+      <li class="rules__row">
+        <ui-skeleton class="rules__sk-favicon" [shape]="SKELETON_SHAPE.Block" />
+        <div class="rules__text">
+          <span class="rules__sk-line">
+            <ui-skeleton class="rules__sk-domain" [shape]="SKELETON_SHAPE.Block" />
+          </span>
+          <span class="rules__sk-line">
+            <ui-skeleton class="rules__sk-target" [shape]="SKELETON_SHAPE.Block" />
+          </span>
+        </div>
+        <ui-skeleton class="rules__sk-edit" [shape]="SKELETON_SHAPE.Block" />
+        <ui-skeleton class="rules__sk-more" [shape]="SKELETON_SHAPE.Block" />
+      </li>
+    </ul>
   } @else if (store.loaded() && rows().length === 0) {
     <p class="rules__empty">{{ 'rules.empty' | transloco }}</p>
   } @else if (store.loaded()) {

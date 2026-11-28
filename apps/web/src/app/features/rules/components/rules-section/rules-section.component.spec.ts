@@ -11,7 +11,7 @@ import { RULES_API } from '../../models/rules-api.const';
 import { RuleActionsService } from '../../services/rule-actions.service';
 import { RulesSectionComponent } from './rules-section.component';
 
-async function setup(rules: MockLibraryData['rules'] = []) {
+async function setup(rules: MockLibraryData['rules'] = [], load = true) {
   const actions = {
     create: vi.fn(() => Promise.resolve(null)),
     edit: vi.fn(() => Promise.resolve(null)),
@@ -30,7 +30,9 @@ async function setup(rules: MockLibraryData['rules'] = []) {
   TestBed.inject(MockLibraryData).rules = rules;
   const fixture = TestBed.createComponent(RulesSectionComponent);
   document.body.appendChild(fixture.nativeElement as HTMLElement);
-  await TestBed.inject(RulesStore).load();
+  if (load) {
+    await TestBed.inject(RulesStore).load();
+  }
   await fixture.whenStable();
   const element = fixture.nativeElement as HTMLElement;
   return { fixture, element, actions };
@@ -43,6 +45,13 @@ afterEach(() => {
 });
 
 describe('RulesSectionComponent', () => {
+  it('holds the room of one rule row until the rules are in', async () => {
+    const { element } = await setup([], false);
+    expect(element.querySelectorAll('.rules__sk-line')).toHaveLength(2);
+    expect(element.querySelector('.rules__row')?.getAttribute('class')).toContain('rules__row');
+    expect(element.textContent).not.toContain('No rules yet.');
+  });
+
   it('explains rules when there are none and adds one', async () => {
     const { element, actions } = await setup();
     expect(element.querySelector('h2')?.textContent).toContain('Rules');

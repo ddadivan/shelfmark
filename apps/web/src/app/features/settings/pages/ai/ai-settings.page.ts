@@ -28,6 +28,8 @@ import {
   SelectComponent,
   SettingsRowComponent,
   SettingsSectionComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
   SwitchComponent,
   type SegmentedOption,
   type SelectOption,
@@ -79,6 +81,7 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
     SettingsPageHeaderComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
+    SkeletonComponent,
     SwitchComponent,
   ],
   templateUrl: './ai-settings.page.html',
@@ -86,6 +89,9 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AiSettingsPage {
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
+  /** The rows under the AI switch while the settings load: three modes, summaries, search, Ask, history. */
+  protected readonly SKELETON_ROWS: readonly number[] = [0, 1, 2, 3, 4, 5];
   protected readonly store = inject(AiSettingsStore);
   protected readonly actions = inject(AiSettingsActions);
   protected readonly viewport = inject(ViewportService);

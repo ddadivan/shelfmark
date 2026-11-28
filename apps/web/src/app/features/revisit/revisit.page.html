@@ -9,25 +9,34 @@
 
   @if (!revisit.loaded()) {
   <div class="revisit__skeleton" [attr.aria-label]="'revisit.loading' | transloco">
-    <!-- The loaded groups' own places: a heading line over a hairline panel of rows, then the cards. -->
-    @for (rows of SKELETON_GROUPS; track $index) {
+    <!-- The loaded page's own places (Due, Forgotten, Recently opened): a heading line over a hairline
+         panel of 68px rows, or over the lead and a grid of cards. The demo's heights. -->
+    @for (group of SKELETON_GROUPS; track $index) {
     <div class="revisit__group">
       <div class="revisit__sk-heading">
         <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
       </div>
-      <div class="revisit__panel">
-        <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="rows" />
+      @if (group.cards > 0) {
+      <div class="revisit__sk-lead"><ui-skeleton [shape]="SKELETON_SHAPE.Block" /></div>
+      <div class="revisit__cards revisit__cards--loading">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="group.cards" />
       </div>
+      } @else {
+      <ul class="revisit__panel">
+        @for (row of group.rowList; track row) {
+        <li class="revisit__sk-row">
+          <ui-skeleton class="revisit__sk-thumb" [shape]="SKELETON_SHAPE.Block" />
+          <div class="revisit__sk-text">
+            <ui-skeleton class="revisit__sk-title" [shape]="SKELETON_SHAPE.Block" />
+            <ui-skeleton class="revisit__sk-meta" [shape]="SKELETON_SHAPE.Block" />
+          </div>
+          <ui-skeleton class="revisit__sk-trail" [shape]="SKELETON_SHAPE.Block" />
+        </li>
+        }
+      </ul>
+      }
     </div>
     }
-    <div class="revisit__group">
-      <div class="revisit__sk-heading">
-        <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
-      </div>
-      <div class="revisit__cards">
-        <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="3" />
-      </div>
-    </div>
   </div>
   } @else if (revisit.empty()) {
   <ui-empty-state

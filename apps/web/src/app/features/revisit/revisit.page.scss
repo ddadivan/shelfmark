@@ -181,3 +181,72 @@
   align-items: center;
   block-size: calc(var(--font-size-section) * 1.25);
 }
+
+// A row of the loading panel: the list item's own padding, the 72 x 48 picture, two bars and the
+// trailing button (68px, the loaded row).
+.revisit__sk-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--density-row-padding);
+}
+
+.revisit__sk-thumb {
+  --ui-skeleton-width: #{rem(72px)};
+  --ui-skeleton-height: #{rem(48px)};
+  --ui-skeleton-radius: var(--radius-sm);
+
+  flex: none;
+
+  @include phone {
+    --ui-skeleton-width: #{rem(48px)};
+  }
+}
+
+.revisit__sk-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.revisit__sk-title {
+  --ui-skeleton-width: 45%;
+  --ui-skeleton-height: #{rem(14px)};
+}
+
+.revisit__sk-meta {
+  --ui-skeleton-width: 25%;
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+.revisit__sk-trail {
+  --ui-skeleton-width: #{rem(72px)};
+  --ui-skeleton-height: #{rem(32px)};
+  --ui-skeleton-radius: var(--radius-full);
+
+  flex: none;
+}
+
+// The lead under the Forgotten heading (14 / 22, 4px under it).
+.revisit__sk-lead {
+  --ui-skeleton-width: 55%;
+  --ui-skeleton-height: #{rem(12px)};
+
+  display: flex;
+  align-items: center;
+  block-size: rem(22px);
+  margin-block-end: var(--space-1);
+}
+
+// The loaded cards are 324px tall: the skeleton card is a little taller (it always draws a tag
+// row), so the rows are fixed and clip it.
+.revisit__cards--loading {
+  grid-auto-rows: rem(324px);
+}
+
+// Recently opened has its "see all" button in the heading line (32px).
+.revisit__group:last-child .revisit__sk-heading {
+  block-size: rem(32px);
+}

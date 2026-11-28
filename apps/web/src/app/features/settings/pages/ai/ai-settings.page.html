@@ -97,10 +97,36 @@
   >
     <app-ask-history-control />
   </ui-settings-row>
-  }
+  } @else if (!store.loaded()) {
+  <!-- The rows of an account with AI on (the most the section ever holds), so nothing below moves when
+       the answer is in; an account with AI off then gives the room back. -->
+  @for (row of SKELETON_ROWS; track row) {
+  <div class="ai-settings__sk-row" aria-hidden="true">
+    <ui-skeleton class="ai-settings__sk-title" [shape]="SKELETON_SHAPE.Block" />
+    <ui-skeleton class="ai-settings__sk-text" [shape]="SKELETON_SHAPE.Block" />
+  </div>
+  } }
 </ui-settings-section>
 
-@if (store.isOn()) {
+@if (!store.loaded()) {
+<!-- Room for the sections an account with AI on has here (what is sent, usage, your data), so
+     "Connect your assistant" below does not jump down when they arrive. -->
+<ui-skeleton
+  class="ai-settings__sk-section ai-settings__sk-section--sent"
+  aria-hidden="true"
+  [shape]="SKELETON_SHAPE.Block"
+/>
+<ui-skeleton
+  class="ai-settings__sk-section ai-settings__sk-section--usage"
+  aria-hidden="true"
+  [shape]="SKELETON_SHAPE.Block"
+/>
+<ui-skeleton
+  class="ai-settings__sk-section ai-settings__sk-section--data"
+  aria-hidden="true"
+  [shape]="SKELETON_SHAPE.Block"
+/>
+} @if (store.isOn()) {
 <ui-settings-section [title]="'ai.settings.sent.title' | transloco">
   <ui-settings-row
     [title]="'ai.settings.notes.label' | transloco"

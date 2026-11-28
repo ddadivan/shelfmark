@@ -94,6 +94,20 @@ async function setup(empty = false) {
 }
 
 describe('RevisitPage', () => {
+  it('holds the places of Due, Forgotten and Recently opened while loading', async () => {
+    const { element, revisit, fixture } = await setup();
+    revisit.loaded.set(false);
+    await fixture.whenStable();
+    expect(element.querySelector('.revisit__skeleton')).not.toBeNull();
+    expect(element.querySelectorAll('.revisit__skeleton .revisit__group')).toHaveLength(3);
+    // One Due row, five Recently opened rows and six cards of the 324px rows.
+    expect(element.querySelectorAll('.revisit__sk-row')).toHaveLength(6);
+    expect(element.querySelector('.revisit__cards--loading')).not.toBeNull();
+    revisit.loaded.set(true);
+    await fixture.whenStable();
+    expect(element.querySelector('.revisit__skeleton')).toBeNull();
+  });
+
   it('shows the four groups with their counts', async () => {
     const { element, revisit } = await setup();
     expect(revisit.load).toHaveBeenCalled();

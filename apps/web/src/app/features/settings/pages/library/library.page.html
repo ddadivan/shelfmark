@@ -131,6 +131,7 @@
     </ui-button>
   </ui-notice>
   }
+  <!-- While the count loads the description is a no-break space: the line keeps its room. -->
   <ui-settings-row
     [title]="'settings.library.trash.open.label' | transloco"
     [description]="
@@ -139,7 +140,7 @@
           | transloco: { count: trash.total() })
         : trash.loaded()
           ? ('settings.library.trash.open.none' | transloco)
-          : undefined
+          : '\u00a0'
     "
   >
     <ui-button [size]="BUTTON_SIZE.Sm" [href]="trashHref" (linkClick)="openTrash($event)">

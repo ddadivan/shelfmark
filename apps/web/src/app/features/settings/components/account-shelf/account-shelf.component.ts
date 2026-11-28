@@ -29,6 +29,12 @@ import { AccountStatsService } from '../../services/account-stats.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountShelfComponent {
+  /** The loading state's figures: three counts and two lists; five rows per list, twelve weeks. */
+  protected readonly SKELETON_COUNTS: readonly number[] = [0, 1, 2];
+  protected readonly SKELETON_ROWS: readonly number[] = [0, 1, 2, 3, 4];
+  protected readonly SKELETON_WEEKS: readonly number[] = [
+    8, 8, 12, 8, 14, 18, 28, 40, 48, 36, 44, 66,
+  ];
   protected readonly stats = inject(AccountStatsService);
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
 }

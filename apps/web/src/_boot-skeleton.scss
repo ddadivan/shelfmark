@@ -865,7 +865,7 @@
 }
 
 :root[data-boot-page='reminders'] .boot__generic,
-:root[data-boot-page='revisit'] .boot__generic,
+:root[data-boot-page='revisit'] .boot__revisit,
 :root[data-boot-page='tags'] .boot__generic,
 :root[data-boot-page='import'] .boot__generic,
 :root[data-boot-page='tidy'] .boot__generic,
@@ -1412,7 +1412,7 @@
   max-inline-size: rem(960px);
 }
 
-:root[data-boot-page='revisit'] .boot__generic,
+:root[data-boot-page='revisit'] .boot__revisit,
 :root[data-boot-page='tidy'] .boot__generic {
   max-inline-size: rem(880px);
 }
@@ -1503,7 +1503,6 @@
 }
 
 :root[data-boot-page='reminders'] .boot__g-body--panels,
-:root[data-boot-page='revisit'] .boot__g-body--panels,
 :root[data-boot-page='tidy'] .boot__g-body--panels,
 :root[data-boot-page='library-tab'] .boot__g-body--panels,
 :root[data-boot-page='settings'] .boot__g-body--panels {
@@ -1877,6 +1876,120 @@
 .boot__share-foot {
   width: 45%;
   height: rem(10px);
+}
+
+// Revisit (revisit.page): Due (a heading over one 68px row), Forgotten (heading, lead, cards 324px
+// tall) and Recently opened (five rows), 24px apart, as the loaded page of the demo.
+.boot__revisit {
+  gap: var(--space-6);
+  max-inline-size: rem(880px);
+}
+
+.boot__revisit .boot__g-head {
+  min-block-size: rem(56px);
+}
+
+.boot__rv-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.boot__rv-heading {
+  display: flex;
+  align-items: center;
+  block-size: calc(var(--font-size-section) * 1.25);
+}
+
+// Recently opened has its "see all" button in the heading line.
+.boot__rv-group:last-child .boot__rv-heading {
+  block-size: rem(32px);
+}
+
+.boot__rv-heading-bar {
+  width: rem(96px);
+  height: rem(14px);
+}
+
+.boot__rv-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.boot__rv-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--density-row-padding);
+
+  & + & {
+    border-block-start: 1px solid var(--sep);
+  }
+}
+
+.boot__rv-thumb {
+  flex: none;
+  width: rem(72px);
+  height: rem(48px);
+  border-radius: var(--radius-sm);
+
+  @include phone {
+    width: rem(48px);
+  }
+}
+
+.boot__rv-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.boot__rv-title {
+  width: 45%;
+  height: rem(14px);
+}
+
+.boot__rv-meta {
+  width: 25%;
+  height: rem(10px);
+}
+
+.boot__rv-trail {
+  flex: none;
+  width: rem(72px);
+  height: rem(32px);
+  border-radius: var(--radius-full);
+}
+
+.boot__rv-lead {
+  display: flex;
+  align-items: center;
+  block-size: rem(22px);
+  margin-block-end: var(--space-1);
+}
+
+.boot__rv-lead-bar {
+  width: 55%;
+  height: rem(12px);
+}
+
+.boot__rv-cards {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(rem(240px), 1fr));
+}
+
+.boot__rv-card {
+  height: rem(324px);
+  background: var(--fill);
+  border-radius: var(--radius-card);
 }
 
 // Ask (ask.page): the conversations card and the conversation, the question box at the bottom.

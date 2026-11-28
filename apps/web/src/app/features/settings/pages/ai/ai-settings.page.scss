@@ -1,3 +1,4 @@
+@use 'sass:list';
 @use 'ui' as *;
 @use '../../settings-page' as *;
 @include settings-page;
@@ -10,4 +11,77 @@
 
 .ai-settings__status {
   padding-inline: var(--space-2);
+}
+
+// The loading rows: a title bar and a text bar in rows of the loaded rows' heights (desktop and
+// tablet, then the taller phone rows), split by the settings rows' line.
+.ai-settings__sk-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  justify-content: center;
+  box-sizing: border-box;
+  margin-inline: calc(-1 * var(--ui-settings-row-inset, 0rem));
+  padding-inline: var(--ui-settings-row-inset, 0);
+  border-block-start: 1px solid var(--border);
+}
+
+$ai-row-heights: 83, 65, 65, 83, 101, 101;
+$ai-row-heights-phone: 57, 57, 45, 137, 169, 167;
+
+@for $index from 1 through list.length($ai-row-heights) {
+  .ai-settings__sk-row:nth-of-type(#{$index}) {
+    block-size: rem(list.nth($ai-row-heights, $index) * 1px);
+  }
+}
+
+// The desktop's last row is two lines shorter than the tablet's.
+@include desktop {
+  .ai-settings__sk-row:nth-of-type(6) {
+    block-size: rem(83px);
+  }
+}
+
+@include phone {
+  @for $index from 1 through list.length($ai-row-heights-phone) {
+    .ai-settings__sk-row:nth-of-type(#{$index}) {
+      block-size: rem(list.nth($ai-row-heights-phone, $index) * 1px);
+    }
+  }
+}
+
+.ai-settings__sk-title {
+  --ui-skeleton-width: #{rem(160px)};
+  --ui-skeleton-height: #{rem(14px)};
+}
+
+.ai-settings__sk-text {
+  --ui-skeleton-width: 60%;
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+// The sections below the features while the settings load: panels of the loaded sections' heights
+// (title included): what is sent 159px, usage 82px, your data 177px (251, 82 and 243px on a phone).
+.ai-settings__sk-section {
+  --ui-skeleton-radius: var(--radius-lg);
+}
+
+.ai-settings__sk-section--sent {
+  --ui-skeleton-height: #{rem(159px)};
+
+  @include phone {
+    --ui-skeleton-height: #{rem(251px)};
+  }
+}
+
+.ai-settings__sk-section--usage {
+  --ui-skeleton-height: #{rem(82px)};
+}
+
+.ai-settings__sk-section--data {
+  --ui-skeleton-height: #{rem(177px)};
+
+  @include phone {
+    --ui-skeleton-height: #{rem(243px)};
+  }
 }

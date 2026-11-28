@@ -1,10 +1,66 @@
 @if (stats.loading()) {
+  <!-- The loaded layout drawn with its own classes (the three counts, the oldest line, two lists of
+       five rows, the 12 weeks), so the figures replace it without moving anything. -->
   <div
     class="shelf__loading"
     [attr.aria-label]="'settings.account.shelf.loading' | transloco"
     role="status"
   >
-    <ui-skeleton [shape]="SKELETON_SHAPE.Line" count="4" />
+    <dl class="shelf__counts" aria-hidden="true">
+      @for (count of SKELETON_COUNTS; track count) {
+        <div class="shelf__count">
+          <dt class="shelf__count-label shelf__sk">
+            <ui-skeleton class="shelf__sk-label" [shape]="SKELETON_SHAPE.Block" />
+          </dt>
+          <dd class="shelf__count-value shelf__sk">
+            <ui-skeleton class="shelf__sk-value" [shape]="SKELETON_SHAPE.Block" />
+          </dd>
+        </div>
+      }
+    </dl>
+    <p class="shelf__muted shelf__sk" aria-hidden="true">
+      <ui-skeleton class="shelf__sk-text" [shape]="SKELETON_SHAPE.Block" />
+    </p>
+    <div class="shelf__lists" aria-hidden="true">
+      @for (list of SKELETON_COUNTS.slice(0, 2); track list) {
+        <section class="shelf__block">
+          <h3 class="shelf__heading shelf__sk">
+            <ui-skeleton class="shelf__sk-heading" [shape]="SKELETON_SHAPE.Block" />
+          </h3>
+          <ol class="shelf__sites">
+            @for (row of SKELETON_ROWS; track row) {
+              <li class="shelf__site">
+                <ui-skeleton class="shelf__sk-favicon" [shape]="SKELETON_SHAPE.Block" />
+                <span class="shelf__host shelf__sk">
+                  <ui-skeleton class="shelf__sk-host" [shape]="SKELETON_SHAPE.Block" />
+                </span>
+                <span class="shelf__number shelf__sk">
+                  <ui-skeleton class="shelf__sk-number" [shape]="SKELETON_SHAPE.Block" />
+                </span>
+              </li>
+            }
+          </ol>
+        </section>
+      }
+    </div>
+    <section class="shelf__block" aria-hidden="true">
+      <h3 class="shelf__heading shelf__sk">
+        <ui-skeleton class="shelf__sk-heading" [shape]="SKELETON_SHAPE.Block" />
+      </h3>
+      <p class="shelf__muted shelf__sk">
+        <ui-skeleton class="shelf__sk-text" [shape]="SKELETON_SHAPE.Block" />
+      </p>
+      <ol class="shelf__chart">
+        @for (week of SKELETON_WEEKS; track week) {
+          <li class="shelf__week">
+            <span class="shelf__bar shelf__bar--loading" [style.block-size.%]="week"></span>
+          </li>
+        }
+      </ol>
+      <div class="shelf__axis shelf__sk">
+        <ui-skeleton class="shelf__sk-axis" [shape]="SKELETON_SHAPE.Block" />
+      </div>
+    </section>
   </div>
 } @else if (stats.failed()) {
   <div class="shelf__error" role="alert">

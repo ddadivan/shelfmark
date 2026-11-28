@@ -15,6 +15,8 @@ import {
   NOTICE_KIND,
   NoticeComponent,
   SettingsSectionComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
   TooltipDirective,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
@@ -31,6 +33,7 @@ import { ruleRows } from '../../utils/rule-rows';
 @Component({
   selector: 'app-rules-section',
   imports: [
+    SkeletonComponent,
     ButtonComponent,
     IconComponent,
     FaviconComponent,
@@ -49,6 +52,7 @@ import { ruleRows } from '../../utils/rule-rows';
   styleUrl: './rules-section.component.scss',
 })
 export class RulesSectionComponent {
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly RULE_LIMIT = RULE_LIMIT;

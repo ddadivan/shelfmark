@@ -161,3 +161,69 @@
 .shelf__sr {
   @include visually-hidden;
 }
+
+// The loading state: each text is a bar centred in the line box of the text it stands for (`1lh` of
+// the class that sets the type), so the rows have their loaded height.
+.shelf__sk {
+  display: flex;
+  align-items: center;
+  block-size: 1lh;
+}
+
+.shelf__sk-label {
+  --ui-skeleton-width: #{rem(40px)};
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+.shelf__sk-value {
+  --ui-skeleton-width: #{rem(48px)};
+  --ui-skeleton-height: #{rem(18px)};
+}
+
+.shelf__sk-text {
+  --ui-skeleton-width: #{rem(160px)};
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+.shelf__sk-heading {
+  --ui-skeleton-width: #{rem(120px)};
+  --ui-skeleton-height: #{rem(12px)};
+}
+
+.shelf__sk-favicon {
+  --ui-skeleton-width: #{rem(16px)};
+  --ui-skeleton-height: #{rem(16px)};
+  --ui-skeleton-radius: var(--radius-full);
+
+  flex: none;
+}
+
+.shelf__sk-host {
+  --ui-skeleton-width: 60%;
+  --ui-skeleton-height: #{rem(14px)};
+}
+
+.shelf__host.shelf__sk {
+  display: flex;
+}
+
+.shelf__sk-number {
+  --ui-skeleton-width: #{rem(16px)};
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+.shelf__sk-axis {
+  --ui-skeleton-width: 100%;
+  --ui-skeleton-height: #{rem(10px)};
+}
+
+.shelf__bar--loading {
+  background: var(--surface-pressed);
+}
+
+// The loading wrapper stands for the host's own column, so the parts keep the same gaps.
+.shelf__loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
