@@ -20,6 +20,8 @@ describe('boot-skeleton.js and the extension banner', () => {
       STORAGE_KEY.FeedMemory,
       STORAGE_KEY.LibraryDefaultView,
       STORAGE_KEY.Layout,
+      STORAGE_KEY.TidyEntry,
+      STORAGE_KEY.FolderShape,
     ]) {
       expect(script).toContain(`'${key}'`);
     }
@@ -275,5 +277,54 @@ describe('boot-skeleton.js and the library view', () => {
     });
     expect(defaults.attributes['data-text-size']).toBeUndefined();
     expect(defaults.attributes['data-density']).toBeUndefined();
+  });
+});
+
+describe('boot-skeleton.js and the room of late parts', () => {
+  it('holds the Tidy button of Unsorted only when it showed last time', () => {
+    const held = runBootScript({
+      path: '/unsorted',
+      storage: { ...SIGNED_IN, [STORAGE_KEY.TidyEntry]: '1' },
+    });
+    expect(held.attributes['data-boot-tidy']).toBe('');
+    for (const storage of [SIGNED_IN, { ...SIGNED_IN, [STORAGE_KEY.TidyEntry]: '0' }]) {
+      expect(runBootScript({ path: '/unsorted', storage }).attributes['data-boot-tidy']).toBe(
+        undefined,
+      );
+    }
+    expect(
+      runBootScript({ path: '/links', storage: { ...SIGNED_IN, [STORAGE_KEY.TidyEntry]: '1' } })
+        .attributes['data-boot-tidy'],
+    ).toBeUndefined();
+  });
+
+  it('marks a folder path and holds the subfolder chips it had last time', () => {
+    const storage = {
+      ...SIGNED_IN,
+      [STORAGE_KEY.FolderShape]: JSON.stringify({ f1: 2, f2: 40, f3: 0, f4: 'x' }),
+    };
+    const some = runBootScript({ path: '/folders/f1', storage });
+    expect(some.attributes['data-boot-folder']).toBe('');
+    expect(some.attributes['data-boot-subfolders']).toBe('2');
+    expect(runBootScript({ path: '/folders/f2', storage }).attributes['data-boot-subfolders']).toBe(
+      '9',
+    );
+    for (const id of ['f3', 'f4', 'elsewhere']) {
+      const run = runBootScript({ path: `/folders/${id}`, storage });
+      expect(run.attributes['data-boot-folder']).toBe('');
+      expect(run.attributes['data-boot-subfolders']).toBeUndefined();
+    }
+    expect(runBootScript({ path: '/links', storage }).attributes['data-boot-folder']).toBe(
+      undefined,
+    );
+  });
+
+  it('survives a broken folder shape', () => {
+    const run = runBootScript({
+      path: '/folders/f1',
+      storage: { ...SIGNED_IN, [STORAGE_KEY.FolderShape]: '{not json' },
+    });
+    expect(run.attributes['data-boot-skeleton']).toBe('');
+    expect(run.attributes['data-boot-subfolders']).toBeUndefined();
   });
 });

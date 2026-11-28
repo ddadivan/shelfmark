@@ -25,6 +25,9 @@ describe('STORAGE_KEY registry', () => {
         'sm-last-export',
         'sm-recent-searches',
         'sm-notifications-push-device',
+        'sm-tidy-entry',
+        'sm-folder-shape',
+        'sm-connected-accounts',
       ].sort(),
     );
   });

@@ -23,6 +23,11 @@
   // The text size, font and density of Settings › Appearance (`ThemeService`, `LAYOUT_ATTRIBUTE`) change
   // every size of the skeleton, so they are copied to `html` as the app will set them.
   const LAYOUT_KEY = 'sm-layout'; // STORAGE_KEY.Layout
+  // What the last session saw on library pages, so the placeholder keeps the room of parts that arrive
+  // late: "Tidy with suggestions" in Unsorted (`TidyEntryCache`: `1` when it showed) and the subfolder
+  // count of a folder (`FolderShapeCache`: JSON of folder id to count).
+  const TIDY_KEY = 'sm-tidy-entry'; // STORAGE_KEY.TidyEntry
+  const FOLDER_SHAPE_KEY = 'sm-folder-shape'; // STORAGE_KEY.FolderShape
   const root = document.documentElement;
   const path = location.pathname.replace(/(.)\/$/, '$1');
   // Pages a guest can be on: the hint (a session that may have ended) is not trusted there.
@@ -52,6 +57,7 @@
   const page = bootPage();
   if (page) root.setAttribute('data-boot-page', page);
   if (!page) libraryView();
+  if (!page) libraryRoom();
   if (extensionBanner()) root.setAttribute('data-boot-extension', '');
   if (extensionRow()) root.setAttribute('data-boot-extension-row', '');
   root.setAttribute('data-boot-skeleton', '');
@@ -141,6 +147,29 @@
     if (step !== GRID_STEP_DEFAULT) {
       root.setAttribute('data-boot-grid', String(step));
       root.style.setProperty('--boot-column', GRID_COLUMNS[step - 1] / 16 + 'rem');
+    }
+  }
+
+  /**
+   * `html[data-boot-tidy]` (Unsorted, the button showed last time) and, on a folder path,
+   * `html[data-boot-folder]` with `data-boot-subfolders` (their count, from `FolderShapeCache`): the
+   * parts of a library page that arrive after the first paint and move the feed when they do.
+   */
+  function libraryRoom() {
+    try {
+      if (path === '/unsorted' && localStorage.getItem(TIDY_KEY) === '1') {
+        root.setAttribute('data-boot-tidy', '');
+      }
+      const folder = /^\/folders\/([^/]+)$/.exec(path);
+      if (!folder) return;
+      root.setAttribute('data-boot-folder', '');
+      const shape = JSON.parse(localStorage.getItem(FOLDER_SHAPE_KEY) || '{}');
+      const count = shape && typeof shape === 'object' ? shape[decodeURIComponent(folder[1])] : 0;
+      if (Number.isInteger(count) && count > 0) {
+        root.setAttribute('data-boot-subfolders', String(Math.min(count, 9)));
+      }
+    } catch {
+      // Storage blocked or broken JSON: no room is held.
     }
   }
 

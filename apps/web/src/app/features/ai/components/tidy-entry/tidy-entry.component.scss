@@ -8,3 +8,12 @@
 .tidy-entry__count {
   margin-inline-start: var(--space-1);
 }
+
+// The slot of the button while its answer is out: the secondary `sm` button with the badge at 360px
+// (225 x 32; `--control-sm`), so the toolbar wraps the same way before and after.
+.tidy-entry__slot {
+  flex: none;
+  inline-size: rem(224px);
+  max-inline-size: 100%;
+  block-size: var(--control-sm);
+}

@@ -2,7 +2,7 @@
  * Every real `localStorage` key of the app, in one place. The strings are what browsers already
  * hold: renaming one drops the saved choice, so never do. Adding a key means adding its scope in
  * `STORAGE_KEY_SCOPE` too (the compiler asks). `public/boot-skeleton.js` repeats `SessionHint`,
- * `Theme`, `ExtensionBannerDismissed`, `FeedMemory` and `LibraryDefaultView` (checked by `boot-skeleton-script.spec.ts`). Mock-only
+ * `Theme`, `ExtensionBannerDismissed`, `FeedMemory`, `LibraryDefaultView`, `Layout`, `TidyEntry` and `FolderShape` (checked by `boot-skeleton-script.spec.ts`). Mock-only
  * keys stay next to their mocks.
  */
 export const STORAGE_KEY = {
@@ -14,6 +14,12 @@ export const STORAGE_KEY = {
   FeedMemory: 'sm-feed-memory',
   /** The account's Default view, kept for the first paint of the boot skeleton (`public/boot-skeleton.js`). */
   LibraryDefaultView: 'sm-library-default-view',
+  /** Whether "Tidy with suggestions" showed last time (`1` / `0`), so Unsorted keeps its room on the next reload. */
+  TidyEntry: 'sm-tidy-entry',
+  /** Folder id to its subfolder count, so a folder page keeps their room on the next reload. */
+  FolderShape: 'sm-folder-shape',
+  /** How many sign-in accounts Settings › Account listed last time, for the room of the next reload. */
+  ConnectedAccounts: 'sm-connected-accounts',
   /** Reading settings, the first paint before the account answers. */
   ReaderSettings: 'sm-reader-settings',
   /** `off` once notifications were turned off on this device while the browser allows them. */

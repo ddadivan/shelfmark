@@ -451,27 +451,27 @@
 .boot__count {
   width: rem(96px);
   height: rem(16px);
-  margin-block: var(--space-1) rem(56px);
+  margin-block: var(--space-1) calc(#{rem(56px)} + var(--boot-room, 0rem));
 
   // Below 64em (measured on the real page): the rest of the title row and the saved views, 38px
   // under the count line; touch: 62px (the 44px targets of the toolbar and the tabs).
   // The saved views sit 22px under the title row (10px more than the reference, library.page.scss).
   @include compact {
-    margin-block-end: rem(48px);
+    margin-block-end: calc(#{rem(48px)} + var(--boot-room, 0rem));
 
     @include coarse {
-      margin-block-end: rem(72px);
+      margin-block-end: calc(#{rem(72px)} + var(--boot-room, 0rem));
     }
   }
 
   // Phone: the 8px gap, the 44px control row (picker and tools) and 12px above the feed.
   @include phone {
-    margin-block-end: rem(32px);
+    margin-block-end: calc(#{rem(32px)} + var(--boot-room, 0rem));
   }
 
   @include desktop {
     height: rem(1px);
-    margin-block: 0 rem(74px);
+    margin-block: 0 calc(#{rem(74px)} + var(--boot-room, 0rem));
   }
 }
 
@@ -492,6 +492,71 @@
 .boot__extension--shown {
   @include desktop {
     display: block;
+  }
+}
+
+// Parts of a library page that arrive after the first paint hold their room in the count's
+// bottom margin (`--boot-room`, set by `public/boot-skeleton.js` attributes):
+// - Unsorted held "Tidy with suggestions" last time (`html[data-boot-tidy]`, from `sm-tidy-entry`):
+//   on a phone the button (32px) pushes the tools onto a second row, 36px and the 8px gap more
+//   (76px measured; wider windows keep the button in the row).
+// - A folder page (`html[data-boot-folder]`): its heading row is 40px (the tile), 8px more than
+//   the title row of the other pages (12px on a phone, 4px under the control row's gap), and
+//   from 64em the breadcrumb trail's 32px sit above it (`library.page.scss`, `library--folder`).
+:root[data-boot-tidy] {
+  @include phone {
+    --boot-room: #{rem(76px)};
+  }
+}
+
+:root[data-boot-folder] {
+  --boot-room: #{rem(8px)};
+
+  @include phone {
+    --boot-room: #{rem(12px)};
+  }
+}
+
+:root[data-boot-folder] .boot__lib {
+  @include desktop {
+    padding-block-start: rem(32px);
+  }
+}
+
+// The subfolder chips of a folder page (`html[data-boot-subfolders]`, the count from
+// `sm-folder-shape`, 9 at most): 40px chips on a row that wraps, 24px under them; 48px rows in the
+// list views. Nine are drawn, the rules hide the surplus.
+.boot__subfolders {
+  display: none;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-end: var(--space-6);
+}
+
+:root[data-boot-subfolders] .boot__subfolders {
+  display: flex;
+}
+
+.boot__subfolder {
+  inline-size: rem(112px);
+  max-inline-size: 100%;
+  block-size: rem(40px);
+}
+
+:root[data-boot-view='list'] .boot__subfolders,
+:root[data-boot-view='headlines'] .boot__subfolders {
+  flex-flow: column nowrap;
+  gap: var(--space-1);
+
+  .boot__subfolder {
+    inline-size: 100%;
+    block-size: rem(48px);
+  }
+}
+
+@for $n from 1 through 8 {
+  :root[data-boot-subfolders='#{$n}'] .boot__subfolder:nth-child(n + #{$n + 1}) {
+    display: none;
   }
 }
 

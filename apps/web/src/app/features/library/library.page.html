@@ -2,6 +2,7 @@
 <section
   class="library"
   [class.library--selecting]="selection.selecting()"
+  [class.library--folder]="filters.isFolder() && !filters.folderMissing()"
   [class.library--link-full]="preview.fullScreen()"
   [attr.aria-busy]="store.loading()"
 >
@@ -41,7 +42,12 @@
     [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
     (linkClick)="openCrumb($event)"
   />
-  } } } @if (splitView.open() && !preview.split()) {
+  } } @else if (filters.isFolder() && !(selection.selecting() && compact())) {
+  <!-- The trail arrives with the folder: its line is held (a bar), the room of the title stays. -->
+  <div class="library__crumbs library__crumbs--loading" aria-hidden="true">
+    <ui-skeleton class="library__crumbs-sk" [shape]="SKELETON_SHAPE.Block" />
+  </div>
+  } } @if (splitView.open() && !preview.split()) {
   <!-- Shelf side by side (08-select-move): the page's own line over both feeds. -->
   <div class="library__split-head">
     <p class="library__split-title" aria-hidden="true">{{ 'library.split.open' | transloco }}</p>
@@ -522,6 +528,17 @@
               [dropTarget]="drag.folderTargetId() === item.folder.id"
             />
           </li>
+          }
+        </ul>
+        } @else if (feed.subfolderSlots().length > 0) {
+        <!-- The folder list is still out: the chips it had last time are held as bars (no shift). -->
+        <ul
+          class="library__folders library__folders--loading"
+          [class.library__folders--rows]="rowsView()"
+          aria-hidden="true"
+        >
+          @for (slot of feed.subfolderSlots(); track slot) {
+          <li><ui-skeleton class="library__folder-sk-chip" [shape]="SKELETON_SHAPE.Block" /></li>
           }
         </ul>
         } @if (filters.folderMissing()) {

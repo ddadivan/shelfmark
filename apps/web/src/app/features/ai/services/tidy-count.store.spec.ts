@@ -25,8 +25,10 @@ describe('TidyCountStore', () => {
   it('reads the count while AI is on and keeps it when a read fails', async () => {
     const { api, store } = await setup();
     expect(store.total()).toBe(0);
+    expect(store.known()).toBe(false);
     await store.load();
     expect(store.total()).toBe(12);
+    expect(store.known()).toBe(true);
     api.getTidyCount.mockReturnValue(throwError(() => new Error('down')));
     await store.load();
     expect(store.total()).toBe(12);
@@ -36,6 +38,7 @@ describe('TidyCountStore', () => {
     const { api, store } = await setup(false);
     await store.load();
     expect(store.total()).toBe(0);
+    expect(store.known()).toBe(true);
     expect(api.getTidyCount).not.toHaveBeenCalled();
   });
 

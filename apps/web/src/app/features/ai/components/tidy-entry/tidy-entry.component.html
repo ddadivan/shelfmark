@@ -10,4 +10,7 @@
     {{ 'ai.tidy.entry' | transloco }}
     <ui-badge class="tidy-entry__count" pop><ui-number-flow [value]="count.total()" /></ui-badge>
   </ui-button>
+} @else if (cache.reserve()) {
+  <!-- The button was there last time: its slot stays until the answer is in (no shift). -->
+  <ui-skeleton class="tidy-entry__slot" [shape]="SKELETON_SHAPE.Block" aria-hidden="true" />
 }

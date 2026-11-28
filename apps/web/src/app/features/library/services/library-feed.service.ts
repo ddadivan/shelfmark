@@ -25,6 +25,7 @@ import type { LastShown } from '../models/last-shown.interface';
 import type { SubfolderItem } from '../models/subfolder-item.interface';
 import { VIEW_OPTION_KEYS } from '../models/view-option-keys.const';
 import { runViewTransition, type ViewTransitionNames } from '../utils/view-transition';
+import { FolderShapeCache } from './folder-shape-cache.service';
 import { LibraryFilterService } from './library-filter.service';
 
 /**
@@ -38,6 +39,7 @@ export class LibraryFeedService {
   private readonly store = inject(LinksStore);
   private readonly filters = inject(LibraryFilterService);
   private readonly folders = inject(FoldersStore);
+  private readonly shapes = inject(FolderShapeCache);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
   private readonly injector = inject(Injector);
@@ -167,6 +169,18 @@ export class LibraryFeedService {
         childCount: all.filter((child) => child.parentId === folder.id).length,
       }));
   });
+  /**
+   * Places held for the subfolder chips while the folder list is still out (`FolderShapeCache`: the
+   * count they had last time), one entry per chip; none once the list is in or for a filtered
+   * view. The row moves the feed by 64px, so the skeleton keeps its room.
+   */
+  readonly subfolderSlots = computed<readonly number[]>(() => {
+    const id = this.filters.folderId();
+    if (!this.filters.isFolder() || id === undefined || this.folders.loaded()) {
+      return [];
+    }
+    return Array.from({ length: this.shapes.subfolders(id) }, (_, index) => index);
+  });
   /** The subfolders of the last settled view; they stay with its cards while the next view loads. */
   private readonly lastSubfolders = signal<readonly SubfolderItem[]>([]);
   readonly subfolders = computed(() =>
@@ -205,6 +219,18 @@ export class LibraryFeedService {
           sawSkeleton = false;
         }
       });
+    });
+    // What the folder showed, for the room it holds on the next reload (`subfolderSlots`).
+    effect(() => {
+      const id = this.filters.folderId();
+      if (this.folders.loaded() && this.filters.isFolder() && id !== undefined) {
+        const count = this.currentSubfolders().length;
+        untracked(() => {
+          if (!this.filters.filtered() && !this.filters.folderMissing()) {
+            this.shapes.remember(id, count);
+          }
+        });
+      }
     });
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();

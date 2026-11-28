@@ -45,6 +45,20 @@
   }
 }
 
+// The chips held while the folder list is out: the 40px chip (`app-folder-tile`), the 48px row in
+// the list views.
+.library__folder-sk-chip {
+  display: block;
+  inline-size: rem(112px);
+  max-inline-size: 100%;
+  block-size: rem(40px);
+}
+
+.library__folders--rows .library__folder-sk-chip {
+  inline-size: 100%;
+  block-size: rem(48px);
+}
+
 // The same as the stale cards (`library__list--stale`) while the next view loads.
 .library__folders--stale {
   pointer-events: none;
@@ -119,6 +133,16 @@
 
   inset-inline: 0;
   display: block;
+}
+
+// The bar that holds the trail's line until the folder arrives: the 28px of the real trail (a 3px
+// padded label line), so the title below it does not move.
+.library__crumbs-sk {
+  inline-size: rem(160px);
+  max-inline-size: 100%;
+  block-size: var(--space-4);
+  margin-block: var(--space-1-5);
+  margin-inline: var(--space-1-5);
 }
 
 // Screen reader text only: "Selection mode on / off".

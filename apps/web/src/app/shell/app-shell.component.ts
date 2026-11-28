@@ -33,6 +33,7 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
+import { TidyEntryCache } from '../features/ai/services/tidy-entry-cache.service';
 import { LibraryDefaultViewCache } from '../features/library/services/library-default-view-cache.service';
 import { AiAnnouncementService } from '../features/ai/services/ai-announcement.service';
 import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
@@ -214,6 +215,8 @@ export default class AppShellComponent {
     inject(AiAnnouncementService);
     // The Default view for the next first paint (the boot skeleton follows the view).
     inject(LibraryDefaultViewCache);
+    // Whether "Tidy with suggestions" shows in Unsorted, for the room it keeps on the next reload.
+    inject(TidyEntryCache);
   }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */

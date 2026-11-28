@@ -30,8 +30,9 @@
   @include desktop {
     padding-block-start: var(--space-2);
 
-    // A subfolder keeps room for its breadcrumb trail above the title.
-    &:has(> .library__crumbs) {
+    // A folder page keeps room for its breadcrumb trail above the title (every folder has one, so
+    // the room is known from the address, before the trail arrives).
+    &.library--folder {
       padding-block-start: calc(var(--space-8) + var(--space-2));
     }
   }
@@ -482,7 +483,8 @@ ui-menu-label {
 }
 
 // A folder page before the folder list has answered: the heading's tile and title as bars of the
-// loaded sizes (the 40px tile, the title's line box).
+// loaded sizes (the 40px tile, the title's line box). The title bar is short enough for the count
+// bar to stay on its line at 360px (40 + 12 + 112 + 12 + 120 of 328), as the loaded heading does.
 .library__folder-sk {
   --ui-skeleton-width: #{rem(40px)};
   --ui-skeleton-height: #{rem(40px)};
@@ -497,6 +499,6 @@ ui-menu-label {
 }
 
 .library__title-sk {
-  --ui-skeleton-width: #{rem(160px)};
+  --ui-skeleton-width: #{rem(112px)};
   --ui-skeleton-height: #{rem(20px)};
 }
