@@ -63,3 +63,29 @@
 
   color: var(--text-muted);
 }
+
+// The sections the server's answer adds, as panels of their loaded heights (title included): what is
+// sent 159px, quiet hours 94px, devices 94px (177, 112 and 94px on a phone).
+.notifications__sk {
+  --ui-skeleton-radius: var(--radius-lg);
+}
+
+.notifications__sk--send {
+  --ui-skeleton-height: #{rem(159px)};
+
+  @include phone {
+    --ui-skeleton-height: #{rem(177px)};
+  }
+}
+
+.notifications__sk--quiet {
+  --ui-skeleton-height: #{rem(94px)};
+
+  @include phone {
+    --ui-skeleton-height: #{rem(112px)};
+  }
+}
+
+.notifications__sk--devices {
+  --ui-skeleton-height: #{rem(94px)};
+}

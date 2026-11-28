@@ -4,7 +4,7 @@ import {
   type NotificationSettingsResponse,
   type UpdateNotificationSettings,
 } from '@shelfmark/contracts';
-import { of } from 'rxjs';
+import { NEVER, of } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { buttonWith, setupSettingsPage } from '../../../../../testing/settings-page-testbed';
 import { NOTIFICATIONS_API } from '../../../notifications/models/notifications-api.const';
@@ -25,7 +25,8 @@ class FakeNotification {
 async function setup({
   available = true,
   permission,
-}: { available?: boolean; permission?: NotificationPermission } = {}) {
+  pending = false,
+}: { available?: boolean; permission?: NotificationPermission; pending?: boolean } = {}) {
   if (permission) {
     FakeNotification.permission = permission;
     FakeNotification.shown = [];
@@ -45,7 +46,7 @@ async function setup({
     ],
   };
   const api = {
-    get: vi.fn(() => of(answer)),
+    get: vi.fn(() => (pending ? NEVER : of(answer))),
     update: vi.fn((change: UpdateNotificationSettings) => {
       answer = { ...answer, settings: { ...answer.settings, ...change } };
       return of(answer);
@@ -68,6 +69,13 @@ function headings(root: HTMLElement): (string | undefined)[] {
 }
 
 describe('NotificationsPage', () => {
+  it('holds the room of the three sections the server answer adds', async () => {
+    const { root } = await setup({ pending: true });
+
+    expect(headings(root)).toEqual(['On this device']);
+    expect(root.querySelectorAll('.notifications__sk')).toHaveLength(3);
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
     localStorage.removeItem('sm-notifications-device');

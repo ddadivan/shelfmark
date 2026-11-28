@@ -10,6 +10,8 @@ import {
   SelectComponent,
   SettingsRowComponent,
   SettingsSectionComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
   SwitchComponent,
   TOAST_KIND,
   ToastService,
@@ -38,6 +40,7 @@ import { Translate } from '../../../../core/i18n/translate.service';
     SettingsPageHeaderComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
+    SkeletonComponent,
     SwitchComponent,
   ],
   templateUrl: './notifications.page.html',
@@ -45,6 +48,7 @@ import { Translate } from '../../../../core/i18n/translate.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class NotificationsPage {
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly device = inject(DeviceNotificationsService);
   protected readonly store = inject(NotificationSettingsStore);
   protected readonly locale = inject(LocaleService);

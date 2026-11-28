@@ -69,7 +69,25 @@
   }
 </ui-settings-section>
 
-@if (store.available()) {
+@if (!store.loaded()) {
+<!-- Room for the three sections the server's answer adds (what is sent, quiet hours, devices), so the page
+     keeps its height when it arrives. -->
+<ui-skeleton
+  class="notifications__sk notifications__sk--send"
+  aria-hidden="true"
+  [shape]="SKELETON_SHAPE.Block"
+/>
+<ui-skeleton
+  class="notifications__sk notifications__sk--quiet"
+  aria-hidden="true"
+  [shape]="SKELETON_SHAPE.Block"
+/>
+<ui-skeleton
+  class="notifications__sk notifications__sk--devices"
+  aria-hidden="true"
+  [shape]="SKELETON_SHAPE.Block"
+/>
+} @if (store.available()) {
 <ui-settings-section [title]="'settings.notifications.send.title' | transloco">
   <ui-settings-row
     [title]="'settings.notifications.send.reminders.label' | transloco"

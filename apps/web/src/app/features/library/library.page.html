@@ -98,6 +98,16 @@
             <p class="library__description">{{ description }}</p>
             }
           </div>
+          } @else if (filters.isFolder() && !splitView.open() && !filters.searching()) {
+          <!-- A folder whose list has not answered yet: the folder heading's own places (the 40px tile, the
+               title line, the count), so the toolbar below does not move when the folder arrives. -->
+          <div class="library__heading library__heading--folder" aria-hidden="true">
+            <ui-skeleton class="library__folder-sk" [shape]="SKELETON_SHAPE.Block" />
+            <h1 class="library__title library__title--loading">
+              <ui-skeleton class="library__title-sk" [shape]="SKELETON_SHAPE.Block" />
+            </h1>
+            <ng-container *ngTemplateOutlet="countLine" />
+          </div>
           } @else {
           <div
             class="library__heading"

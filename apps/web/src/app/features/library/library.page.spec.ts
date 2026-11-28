@@ -478,13 +478,22 @@ describe('LibraryPage', () => {
 describe('LibraryPage of a folder', () => {
   const FOLDER: FolderResponse = { ...MOCK_FOLDERS[0], id: 'f1', name: 'Reading list' };
 
-  async function setupFolder(folderId: string, items: LinkResponse[] = [link(1)]) {
+  async function setupFolder(
+    folderId: string,
+    items: LinkResponse[] = [link(1)],
+    folderList: Observable<{
+      items: FolderResponse[];
+      counts: typeof MOCK_LIBRARY_COUNTS;
+    }> | null = null,
+  ) {
     const linksApi = {
       list: vi.fn<LinksApi['list']>(() => of(page(items))),
       recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
     };
     const foldersApi = {
-      list: vi.fn<FoldersApi['list']>(() => of({ items: [FOLDER], counts: MOCK_LIBRARY_COUNTS })),
+      list: vi.fn<FoldersApi['list']>(
+        () => folderList ?? of({ items: [FOLDER], counts: MOCK_LIBRARY_COUNTS }),
+      ),
     };
     TestBed.configureTestingModule({
       providers: [
@@ -501,6 +510,23 @@ describe('LibraryPage of a folder', () => {
     await fixture.whenStable();
     return { linksApi, fixture, element: fixture.nativeElement as HTMLElement };
   }
+
+  it('draws the folder heading as bars (tile, title, count) until the folder list answers', async () => {
+    const folders = new Subject<{ items: FolderResponse[]; counts: typeof MOCK_LIBRARY_COUNTS }>();
+    const { element, fixture } = await setupFolder('f1', [link(1)], folders);
+
+    const heading = element.querySelector('.library__heading--folder');
+    expect(heading?.getAttribute('aria-hidden')).toBe('true');
+    expect(heading?.querySelector('.library__folder-sk')).not.toBeNull();
+    expect(heading?.querySelector('.library__title-sk')).not.toBeNull();
+
+    folders.next({ items: [FOLDER], counts: MOCK_LIBRARY_COUNTS });
+    await vi.waitFor(async () => {
+      await fixture.whenStable();
+      expect(element.querySelector('.library__folder-sk')).toBeNull();
+      expect(element.querySelector('h1')?.textContent).toBe('Reading list');
+    });
+  });
 
   it('asks for the links of the folder and shows its name as the heading', async () => {
     const { linksApi, element } = await setupFolder('f1');

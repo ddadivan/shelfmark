@@ -480,3 +480,23 @@ ui-menu-label {
 .library__tools .library__add-here {
   --ui-button-weight: 500;
 }
+
+// A folder page before the folder list has answered: the heading's tile and title as bars of the
+// loaded sizes (the 40px tile, the title's line box).
+.library__folder-sk {
+  --ui-skeleton-width: #{rem(40px)};
+  --ui-skeleton-height: #{rem(40px)};
+  --ui-skeleton-radius: var(--radius-md);
+
+  flex: none;
+}
+
+.library__title--loading {
+  display: flex;
+  align-items: center;
+}
+
+.library__title-sk {
+  --ui-skeleton-width: #{rem(160px)};
+  --ui-skeleton-height: #{rem(20px)};
+}
