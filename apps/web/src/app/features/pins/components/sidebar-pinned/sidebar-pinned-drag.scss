@@ -107,3 +107,11 @@
 .pinned__item--drop .pinned__actions {
   opacity: 0;
 }
+
+// No Unpin while anything is dragged: a link card from the feed (`pinned__list--link-drag`) or a
+// pinned row being reordered (`cdk-drop-list-dragging`); the hover under the pointer is the drag's.
+.pinned__list--link-drag .pinned__item .pinned__actions,
+.pinned__list.cdk-drop-list-dragging .pinned__item .pinned__actions {
+  pointer-events: none;
+  opacity: 0;
+}

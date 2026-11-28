@@ -14,6 +14,7 @@ import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transl
 import { MockFoldersApi } from '../../../links/mock/mock-folders.api';
 import { MockLibraryData } from '../../../links/mock/mock-library-data';
 import { MockLinksApi } from '../../../links/mock/mock-links.api';
+import { LinkDragService } from '../../../links/services/link-drag.service';
 import { MockTagsApi } from '../../../links/mock/mock-tags.api';
 import { FOLDERS_API } from '../../../links/models/folders-api.const';
 import { LINKS_API } from '../../../links/models/links-api.const';
@@ -70,6 +71,17 @@ describe('SidebarPinnedComponent', () => {
     const { element } = await setup();
 
     expect(element.querySelector('.pinned__link ui-icon[name="pin"]')).toBeNull();
+  });
+
+  it('marks the list while a link is dragged, so no row shows Unpin under the pointer', async () => {
+    const { fixture, element, data } = await setup();
+    const list = element.querySelector('.pinned__list');
+    expect(list?.classList.contains('pinned__list--link-drag')).toBe(false);
+
+    TestBed.inject(LinkDragService).start(data.links[1]);
+    await fixture.whenStable();
+
+    expect(list?.classList.contains('pinned__list--link-drag')).toBe(true);
   });
 
   it('renders nothing while nothing is pinned', async () => {

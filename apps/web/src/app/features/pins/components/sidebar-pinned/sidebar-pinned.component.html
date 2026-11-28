@@ -47,6 +47,7 @@
         } @else {
           <ul
             class="pinned__list"
+            [class.pinned__list--link-drag]="linkDragging()"
             cdkDropList
             cdkDropListLockAxis="y"
             (cdkDropListSorted)="sorted($event)"
