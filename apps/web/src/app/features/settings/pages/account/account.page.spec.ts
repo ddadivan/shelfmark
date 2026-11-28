@@ -9,6 +9,7 @@ import {
   SETTINGS_TEST_USER,
   setupSettingsPage,
 } from '../../../../../testing/settings-page-testbed';
+import { STORAGE_KEY } from '../../../../core/storage/models/storage-key.const';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { ACCOUNT_DELETION_API } from '../../../account-deletion/models/account-deletion-api.const';
 import AccountPage from './account.page';
@@ -17,6 +18,45 @@ const setup = (user = SETTINGS_TEST_USER, stats = () => of(SETTINGS_TEST_STATS))
   setupSettingsPage(AccountPage, 'account', { user, stats });
 
 describe('AccountPage', () => {
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY.ConnectedAccounts));
+  afterAll(() => localStorage.removeItem(STORAGE_KEY.ConnectedAccounts));
+
+  describe('the connected accounts while the stats load', () => {
+    const slots = (root: HTMLElement) => ({
+      rows: root.querySelectorAll('.account__sk-row').length,
+      none: root.querySelectorAll('.account__sk-line').length,
+    });
+
+    it('holds one row for a real account without a last visit', async () => {
+      const { root } = await setup(SETTINGS_TEST_USER, () => NEVER);
+      expect(slots(root)).toEqual({ rows: 1, none: 0 });
+    });
+
+    it('holds the line of "none" for the demo, which has no linked account', async () => {
+      const { root } = await setup({ ...SETTINGS_TEST_USER, isDemo: true }, () => NEVER);
+      expect(slots(root)).toEqual({ rows: 0, none: 1 });
+    });
+
+    it('follows the count of the last visit', async () => {
+      localStorage.setItem(STORAGE_KEY.ConnectedAccounts, '2');
+      expect(slots((await setup(SETTINGS_TEST_USER, () => NEVER)).root)).toEqual({
+        rows: 2,
+        none: 0,
+      });
+      TestBed.resetTestingModule();
+      localStorage.setItem(STORAGE_KEY.ConnectedAccounts, '0');
+      expect(slots((await setup(SETTINGS_TEST_USER, () => NEVER)).root)).toEqual({
+        rows: 0,
+        none: 1,
+      });
+    });
+
+    it('keeps the count of the accounts it listed for the next visit', async () => {
+      await setup(SETTINGS_TEST_USER, () => of({ ...SETTINGS_TEST_STATS, connectedAccounts: [] }));
+      expect(localStorage.getItem(STORAGE_KEY.ConnectedAccounts)).toBe('0');
+    });
+  });
+
   it('draws the shelf while the stats load: three counts, two lists of five, twelve weeks', async () => {
     const { root } = await setup(SETTINGS_TEST_USER, () => NEVER);
     const loading = root.querySelector('.shelf__loading');

@@ -130,6 +130,35 @@
         @if (extensionBanner.bannerShown()) {
           <span class="boot__extension boot__extension--shown"></span>
         }
+        <!-- The List and Headlines views (html[data-boot-view], which the script sets for /demo from the
+             feed's memory or the Default view): the same rows as index.html, shown by the same rules. -->
+        <div class="boot__rows boot__rows--list">
+          @for (row of rows; track row) {
+            <span class="boot__row"
+              ><span class="boot__row-select"></span
+              ><span class="boot__block boot__row-thumb"></span
+              ><span class="boot__row-text"
+                ><span class="boot__row-line boot__row-line--title"
+                  ><span class="boot__block boot__row-title"></span></span
+                ><span class="boot__row-line boot__row-line--meta"
+                  ><span class="boot__block boot__row-meta"></span></span></span
+            ></span>
+          }
+        </div>
+        <div class="boot__rows boot__rows--headlines">
+          @for (row of rows; track row) {
+            <span class="boot__hl"
+              ><span class="boot__block boot__hl-favicon"></span
+              ><span class="boot__block boot__hl-title"></span
+              ><span class="boot__hl-col boot__hl-col--domain"
+                ><span class="boot__block boot__hl-bar boot__hl-bar--domain"></span></span
+              ><span class="boot__hl-col boot__hl-col--folder"
+                ><span class="boot__block boot__hl-bar boot__hl-bar--folder"></span></span
+              ><span class="boot__hl-col boot__hl-col--date"
+                ><span class="boot__block boot__hl-bar boot__hl-bar--date"></span></span
+            ></span>
+          }
+        </div>
         <div class="boot__grid">
           @for (card of cards; track card) {
             <div class="boot__card">

@@ -275,6 +275,7 @@ describe('boot-skeleton.js and the library view', () => {
         }),
       },
     });
+    expect(defaults.attributes['data-card-preview']).toBeUndefined();
     expect(defaults.attributes['data-text-size']).toBeUndefined();
     expect(defaults.attributes['data-density']).toBeUndefined();
   });
@@ -326,5 +327,23 @@ describe('boot-skeleton.js and the room of late parts', () => {
     });
     expect(run.attributes['data-boot-skeleton']).toBe('');
     expect(run.attributes['data-boot-subfolders']).toBeUndefined();
+  });
+});
+
+describe('boot-skeleton.js and the card preview setting', () => {
+  const layout = (cardPreview: string): Record<string, string> => ({
+    ...SIGNED_IN,
+    [STORAGE_KEY.Layout]: JSON.stringify({ cardPreview }),
+  });
+
+  it('copies a small or off preview and leaves large (the default) out', () => {
+    for (const value of ['small', 'off']) {
+      const { attributes } = runBootScript({ path: '/links', storage: layout(value) });
+      expect(attributes['data-card-preview']).toBe(value);
+    }
+    for (const value of ['large', 'huge']) {
+      const { attributes } = runBootScript({ path: '/links', storage: layout(value) });
+      expect(attributes['data-card-preview']).toBeUndefined();
+    }
   });
 });

@@ -57,3 +57,14 @@
   align-items: center;
   block-size: rem(60px);
 }
+
+// The line of "no connected accounts" while loading: one caption line (`.account__muted`) with a
+// thinner bar centred in it.
+.account__sk-line {
+  --ui-skeleton-width: 60%;
+  --ui-skeleton-height: #{rem(10px)};
+
+  display: flex;
+  align-items: center;
+  block-size: 1lh;
+}

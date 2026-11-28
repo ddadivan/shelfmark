@@ -21,6 +21,15 @@
   </ui-notice>
 }
 
+@if (!store.loaded() && !store.loadFailed() && !isDemo()) {
+  <!-- The tokens and Create token arrive above the how-to sections: their room (a section of a title
+       and a row, then the 40px button) is held, so the sections below do not jump down. -->
+  <div class="connect__tokens" aria-hidden="true">
+    <ui-skeleton class="connect__sk-tokens" [shape]="SKELETON_SHAPE.Block" />
+    <ui-skeleton class="connect__sk-create" [shape]="SKELETON_SHAPE.Block" />
+  </div>
+}
+
 @if (store.loaded() && (!blockedKey() || !store.empty())) {
   <div class="connect__tokens">
     <ui-settings-section [title]="'ai.connect.page.tokens' | transloco">

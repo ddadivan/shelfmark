@@ -62,6 +62,10 @@ export default class AccountPage {
   protected readonly buttonSize = computed(() =>
     this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
   );
+  /** One entry per row held for the connected accounts while the stats load. */
+  protected readonly connectedSlotList = computed(() =>
+    Array.from({ length: this.stats.connectedSlots() }, (_, index) => index),
+  );
   /** Demo sandboxes expire by themselves, so only real accounts can be deleted. */
   protected readonly canDeleteAccount = computed(() => {
     const user = this.auth.user();

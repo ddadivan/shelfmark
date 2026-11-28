@@ -62,6 +62,13 @@ describe('DemoStartPage', () => {
     expect(page.querySelector('main')?.getAttribute('aria-busy')).toBe('true');
     expect(page.querySelector('[role="status"]')?.textContent).toContain('Opening the demo');
     expect(page.querySelector('app-boot-skeleton .boot__card')).not.toBeNull();
+    // The List and Headlines rows are drawn too; `html[data-boot-view]` shows the one the view wants.
+    expect(page.querySelectorAll('app-boot-skeleton .boot__rows--list .boot__row')).toHaveLength(
+      12,
+    );
+    expect(
+      page.querySelectorAll('app-boot-skeleton .boot__rows--headlines .boot__hl'),
+    ).toHaveLength(12);
     expect(page.querySelector('ui-logo, ui-spinner')).toBeNull();
     finish(DEMO);
     await harness.fixture.whenStable();

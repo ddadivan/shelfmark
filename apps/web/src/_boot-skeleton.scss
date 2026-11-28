@@ -1,3 +1,4 @@
+@use 'sass:list';
 @use 'sass:math';
 @use 'ui' as *;
 
@@ -645,6 +646,16 @@
 .boot__media {
   aspect-ratio: 4 / 3;
   border-radius: 0;
+}
+
+// Settings › Appearance › Cards › Preview image (`html[data-card-preview]`, copied by the script): a
+// short strip, or no preview area, as `ui-card` draws it.
+:root[data-card-preview='small'] .boot__media {
+  aspect-ratio: 32 / 9;
+}
+
+:root[data-card-preview='off'] .boot__media {
+  display: none;
 }
 
 .boot__card-body {
@@ -1569,8 +1580,13 @@
 
 :root[data-boot-page='reminders'] .boot__g-body--panels,
 :root[data-boot-page='tidy'] .boot__g-body--panels,
-:root[data-boot-page='library-tab'] .boot__g-body--panels,
-:root[data-boot-page='settings'] .boot__g-body--panels {
+:root[data-boot-page='library-tab'] .boot__g-body--panels {
+  display: flex;
+}
+
+// Settings: the generic two panels, or the page's own sections (`html[data-boot-settings]`, below).
+:root[data-boot-page='settings']:not([data-boot-settings]) .boot__g-body--panels,
+:root[data-boot-page='settings'][data-boot-settings] .boot__g-body--settings {
   display: flex;
 }
 
@@ -1737,6 +1753,282 @@
 :root[data-boot-page='settings'] .boot__g-top {
   flex-direction: column;
   margin-block-end: calc(var(--space-6) * -1 + var(--space-4));
+}
+
+// Settings pages with their own layout (`html[data-boot-settings]`, set by `public/boot-skeleton.js`):
+// Account, Appearance, Library, AI, Notifications and AI > Connect. Measured on the loaded pages in the
+// demo (the heights of `ui-settings-section`, title row included), at 1440px, 768px and 360px; the
+// header's own height (the title and its description, two or three lines on a phone) comes first, then
+// the sections 24px apart. A section is a title bar and a panel with up to four rows, clipped to the
+// section's height; the sections beyond the list are not drawn. The panels of the loaded pages hold
+// more than rows (the shelf's chart, the theme picker): their height is what is kept, not their look.
+$boot-settings-desktop: (
+  'account': (
+    110,
+    528,
+    90,
+    94,
+  ),
+  'appearance': (
+    222,
+    224,
+    159,
+  ),
+  'library': (
+    497,
+    224,
+    139,
+    94,
+    159,
+  ),
+  'ai': (
+    592,
+    159,
+    82,
+    177,
+    94,
+  ),
+  'notifications': (
+    198,
+    159,
+    94,
+    94,
+  ),
+  'ai-connect': (
+    43,
+    90,
+    40,
+    250,
+    177,
+  ),
+);
+$boot-settings-tablet: (
+  'account': (
+    110,
+    528,
+    90,
+    102,
+  ),
+  'appearance': (
+    222,
+    224,
+    159,
+  ),
+  'library': (
+    497,
+    159,
+    139,
+    94,
+    159,
+  ),
+  'ai': (
+    628,
+    159,
+    82,
+    177,
+    94,
+  ),
+  'notifications': (
+    198,
+    159,
+    94,
+    94,
+  ),
+  'ai-connect': (
+    43,
+    90,
+    40,
+    250,
+    177,
+  ),
+);
+$boot-settings-phone: (
+  'account': (
+    110,
+    726,
+    90,
+    158,
+  ),
+  'appearance': (
+    292,
+    368,
+    207,
+  ),
+  'library': (
+    745,
+    215,
+    199,
+    112,
+    255,
+  ),
+  'ai': (
+    888,
+    251,
+    82,
+    261,
+    160,
+  ),
+  'notifications': (
+    266,
+    177,
+    112,
+    94,
+  ),
+  'ai-connect': (
+    63,
+    90,
+    40,
+    250,
+    177,
+  ),
+);
+
+@mixin boot-settings-heights($heights-by-variant) {
+  @each $variant, $heights in $heights-by-variant {
+    @for $i from 1 through list.length($heights) {
+      :root[data-boot-settings='#{$variant}'] .boot__s-section:nth-child(#{$i}) {
+        display: flex;
+        block-size: rem(list.nth($heights, $i) * 1px);
+      }
+    }
+  }
+}
+
+.boot__s-section {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.boot__s-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-block-size: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+@include desktop {
+  @include boot-settings-heights($boot-settings-desktop);
+}
+
+@include tablet {
+  @include boot-settings-heights($boot-settings-tablet);
+}
+
+@include phone {
+  @include boot-settings-heights($boot-settings-phone);
+}
+
+// The header of the page (`app-settings-page-header`): the title and the description, 54px on a
+// desktop, 62px on a tablet, and on a phone (where the way back, 32px, is part of it and is the
+// skeleton's own back row above) 62px, 82px with three lines of description.
+:root[data-boot-page='settings'][data-boot-settings] {
+  .boot__g-head {
+    block-size: rem(54px);
+
+    @include tablet {
+      block-size: rem(62px);
+    }
+
+    @include phone {
+      block-size: rem(62px);
+    }
+  }
+
+  .boot__g-top {
+    @include phone {
+      margin-block-end: calc(var(--space-6) * -1);
+    }
+  }
+}
+
+:root[data-boot-page='settings'][data-boot-settings='ai'] .boot__g-head,
+:root[data-boot-page='settings'][data-boot-settings='notifications'] .boot__g-head {
+  @include phone {
+    block-size: rem(82px);
+  }
+}
+
+// Demo account: no linked sign-in provider, so the connected accounts hold one line, not a row.
+:root[data-boot-demo][data-boot-settings='account'] .boot__s-section:nth-child(3) {
+  block-size: rem(70px);
+}
+
+// AI > Connect an assistant: the title (with the way back above it on a tablet and a phone, 70px),
+// the lead 8px under it, then for the demo one notice, else the tokens, the Create button and the
+// two how-to sections. The lead, the notice and the button are flat blocks.
+@mixin boot-settings-flat {
+  .boot__hgroup-title,
+  .boot__g-row {
+    display: none;
+  }
+
+  .boot__s-panel {
+    background: var(--surface-hover);
+    border-radius: var(--radius-md);
+    box-shadow: none;
+  }
+}
+
+:root[data-boot-page='settings'][data-boot-settings='ai-connect'] {
+  .boot__g-head {
+    block-size: rem(30px);
+
+    // The way back is a row of the header: 32px above the title on a tablet (the chip row is above
+    // that), the phone's own back row above the head.
+    @include tablet {
+      padding-block-start: rem(32px);
+      block-size: rem(70px);
+      box-sizing: border-box;
+    }
+
+    @include phone {
+      block-size: rem(38px);
+    }
+  }
+
+  .boot__g-title {
+    @include compact {
+      height: rem(38px);
+    }
+  }
+
+  .boot__g-lead {
+    display: none;
+  }
+
+  .boot__g-body--settings {
+    margin-block-start: calc(var(--space-4) * -1);
+  }
+
+  .boot__s-section:nth-child(1) {
+    @include boot-settings-flat;
+  }
+
+  // The demo shows the notice (44px; 64px on a phone) and nothing else.
+  &[data-boot-demo] .boot__s-section:nth-child(2) {
+    block-size: rem(44px);
+
+    @include phone {
+      block-size: rem(64px);
+    }
+
+    @include boot-settings-flat;
+  }
+
+  &[data-boot-demo] .boot__s-section:nth-child(n + 3) {
+    display: none;
+  }
+
+  &:not([data-boot-demo]) .boot__s-section:nth-child(3) {
+    inline-size: rem(160px);
+
+    @include boot-settings-flat;
+  }
 }
 
 // Share Target (`html[data-boot-page='share']`, features/share/share.page.scss): outside the shell, so

@@ -58,6 +58,7 @@
   if (page) root.setAttribute('data-boot-page', page);
   if (!page) libraryView();
   if (!page) libraryRoom();
+  if (page === 'settings') settingsVariant();
   if (extensionBanner()) root.setAttribute('data-boot-extension', '');
   if (extensionRow()) root.setAttribute('data-boot-extension-row', '');
   root.setAttribute('data-boot-skeleton', '');
@@ -66,7 +67,7 @@
     if (left) left.remove();
   }, MAX_MS);
 
-  /** `data-text-size`, `data-font` and `data-density` from the stored layout (the defaults leave them out). */
+  /** `data-text-size`, `data-font`, `data-density` and `data-card-preview` from the stored layout (the defaults leave them out). */
   function layout() {
     try {
       const stored = JSON.parse(localStorage.getItem(LAYOUT_KEY) || 'null');
@@ -78,6 +79,9 @@
         root.setAttribute('data-font', stored.font); // APP_FONT
       }
       if (stored.density === 'compact') root.setAttribute('data-density', 'compact'); // DENSITY
+      if (stored.cardPreview === 'small' || stored.cardPreview === 'off') {
+        root.setAttribute('data-card-preview', stored.cardPreview); // CARD_PREVIEW (large is the default)
+      }
     } catch {
       // Storage blocked or broken JSON: the defaults.
     }
@@ -101,6 +105,17 @@
     if (/^\/settings(\/.*)?$/.test(path)) return 'settings';
     if (/^\/admin(\/.*)?$/.test(path)) return 'reminders';
     return null;
+  }
+
+  /**
+   * `html[data-boot-settings]` for the settings pages whose real layout differs from the generic title and
+   * two panels: Account, Appearance, Library, AI, Notifications and AI › Connect an assistant (their section
+   * heights are in src/_boot-skeleton.scss).
+   */
+  function settingsVariant() {
+    const child = /^\/settings\/(account|appearance|library|ai|notifications)$/.exec(path);
+    if (child) root.setAttribute('data-boot-settings', child[1]);
+    if (path === '/settings/ai/connect') root.setAttribute('data-boot-settings', 'ai-connect');
   }
 
   /**

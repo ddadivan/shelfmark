@@ -1,7 +1,10 @@
-import { computed, inject, Service } from '@angular/core';
+import { computed, effect, inject, Service } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import type { MeStatsResponse } from '@shelfmark/contracts';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { LocaleService } from '../../../core/i18n/locale.service';
+import { STORAGE_KEY } from '../../../core/storage/models/storage-key.const';
+import { SafeStorage } from '../../../core/storage/safe-storage.service';
 import { AUTH_PROVIDER_VIEW } from '../models/auth-provider-view.const';
 import type { ConnectedAccountView } from '../models/connected-account-view.interface';
 import { ME_STATS_API } from '../models/me-stats-api.const';
@@ -19,6 +22,10 @@ import { weekBars } from '../utils/week-bars';
 export class AccountStatsService {
   private readonly api = inject(ME_STATS_API);
   private readonly locale = inject(LocaleService);
+  private readonly storage = inject(SafeStorage);
+  private readonly auth = inject(AuthStore);
+  /** The count of connected accounts the page listed last time (`sm-connected-accounts`), if any. */
+  private readonly lastConnected = this.storage.getNumber(STORAGE_KEY.ConnectedAccounts);
   /** Reloads when the first day of the week changes (Settings › Language, or the region). */
   private readonly resource = rxResource({
     params: () => ({ firstDay: this.locale.firstDay() }),
@@ -105,6 +112,26 @@ export class AccountStatsService {
       date: this.locale.formatDate(account.connectedAt),
     })),
   );
+
+  /**
+   * How many rows the connected accounts hold while the stats load: the count of the last visit,
+   * else what the account kind has (a real account signed in with one provider at least, the
+   * demo with none), so the sections below do not move when the list arrives.
+   */
+  readonly connectedSlots = computed(() => {
+    if (this.lastConnected !== null && Number.isInteger(this.lastConnected)) {
+      return Math.max(0, Math.min(this.lastConnected, 3));
+    }
+    return this.auth.user()?.isDemo === true ? 0 : 1;
+  });
+
+  constructor() {
+    effect(() => {
+      if (this.loaded()) {
+        this.storage.set(STORAGE_KEY.ConnectedAccounts, String(this.connectedAccounts().length));
+      }
+    });
+  }
 
   reload(): void {
     this.resource.reload();

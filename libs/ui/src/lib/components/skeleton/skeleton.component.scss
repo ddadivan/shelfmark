@@ -78,6 +78,16 @@
   border-radius: 0;
 }
 
+// The card's Preview image setting (`data-card-preview` on an ancestor, as `ui-card`): a short
+// strip, or no preview area at all.
+:host-context([data-card-preview='small']) .ui-skeleton__media {
+  aspect-ratio: 32 / 9;
+}
+
+:host-context([data-card-preview='off']) .ui-skeleton__media {
+  display: none;
+}
+
 .ui-skeleton__card-body {
   @include card-body;
 }

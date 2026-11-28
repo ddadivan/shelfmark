@@ -58,3 +58,16 @@
   line-height: rem(24px);
   color: var(--text);
 }
+
+// The room of the tokens section while they load: a title and a row (90px), then the Create button
+// (40px, as wide as its label).
+.connect__sk-tokens {
+  --ui-skeleton-height: #{rem(90px)};
+  --ui-skeleton-radius: var(--radius-lg);
+}
+
+.connect__sk-create {
+  --ui-skeleton-width: #{rem(160px)};
+  --ui-skeleton-height: var(--control-md);
+  --ui-skeleton-radius: var(--radius-md);
+}

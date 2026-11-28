@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import type { McpTokensResponse } from '@shelfmark/contracts';
 import { DialogService, ToastService } from '@shelfmark/ui';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 import { stubClipboard } from '../../../../../../testing/stub-clipboard';
 import { axeViolations } from '../../../../../../testing/axe';
 import { fakeMcpApi, mcpToken } from '../../../../../../testing/fake-mcp-api';
@@ -19,9 +19,10 @@ const URL = 'https://shelfmark.example/api/mcp';
 
 async function setup(
   response: McpTokensResponse = { available: true, items: [] },
-  options: { demo?: boolean; confirm?: boolean; failLoad?: boolean } = {},
+  options: { demo?: boolean; confirm?: boolean; failLoad?: boolean; pending?: boolean } = {},
 ) {
   const api = fakeMcpApi(response);
+  if (options.pending) api.list.mockReturnValue(NEVER);
   if (options.failLoad) api.list.mockReturnValue(throwError(() => new Error('down')));
   const confirm = vi.fn(() => Promise.resolve(options.confirm ?? true));
   const open = vi.fn(() => ({ result: Promise.resolve(undefined) }));
@@ -188,6 +189,17 @@ describe('ConnectAssistantComponent', () => {
   it('tells the demo it cannot connect an assistant', async () => {
     const { element } = await setup({ available: false, items: [] }, { demo: true });
     expect(element.textContent).toContain('The demo can’t connect an assistant.');
+  });
+
+  it('holds the room of the tokens while they load, and the demo notice stands at once', async () => {
+    const real = await setup(undefined, { pending: true });
+    expect(real.element.querySelectorAll('.connect__tokens ui-skeleton')).toHaveLength(2);
+    expect(real.element.querySelector('ui-notice')).toBeNull();
+    TestBed.resetTestingModule();
+    const demo = await setup(undefined, { pending: true, demo: true });
+    expect(demo.element.textContent).toContain('The demo can’t connect an assistant.');
+    expect(demo.element.querySelector('ui-skeleton')).toBeNull();
+    expect(demo.element.querySelectorAll('ui-settings-section')).toHaveLength(0);
   });
 
   it('offers Try again when the list fails to load', async () => {

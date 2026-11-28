@@ -52,11 +52,18 @@
   }
 </ui-settings-section>
 } @else {
-<!-- Holds the place of the connected accounts while the stats load, so the sections below stay. -->
+<!-- Holds the place of the connected accounts while the stats load, so the sections below stay: a row
+     for each account of the last visit, or the line of "none" (`AccountStatsService.connectedSlots`). -->
 <ui-settings-section [title]="'settings.account.connected.title' | transloco">
+  @for (slot of connectedSlotList(); track slot) {
   <div class="account__sk-row" aria-hidden="true">
     <ui-skeleton [shape]="SKELETON_SHAPE.Block" />
   </div>
+  } @empty {
+  <div class="account__muted" aria-hidden="true">
+    <span class="account__sk-line"><ui-skeleton [shape]="SKELETON_SHAPE.Block" /></span>
+  </div>
+  }
 </ui-settings-section>
 }
 

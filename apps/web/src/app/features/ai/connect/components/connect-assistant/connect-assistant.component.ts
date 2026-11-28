@@ -11,6 +11,8 @@ import {
   NoticeComponent,
   SettingsRowComponent,
   SettingsSectionComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
 } from '@shelfmark/ui';
 import { AuthStore } from '../../../../../core/auth/auth.store';
 import { activeLang } from '../../../../../core/i18n/active-lang';
@@ -37,6 +39,7 @@ import { McpHowToComponent } from '../mcp-how-to/mcp-how-to.component';
     NoticeComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
+    SkeletonComponent,
     TranslocoPipe,
   ],
   templateUrl: './connect-assistant.component.html',
@@ -55,13 +58,17 @@ export class ConnectAssistantComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly MCP_LIMIT = MCP_LIMIT;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
 
   protected readonly isDemo = computed(() => this.auth.user()?.isDemo ?? false);
 
-  /** Why Create token is off, as a key: the demo or an account without Pro. */
+  /**
+   * Why Create token is off, as a key: the demo (known from the session, so its notice stands from
+   * the first frame and the page does not shrink when the tokens answer) or an account without Pro.
+   */
   protected readonly blockedKey = computed(() => {
-    if (!this.store.loaded()) return null;
     if (this.isDemo()) return 'ai.connect.demo';
+    if (!this.store.loaded()) return null;
     if (!this.store.available()) return 'ai.connect.pro';
     return null;
   });
